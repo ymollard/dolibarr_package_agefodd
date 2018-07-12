@@ -58,7 +58,7 @@ class FormAgefodd extends Form
 	 */
 	public function select_formation($selectid, $htmlname = 'formation', $sort = 'intitule', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
 		global $conf, $user, $langs;
-		if (!empty($conf->use_javascript_ajax) && !empty($conf->global->AGEFODD_USE_SEARCH_TO_SELECT))
+		if (!empty($conf->use_javascript_ajax) && !empty( $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT))
 		{
 			$placeholder = '';
 
@@ -75,11 +75,11 @@ class FormAgefodd extends Form
 			$filter=json_encode($filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
 			
-			print ajax_autocompleter($selectid, $htmlname, '../ajax/formation.php', $urloption, $conf->global->AGEFODD_USE_SEARCH_TO_SELECT, 0, '');
+			print ajax_autocompleter($selectid, $htmlname, '../ajax/formation.php', $urloption,  $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT, 0, '');
 
 			
 			
-			return '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'"'.$placeholder.' '.(!empty($conf->global->PRODUCT_SEARCH_AUTOFOCUS) ? 'autofocus' : '').' />';
+			return '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'" />';
 			
 		}
 		else
@@ -122,7 +122,7 @@ class FormAgefodd extends Form
 		dol_syslog(get_class($this) . "::select_formation", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT && ! $forcecombo) {
+			if ($conf->use_javascript_ajax  && ! $forcecombo) {
 				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
 				$out .= ajax_combobox($htmlname, $event);
 			}
@@ -384,7 +384,7 @@ class FormAgefodd extends Form
 	 */
 	public function select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array(), $class='') {
 		global $conf, $langs;
-		if (!empty($conf->use_javascript_ajax) && !empty($conf->global->AGEFODD_USE_SEARCH_TO_SELECT))
+		if (!empty($conf->use_javascript_ajax) && !empty( $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT ))
 		{
 			$placeholder = '';
 
@@ -400,11 +400,11 @@ class FormAgefodd extends Form
 			$filter=str_replace('FROM', 'TOREPLACE', $filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
 			
-			print ajax_autocompleter($selectid, $htmlname, '../ajax/lieu.php', $urloption, $conf->global->AGEFODD_USE_SEARCH_TO_SELECT, 0, '');
+			print ajax_autocompleter($selectid, $htmlname, '../ajax/lieu.php', $urloption,  $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT , 0, '');
 
 			
 			
-			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'"'.$placeholder.' '.(!empty($conf->global->PRODUCT_SEARCH_AUTOFOCUS) ? 'autofocus' : '').' />';
+			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'" />';
 			
 		}
 		else
@@ -439,7 +439,7 @@ class FormAgefodd extends Form
 		dol_syslog(get_class($this) . "::select_site_forma", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
-			if ($conf->use_javascript_ajax && $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
+			if ($conf->use_javascript_ajax && ! $forcecombo) {
 				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
 				$out .= ajax_combobox($htmlname, $event);
 			}
@@ -491,7 +491,7 @@ class FormAgefodd extends Form
 	public function select_stagiaire($selectid = '', $htmlname = 'stagiaire', $filter = '', $showempty = 0, $forcecombo = 0, $event = array())
 	{
 		global $conf, $langs;
-		if (!empty($conf->use_javascript_ajax) && !empty($conf->global->AGEFODD_USE_SEARCH_TO_SELECT))
+		if (!empty($conf->use_javascript_ajax) && !empty($conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT ))
 		{
 			$placeholder = '';
 
@@ -507,11 +507,11 @@ class FormAgefodd extends Form
 			$filter=str_replace('FROM', 'TOREPLACE', $filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
 			
-			print ajax_autocompleter($selectid, $htmlname, '../ajax/stagiaire.php', $urloption, $conf->global->AGEFODD_USE_SEARCH_TO_SELECT, 0, '');
+			print ajax_autocompleter($selectid, $htmlname, '../ajax/stagiaire.php', $urloption, $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT , 0, '');
 
 			
 			
-			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'"'.$placeholder.' '.(!empty($conf->global->PRODUCT_SEARCH_AUTOFOCUS) ? 'autofocus' : '').' />';
+			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'" />';
 			
 		}
 		else
@@ -546,7 +546,7 @@ class FormAgefodd extends Form
 			$result = $this->db->query($sql);
 			if ($result)
 			{
-				if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT && !$forcecombo)
+				if ($conf->use_javascript_ajax &&  !$forcecombo)
 				{
 					include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
 					$out .= ajax_combobox($htmlname, $event, 1);
@@ -837,7 +837,7 @@ class FormAgefodd extends Form
 	 */
 	public function select_formateur($selectid = '', $htmlname = 'formateur', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
 		global $conf, $langs;
-		if (!empty($conf->use_javascript_ajax) && !empty($conf->global->AGEFODD_USE_SEARCH_TO_SELECT))
+		if (!empty($conf->use_javascript_ajax) && !empty($conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT))
 		{
 			$placeholder = '';
 
@@ -853,11 +853,11 @@ class FormAgefodd extends Form
 			$filter=str_replace('FROM', 'TOREPLACE', $filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
 			
-			print ajax_autocompleter($selectid, $htmlname, '../ajax/formateur.php', $urloption, $conf->global->AGEFODD_USE_SEARCH_TO_SELECT, 0, '');
+			print ajax_autocompleter($selectid, $htmlname, '../ajax/formateur.php', $urloption, $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT, 0, '');
 
 			
 			
-			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'"'.$placeholder.' '.(!empty($conf->global->PRODUCT_SEARCH_AUTOFOCUS) ? 'autofocus' : '').' />';
+			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'" />';
 			
 		}
 		else
@@ -902,7 +902,7 @@ class FormAgefodd extends Form
 		$result = $this->db->query($sql);
 		if ($result) {
 
-			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT && ! $forcecombo) {
+			if ($conf->use_javascript_ajax &&  ! $forcecombo) {
 				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
 				$out .= ajax_combobox($htmlname, $event);
 			}

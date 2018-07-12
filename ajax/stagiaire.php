@@ -77,7 +77,7 @@ else
 	require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
 	dol_include_once('/agefodd/class/html.formagefodd.class.php');
 
-	$langs->load("products");
+	$langs->load("agefodd@agefodd");
 	$langs->load("main");
 
 	top_httphead();
@@ -91,9 +91,9 @@ else
 	$match = preg_grep('/(' . $htmlname . '[0-9]+)/', array_keys($_GET));
 	sort($match);
 
-	$idprod = (! empty($match[0]) ? $match[0] : '');
+	$idtrainee = (! empty($match[0]) ? $match[0] : '');
 
-	if (GETPOST($htmlname,'alpha') == '' && (! $idprod || ! GETPOST($idprod,'alpha')))
+	if (GETPOST($htmlname,'alpha') == '' && (! $idtrainee || ! GETPOST($idtrainee,'alpha')))
 	{
 		print json_encode(array());
 	    return;
@@ -103,7 +103,7 @@ else
 	}
 
 	// When used from jQuery, the search term is added as GET param "term".
-	$searchkey = (($idprod && GETPOST($idprod,'alpha')) ? GETPOST($idprod,'alpha') :  (GETPOST($htmlname, 'alpha') ? GETPOST($htmlname, 'alpha') : ''));
+	$searchkey = (($idtrainee && GETPOST($idtrainee,'alpha')) ? GETPOST($idtrainee,'alpha') :  (GETPOST($htmlname, 'alpha') ? GETPOST($htmlname, 'alpha') : ''));
 	
 	$form = new FormAgefodd($db);
 	

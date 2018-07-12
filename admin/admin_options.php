@@ -67,26 +67,9 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
+        
 
-        $usesearch_training = GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT', 'alpha');
-        $res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training, 'chaine', 0, '', $conf->entity);
-        if (! $res > 0)
-            $error ++;
-
-        $usesearch_trainer = GETPOST('AGF_TRAINER_USE_SEARCH_TO_SELECT', 'alpha');
-        $res = dolibarr_set_const($db, 'AGF_TRAINER_USE_SEARCH_TO_SELECT', $usesearch_trainer, 'chaine', 0, '', $conf->entity);
-        if (! $res > 0)
-            $error ++;
-
-        $usesearch_trainee = GETPOST('AGF_TRAINEE_USE_SEARCH_TO_SELECT', 'alpha');
-        $res = dolibarr_set_const($db, 'AGF_TRAINEE_USE_SEARCH_TO_SELECT', $usesearch_trainee, 'chaine', 0, '', $conf->entity);
-        if (! $res > 0)
-            $error ++;
-
-        $usesearch_site = GETPOST('AGF_SITE_USE_SEARCH_TO_SELECT', 'alpha');
-        $res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site, 'chaine', 0, '', $conf->entity);
-        if (! $res > 0)
-            $error ++;
+        
 
         $usesearch_stagstype = GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT', 'alpha');
         $res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype, 'chaine', 0, '', $conf->entity);
@@ -208,7 +191,27 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_HIDE_REF_PROPAL_DT_INFO', $add_hide_dt_info, 'yesno', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
-    }
+    }else {
+		$usesearch_trainer = GETPOST('AGF_TRAINER_USE_SEARCH_TO_SELECT', 'alpha');
+        $res = dolibarr_set_const($db, 'AGF_TRAINER_USE_SEARCH_TO_SELECT', $usesearch_trainer, 'chaine', 0, '', $conf->entity);
+        if (! $res > 0)
+            $error ++;
+
+        $usesearch_trainee = GETPOST('AGF_TRAINEE_USE_SEARCH_TO_SELECT', 'alpha');
+        $res = dolibarr_set_const($db, 'AGF_TRAINEE_USE_SEARCH_TO_SELECT', $usesearch_trainee, 'chaine', 0, '', $conf->entity);
+        if (! $res > 0)
+            $error ++;
+
+        $usesearch_site = GETPOST('AGF_SITE_USE_SEARCH_TO_SELECT', 'alpha');
+        $res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site, 'chaine', 0, '', $conf->entity);
+        if (! $res > 0)
+            $error ++;
+		
+		$usesearch_training = GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT', 'alpha');
+		$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training, 'chaine', 0, '', $conf->entity);
+        if (! $res > 0)
+            $error ++;
+	}
 
     $fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
     $res = dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
@@ -377,93 +380,100 @@ if (! $conf->use_javascript_ajax || empty($conf->global->CONTACT_USE_SEARCH_TO_S
 print '</tr>';
 
 // utilisation formulaire Ajax sur choix training
-print '<tr class="impair">';
-print '<td>' . $langs->trans("AgfUseSearchToSelectTraining") . '</td>';
-if (! $conf->use_javascript_ajax) {
-    print '<td nowrap="nowrap" align="right" colspan="2">';
-    print $langs->trans("NotAvailableWhenAjaxDisabled");
-    print '</td>';
-} else {
-    print '<td align="left">';
-    if ($conf->use_javascript_ajax) {
-        print ajax_constantonoff('AGF_TRAINING_USE_SEARCH_TO_SELECT');
-    } else {
-        $arrval = array (
-            '0' => $langs->trans("No"),
-            '1' => $langs->trans("Yes")
-        );
-        print $form->selectarray("AGF_TRAINING_USE_SEARCH_TO_SELECT", $arrval, $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT);
-    }
-    print '</td>';
+print '<tr class="oddeven">';
+print '<td>'.$form->textwithpicto($langs->trans("AgfUseSearchToSelectTraining"),$langs->trans('UseSearchToSelectPictoAgefodd'),1).'</td>';
+if (empty($conf->use_javascript_ajax))
+{
+	print '<td class="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print '</td>';
+}
+else
+{
+	print '<td width="60" align="right">';
+	$arrval=array(
+		'0'=>$langs->trans("No"),
+		'1'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",1).')',
+	    '2'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",2).')',
+	    '3'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",3).')',
+	);
+	print $form->selectarray("AGF_TRAINING_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT);
+	print '</td>';
 }
 print '<td>&nbsp;</td>';
 print '</tr>';
 
+
 // utilisation formulaire Ajax sur choix trainer
-print '<tr class="pair">';
-print '<td>' . $langs->trans("AgfUseSearchToSelectTrainer") . '</td>';
-if (! $conf->use_javascript_ajax) {
-    print '<td nowrap="nowrap" align="right" colspan="2">';
-    print $langs->trans("NotAvailableWhenAjaxDisabled");
-    print '</td>';
-} else {
-    print '<td align="left">';
-    if ($conf->use_javascript_ajax) {
-        print ajax_constantonoff('AGF_TRAINER_USE_SEARCH_TO_SELECT');
-    } else {
-        $arrval = array (
-            '0' => $langs->trans("No"),
-            '1' => $langs->trans("Yes")
-        );
-        print $form->selectarray("AGF_TRAINER_USE_SEARCH_TO_SELECT", $arrval, $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT);
-    }
-    print '</td>';
+print '<tr class="oddeven">';
+print '<td>'.$form->textwithpicto($langs->trans("AgfUseSearchToSelectTrainer"),$langs->trans('UseSearchToSelectPictoAgefodd'),1).'</td>';
+if (empty($conf->use_javascript_ajax))
+{
+	print '<td class="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print '</td>';
+}
+else
+{
+	print '<td width="60" align="right">';
+	$arrval=array(
+		'0'=>$langs->trans("No"),
+		'1'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",1).')',
+	    '2'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",2).')',
+	    '3'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",3).')',
+	);
+	print $form->selectarray("AGF_TRAINER_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT);
+	print '</td>';
 }
 print '<td>&nbsp;</td>';
 print '</tr>';
 
 // utilisation formulaire Ajax sur choix trainee
-print '<tr class="impair">';
-print '<td>' . $langs->trans("AgfUseSearchToSelectTrainee") . '</td>';
-if (! $conf->use_javascript_ajax) {
-    print '<td nowrap="nowrap" align="right" colspan="2">';
-    print $langs->trans("NotAvailableWhenAjaxDisabled");
-    print '</td>';
-} else {
-    print '<td  align="left">';
-    if ($conf->use_javascript_ajax) {
-        print ajax_constantonoff('AGF_TRAINEE_USE_SEARCH_TO_SELECT');
-    } else {
-        $arrval = array (
-            '0' => $langs->trans("No"),
-            '1' => $langs->trans("Yes")
-        );
-        print $form->selectarray("AGF_TRAINEE_USE_SEARCH_TO_SELECT", $arrval, $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT);
-    }
-    print '</td>';
+print '<tr class="oddeven">';
+print '<td>'.$form->textwithpicto($langs->trans("AgfUseSearchToSelectTrainee"),$langs->trans('UseSearchToSelectPictoAgefodd'),1).'</td>';
+if (empty($conf->use_javascript_ajax))
+{
+	print '<td class="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print '</td>';
+}
+else
+{
+	print '<td width="60" align="right">';
+	$arrval=array(
+		'0'=>$langs->trans("No"),
+		'1'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",1).')',
+	    '2'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",2).')',
+	    '3'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",3).')',
+	);
+	print $form->selectarray("AGF_TRAINEE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT);
+	print '</td>';
 }
 print '<td>&nbsp;</td>';
 print '</tr>';
 
+
+
 // utilisation formulaire Ajax sur choix site
-print '<tr class="pair">';
-print '<td>' . $langs->trans("AgfUseSearchToSelectSite") . '</td>';
-if (! $conf->use_javascript_ajax) {
-    print '<td nowrap="nowrap" align="right" colspan="2">';
-    print $langs->trans("NotAvailableWhenAjaxDisabled");
-    print '</td>';
-} else {
-    print '<td align="left">';
-    if ($conf->use_javascript_ajax) {
-        print ajax_constantonoff('AGF_SITE_USE_SEARCH_TO_SELECT');
-    } else {
-        $arrval = array (
-            '0' => $langs->trans("No"),
-            '1' => $langs->trans("Yes")
-        );
-        print $form->selectarray("AGF_SITE_USE_SEARCH_TO_SELECT", $arrval, $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT);
-    }
-    print '</td>';
+print '<tr class="oddeven">';
+print '<td>'.$form->textwithpicto($langs->trans("AgfUseSearchToSelectSite"),$langs->trans('UseSearchToSelectPictoAgefodd'),1).'</td>';
+if (empty($conf->use_javascript_ajax))
+{
+	print '<td class="nowrap" align="right" colspan="2">';
+	print $langs->trans("NotAvailableWhenAjaxDisabled");
+	print '</td>';
+}
+else
+{
+	print '<td width="60" align="right">';
+	$arrval=array(
+		'0'=>$langs->trans("No"),
+		'1'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",1).')',
+	    '2'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",2).')',
+	    '3'=>$langs->trans("Yes").' ('.$langs->trans("NumberOfKeyToSearch",3).')',
+	);
+	print $form->selectarray("AGF_SITE_USE_SEARCH_TO_SELECT",$arrval,$conf->global->AGF_SITE_USE_SEARCH_TO_SELECT);
+	print '</td>';
 }
 print '<td>&nbsp;</td>';
 print '</tr>';
