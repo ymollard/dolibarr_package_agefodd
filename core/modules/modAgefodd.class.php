@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.2';
+		$this->version = '3.3';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -381,6 +381,22 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][1] = "chaine";
 		$this->const[$r][2] = '';
 		$this->const[$r][3] = 'Mask of certificate code';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+		
+		$r ++;
+		$this->const[$r][0] = "AGF_SESSION_ADDON";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'mod_agefoddsession_simple';
+		$this->const[$r][3] = 'Use simple mask for session ref';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_SESSION_UNIVERSAL_MASK";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '';
+		$this->const[$r][3] = 'Mask of session code';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
@@ -2451,9 +2467,12 @@ class modAgefodd extends DolibarrModules
 									$fileversion = str_replace('.sql', '', $fileversion_array[1]);
 									dol_syslog(get_class($this) . "::_load_tables_agefodd fileversion:" . $fileversion, LOG_DEBUG);
 									if (version_compare($last_version_install, $fileversion) == - 1) {
+										
+										
 										$dorun = true;
 										dol_syslog(get_class($this) . "::_load_tables_agefodd run file:" . $file, LOG_DEBUG);
 									}
+									
 								}
 							} else {
 									$this->error = "Error " . $this->db->lasterror();
@@ -2463,6 +2482,9 @@ class modAgefodd extends DolibarrModules
 
 							if ($dorun) {
 								$result = run_sql($dir . $file, 1, '', 1);
+								
+								if($last_version_install <='3.2' && $fileversion>='3.3')$this->update_refsession();
+								
 								if ($result <= 0)
 									$error ++;
 							}
@@ -2489,4 +2511,26 @@ class modAgefodd extends DolibarrModules
 
 		return $ok;
 	}
+	
+	function update_refsession()
+	{
+		global $db, $user;
+		dol_include_once('/user/class/user.class.php');
+		dol_include_once('/agefodd/class/agsession.class.php');
+		dol_include_once('/agefodd/core/modules/agefodd/session/mod_agefoddsession_simple.php');
+		$sql = "SELECT rowid,datec FROM ".MAIN_DB_PREFIX."agefodd_session WHERE ref = '' ORDER BY rowid";
+		$resql = $db->query($sql);
+		while ($obj = $db->fetch_object($resql))
+		{
+
+			$ags = new Agsession($db);
+			$ags->fetch($obj->rowid);
+			$modSession = new mod_agefoddsession_simple();
+			if (empty($ags->ref))
+				$ags->ref = $modSession->getNextValue('', '', $obj->datec);
+
+			$ags->update($user);
+		}
+	}
+
 }

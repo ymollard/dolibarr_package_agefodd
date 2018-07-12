@@ -1595,6 +1595,12 @@ function fetch_financial_c($filter = array()) {
 	}
 
 	dol_syslog(get_class($this) . "::" . __METHOD__ . ' DEBUG ALL C1 to 13 '."\n".implode(' UNION ',$sqldebugall), LOG_DEBUG);
+
+	$sqldebugall_findinvoice="SELECT factdddd.facnumber,factdddd.total FROM " . MAIN_DB_PREFIX . "facture as factdddd WHERE
+ 					(factdddd.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')
+						AND factdddd.rowid NOT IN ( SELECT factinsssss.rowid FROM (".implode(' UNION ',$sqldebugall).") as factinsssss)";
+
+	dol_syslog(get_class($this) . "::" . __METHOD__ . ' DEBUG find invoice not in C1 to 13 '."\n".$sqldebugall_findinvoice, LOG_DEBUG);
 }
 
 /**

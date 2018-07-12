@@ -98,6 +98,7 @@ $training_view = GETPOST("training_view", 'int');
 $site_view = GETPOST('site_view', 'int');
 $status_view = GETPOST('status', 'int');
 $search_id = GETPOST('search_id', 'int');
+$search_session_ref = GETPOST('search_session_ref', 'alpha');
 $search_month = GETPOST('search_month', 'aplha');
 $search_year = GETPOST('search_year', 'int');
 $search_socpeople_presta = GETPOST('search_socpeople_presta', 'alpha');
@@ -140,6 +141,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_training_ref_interne = "";
 	$search_type_session = "";
 	$search_id = '';
+	$search_session_ref = '';
 	$search_month = '';
 	$search_year = '';
 	$search_sale = '';
@@ -163,6 +165,7 @@ $search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search
 
 $arrayfields=array(
     's.rowid'			=>array('label'=>"Id", 'checked'=>1),
+    's.ref'			=>array('label'=>"SessionRef", 'checked'=>1),
     'so.nom'			=>array('label'=>"Company", 'checked'=>1),
     'f.rowid'			=>array('label'=>"AgfFormateur", 'checked'=>1),
     'c.intitule'		=>array('label'=>"AgfIntitule", 'checked'=>1),
@@ -258,6 +261,10 @@ if (! empty($status_view)) {
 if (! empty($search_id)) {
 	$filter ['s.rowid'] = $search_id;
 	$option .= '&search_id=' . $search_id;
+}
+if (! empty($search_session_ref)) {
+	$filter ['s.ref'] = $search_session_ref;
+	$option .= '&search_session_ref=' . $search_session_ref;
 }
 if (! empty($search_month)) {
 	$filter ['MONTH(s.dated)'] = $search_month;
@@ -434,6 +441,9 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, $user, array_keys($extrafields->attribute_label));
 
 if ($resql != - 1) {
+	
+	$TTotalBySession = _getTTotalBySession();
+	
 	$num = $resql;
 
 	$arrayofselected=is_array($toselect)?$toselect:array();
@@ -506,6 +516,12 @@ if ($resql != - 1) {
 
 	if (! empty($arrayfields['s.rowid']['checked'])) print '<td class="liste_titre"><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
 
+	if (! empty($arrayfields['s.ref']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_session_ref" value="' . $search_session_ref . '" size="15">';
+		print '</td>';
+	}
 	if (! empty($arrayfields['so.nom']['checked']))
 	{
 		print '<td class="liste_titre">';
@@ -663,6 +679,7 @@ if ($resql != - 1) {
 
 	print '<tr class="liste_titre">';
 	if (! empty($arrayfields['s.rowid']['checked']))			print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['s.ref']['checked']))			print_liste_field_titre($langs->trans("SessionRef"), $_SERVEUR ['PHP_SELF'], "s.ref", "", $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['so.nom']['checked']))				print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['f.rowid']['checked']))			print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['c.intitule']['checked']))			print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
@@ -708,6 +725,9 @@ if ($resql != - 1) {
 
 	print "</tr>\n";
 
+	$propal_total_ht = 0;
+	$invoice_total_ht = 0;
+	
 	$var = true;
 	$oldid=0;
 	foreach ( $agf->lines as $line ) {
@@ -725,8 +745,8 @@ if ($resql != - 1) {
 			$color_a = '';
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 				$color_a = ' style="color: #FFFFFF;"';
-
 			if (! empty($arrayfields['s.rowid']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="'.dol_buildpath('/agefodd/session/card.php', 1).'?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . '  ' . $line->rowid . '</a></td>';
+			if (! empty($arrayfields['s.ref']['checked'])) print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="'.dol_buildpath('/agefodd/session/card.php', 1).'?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . '  ' . $line->sessionref . '</a></td>';
 
 			if (! empty($arrayfields['so.nom']['checked']))
 			{
@@ -813,28 +833,49 @@ if ($resql != - 1) {
 			}
 
 			if ($user->rights->agefodd->session->margin) {
-				if (! empty($arrayfields['s.sell_price']['checked']))	print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" >' . price($line->sell_price,0, $langs, 1, -1, -1, 'auto') . '</td>';
+				if (! empty($arrayfields['s.sell_price']['checked']))
+				{
+					$amount = 0;
+					if (!empty($TTotalBySession[$line->rowid]))
+					{
+						if (!empty($TTotalBySession[$line->rowid]['propal']['total_ht_without_draft'])) $amount = $TTotalBySession[$line->rowid]['propal']['total_ht_without_draft'];
+						if (!empty($TTotalBySession[$line->rowid]['propal']['total_ht_from_all_propals'])) $amount-= $TTotalBySession[$line->rowid]['propal']['total_ht_from_all_propals'];
+					}
+					
+					$propal_total_ht+=$amount;
+					print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" >' . price($amount,0, $langs, 1, -1, -1, 'auto') . '</td>';
+//					print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" >' . price($line->sell_price,0, $langs, 1, -1, -1, 'auto') . '</td>';
+				}
 				if (! empty($arrayfields['s.cost_trainer']['checked']))	print '<td  nowrap="nowrap"  name="margininfoline2'.$line->rowid.'">' . price($line->cost_trainer,0, $langs, 1, -1, -1, 'auto') . '</td>';
 				if (! empty($arrayfields['AgfCostOther']['checked']))	print '<td  nowrap="nowrap"  name="margininfoline3'.$line->rowid.'" >' . price($line->cost_other,0, $langs, 1, -1, -1, 'auto') . '</td>';
 
 				if (! empty($arrayfields['AgfFactAmount']['checked']))
 				{
 					print '<td  nowrap="nowrap"  name="margininfoline4'.$line->rowid.'" >';
-					$amount_act_invoiced_less_charges=0;
-					// Remove charges of product of category 'frais'
-					if (! empty($line->cost_sell_charges) && $line->cost_sell_charges != - 1 && $line->cost_sell_charges <= $line->invoice_amount) {
-						$amount_act_invoiced_less_charges = $line->invoice_amount - $line->cost_sell_charges;
-					} else {
-						$amount_act_invoiced_less_charges = $line->invoice_amount;
-					}
-					$totalfacththf += $amount_act_invoiced_less_charges;
+//					$amount_act_invoiced_less_charges=0;
+//					// Remove charges of product of category 'frais'
+//					if (! empty($line->cost_sell_charges) && $line->cost_sell_charges != - 1 && $line->cost_sell_charges <= $line->invoice_amount) {
+//						$amount_act_invoiced_less_charges = $line->invoice_amount - $line->cost_sell_charges;
+//					} else {
+//						$amount_act_invoiced_less_charges = $line->invoice_amount;
+//					}
+//					$totalfacththf += $amount_act_invoiced_less_charges;
 
-					if ($amount_act_invoiced_less_charges == 0 && $line->sell_price!=0) {
+					$amount = 0;
+					if (!empty($TTotalBySession[$line->rowid]))
+					{
+						if (!empty($TTotalBySession[$line->rowid]['invoice']['total_ht_without_draft'])) $amount = $TTotalBySession[$line->rowid]['invoice']['total_ht_without_draft'];
+						if (!empty($TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_propals'])) $amount-= $TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices'];
+					}
+					
+					$invoice_total_ht+=$amount;
+					
+					if ($invoice_total_ht == 0 && $line->sell_price!=0) {
 						$bgfact = 'red';
 					} else {
 						$bgfact = '';
 					}
-					print '<font style="color:' . $bgfact . '">' . price($amount_act_invoiced_less_charges,0, $langs, 1, -1, -1, 'auto'). '</font>';
+					print '<font style="color:' . $bgfact . '">' . price($amount,0, $langs, 1, -1, -1, 'auto'). '</font>';
 					print '</td>';
 				}
 
@@ -911,6 +952,7 @@ if ($resql != - 1) {
 		} else {
 			print "<tr $bc[$var]>";
 			if (! empty($arrayfields['s.rowid']['checked']))	print '<td></td>';
+			if (! empty($arrayfields['s.ref']['checked']))	print '<td></td>';
 			if (! empty($arrayfields['so.nom']['checked']))		print '<td></td>';
 			if (! empty($arrayfields['f.rowid']['checked']))
 			{
@@ -972,7 +1014,8 @@ if ($resql != - 1) {
 		
 		print '<tr class="liste_total" name="margininfototal" >';
 		print '<td>'.$langs->trans('Total').'</td>';
-		if (! empty($arrayfields['s.rowid']['checked']) && ! empty($arrayfields['so.nom']['checked']))					print '<td></td>';
+		if (! empty($arrayfields['s.rowid']['checked']) && ! empty($arrayfields['s.ref']['checked']))					print '<td></td>';
+		if (! empty($arrayfields['so.nom']['checked']))				print '<td></td>';
 		if (! empty($arrayfields['f.rowid']['checked']))				print '<td></td>';
 		if (! empty($arrayfields['c.intitule']['checked']))				print '<td></td>';
 		if (! empty($arrayfields['c.ref']['checked']))					print '<td></td>';
@@ -985,13 +1028,36 @@ if ($resql != - 1) {
 		if (! empty($arrayfields['s.nb_stagiaire']['checked']))	print '<td></td>';
 		if (! empty($arrayfields['s.fk_soc_requester']['checked']))		print '<td></td>';
 		if ($user->rights->agefodd->session->margin) {
-			if (! empty($arrayfields['s.sell_price']['checked']))		print '<td nowrap="nowrap">'.price($total_sellprice,0, '', 1, -1, -1, 'auto').'</td>';
+//			$big_propal_total_ht = $big_invoice_total_ht = 0;
+//			array_walk($TTotalBySession, function(&$tab) use (&$big_propal_total_ht, &$big_invoice_total_ht) {
+//				if (!empty($tab['propal']['total_ht_without_draft'])) $big_propal_total_ht += $tab['propal']['total_ht_without_draft'];
+//				if (!empty($tab['propal']['total_ht_from_all_propals'])) $big_propal_total_ht -= $tab['propal']['total_ht_from_all_propals'];
+//				if (!empty($tab['invoice']['total_ht_without_draft'])) $big_invoice_total_ht += $tab['invoice']['total_ht_without_draft'];
+//				if (!empty($tab['invoice']['total_ht_from_all_propals'])) $big_invoice_total_ht -= $tab['invoice']['total_ht_from_all_propals'];
+//			});
+//			if (! empty($arrayfields['s.sell_price']['checked']))		print '<td nowrap="nowrap">'.price($total_sellprice,0, '', 1, -1, -1, 'auto').'</td>';
+			if (! empty($arrayfields['s.sell_price']['checked']))		print '<td nowrap="nowrap">'.price($propal_total_ht,0, '', 1, -1, -1, 'auto').'</td>';
 			if (! empty($arrayfields['s.cost_trainer']['checked']))		print '<td nowrap="nowrap">'.price($total_costtrainer,0, '', 1, -1, -1, 'auto').'</td>';
 			if (! empty($arrayfields['AgfCostOther']['checked']))		print '<td nowrap="nowrap">'.price($total_costother,0, '', 1, -1, -1, 'auto').'</td>';
-			if (! empty($arrayfields['AgfFactAmount']['checked']))		print '<td nowrap="nowrap">'.price($total_facththf,0, '', 1, -1, -1, 'auto').'</td>';
+//			if (! empty($arrayfields['AgfFactAmount']['checked']))		print '<td nowrap="nowrap">'.price($total_facththf,0, '', 1, -1, -1, 'auto').'</td>';
+			if (! empty($arrayfields['AgfFactAmount']['checked']))		print '<td nowrap="nowrap">'.price($invoice_total_ht,0, '', 1, -1, -1, 'auto').'</td>';
 			if (! empty($arrayfields['AgfMargin']['checked']))			print '<td nowrap="nowrap">'.price($total_margin,0, '', 1, -1, -1, 'auto').'(' . $total_percentmargin . ')'.'</td>';
 		}
 		if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))	print '<td></td>';
+		if (! empty($arrayfields['AgfProductServiceLinked']['checked']))	print '<td></td>';
+
+		// Extra fields
+		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
+		{
+			foreach($extrafields->attribute_label as $key => $val)
+			{
+				if (! empty($arrayfields["ef.".$key]['checked']))
+				{
+					print print '<td></td>';
+				}
+			}
+		}
+		
 		//Action column
 		print '<td>&nbsp;</td>';
 		print "</tr>\n";

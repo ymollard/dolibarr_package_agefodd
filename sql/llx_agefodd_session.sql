@@ -24,6 +24,7 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
+  ref varchar(40) NOT NULL,
   entity integer NOT NULL DEFAULT 1,
   fk_soc int NULL,
   fk_soc_requester int NULL,
@@ -72,3 +73,5 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   import_key varchar(36) DEFAULT NULL,
   ref_ext varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB;
+
+ALTER TABLE llx_agefodd_session ADD COLUMN fk_soc_employer integer DEFAULT NULL AFTER fk_socpeople_presta;
