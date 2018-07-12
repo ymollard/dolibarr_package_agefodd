@@ -179,6 +179,11 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				if (! empty($tplidx)) $this->pdf->useTemplate($tplidx);
 
 				$this->_pagehead($agf, $outputlangs);
+				$this->pdf->startTransaction();
+				$footerheight = $this->_pagefoot($agf, $outputlangs);
+				$this->page_limit = $this->page_hauteur - $footerheight;
+				$this->pdf = $this->pdf->rollbackTransaction();
+				
 				/*
 				 * Corps de page
 				 */
@@ -363,7 +368,7 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 					$height = $this->getRealHeightLine($agf->methode, $agf, $outputlangs, $this->default_font_size);
 
 					$height_left = $this->page_hauteur - $this->marge_basse - $posY;
-					if ($height > $height_left) {
+					if ($height + $posY > $this->page_limit) {
 						$this->_pagefoot($agf, $outputlangs);
 						$this->pdf->AddPage();
 						if (! empty($tplidx)) $this->pdf->useTemplate($tplidx);
@@ -395,42 +400,21 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 				}
 
 				// Durée
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
-				$this->pdf->SetXY($posX, $posY);
-				$this->str = $outputlangs->transnoentities('AgfPDFFichePeda1');
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $this->pdf->GetY();
-				$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
-				$this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
-				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
-
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				// calcul de la duree en nbre de jours
-
-				if (empty($agf_session->duree_session)) {
-					$duree = $agf->duree;
+				$this->pdf->startTransaction();
+				$posY = $this->_printduree($posX, $posY, $outputlangs, $agf_session, $agf);
+				
+				if($posY > $this->page_limit)
+				{
+				    $this->pdf = $this->pdf->rollbackTransaction();
+				    $this->_pagefoot($agf, $outputlangs);
+				    $this->pdf->AddPage();
+				    if (! empty($tplidx)) $this->pdf->useTemplate($tplidx);
+				    $this->_pagehead($agf, $outputlangs);
+				    $posY = $this->pdf->GetY() + 5;	
+				    $this->_printduree($posX, $posY, $outputlangs, $agf_session, $agf);
 				} else {
-					$duree = $agf_session->duree_session;
+				    $this->pdf->commitTransaction();
 				}
-				if (empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
-					$jour = $duree / 7;
-				} else {
-					$jour = $duree / $conf->global->AGF_NB_HOUR_IN_DAYS;
-				}
-
-
-				// $this->str = $agf->duree.' '.$outputlangs->transnoentities('AgfPDFFichePeda2').'.';
-				if ($jour < 1)
-					$this->str = $duree . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda2') . '.';
-				else {
-					$this->str = $duree . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda2') . ' (' . ceil($jour) . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda3');
-					if (ceil($jour) > 1)
-						$this->str .= 's';
-					$this->str .= ').';
-				}
-				$this->pdf->SetXY($posX, $posY);
-				$this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-				$posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
 				/**
 				 * *** Programme ****
 				 */
@@ -839,5 +823,49 @@ class pdf_fiche_pedago extends ModelePDFAgefodd
 		$this->pdf = $this->pdf->rollbackTransaction();
 
 		return $height;
+	}
+	
+	function _printduree($posX, $posY, &$outputlangs, &$agf_session, &$agf)
+	{
+	    global $conf;
+	    
+	    $this->pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size + 1);
+	    $this->pdf->SetXY($posX, $posY);
+	    $this->str = $outputlangs->transnoentities('AgfPDFFichePeda1');
+	    $this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+	    $posY = $this->pdf->GetY();
+	    $this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
+	    $this->pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
+	    $posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+	    
+	    $this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+	    // calcul de la duree en nbre de jours
+	    
+	    if (empty($agf_session->duree_session)) {
+	        $duree = $agf->duree;
+	    } else {
+	        $duree = $agf_session->duree_session;
+	    }
+	    if (empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
+	        $jour = $duree / 7;
+	    } else {
+	        $jour = $duree / $conf->global->AGF_NB_HOUR_IN_DAYS;
+	    }
+	    
+	    
+	    // $this->str = $agf->duree.' '.$outputlangs->transnoentities('AgfPDFFichePeda2').'.';
+	    if ($jour < 1)
+	        $this->str = $duree . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda2') . '.';
+        else {
+            $this->str = $duree . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda2') . ' (' . ceil($jour) . ' ' . $outputlangs->transnoentities('AgfPDFFichePeda3');
+            if (ceil($jour) > 1)
+                $this->str .= 's';
+                $this->str .= ').';
+        }
+        $this->pdf->SetXY($posX, $posY);
+        $this->pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+        $posY = $this->pdf->GetY() + $this->espace_apres_titre + 2;
+        
+        return $posY;
 	}
 }
