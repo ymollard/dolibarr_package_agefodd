@@ -368,7 +368,7 @@ class ReportCA extends AgefoddExportExcel {
 				$sessions = array();
 
 				foreach ( $this->year_to_report_array as $year_todo ) {
-var_dump($this->value_ca_total_hthf[$year_todo][$month_todo]);
+
 					$line_to_output[$i] = $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
 					$line_to_output[$i + 1] = $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
 					$line_to_output[$i + 2] = $this->persent_ca_total_ht[$year_todo][$month_todo];
@@ -403,7 +403,7 @@ var_dump($this->value_ca_total_hthf[$year_todo][$month_todo]);
 				}
 				
 				sort($sessions);
-//var_dump($sessions);
+
 				foreach($sessions as $sessionId) {
 					
 					$line_to_output = array();
@@ -572,7 +572,7 @@ var_dump($this->value_ca_total_hthf[$year_todo][$month_todo]);
 	 */
 	function fetch_ca($filter = array()) {
 		global $langs, $conf;
-//var_dump($filter); exit;
+
 		$minyear = dol_print_date(dol_now(), '%Y');
 		// find minimum invoice year with dolibarr
 		$sql = "SELECT MIN(YEAR(f.datef)) as minyear";
