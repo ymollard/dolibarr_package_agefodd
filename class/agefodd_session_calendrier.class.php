@@ -338,7 +338,7 @@ class Agefodd_sesscalendar {
 		$sql .= " heured='" . $this->db->idate($this->heured) . "',";
 		$sql .= " heuref='" . $this->db->idate($this->heuref) . "',";
 		$sql .= " fk_user_mod=" . $user->id . ", ";
-		$sql .= " calendrier_type='" . $this->db->escape($this->calendrier_type) . "' ";
+		$sql .= " calendrier_type='" . $this->db->escape($this->calendrier_type) . "', ";
 		$sql .= " status=" . $this->status;
 		$sql .= " WHERE rowid = " . $this->id;
 
@@ -456,7 +456,7 @@ class Agefodd_sesscalendar {
 		}
 
 		if ($error == 0) {
-			$result = $action->add($user);
+			$result = $action->create($user);
 
 			if ($result < 0) {
 				$error ++;

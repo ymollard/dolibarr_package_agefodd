@@ -131,20 +131,21 @@ $(document).ready(function() {
 				,dataType: 'json'
 				,data: {
 					json: 1
-					,put: 'updateTimeSlot' // update crénau horaire et ressource associée
-					,event: {
-						id: event.id
-						,allDay: +event.allDay // event.allDay vos "true" ou "false" et le "+" de devant est là pour convertir en int
-						,start: event.start.format('YYYY-MM-DD HH:mm:ss')
-						,end: event.end !== null && event.end !== "undefined" ? event.end.format('YYYY-MM-DD HH:mm:ss') : ''
-						,deltaInSecond: delta.asSeconds()
-					}
+					,put: 'updateTimeSlotCalendrier' // update crénau horaire et ressource associée
+					,fk_agefodd_session_calendrier: event.id
+					,start: event.start.format('YYYY-MM-DD HH:mm')
+					,end: event.end !== null && event.end !== "undefined" ? event.end.format('YYYY-MM-DD HH:mm') : ''
+					,deltaInSecond: delta.asSeconds()
 					,dateFrom: event.start.format('YYYY-MM-DD')
 				}
 			}).fail(function(jqXHR, textStatus, errorThrown) {
 				console.log('Error: jqXHR, textStatus, errorThrown => ', jqXHR, textStatus, errorThrown);
 				revertFunc();
 			}).done(function(response, textStatus, jqXHR) {
+				if (typeof response.data !== 'undefined' && typeof response.data.event !== 'undefined')
+				{
+					event = _updateEvent(event, response.data);
+				}
 				console.log('Done: ', response);
 			});
 		},
@@ -163,19 +164,21 @@ $(document).ready(function() {
 				,dataType: 'json'
 				,data: {
 					json: 1
-					,put: 'updateTimeSlot' // update crénau horaire
-					,event: {
-						id: event.id
-						,start: event.start.format('YYYY-MM-DD HH:mm:ss')
-						,end: event.end.format('YYYY-MM-DD HH:mm:ss')
-						,deltaInSecond: delta.asSeconds()
-					}
+					,put: 'updateTimeSlotCalendrier' // update crénau horaire
+					,fk_agefodd_session_calendrier: event.id
+					,start: event.start.format('YYYY-MM-DD HH:mm')
+					,end: event.end.format('YYYY-MM-DD HH:mm')
+					,deltaInSecond: delta.asSeconds()
 					,dateFrom: event.start.format('YYYY-MM-DD')
 				}
 			}).fail(function(jqXHR, textStatus, errorThrown) {
 				console.log('Error: jqXHR, textStatus, errorThrown => ', jqXHR, textStatus, errorThrown);
 				revertFunc();
 			}).done(function(response, textStatus, jqXHR) {
+				if (typeof response.data !== 'undefined' && typeof response.data.event !== 'undefined')
+				{
+					event = _updateEvent(event, response.data);
+				}
 				console.log('Done: ', response);
 			});
 			
@@ -210,6 +213,8 @@ $(document).ready(function() {
 				var action_delete = '<a class="ajaxtool_link" href="javascript:delete_event('+event.id+');">'+fullcalendarscheduler_picto_delete+'</a>';
 				
 				if (event.startEditable) element.find('.fc-content').append('<div class="ajaxtool">'+action_delete+'</div>');
+				
+				if (event.calendrier_type_label.length > 0) element.find('.fc-content').append('<div class="calendrier_type">('+event.calendrier_type_label+')</div>');
 				
 				var liste_participant = $('<div class="liste_participant"></div>');
 				var liste_formateur = $('<div class="liste_formateur"></div>');
@@ -254,6 +259,13 @@ $(document).ready(function() {
 	});
 	/* Fin Calendar centrale */
 	
+	_updateEvent = function(event, data)
+	{
+		event.TFormateur = data.event.TFormateur;
+		event.TNomUrlFormateur = data.event.TNomUrlFormateur;
+		$('#agf_session_scheduler').fullCalendar('removeEvents', event.id);
+		$('#agf_session_scheduler').fullCalendar('renderEvent', event);
+	};
 	
 	delete_event = function(id)
 	{	
@@ -336,10 +348,12 @@ $(document).ready(function() {
 						dataObject.put = 'createOrUpdateCalendrier';
 						dataObject.fk_agefodd_session_calendrier = (typeof event !== 'undefined') ? event.id : 0;
 						dataObject.dateFrom = view.start.format('YYYY-MM-DD');
+						dataObject.dateStart = view.start.format('YYYY-MM-DD 00:00:00');
+						dataObject.dateEnd = view.end.add(-1, 'days').format('YYYY-MM-DD 23:59:59');
 						
 						$.ajax({
 							url: fullcalendarscheduler_interface
-							,type: 'GET' // obligatoirement en GET car la méthode d'affichage des extrafields ne permet pas d'utiliser du POST à cause de la méthode showOptionals du commonObject
+							,type: 'POST' 
 							,dataType: 'json'
 							,data: dataObject
 						}).fail(function(jqXHR, textStatus, errorThrown) {
@@ -398,22 +412,13 @@ $(document).ready(function() {
         
 	initEventFormFields = function(start, end, event) {
 		
+		var duration = end.diff(start) / 1000 / 60 / 60; //  /1000 pour avoir des secondes; /60 pour avoir des minutes; /60 pour avoir des heures
+		fullcalendarscheduler_div.find('.type_hour').val(duration);
+		
 		if (typeof event !== 'undefined')
 		{
-			fullcalendarscheduler_div.find('#type_code').val(event.type_code).trigger('change');
-			fullcalendarscheduler_div.find('input[name=label]').val(event.title);
-			fullcalendarscheduler_div.find('textarea[name=note]').val(event.desc);
-			
-			fullcalendarscheduler_div.find('#fk_soc').val(event.fk_soc).trigger('change');
-			fullcalendarscheduler_div.find('#contactid').data('fk-socpeople', event.fk_socpeople); // Maj via le bind "DOMNodeInserted"
-			
-			if (typeof event.editOptionals != 'undefined')
-			{
-//				fullcalendarscheduler_div.find('#extrafield_to_replace').replaceWith(event.editOptionals);
-			}
-			
-			fullcalendarscheduler_div.find('#fullday').prop('checked', event.allDay);
-			disabledHour(fullcalendarscheduler_div.find('#fullday'));
+			// Init inputs
+			fullcalendarscheduler_div.find('[name=calendrier_type]').val(event.calendrier_type);
 		}
 		
 		// Format en majuscule pour l'objet moment() si non il renvoie le mauvais format
@@ -423,7 +428,7 @@ $(document).ready(function() {
 		fullcalendarscheduler_div.find('#date_end').val(date);
 		dpChangeDay('date_end', fullcalendarscheduler_date_format);
 		
-		if (typeof event == 'undefined' || !event.allDay)
+		if (typeof event == 'undefined')
 		{
 			var hour_start = start.format('HH');
 			var minute_start = start.format('mm');
@@ -433,33 +438,12 @@ $(document).ready(function() {
 			var hour_end = end.format('HH');
 			var minute_end = end.format('mm');
 			fullcalendarscheduler_div.find('#date_endhour').val(hour_end);
-			fullcalendarscheduler_div.find('#date_endmin').val(minute_end);	
+			fullcalendarscheduler_div.find('#date_endmin').val(minute_end);
 		}
 		
-//		fullcalendarscheduler_div.find('#fk_resource').val(resource.id).trigger('change');
 	};
 	
 	
-	fullcalendarscheduler_div.find('#fullday').click(function() {
-		disabledHour(this);
-	});
-	
-	disabledHour = function(input) {
-		if ($(input).is(':checked'))
-		{
-			fullcalendarscheduler_div.find('#date_starthour').val('00').change().attr('disabled', true);
-			fullcalendarscheduler_div.find('#date_startmin').val('00').change().attr('disabled', true);
-			fullcalendarscheduler_div.find('#date_endhour').val('23').change().attr('disabled', true);
-			fullcalendarscheduler_div.find('#date_endmin').val('59').change().attr('disabled', true);
-		}
-		else
-		{
-			fullcalendarscheduler_div.find('#date_starthour').attr('disabled', false);
-			fullcalendarscheduler_div.find('#date_startmin').attr('disabled', false);
-			fullcalendarscheduler_div.find('#date_endhour').attr('disabled', false);
-			fullcalendarscheduler_div.find('#date_endmin').attr('disabled', false);
-		}
-	};
 });
 
 $.fn.serializeObject = function()

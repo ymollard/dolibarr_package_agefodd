@@ -195,9 +195,11 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
 		$sql .= " t.tms,";
-		$sql .= " t.status";
+		$sql .= " t.status,";
+		$sql .= " f.fk_session";
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as t";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as f ON (f.rowid=t.fk_agefodd_session_formateur)";
 		$sql .= " WHERE t.rowid = " . $id;
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
@@ -220,6 +222,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
 				$this->status = $obj->status;
+				$this->sessid = $obj->fk_session;
 			}
 			$this->db->free($resql);
 

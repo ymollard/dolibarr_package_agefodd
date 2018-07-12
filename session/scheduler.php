@@ -27,19 +27,19 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-require_once ('../class/agsession.class.php');
+dol_include_once('/agefodd/class/agsession.class.php');
 require_once DOL_DOCUMENT_ROOT.'/comm/action/class/actioncomm.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formactions.class.php';
 //require_once ('../class/agefodd_sessadm.class.php');
 //require_once ('../class/agefodd_session_admlevel.class.php');
-//require_once ('../class/html.formagefodd.class.php');
+dol_include_once('/agefodd/class/html.formagefodd.class.php');
 //require_once ('../class/agefodd_session_calendrier.class.php');
 //require_once ('../class/agefodd_calendrier.class.php');
 //require_once ('../class/agefodd_session_formateur.class.php');
 //require_once ('../class/agefodd_session_stagiaire.class.php');
 //require_once ('../class/agefodd_session_element.class.php');
 //require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
-require_once ('../lib/agefodd.lib.php');
+dol_include_once('/agefodd/lib/agefodd.lib.php');
 //require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
 //require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 //require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
@@ -71,7 +71,16 @@ if (!empty($id) && empty($object->id))
 	if ($object->id <= 0) dol_print_error($db, $object->error);
 }
 
+$stagiaires = new Agefodd_session_stagiaire($db);
+$formateurs = new Agefodd_session_formateur($db);
 
+
+if (!empty($object->id))
+{
+	$stagiaires->fetch_stagiaire_per_session($object->id);
+	$formateurs->fetch_formateur_per_session($object->id);
+}
+					
 
 $morejs = array(
 	'/fullcalendarscheduler/js/moment.min.js'
@@ -107,12 +116,13 @@ echo '<div id="agf_session_scheduler"></div>';
 /**
  * Instance des variables utiles pour le formulaire de création d'un événement
  */
-$formactions=new FormActions($db);
+$formagefodd = new FormAgefodd($db);
 $form=new Form($db);
 
 $inputs_hidden = '<input type="hidden" name="fk_agefodd_session" value="'.$object->id.'" />';
 //$inputs_hidden.= '';
 
+$select_calendrier_type = '<label>'.$langs->trans("AgfCalendarType").'</label> '.$formagefodd->select_calendrier_type('', 'calendrier_type');
 
 ob_start();
 echo '<label>'.$langs->trans("DateActionStart").'</label> ';
@@ -124,7 +134,41 @@ echo '<label>'.$langs->trans("DateActionEnd").'</label> ';
 $form->select_date(null,'date_end',1,1,1,"action",1,1,0,0,'fulldayend');
 $select_date_end = ob_get_clean();
 
-$select_user = '<label for="fk_user">'.$langs->transnoentitiesnoconv('User').'</label>'.$form->select_dolusers($user->id, 'fk_user');
+$html_participants = '';
+// Uniquement si la conf de saisie des temps réels par participant est actif, autrement ça sert à rien d'afficher la liste des participants
+if (!empty($conf->global->AGF_USE_REAL_HOURS))
+{
+	
+	$content_participants = '';
+	$nb_wrong_def = 0;
+	foreach ($stagiaires->lines as &$line)
+	{
+		if ($line->id < 0)
+		{
+			$nb_wrong_def++;
+		}
+		else
+		{
+			$input = '<input class="type_hour" type="text" name="TRealHour[' . $line->id . ']" size="5" value="1" /> '.$langs->transnoentitiesnoconv('Hours');
+			$content_participants.= '<p style="margin:0"><label>'.strtoupper($line->nom) . ' ' . ucfirst($line->prenom).'</label> : '.$input.'</p>';
+		}
+	}
+	
+	$html_participants.= '<div class="titre">'.$langs->transnoentitiesnoconv('AgfMenuActStagiaire');
+	if ($nb_wrong_def > 0) $html_participants.= ' <small class="error">('.$langs->transnoentitiesnoconv('AgfWarning_wrong_def_participant', $nb_wrong_def).')</small>';
+	$html_participants.='</div>';
+	$html_participants.= $content_participants;
+}
+
+
+
+$html_formateurs.= '<div class="titre">'.$langs->transnoentitiesnoconv('AgfFormateur').'</div>';
+foreach ($formateurs->lines as &$line)
+{
+	$input = '<input type="checkbox" value="'.$line->opsid.'" name="TFormateurId[]" />';
+	$html_formateurs.= '<p style="margin:0"><label>'.strtoupper($line->lastname) . ' ' . ucfirst($line->firstname).'</label> : '.$input.'</p>';
+}
+
 
 /**/
 
@@ -164,9 +208,11 @@ echo '
 	
 	fullcalendarscheduler_div = $(\'<form id="form_add_event" action="#"></form>\');
 	fullcalendarscheduler_div	.append('.json_encode($inputs_hidden).')
+								.append("<p>"+'.json_encode($select_calendrier_type).'+"</p>")
 								.append("<p>"+'.json_encode($select_date_start).'+"</p>")
 								.append("<p>"+'.json_encode($select_date_end).'+"</p>")
-								.append("<p>"+'.json_encode($select_user).'+"</p>");		
+								.append("<div>"+'.json_encode($html_participants).'+"</div>")	
+								.append("<div>"+'.json_encode($html_formateurs).'+"</div>");		
 								
 	fullcalendarscheduler_picto_delete = "'.addslashes(img_delete()).'";
 	
