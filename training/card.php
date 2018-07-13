@@ -279,26 +279,26 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
  */
 if ($action == "ajax_obj_update" && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
     $newObjectifs = GETPOST('pedago');
-    
+
     $agf_peda = new Formation($db);
     $result_peda = $agf_peda->fetch_objpeda_per_formation($id);
-    
+
     foreach ($agf_peda->lines as $line){
         $agf_peda->remove_objpeda($line->id);
     }
     if (!empty($newObjectifs)){
         foreach ($newObjectifs as $objectif){
             //$agf = new Formation($db);
-            
+
             $agf_peda->intitule = $objectif['intitule'];
             $agf_peda->priorite = (int) $objectif['priorite'];
             $agf_peda->fk_formation_catalogue = $id;
-            
+
             $result = $agf_peda->create_objpeda($user);
-            
+
         }
     }
-    
+
 }
 
 /*
@@ -379,10 +379,10 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 if ($action == 'fichepeda' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	// Define output language
 	$agf->fetch($id);
-	
+
 	$result = $agf->generatePDAByLink();
-	
-	
+
+
 	if($result <= 0){
 		$outputlangs = $langs;
 		$newlang = GETPOST('lang_id', 'alpha');
@@ -410,7 +410,7 @@ if ($action == 'fichepeda' && $user->rights->agefodd->agefodd_formation_catalogu
 				}
 			}
 		}
-	
+
 		$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, 0);
 	}
 	if ($result > 0) {
@@ -620,7 +620,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 		$head = training_prepare_head($agf);
 
 		dol_fiche_head($head, 'card', $langs->trans("AgfCatalogDetail"), 0, 'label');
-		
+
 		if ($result) {
 
 			$agf_peda = new Formation($db);
@@ -772,10 +772,10 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				/*
 				 * Display
 				 */
-			    
+
 			    dol_agefodd_banner_tab($agf, 'id');
 			    print '<div class="underbanner clearboth"></div>';
-			    
+
 				// confirm delete
 				if ($action == 'delete') {
 					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteOps"), "confirm_delete", '', '', 1);
@@ -992,11 +992,6 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				}
 
 				print "</table>";
-				if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
-    				print '<div class="tabsAction">';
-    				print '<a class="butAction" href="#" id="modifyPedago">' . $langs->trans('Modify') . '</a>';
-    				print '</div>';
-				}
 				?>
 				<script>
 				$(document).ready(function() {
@@ -1006,11 +1001,11 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					});
 
 					function listepedago(){
-						
+
 						if($('#pedagoModal').length==0) {
 							$('body').append('<div id="pedagoModal" title="<?php echo $langs->transnoentities('AgfObjPeda'); ?>"></div>');
 						}
-						
+
 						$.ajax({
                             url : "<?php echo dol_buildpath('/agefodd/scripts/pedagoajax.php',1); ?>"
                             ,data:{
@@ -1022,7 +1017,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
                         }).done(function(data) {
                         	$('#pedagoModal').html(data.form);
                         });
-						
+
 						$('#pedagoModal').dialog({
 							modal:true,
 							width:'50%'
@@ -1035,7 +1030,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '&nbsp';
 				print '<table class="border" width="100%">';
 				print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("AgfLinkedDocuments") . '</td></tr>';
-				
+
 				$agf->generatePDAByLink();
 				if (is_file($conf->agefodd->dir_output . '/fiche_pedago_' . $id . '.pdf')) {
 
@@ -1081,11 +1076,14 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit') {
+
 	if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
+		print '<a class="butAction" href="#" id="modifyPedago">' . $langs->trans('AgfUpdateObjPeda') . '</a>';
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=clone&id=' . $id . '">' . $langs->trans('ToClone') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
+		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfUpdateObjPeda') . '</a>';
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('ToClone') . '</a>';
 	}
 
