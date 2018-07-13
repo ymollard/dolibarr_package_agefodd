@@ -167,6 +167,10 @@ class ReportCA extends AgefoddExportExcel {
 							}
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], implode(',', $invoice_status));
 							$this->row[$keysheet] ++;
+						} elseif ($key == 'group_by_session') {
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfReportCASessionDetail'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('Yes'));
+							$this->row[$keysheet] ++;
 						}
 					}
 				}
@@ -255,6 +259,8 @@ class ReportCA extends AgefoddExportExcel {
 						}
 					}
 					$str_sub_name .= $this->outputlangs->transnoentities('Status').implode('-', $invoice_status);
+				} elseif ($key == 'group_by_session') {
+					$str_sub_name .= 'BySession';
 				}
 			}
 		}
@@ -477,8 +483,7 @@ class ReportCA extends AgefoddExportExcel {
 				$line_to_output[$i+1] = $array_total_ht[$year_todo];
 				if (array_key_exists($year_todo - 1, $array_total_ht)) {
 					if ($array_total_ht[$year_todo] != 0) {
-						$line_to_output[$i + 2] = ((($array_total_ht[$year_todo] - $array_total_ht[$year_todo - 1]) * 100) / $array_total_ht[$year_todo]);
-						$line_to_output[$i + 2] = $line_to_output[$i + 2] / 100;
+						$line_to_output[$i + 2] = (($array_total_ht[$year_todo] - $array_total_ht[$year_todo - 1]) / $array_total_ht[$year_todo - 1]);
 					} else {
 						$line_to_output[$i + 2] = 'N/A';
 					}
@@ -503,8 +508,7 @@ class ReportCA extends AgefoddExportExcel {
 				$line_to_output[$i+1] = $array_total_ttc[$year_todo];
 				if (array_key_exists($year_todo - 1, $array_total_ttc)) {
 					if ($array_total_ttc[$year_todo] != 0) {
-						$line_to_output[$i + 2] = ((($array_total_ttc[$year_todo] - $array_total_ttc[$year_todo - 1]) * 100) / $array_total_ttc[$year_todo]);
-						$line_to_output[$i + 2] = $line_to_output[$i + 2] / 100;
+						$line_to_output[$i + 2] = (($array_total_ttc[$year_todo] - $array_total_ttc[$year_todo - 1]) / $array_total_ttc[$year_todo - 1]);
 					} else {
 						$line_to_output[$i + 2] = 'N/A';
 					}
@@ -522,7 +526,7 @@ class ReportCA extends AgefoddExportExcel {
 			//Jump line
 			$this->row[0]++;
 
-			// Write total by trimertres
+			// Write total by trimesters
 			for($trim = 1; $trim <= 4; $trim ++) {
 				$line_to_output[0] = $this->outputlangs->transnoentities('Trimestre ' . $trim);
 
@@ -534,8 +538,7 @@ class ReportCA extends AgefoddExportExcel {
 
 					if (array_key_exists($year_todo - 1, ${'array_total_ht_trim' . $trim})) {
 						if (${'array_total_ht_trim' . $trim}[$year_todo] != 0) {
-							$line_to_output[$i + 2] = (((${'array_total_ht_trim' . $trim}[$year_todo] - ${'array_total_ht_trim' . $trim}[$year_todo - 1]) * 100) / ${'array_total_ht_trim' . $trim}[$year_todo]);
-							$line_to_output[$i + 2] = $line_to_output[$i + 2] / 100;
+							$line_to_output[$i + 2] = ((${'array_total_ht_trim' . $trim}[$year_todo] - ${'array_total_ht_trim' . $trim}[$year_todo - 1]) / ${'array_total_ht_trim' . $trim}[$year_todo - 1]);
 						} else {
 							$line_to_output[$i + 2] = 'N/A';
 						}
@@ -837,18 +840,16 @@ class ReportCA extends AgefoddExportExcel {
 
 		foreach ( $this->year_to_report_array as $year_todo ) {
 			for($month_todo = 1; $month_todo <= 12; $month_todo ++) {
-				if (array_key_exists($year_todo - 1, $this->value_ca_total_hthf) && $this->value_ca_total_hthf[$year_todo][$month_todo]['total'] != 0) {
-					$this->persent_ca_total_hthf[$year_todo][$month_todo] = ((($this->value_ca_total_hthf[$year_todo][$month_todo]['total'] - $this->value_ca_total_hthf[$year_todo - 1][$month_todo]['total']) * 100) / $this->value_ca_total_hthf[$year_todo][$month_todo]['total']);
-					// In excel file it is formated as percentage so ...
-					$this->persent_ca_total_hthf[$year_todo][$month_todo] = $this->persent_ca_total_hthf[$year_todo][$month_todo]['total'] / 100;
+				if (array_key_exists($year_todo - 1, $this->value_ca_total_hthf) && $this->value_ca_total_hthf[$year_todo - 1][$month_todo]['total'] != 0) {
+					$this->persent_ca_total_hthf[$year_todo][$month_todo] = (($this->value_ca_total_hthf[$year_todo][$month_todo]['total'] - $this->value_ca_total_hthf[$year_todo - 1][$month_todo]['total']) / $this->value_ca_total_hthf[$year_todo - 1][$month_todo]['total']);
+					// In excel file it is formated as percentage, no need to multibly by 100
 				} else {
 					$this->persent_ca_total_hthf[$year_todo][$month_todo] = 'N/A';
 				}
 
-				if (array_key_exists($year_todo - 1, $this->value_ca_total_ht) && $this->value_ca_total_ht[$year_todo][$month_todo]['total'] != 0) {
-					$this->persent_ca_total_ht[$year_todo][$month_todo] = ((($this->value_ca_total_ht[$year_todo][$month_todo]['total'] - $this->value_ca_total_ht[$year_todo - 1][$month_todo]['total']) * 100) / $this->value_ca_total_ht[$year_todo][$month_todo]['total']);
-					// In excel file it is formated as percentage so ...
-					$this->persent_ca_total_ht[$year_todo][$month_todo] = $this->persent_ca_total_ht[$year_todo][$month_todo] / 100;
+				if (array_key_exists($year_todo - 1, $this->value_ca_total_ht) && $this->value_ca_total_ht[$year_todo - 1][$month_todo]['total'] != 0) {
+					$this->persent_ca_total_ht[$year_todo][$month_todo] = (($this->value_ca_total_ht[$year_todo][$month_todo]['total'] - $this->value_ca_total_ht[$year_todo - 1][$month_todo]['total']) / $this->value_ca_total_ht[$year_todo - 1][$month_todo]['total']);
+					// In excel file it is formated as percentage, no need to multibly by 100
 				} else {
 					$this->persent_ca_total_ht[$year_todo][$month_todo] = 'N/A';
 				}
