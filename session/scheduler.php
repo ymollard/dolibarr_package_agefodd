@@ -169,7 +169,6 @@ foreach ($formateurs->lines as &$line)
 	$html_formateurs.= '<p style="margin:0"><label>'.strtoupper($line->lastname) . ' ' . ucfirst($line->firstname).'</label> : '.$input.'</p>';
 }
 
-
 /**/
 
 // fullcalendarscheduler_TColorCivility

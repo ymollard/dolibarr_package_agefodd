@@ -330,8 +330,8 @@ $(document).ready(function() {
 	{
 		if (typeof event != 'undefined') fullcalendarscheduler_div.data('fk-actioncomm', event.id);
 		else fullcalendarscheduler_div.data('fk-actioncomm', 0);
-		
-		fullcalendarscheduler_div.dialog({
+
+        fullcalendarscheduler_div.dialog({
 			modal: true
 			,width: 'auto'
 			,title: (typeof event !== 'undefined') ? fullcalendarscheduler_title_dialog_update_event : fullcalendarscheduler_title_dialog_create_event
@@ -428,18 +428,18 @@ $(document).ready(function() {
 		fullcalendarscheduler_div.find('#date_end').val(date);
 		dpChangeDay('date_end', fullcalendarscheduler_date_format);
 		
-		if (typeof event == 'undefined')
-		{
-			var hour_start = start.format('HH');
-			var minute_start = start.format('mm');
-			fullcalendarscheduler_div.find('#date_starthour').val(hour_start);
-			fullcalendarscheduler_div.find('#date_startmin').val(minute_start);
+        
+		
+		var hour_start = start.format('HH');
+		var minute_start = start.format('mm');
+		fullcalendarscheduler_div.find('#date_starthour').val(hour_start);
+		fullcalendarscheduler_div.find('#date_startmin').val(minute_start);
 			
-			var hour_end = end.format('HH');
-			var minute_end = end.format('mm');
-			fullcalendarscheduler_div.find('#date_endhour').val(hour_end);
-			fullcalendarscheduler_div.find('#date_endmin').val(minute_end);
-		}
+		var hour_end = end.format('HH');
+		var minute_end = end.format('mm');
+		fullcalendarscheduler_div.find('#date_endhour').val(hour_end);
+		fullcalendarscheduler_div.find('#date_endmin').val(minute_end);
+		
 		
 	};
 	
