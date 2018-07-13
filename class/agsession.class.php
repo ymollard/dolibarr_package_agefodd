@@ -177,12 +177,12 @@ class Agsession extends CommonObject
 		}
 		$obj = empty($conf->global->AGF_SESSION_ADDON) ? 'mod_agefoddsession_simple' : $conf->global->AGF_SESSION_ADDON;
 		$path_rel = dol_buildpath('/agefodd/core/modules/agefodd/session/' . $conf->global->AGF_SESSION_ADDON . '.php');
-	
+
 		if (! empty($conf->global->AGF_SESSION_ADDON) && is_readable($path_rel) && (empty($ref))) {
 			dol_include_once('/agefodd/core/modules/agefodd/session/' . $conf->global->AGF_SESSION_ADDON . '.php');
 			$modAgefodd = new $obj();
 			$ref = $modAgefodd->getNextValue();
-			
+
 		}
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session(";
@@ -737,6 +737,7 @@ class Agsession extends CommonObject
 
 		$sql = "SELECT";
 		$sql .= " s.rowid as sessid,";
+		$sql .= " s.ref as sessionref,";
 		$sql .= " so.rowid as socid,";
 		$sql .= " so.nom as socname,";
 		$sql .= " s.type_session,";
@@ -813,6 +814,7 @@ class Agsession extends CommonObject
 				$line = new AgfSessionLine();
 
 				$line->rowid = $obj->sessid;
+				$line->sessionref = $obj->sessionref;
 				$line->socid = $obj->socid;
 				$line->status = $obj->status;
 				$line->socname = $obj->socname;
@@ -1644,7 +1646,7 @@ class Agsession extends CommonObject
 
 			// Update request
 			$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session SET";
-			
+
 			$sql .= " ref='" . (isset($this->ref) ? $this->db->escape($this->ref) : "") . "',";
 			$sql .= " fk_soc=" . (isset($this->fk_soc) ? $this->fk_soc : "null") . ",";
 			$sql .= " fk_soc_requester=" . (isset($this->fk_soc_requester) ? $this->fk_soc_requester : "null") . ",";
@@ -3636,28 +3638,43 @@ class Agsession extends CommonObject
 	/**
 	 * Return clicable link of object (with eventually picto)
 	 *
-	 * @param int $withpicto into link
-	 * @param string $option the link
-	 * @param int $maxlength ref
-	 * @return string with URL
+	 * @param number $withpicto
+	 * @param string $option
+	 * @param number $maxlength
+	 * @param string $label
+	 * @param integer $save_lastsearch_value
+	 * @param string $morehtml
+	 * @return string
 	 */
-	public function getNomUrl($withpicto = 0, $option = '', $maxlength = 0) {
+	public function getNomUrl($withpicto = 0, $option = '', $maxlength = 0, $label='formintitule', $save_lastsearch_value=-1, $morehtml='') {
 		global $langs;
 
+		$langs->load('agefodd@agefodd');
 		$result = '';
 
-		if (! $option) {
-			$lien = '<a href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $this->id . '">';
-			$lienfin = '</a>';
-		}
-		$newref = $this->formintitule;
-		if ($maxlength)
-			$newref = dol_trunc($newref, $maxlength, 'middle');
+		$newref=$this->$label;
+		if ($maxlength) $newref=dol_trunc($newref,$maxlength,'middle');
 
-		if ($withpicto) {
-			$result .= ($lien . img_object($langs->trans("ShowSession") . ' ' . $this->ref, 'agefodd@agefodd') . $lienfin . ' ');
+		$url=dol_buildpath('/agefodd/session/card.php', 1).'?id=' . $this->id;
+		// Add param to save lastsearch_values or not
+		$add_save_lastsearch_values=($save_lastsearch_value == 1 ? 1 : 0);
+		if ($save_lastsearch_value == -1 && preg_match('/list\.php/',$_SERVER["PHP_SELF"])) $add_save_lastsearch_values=1;
+		if ($add_save_lastsearch_values) $url.='&save_lastsearch_values=1';
+
+		$linkstart = '<a '.$morehtml.' href="'.$url.'">';
+		$linkend='</a>';
+
+		if (empty($option)) {
+			$result.=$linkstart;
+			if ($withpicto) {
+				$result .= img_object($langs->trans("AgfShowSession") . ' ' . $this->$label, 'service');
+				$result.= $newref;
+				$result.= $linkend;
+			}
+		} else {
+			$result.= $url;
 		}
-		$result .= $lien . $newref . $lienfin;
+
 		return $result;
 	}
 
@@ -5150,7 +5167,112 @@ class Agsession extends CommonObject
 			echo '</pre>';
 			exit;
 		}
+	}
 
+	public function getTTotalBySession()
+	{
+		global $conf,$db;
+
+		$this->TTotalBySession = array();
+		$error=0;
+
+		$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd.total_ht) as total_ht_without_draft';
+		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p ON (p.rowid = s.fk_element AND s.element_type = \'propal\')';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd ON (pd.fk_propal = p.rowid)';
+		$sql_tmp.= ' WHERE 1';
+		$sql_tmp.= ' AND p.fk_statut > 0'; // Propals non brouillon
+		$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
+
+		$resql_tmp = $this->db->query($sql_tmp);
+		if ($resql_tmp)
+		{
+			while ($arr = $this->db->fetch_array($resql_tmp)) {
+				$this->TTotalBySession[$arr['fk_session_agefodd']]['propal']['total_ht_without_draft'] = $arr['total_ht_without_draft'];
+			}
+		}
+		else
+		{
+			$this->errors[]=$this->db->lasterror;
+			$error++;
+		}
+
+		if (!empty($conf->global->AGF_CAT_PRODUCT_CHARGES))
+		{
+			$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd2.total_ht) as total_ht_from_all_propals';
+			$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
+			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p2 ON (p2.rowid = s.fk_element AND s.element_type = \'propal\')';
+			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd2 ON (pd2.fk_propal = p2.rowid)';
+			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = pd2.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
+			$sql_tmp.= ' WHERE 1';
+			$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
+
+			$resql_tmp = $db->query($sql_tmp);
+			if ($resql_tmp)
+			{
+				while ($arr = $this->db->fetch_array($resql_tmp)) {
+					$this->TTotalBySession[$arr['fk_session_agefodd']]['propal']['total_ht_from_all_propals'] = $arr['total_ht_from_all_propals'];
+				}
+			}
+			else
+			{
+				$this->errors[]=$this->db->lasterror;
+				$error++;
+			}
+		}
+
+
+		$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(fd.total_ht) as total_ht_without_draft';
+		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facture f ON (f.rowid = s.fk_element AND s.element_type = \'invoice\')';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facturedet fd ON (fd.fk_facture = f.rowid)';
+		$sql_tmp.= ' WHERE 1';
+		$sql_tmp.= ' AND f.fk_statut > 0'; // Factures non brouillon
+		$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
+
+		$resql_tmp = $this->db->query($sql_tmp);
+		if ($resql_tmp)
+		{
+			while ($arr = $this->db->fetch_array($resql_tmp)) {
+				$this->TTotalBySession[$arr['fk_session_agefodd']]['invoice']['total_ht_without_draft'] = $arr['total_ht_without_draft'];
+			}
+		}
+		else
+		{
+			$this->errors[]=$this->db->lasterror;
+			$error++;
+		}
+
+		if (!empty($conf->global->AGF_CAT_PRODUCT_CHARGES))
+		{
+			$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(fd.total_ht) as total_ht_from_all_invoices';
+			$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
+			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facture f ON (f.rowid = s.fk_element AND s.element_type = \'invoice\')';
+			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facturedet fd ON (fd.fk_facture = f.rowid)';
+			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = fd.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
+			$sql_tmp.= ' WHERE 1';
+			$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
+
+			$resql_tmp = $this->db->query($sql_tmp);
+			if ($resql_tmp)
+			{
+				while ($arr = $this->db->fetch_array($resql_tmp)) {
+					$this->TTotalBySession[$arr['fk_session_agefodd']]['invoice']['total_ht_from_all_invoices'] = $arr['total_ht_from_all_invoices'];
+				}
+			}
+			else
+			{
+				$this->errors[]=$this->db->lasterror;
+				$error++;
+			}
+		}
+		// Somme du montant HT des ligne des factures associés (non brouillon) à la session - Somme du monant HT des ligne de factures associés à la session dont le produit sont dans les catégories défini ici : custom/agefodd/admin/admin_catcost.php
+
+		if (empty($error)) {
+			return 1;
+		}else {
+			return -1;
+		}
 	}
 }
 
@@ -5211,6 +5333,7 @@ class AgfInvoiceOrder
 class AgfSessionLine
 {
 	public $rowid;
+	public $sessionref;
 	public $socid;
 	public $socname;
 	public $trainerrowid;
@@ -5258,6 +5381,27 @@ class AgfSessionLine
 	public $fk_soc_employer;
 	public function __construct() {
 		return 1;
+	}
+
+	/**
+	 * Return clicable link of object (with eventually picto)
+	 *
+	 * @param number $withpicto
+	 * @param string $option
+	 * @param number $maxlength
+	 * @param string $label
+	 * @param integer $save_lastsearch_value
+	 * @param string $morehtml
+	 * @return string
+	 */
+	public function getNomUrl($withpicto = 0, $option = '', $maxlength = 0, $label='formintitule', $save_lastsearch_value=-1, $morehtml='')
+	{
+		global $db;
+		$agf = new Agsession($db);
+		$agf->id=$this->rowid;
+		$agf->sessionref=$this->sessionref;
+		$agf->formintitule=$this->intitule;
+		return $agf->getNomUrl($withpicto,'',$maxlength,$label,$save_lastsearch_value,$morehtml);
 	}
 }
 

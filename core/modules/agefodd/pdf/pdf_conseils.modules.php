@@ -320,36 +320,40 @@ class pdf_conseils extends ModelePDFAgefodd {
 				 * *** Doucment required ****
 				 */
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
-				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->transnoentities("AgfDocNeeded");
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
-				$posY += 5;
+				if (!empty($agf->note1)) {
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
+					$pdf->SetXY($posX, $posY);
+					$this->str = $langs->transnoentities("AgfDocNeeded");
+					$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
+					$posY += 5;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				$this->str = ucfirst($agf->note1);
-				$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+					$this->str = ucfirst($agf->note1);
+					$pdf->SetXY($posX, $posY);
 
-				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
+					$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
 
-				$posY = $pdf->GetY() + 8;
+					$posY = $pdf->GetY() + 8;
+				}
 
 				/**
 				 * *** Equipement required ****
 				 */
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
-				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->transnoentities("AgfEquiNeeded");
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
-				$posY += 5;
+				if (!empty($agf->note2)) {
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
+					$pdf->SetXY($posX, $posY);
+					$this->str = $langs->transnoentities("AgfEquiNeeded");
+					$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
+					$posY += 5;
 
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				$this->str = ucfirst($agf->note2);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+					$this->str = ucfirst($agf->note2);
 
-				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
-				$posY = $pdf->GetY() + 8;
+					$pdf->SetXY($posX, $posY);
+					$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
+					$posY = $pdf->GetY() + 8;
+				}
 
 				/**
 				 * *** Site ****
