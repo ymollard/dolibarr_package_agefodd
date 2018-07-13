@@ -96,7 +96,9 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			// Put here code to add control on parameters values
 
 		if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
+			
 			$result = $this->createAction($user);
+			
 			if ($result <= 0) {
 				$error ++;
 				$this->errors[] = "Error " . $this->db->lasterror();
@@ -135,11 +137,12 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " " . $this->status;
 		$sql .= ")";
 		$this->db->begin();
-
+		
 		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
+			
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 
@@ -558,6 +561,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 
 		$formateur = new Agefodd_teacher($this->db);
 		$result = $formateur->fetch($formateur_session->formid);
+		
 		if ($result < 0) {
 			$error ++;
 		}
@@ -606,7 +610,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 					$action->socid = $contactstat->socid;
 			}
 		}
-
+		
 		if ($error == 0) {
 
 
