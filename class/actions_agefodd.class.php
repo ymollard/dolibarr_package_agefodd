@@ -156,14 +156,62 @@ class ActionsAgefodd
 	 * @return void
 	 */
 	public function doActions($parameters, &$object, &$action, $hookmanager) {
-		// global $langs,$conf,$user;
+		global $langs, $conf, $user;
 		$TContext = explode(':', $parameters['context']);
 		
 		
 		if (in_array('externalaccesspage', $TContext))
 		{
+			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
+			dol_include_once('/agefodd/class/agsession.class.php');
+			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+			dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
+			
 			// TODO gérer ici les actions de mes pages pour update les données
 			$context = Context::getInstance();
+			if ($context->controller == 'agefodd_session_card')
+			{
+				if ($action == 'deleteCalendrierFormateur' && GETPOST('sessid') > 0)
+				{
+	//				$fk_agefodd_session = GETPOST('sessid');
+					$agsession = new Agsession($this->db);
+					if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
+					{
+						$agsession->fetchTrainers();
+						if (!empty($agsession->TTrainer)) // Maintenant je vais vérifier que l'utilisateur est bien associé en tant que formateur ;)
+						{
+							$found = false;
+							foreach ($agsession->TTrainer as &$trainer)
+							{
+								if ($trainer->type_trainer == $trainer->type_trainer_def[0]) // user
+								{
+									if ($user->id == $trainer->fk_user) { $found = true; break; }
+								}
+								else if ($trainer->type_trainer == $trainer->type_trainer_def[1]) // socpeople
+								{
+									if ($user->contactid == $trainer->fk_socpeople) { $found = true; break; }
+								}
+							}
+
+							if ($found)
+							{
+								$context->setControllerFound();
+								// TODO 
+								// Faire la suppresion du calendrier formateur ainsi que ceux des participants et de leurs saisie de temps
+								
+								$url = $context->getRootUrl(GETPOST('controller'), '&sessid='.$agsession->id);
+								header('Location: '.$url);
+								exit;
+							}
+						}
+					}
+					
+					header('Location: '.$context->getRootUrl(GETPOST('controller')));
+					exit;
+				}
+			}
+			
 			
 			return 1;
 		}
@@ -182,7 +230,7 @@ class ActionsAgefodd
 	 */
 	public function PrintPageView($parameters, &$object, &$action, $hookmanager)
 	{
-		global $langs,$db,$user;
+		global $langs,$user;
 		
 		$TContext = explode(':', $parameters['context']);
 		
@@ -191,6 +239,8 @@ class ActionsAgefodd
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
 			dol_include_once('/agefodd/class/agsession.class.php');
 			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+			dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 		
 			$langs->load('agefodd@agefodd');
 			$context = Context::getInstance();
@@ -209,7 +259,7 @@ class ActionsAgefodd
 			else if ($context->controller == 'agefodd_session_card' && GETPOST('sessid') > 0)
 			{
 				$fk_agefodd_session = GETPOST('sessid');
-				$agsession = new Agsession($db);
+				$agsession = new Agsession($this->db);
 				if ($agsession->fetch($fk_agefodd_session) > 0) // Vérification que la session existe
 				{
 					$agsession->fetchTrainers();
@@ -227,10 +277,11 @@ class ActionsAgefodd
 								if ($user->contactid == $trainer->fk_socpeople) { $found = true; break; }
 							}
 						}
+						
 						if ($found)
 						{
 							$context->setControllerFound();
-							print getPageViewSessionCardExternalAccess();
+							print getPageViewSessionCardExternalAccess($agsession, $trainer);
 						}
 					}
 				}

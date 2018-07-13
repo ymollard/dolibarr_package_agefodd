@@ -1321,3 +1321,11 @@ Agf_fullcalendarscheduler_title_dialog_update_event=Modification du crénau hora
 Agf_fullcalendarscheduler_title_dialog_delete_event=Suppression du créneau horaire
 Agf_fullcalendarscheduler_content_dialog_delete_for_calendrier_formateur=Supprimer aussi le/les créneau(x) du/des formateur(s) associé(s) : 
 AgfWarning_wrong_def_participant=Attention : %d autre(s) participant(s) mal définie(s)
+
+AgfDateSession=Date session
+AgfStatusCalendar_draft=Brouillon
+AgfStatusCalendar_confirmed=Confirmée
+AgfStatusCalendar_abandoned=Abandonnée
+
+Agf_EA_DeleteClandrierFormateurTitle=Suppression d'un créneau horaire
+Agf_EA_DeleteClandrierFormateurBody=Êtes-vous sûr de vouloir supprimer ce créneau horaire ?<br /> <small>Ceci supprimera aussi les saisies de temps des participants</small>

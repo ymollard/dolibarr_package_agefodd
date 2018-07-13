@@ -757,6 +757,34 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$this->fk_user_mod = '';
 		$this->tms = '';
 	}
+	
+	public static function getStaticLibStatut($status, $mode=0)
+	{
+		global $langs;
+		
+		$out = '';
+		if ($status == self::$STATUS_DRAFT)
+		{
+			if ($mode == 1) $out.= img_picto('', 'statut0').' ';
+			$out.= $langs->trans('AgfStatusCalendar_draft');
+		}
+		else if ($status == self::$STATUS_CONFIRMED)
+		{
+			if ($mode == 1) $out.= img_picto('', 'statut4').' ';
+			$out.= $langs->trans('AgfStatusCalendar_confirmed');
+		}
+		else if ($status == self::$STATUS_ABANDONED)
+		{
+			if ($mode == 1) $out.= img_picto('', 'statut6').' ';
+			$out.= $langs->trans('AgfStatusCalendar_abandoned');
+		}
+		
+		return $out;
+	}
+	
+	function getLibStatut($mode = 0){
+	    return self::getStaticLibStatut($this->status, $mode);
+	}
 }
 class AgefoddcalendrierformateurLines {
 	public $id;

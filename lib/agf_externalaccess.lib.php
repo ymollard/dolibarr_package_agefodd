@@ -102,13 +102,14 @@ function getPageViewSessionListExternalAccess()
 
 		$out.= '</table>';
 
-		$out.='	<script type="text/javascript" >
+		$out.= '<script type="text/javascript" >
 					$(document).ready(function(){
 						$("#session-list").DataTable({
 							"language": {
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 							},
 							responsive: true,
+							order: [[ 2, "desc" ]],
 							columnDefs: [{
 								orderable: false,
 								"aTargets": [-1]
@@ -131,7 +132,87 @@ function getPageViewSessionListExternalAccess()
 	return $out;
 }
 
-function getPageViewSessionCardExternalAccess()
+function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 {
-	return 'TOTO';
+	global $db,$langs;
+	
+	$context = Context::getInstance();
+	
+	$out = '';
+	$out.= '<section id="section-session-card"><div class="container">';
+	
+	$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
+	$agf_calendrier_formateur->fetch_all_by_trainer($trainer->id);
+	
+	
+	$out.= '<table id="session-list" class="table table-striped w-100" >';
+
+	$out.= '<thead>';
+
+	$out.= '<tr>';
+	$out.= ' <th class="text-center" ></th>';
+	$out.= ' <th class="" >'.$langs->trans('AgfDateSession').'</th>';
+	$out.= ' <th class="" >'.$langs->trans('AgfPeriodTimeB').'</th>';
+	$out.= ' <th class="" >'.$langs->trans('AgfPeriodTimeE').'</th>';
+	$out.= ' <th class="text-center" >'.$langs->trans('AgfDuree').'</th>';
+	$out.= ' <th class="text-center" >'.$langs->trans('Status').'</th>';
+	$out.= ' <th class="text-center" ></th>';
+	$out.= '</tr>';
+
+	$out.= '<tbody>';
+	foreach ($agf_calendrier_formateur->lines as &$item)
+	{
+		$out.= '<tr>';
+		// TODO replace $item->id by $item->ref when merge master
+		$out.= ' <td class="text-center">'.$item->id.'</td>';
+		$date_session = dol_print_date($item->date_session);
+		$out.= ' <td data-search="'.$date_session.'" data-calendrierf="'.$item->date_session.'"  >'.$date_session.'</td>';
+		
+		$out.= ' <td data-calendrierf="'.$item->heured.'" >'.dol_print_date($item->heured, '%H:%M').'</td>';
+		$out.= ' <td data-calendrierf="'.$item->heuref.'" >'.dol_print_date($item->heuref, '%H:%M').'</td>';
+		$duree = ($item->heuref - $item->heured) / 60 / 60;
+		$out.= ' <td class="text-center" data-calendrierf="'.$duree.'"  >'.$duree.'</td>';
+		$statut = Agefoddsessionformateurcalendrier::getStaticLibStatut($item->status, 0);
+		$out.= ' <td class="text-center" data-calendrierf="'.$statut.'" >'.$statut.'</td>';
+
+		$edit = '<i class="fa fa-edit">&nbsp;</i>';
+		$delete = '<i class="fa fa-trash" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-calendrier" onclick="$(\'#session-card-delete-calendrier\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)"></i>';
+		$out.= ' <td class="text-center" >'.$edit.' '.$delete.'</td>';
+
+		$out.= '</tr>';
+		
+//		var_dump($item);break;
+	}
+	$out.= '</tbody>';
+
+	$out.= '</table>';
+	
+	$out.= '<script type="text/javascript" >
+				$(document).ready(function(){
+					$("#session-list").DataTable({
+						"language": {
+							"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
+						},
+						responsive: true,
+						order: [[ 1, "desc" ]],
+						columnDefs: [{
+							orderable: false,
+							"aTargets": [-1,0]
+						}, {
+							"bSearchable": false,
+							"aTargets": [-1, 0]
+						}]
+					});
+				});
+		   </script>';
+	
+	$out.= '</div></section>';
+
+	$body = $langs->trans('Agf_EA_DeleteClandrierFormateurBody');
+	$body.= '<input type="hidden" name="sessid" value="'.$agsession->id.'" />';
+	$body.= '<input type="hidden" name="fk_agefodd_session_formateur_calendrier" value="" />';
+	$out.= getModalConfirm('session-card-delete-calendrier', $langs->trans('Agf_EA_DeleteClandrierFormateurTitle'), $body, $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id), 'deleteCalendrierFormateur');
+	
+	return $out;
 }
+
