@@ -167,7 +167,8 @@ if ($action == 'builddoc') {
 	$action = '';
 }
 
-dol_fiche_head($head, 'AgfMenuReportCA', $langs->trans("AgfMenuReportCA"), 0, 'bill');
+$head = agf_revenue_report_prepare_head(http_build_query($_REQUEST));
+dol_fiche_head($head, 'card', $langs->trans("AgfMenuReportCA"), 0, 'bill');
 
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
 
@@ -255,7 +256,7 @@ echo '<script type="text/javascript">
 		</script>';
 
 print '</form>' . "\n";
-$langs->load('gnagnagna');
+
 llxFooter();
 $db->close();
 
