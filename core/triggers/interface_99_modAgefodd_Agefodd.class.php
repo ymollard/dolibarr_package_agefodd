@@ -119,9 +119,8 @@ class InterfaceAgefodd {
 			
 			$mc->setValues($conf);
 		}
-		
-		
-		
+
+		$ok = 0;
 
 		// Users
 		if ($action == 'ACTION_MODIFY') {
