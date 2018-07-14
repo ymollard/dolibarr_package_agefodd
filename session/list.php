@@ -1007,9 +1007,9 @@ if ($resql != - 1) {
 
 				if (! empty($arrayfields['AgfMargin']['checked'])) {
 					print '<td nowrap="nowrap"  name="margininfoline5' . $line->rowid . '">';
-					if ($line->invoice_amount > 0) {
-						$margin = $line->invoice_amount - ($line->cost_trainer + $line->cost_other);
-						$percentmargin = price((($margin * 100) / $line->invoice_amount), 0, $langs, 1, 0, 1) . '%';
+					if ($TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices'] > 0) {
+						$margin = $TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices'] - ($line->cost_trainer + $line->cost_other);
+						$percentmargin = price((($margin * 100) / $TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices']), 0, $langs, 1, 0, 1) . '%';
 					} else {
 						$margin = 0;
 						$percentmargin = "n/a";
