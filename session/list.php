@@ -986,20 +986,11 @@ if ($resql != - 1) {
 
 				if (! empty($arrayfields['AgfFactAmount']['checked'])) {
 					print '<td  nowrap="nowrap"  name="margininfoline4' . $line->rowid . '" >';
-					// $amount_act_invoiced_less_charges=0;
-					// // Remove charges of product of category 'frais'
-					// if (! empty($line->cost_sell_charges) && $line->cost_sell_charges != - 1 && $line->cost_sell_charges <= $line->invoice_amount) {
-					// $amount_act_invoiced_less_charges = $line->invoice_amount - $line->cost_sell_charges;
-					// } else {
-					// $amount_act_invoiced_less_charges = $line->invoice_amount;
-					// }
-					// $totalfacththf += $amount_act_invoiced_less_charges;
-
 					$amount = 0;
 					if (! empty($TTotalBySession[$line->rowid])) {
 						if (! empty($TTotalBySession[$line->rowid]['invoice']['total_ht_without_draft']))
 							$amount = $TTotalBySession[$line->rowid]['invoice']['total_ht_without_draft'];
-						if (! empty($TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_propals']))
+						if (! empty($TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices']))
 							$amount -= $TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices'];
 					}
 
