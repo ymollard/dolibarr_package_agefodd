@@ -5205,7 +5205,7 @@ class Agsession extends CommonObject
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd2 ON (pd2.fk_propal = p2.rowid)';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = pd2.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
 			$sql_tmp.= ' WHERE 1';
-			$sql_tmp.= ' AND p.fk_statut > 0'; // Propals non brouillon
+			$sql_tmp.= ' AND p2.fk_statut > 0'; // Propals non brouillon
 			$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
 
 			$resql_tmp = $db->query($sql_tmp);
