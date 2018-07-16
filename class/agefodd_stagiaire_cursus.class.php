@@ -749,8 +749,6 @@ class AgfSessionCursusLine {
 	public $socname;
 	public $trainerrowid;
 	public $type_session;
-	public $is_date_res_site;
-	public $is_date_res_trainer;
 	public $date_res_trainer;
 	public $fk_session_place;
 	public $dated;
