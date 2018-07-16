@@ -236,8 +236,12 @@ $arrayfields = array(
 				'label' => 'AgfTypeRequester',
 				'checked' => 0
 		),
-
 		's.sell_price' => array(
+				'label' => "AgfCoutFormation",
+				'checked' => 1,
+				'enabled' => $user->rights->agefodd->session->margin
+		),
+		'AgfAmoutHTHF' => array(
 				'label' => "AgfAmoutHTHF",
 				'checked' => 1,
 				'enabled' => $user->rights->agefodd->session->margin
@@ -676,6 +680,9 @@ if ($resql != - 1) {
 
 	if ($user->rights->agefodd->session->margin) {
 		if (! empty($arrayfields['s.sell_price']['checked']))
+			print '<td class="liste_titre" name="margininfo11" ></td>';
+
+		if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
 			print '<td class="liste_titre" name="margininfo6" ></td>';
 
 		if (! empty($arrayfields['s.cost_trainer']['checked']))
@@ -811,6 +818,8 @@ if ($resql != - 1) {
 	if ($user->rights->agefodd->session->margin) {
 		// var_dump($langs->trans('AgfCostOther'));exit;
 		if (! empty($arrayfields['s.sell_price']['checked']))
+			print_liste_field_titre($langs->trans("AgfCoutFormation"), $_SERVER['PHP_SELF'], "s.sell_price", "", $option, ' name="margininfo1"  ', $sortfield, $sortorder);
+		if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
 			print_liste_field_titre($langs->trans("AgfAmoutHTHF"), $_SERVER['PHP_SELF'], "s.sell_price", "", $option, ' name="margininfo1"  ', $sortfield, $sortorder);
 		if (! empty($arrayfields['s.cost_trainer']['checked']))
 			print_liste_field_titre($langs->trans("AgfCostTrainer"), $_SERVER['PHP_SELF'], "s.cost_trainer", "", $option, ' name="margininfo2" ', $sortfield, $sortorder);
@@ -966,7 +975,11 @@ if ($resql != - 1) {
 			}
 
 			if ($user->rights->agefodd->session->margin) {
-				if (! empty($arrayfields['s.sell_price']['checked'])) {
+
+				if (! empty($arrayfields['s.sell_price']['checked']))
+					print '<td  nowrap="nowrap"  name="margininfoline11' . $line->rowid . '">' . price($line->sell_price, 0, $langs, 1, - 1, - 1, 'auto') . '</td>';
+
+				if (! empty($arrayfields['AgfAmoutHTHF']['checked'])) {
 					$amount = 0;
 					if (! empty($TTotalBySession[$line->rowid])) {
 						if (! empty($TTotalBySession[$line->rowid]['propal']['total_ht_without_draft']))
@@ -1119,6 +1132,8 @@ if ($resql != - 1) {
 			if (! empty($arrayfields['s.fk_soc_requester']['checked']))
 				print '<td></td>';
 			if ($user->rights->agefodd->session->margin) {
+				if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
+					print '<td name="margininfolineb11' . $line->rowid . '" ></td>';
 				if (! empty($arrayfields['s.sell_price']['checked']))
 					print '<td name="margininfolineb1' . $line->rowid . '" ></td>';
 				if (! empty($arrayfields['s.cost_trainer']['checked']))
@@ -1184,6 +1199,8 @@ if ($resql != - 1) {
 			print '<td></td>';
 		if ($user->rights->agefodd->session->margin) {
 			if (! empty($arrayfields['s.sell_price']['checked']))
+				print '<td nowrap="nowrap">' . '' . '</td>';
+			if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
 				print '<td nowrap="nowrap">' . price($propal_total_ht, 0, '', 1, - 1, - 1, 'auto') . '</td>';
 			if (! empty($arrayfields['s.cost_trainer']['checked']))
 				print '<td nowrap="nowrap">' . price($total_costtrainer, 0, '', 1, - 1, - 1, 'auto') . '</td>';
