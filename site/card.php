@@ -106,11 +106,11 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 		$agf = new Agefodd_place($db);
 
 		// thirdparty is not required (uncomment if needed)
-		/*
+
 		if ($societe < 1) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
 			$error ++;
-		}*/
+		}
 
 		$label = GETPOST('ref_interne', 'alpha');
 		if (empty($label)) {
@@ -307,7 +307,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<tr><td width="20%"><span class="fieldrequired">' . $langs->trans("AgfSessPlaceCode") . '</span></td>';
 	print '<td><input name="ref_interne" class="flat" size="50" value=""></td></tr>';
 
-	print '<tr><td>' . $langs->trans("Company") . '</td>';
+	print '<tr><td><span class="fieldrequired">' . $langs->trans("Company") . '</span></td>';
 	$events = array ();
 	$events[] = array (
 			'method' => 'getContacts',
@@ -498,7 +498,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				print '</div>' . "\n";
 			} else {
 				// Display View mode
-				
+
 			    dol_agefodd_banner_tab($agf, 'id');
 			    print '<div class="underbanner clearboth"></div>';
 
