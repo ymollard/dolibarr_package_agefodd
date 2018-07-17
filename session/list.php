@@ -728,8 +728,7 @@ if ($resql != - 1) {
 
 	print "</tr>\n";
 
-	$propal_total_ht = 0;
-	$invoice_total_ht = 0;
+	$propal_total_ht = $pv_total_ht = $invoice_total_ht = 0;
 	
 	$var = true;
 	$oldid=0;
@@ -836,6 +835,7 @@ if ($resql != - 1) {
 			}
 
 			if ($user->rights->agefodd->session->margin) {
+				$pv_total_ht += $line->sell_price;
 				if (! empty($arrayfields['s.sell_price']['checked']))
 					print '<td  nowrap="nowrap"  name="margininfoline11' . $line->rowid . '">' . price($line->sell_price, 0, $langs, 1, - 1, - 1, 'auto') . '</td>';
 				if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
@@ -1042,7 +1042,7 @@ if ($resql != - 1) {
 //				if (!empty($tab['invoice']['total_ht_from_all_propals'])) $big_invoice_total_ht -= $tab['invoice']['total_ht_from_all_propals'];
 //			});
 //			if (! empty($arrayfields['s.sell_price']['checked']))		print '<td nowrap="nowrap">'.price($total_sellprice,0, '', 1, -1, -1, 'auto').'</td>';
-			if (! empty($arrayfields['s.sell_price']['checked']))		print '<td nowrap="nowrap"></td>';
+			if (! empty($arrayfields['s.sell_price']['checked']))		print '<td nowrap="nowrap">'.price($pv_total_ht,0, '', 1, -1, -1, 'auto').'</td>';
 			if (! empty($arrayfields['AgfAmoutHTHF']['checked']))		print '<td nowrap="nowrap">'.price($propal_total_ht,0, '', 1, -1, -1, 'auto').'</td>';
 			if (! empty($arrayfields['s.cost_trainer']['checked']))		print '<td nowrap="nowrap">'.price($total_costtrainer,0, '', 1, -1, -1, 'auto').'</td>';
 			if (! empty($arrayfields['AgfCostOther']['checked']))		print '<td nowrap="nowrap">'.price($total_costother,0, '', 1, -1, -1, 'auto').'</td>';
