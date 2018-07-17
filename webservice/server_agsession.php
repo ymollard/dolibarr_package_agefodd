@@ -180,34 +180,22 @@ $server->wsdl->addComplexType('agsession', 'complexType', 'struct', 'all', '', a
 				'name' => 'date_res_site',
 				'type' => 'xsd:string'
 		),
-		'is_date_res_site' => array(
-				'name' => 'is_date_res_site',
-				'type' => 'xsd:string'
-		),
+		
 		'date_res_confirm_site' => array(
 				'name' => 'date_res_confirm_site',
 				'type' => 'xsd:string'
 		),
-		'is_date_res_confirm_site' => array(
-				'name' => 'is_date_res_confirm_site',
-				'type' => 'xsd:string'
-		),
+		
 		'date_res_trainer' => array(
 				'name' => 'date_res_trainer',
 				'type' => 'xsd:string'
 		),
-		'is_date_res_trainer' => array(
-				'name' => 'is_date_res_trainer',
-				'type' => 'xsd:string'
-		),
+		
 		'date_ask_OPCA' => array(
 				'name' => 'date_ask_OPCA',
 				'type' => 'xsd:string'
 		),
-		'is_date_ask_OPCA' => array(
-				'name' => 'is_date_ask_OPCA',
-				'type' => 'xsd:string'
-		),
+	
 		'is_OPCA' => array(
 				'name' => 'is_OPCA',
 				'type' => 'xsd:string'
@@ -682,11 +670,8 @@ function getAgsession($authentication, $id, $ref = '', $ref_ext = '') {
 								'cost_buy_charges' => $agsession->cost_buy_charges,
 								'cost_sell_charges' => $agsession->cost_sell_charges,
 								'date_res_site' => $agsession->date_res_site,
-								'is_date_res_site' => $agsession->is_date_res_site,
 								'date_res_confirm_site' => $agsession->date_res_confirm_site,
-								'is_date_res_confirm_site' => $agsession->is_date_res_confirm_site,
 								'date_res_trainer' => $agsession->date_res_trainer,
-								'is_date_res_trainer' => $agsession->is_date_res_trainer,
 								'date_ask_OPCA' => $agsession->date_ask_OPCA,
 								'is_date_ask_OPCA' => $agsession->is_date_ask_OPCA,
 								'is_OPCA' => $agsession->is_OPCA,
@@ -859,11 +844,8 @@ function createAgsession($authentication, $agsession) {
 		$newobject->cost_buy_charges = $agsession->cost_buy_charges;
 		$newobject->cost_sell_charges = $agsession->cost_sell_charges;
 		$newobject->date_res_site = $agsession->date_res_site;
-		$newobject->is_date_res_site = $agsession->is_date_res_site;
 		$newobject->date_res_confirm_site = $agsession->date_res_confirm_site;
-		$newobject->is_date_res_confirm_site = $agsession->is_date_res_confirm_site;
 		$newobject->date_res_trainer = $agsession->date_res_trainer;
-		$newobject->is_date_res_trainer = $agsession->is_date_res_trainer;
 		$newobject->date_ask_OPCA = $agsession->date_ask_OPCA;
 		$newobject->is_date_ask_OPCA = $agsession->is_date_ask_OPCA;
 		$newobject->is_OPCA = $agsession->is_OPCA;
