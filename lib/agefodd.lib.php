@@ -1607,6 +1607,8 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     dol_include_once('/agefodd/class/html.formagefodd.class.php');
     $formAgefodd = new FormAgefodd($db);
 
+    if(!empty($conf->global->AGF_FORCE_ID_AS_REF)) $fieldref = 'id';
+
     $error = 0;
 
     $maxvisiblephotos=1;
