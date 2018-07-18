@@ -493,7 +493,7 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter, $user);
 	if ($user->rights->agefodd->session->margin) {
-
+		
 		$total_sellprice = 0;
 		$total_costtrainer = 0;
 		$total_costother = 0;
@@ -519,11 +519,11 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 				} else {
 					$margin = 0;
 				}
-
+		
 				$oldid = $line->rowid;
 			}
 		}
-
+		
 		$result = $agf->getTTotalBySession(1);
 		if ($result > 0) {
 			$TTotalBySession = $agf->TTotalBySession;
@@ -1150,9 +1150,9 @@ if ($resql != - 1) {
 			if (! empty($arrayfields['s.fk_soc_requester']['checked']))
 				print '<td></td>';
 			if ($user->rights->agefodd->session->margin) {
-				if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
-					print '<td name="margininfolineb11' . $line->rowid . '" ></td>';
 				if (! empty($arrayfields['s.sell_price']['checked']))
+					print '<td name="margininfolineb11' . $line->rowid . '" ></td>';
+				if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
 					print '<td name="margininfolineb1' . $line->rowid . '" ></td>';
 				if (! empty($arrayfields['s.cost_trainer']['checked']))
 					print '<td name="margininfolineb2' . $line->rowid . '" ></td>';
