@@ -1583,7 +1583,7 @@ class Agsession extends CommonObject
 			$this->sell_price = price2num(trim($this->sell_price));
 		if (isset($this->is_OPCA))
 			$this->is_OPCA = trim($this->is_OPCA);
-		
+
 		if (isset($this->fk_soc_OPCA))
 			$this->fk_soc_OPCA = trim($this->fk_soc_OPCA);
 		if (isset($this->fk_socpeople_OPCA))
@@ -2363,7 +2363,7 @@ class Agsession extends CommonObject
 					$line->fk_soc_employer = $obj->fk_soc_employer;
 					$line->trainerrowid = $obj->trainerrowid;
 					$line->type_session = $obj->type_session;
-					
+
 					$line->date_res_trainer = $this->db->jdate($obj->date_res_trainer);
 					$line->fk_session_place = $obj->fk_session_place;
 					$line->dated = $this->db->jdate($obj->dated);
@@ -2554,7 +2554,7 @@ class Agsession extends CommonObject
 					$line->socname = $obj->socname;
 					$line->trainerrowid = $obj->trainerrowid;
 					$line->type_session = $obj->type_session;
-					
+
 					$line->date_res_trainer = $this->db->jdate($obj->date_res_trainer);
 					$line->fk_session_place = $obj->fk_session_place;
 					$line->dated = $this->db->jdate($obj->dated);
@@ -2727,7 +2727,7 @@ class Agsession extends CommonObject
 					$line->invroom = $obj->invroom;
 					$line->date_res_site = $obj->date_res_site;
 					$line->date_res_confirm_site = $obj->date_res_confirm_site;
-					
+
 					$line->sell_price = $obj->sell_price;
 					$line->fk_soc_employer = $obj->fk_soc_employer;
 
@@ -3465,19 +3465,19 @@ class Agsession extends CommonObject
 		print '<td colspan="'.$colspan.'">' . stripslashes($notes) . '</td></tr>';
 
 		print '<tr class="order_dateResTrainer"><td>' . $langs->trans("AgfDateResTrainer") . '</td>';
-		
+
 		print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_trainer, 'daytext') . '</td></tr>';
-		
+
 
 		print '<tr class="order_dateResSite"><td>' . $langs->trans("AgfDateResSite") . '</td>';
-		
+
 		print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_site, 'daytext') . '</td></tr>';
-		
+
 
 		print '<tr class="order_dateResConfirmSite"><td>' . $langs->trans("AgfDateResConfirmSite") . '</td>';
-		
+
 		print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_confirm_site, 'daytext') . '</td></tr>';
-		
+
 
 		print '<tr class="order_nbMintarget"><td>' . $langs->trans("AgfNbMintarget") . '</td><td colspan="'.$colspan.'">';
 		print $this->nb_subscribe_min . '</td></tr>';
@@ -5143,18 +5143,32 @@ class Agsession extends CommonObject
 		}
 	}
 
-	public function getTTotalBySession()
+	public function getTTotalBySession($use_lines = false)
 	{
 		global $conf,$db;
+
+		if ($use_lines) {
+			$TSessionIds=array();
+			$sql_filterSession='';
+			foreach($this->lines as $line) {
+				$TSessionIds[]=$line->id;
+			}
+			if (count($TSessionIds)>0) {
+				$sql_filterSession=' AND s.fk_session_agefodd IN ('.implode(',',$TSessionIds).')';
+			}
+		}
 
 		$this->TTotalBySession = array();
 		$error=0;
 
-		$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd.total_ht) as total_ht_without_draft';
+		$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd.total_ht) as total_ht';
 		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p ON (p.rowid = s.fk_element AND s.element_type = \'propal\')';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd ON (pd.fk_propal = p.rowid)';
 		$sql_tmp.= ' WHERE 1';
+		if (!empty($sql_filterSession)) {
+			$sql_tmp.=$sql_filterSession;
+		}
 		$sql_tmp.= ' AND p.fk_statut > 0'; // Propals non brouillon
 		$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
 
@@ -5162,7 +5176,7 @@ class Agsession extends CommonObject
 		if ($resql_tmp)
 		{
 			while ($arr = $this->db->fetch_array($resql_tmp)) {
-				$this->TTotalBySession[$arr['fk_session_agefodd']]['propal']['total_ht_without_draft'] = $arr['total_ht_without_draft'];
+				$this->TTotalBySession[$arr['fk_session_agefodd']]['propal']['total_ht'] = $arr['total_ht'];
 			}
 		}
 		else
@@ -5173,12 +5187,15 @@ class Agsession extends CommonObject
 
 		if (!empty($conf->global->AGF_CAT_PRODUCT_CHARGES))
 		{
-			$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd2.total_ht) as total_ht_from_all_propals';
+			$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd2.total_ht) as total_ht_onlycharges';
 			$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p2 ON (p2.rowid = s.fk_element AND s.element_type = \'propal\')';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd2 ON (pd2.fk_propal = p2.rowid)';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = pd2.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
 			$sql_tmp.= ' WHERE 1';
+			if (!empty($sql_filterSession)) {
+				$sql_tmp.=$sql_filterSession;
+			}
 			$sql_tmp.= ' AND p2.fk_statut > 0'; // Propals non brouillon
 			$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
 
@@ -5186,7 +5203,7 @@ class Agsession extends CommonObject
 			if ($resql_tmp)
 			{
 				while ($arr = $this->db->fetch_array($resql_tmp)) {
-					$this->TTotalBySession[$arr['fk_session_agefodd']]['propal']['total_ht_from_all_propals'] = $arr['total_ht_from_all_propals'];
+					$this->TTotalBySession[$arr['fk_session_agefodd']]['propal']['total_ht_onlycharges'] = $arr['total_ht_onlycharges'];
 				}
 			}
 			else
@@ -5197,11 +5214,14 @@ class Agsession extends CommonObject
 		}
 
 
-		$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(fd.total_ht) as total_ht_without_draft';
+		$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(fd.total_ht) as total_ht';
 		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facture f ON (f.rowid = s.fk_element AND s.element_type = \'invoice\')';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facturedet fd ON (fd.fk_facture = f.rowid)';
 		$sql_tmp.= ' WHERE 1';
+		if (!empty($sql_filterSession)) {
+			$sql_tmp.=$sql_filterSession;
+		}
 		$sql_tmp.= ' AND f.fk_statut > 0'; // Factures non brouillon
 		$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
 
@@ -5209,7 +5229,7 @@ class Agsession extends CommonObject
 		if ($resql_tmp)
 		{
 			while ($arr = $this->db->fetch_array($resql_tmp)) {
-				$this->TTotalBySession[$arr['fk_session_agefodd']]['invoice']['total_ht_without_draft'] = $arr['total_ht_without_draft'];
+				$this->TTotalBySession[$arr['fk_session_agefodd']]['invoice']['total_ht'] = $arr['total_ht'];
 			}
 		}
 		else
@@ -5220,12 +5240,15 @@ class Agsession extends CommonObject
 
 		if (!empty($conf->global->AGF_CAT_PRODUCT_CHARGES))
 		{
-			$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(fd.total_ht) as total_ht_from_all_invoices';
+			$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(fd.total_ht) as total_ht_onlycharges';
 			$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facture f ON (f.rowid = s.fk_element AND s.element_type = \'invoice\')';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facturedet fd ON (fd.fk_facture = f.rowid)';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = fd.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
 			$sql_tmp.= ' WHERE 1';
+			if (!empty($sql_filterSession)) {
+				$sql_tmp.=$sql_filterSession;
+			}
 			$sql_tmp.= ' AND f.fk_statut > 0'; // Factures non brouillon
 			$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
 
@@ -5233,7 +5256,7 @@ class Agsession extends CommonObject
 			if ($resql_tmp)
 			{
 				while ($arr = $this->db->fetch_array($resql_tmp)) {
-					$this->TTotalBySession[$arr['fk_session_agefodd']]['invoice']['total_ht_from_all_invoices'] = $arr['total_ht_from_all_invoices'];
+					$this->TTotalBySession[$arr['fk_session_agefodd']]['invoice']['total_ht_onlycharges'] = $arr['total_ht_onlycharges'];
 				}
 			}
 			else
@@ -5242,7 +5265,6 @@ class Agsession extends CommonObject
 				$error++;
 			}
 		}
-		// Somme du montant HT des ligne des factures associés (non brouillon) à la session - Somme du monant HT des ligne de factures associés à la session dont le produit sont dans les catégories défini ici : custom/agefodd/admin/admin_catcost.php
 
 		if (empty($error)) {
 			return 1;
@@ -5312,7 +5334,7 @@ class AgfSessionLine
 	public $socname;
 	public $trainerrowid;
 	public $type_session;
-	
+
 	public $date_res_trainer;
 	public $fk_session_place;
 	public $dated;
@@ -5387,7 +5409,7 @@ class AgfSessionLineTask
 	public $socname;
 	public $trainerrowid;
 	public $type_session;
-	
+
 	public $date_res_trainer;
 	public $fk_session_place;
 	public $dated;
@@ -5427,7 +5449,7 @@ class AgfSessionLineSoc
 	public $socname;
 	public $trainerrowid;
 	public $type_session;
-	
+
 	public $date_res_trainer;
 	public $fk_session_place;
 	public $dated;
@@ -5487,7 +5509,7 @@ class AgfSessionLineInter
 	public $ffeenv;
 	public $invtrainer;
 	public $invroom;
-	
+
 	public $sell_price;
 	public $fk_soc_employer;
 	public function __construct() {

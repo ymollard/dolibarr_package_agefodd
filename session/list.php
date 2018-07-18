@@ -493,38 +493,58 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter, $user);
 	if ($user->rights->agefodd->session->margin) {
+
 		$total_sellprice = 0;
 		$total_costtrainer = 0;
 		$total_costother = 0;
-		$total_facththf = 0;
 		$total_margin = 0;
-		$total_percentmargin = 0;
+		$total_percentmargin = '';
+		$total_trainee = 0;
+
+		$total_propal_ht = 0;
+		$total_propal_hthf = 0;
+		$total_invoice_ht = 0;
+		$total_invoice_hthf = 0;
+
+		// Loop on session array to calculate easyly normalized amount
 		foreach ( $agf->lines as $line ) {
 			if ($line->rowid != $oldid) {
 				$total_sellprice += $line->sell_price;
 				$total_costtrainer += $line->cost_trainer;
 				$total_costother += $line->cost_other;
-
-				$amount_act_invoiced_less_charges = 0;
-				if (! empty($line->cost_sell_charges) && $line->cost_sell_charges <= $line->invoice_amount) {
-					$amount_act_invoiced_less_charges = $line->invoice_amount - $line->cost_sell_charges;
-				} else {
-					$amount_act_invoiced_less_charges = $line->invoice_amount;
-				}
-				$total_facththf += $amount_act_invoiced_less_charges;
+				$total_trainee += $line->nb_stagiaire;
 
 				if ($line->invoice_amount > 0) {
-					$margin = $line->invoice_amount - ($line->cost_trainer + $line->cost_other);
+					$total_margin += $line->invoice_amount - ($line->cost_trainer + $line->cost_other);
 				} else {
 					$margin = 0;
 				}
-				$total_margin += $margin;
 
 				$oldid = $line->rowid;
 			}
 		}
-		if (! empty($total_facththf)) {
-			$total_percentmargin = price((($total_margin * 100) / $total_facththf), 0, $langs, 1, 0, 1) . '%';
+
+		$result = $agf->getTTotalBySession(1);
+		if ($result > 0) {
+			$TTotalBySession = $agf->TTotalBySession;
+
+			// Loop on sum array to calculate other indicators
+			if (is_array($TTotalBySession) && count($TTotalBySession) > 0) {
+				foreach ( $TTotalBySession as $key => $data ) {
+					$total_propal_ht += $data['propal']['total_ht'];
+					$total_propal_hthf += ($data['propal']['total_ht'] - $data['propal']['total_ht_onlycharges']);
+					$total_invoice_ht += $data['invoice']['total_ht'];
+					$total_invoice_hthf += ($data['invoice']['total_ht'] - $data['invoice']['total_ht_onlycharges']);
+				}
+			}
+		} else {
+			setEventMessages(null, $agf->errors, 'errors');
+		}
+
+		$total_margin = $total_invoice_ht - ($total_costtrainer + $total_costother);
+
+		if (! empty($total_invoice_ht)) {
+			$total_percentmargin = price((($total_margin * 100) / $total_invoice_ht), 0, $langs, 1, 0, 1) . '%';
 		} else {
 			$total_percentmargin = 'n/a';
 		}
@@ -534,11 +554,13 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, $user
 
 if ($resql != - 1) {
 
-	$result = $agf->getTTotalBySession();
-	if ($result > 0) {
-		$TTotalBySession = $agf->TTotalBySession;
-	} else {
-		setEventMessages(null, $agf->errors);
+	if (is_array($agf->TTotalBySession) && count($agf->TTotalBySession)==0) {
+		$result = $agf->getTTotalBySession(1);
+		if ($result > 0) {
+			$TTotalBySession = $agf->TTotalBySession;
+		} else {
+			setEventMessages(null, $agf->errors, 'errors');
+		}
 	}
 
 	$num = $resql;
@@ -572,7 +594,7 @@ if ($resql != - 1) {
 
 	$massactionbutton = $formAgefodd->selectMassSessionsAction();
 
-	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$morefilter = '';
 	// If the user can view prospects other than his'
@@ -974,22 +996,21 @@ if ($resql != - 1) {
 			}
 
 			if ($user->rights->agefodd->session->margin) {
-				$pv_total_ht += $line->sell_price;
-				if (! empty($arrayfields['s.sell_price']['checked']))
+
+				if (! empty($arrayfields['s.sell_price']['checked'])) {
 					print '<td  nowrap="nowrap"  name="margininfoline11' . $line->rowid . '">' . price($line->sell_price, 0, $langs, 1, - 1, - 1, 'auto') . '</td>';
+				}
 
 				if (! empty($arrayfields['AgfAmoutHTHF']['checked'])) {
 					$amount = 0;
 					if (! empty($TTotalBySession[$line->rowid])) {
-						if (! empty($TTotalBySession[$line->rowid]['propal']['total_ht_without_draft']))
-							$amount = $TTotalBySession[$line->rowid]['propal']['total_ht_without_draft'];
-						if (! empty($TTotalBySession[$line->rowid]['propal']['total_ht_from_all_propals']))
-							$amount -= $TTotalBySession[$line->rowid]['propal']['total_ht_from_all_propals'];
+						if (! empty($TTotalBySession[$line->rowid]['propal']['total_ht']))
+							$amount = $TTotalBySession[$line->rowid]['propal']['total_ht'];
+						if (! empty($TTotalBySession[$line->rowid]['propal']['total_ht_onlycharges']))
+							$amount -= $TTotalBySession[$line->rowid]['propal']['total_ht_onlycharges'];
 					}
 
-					$propal_total_ht += $amount;
 					print '<td  nowrap="nowrap" name="margininfoline1' . $line->rowid . '" >' . price($amount, 0, $langs, 1, - 1, - 1, 'auto') . '</td>';
-					// print '<td nowrap="nowrap" name="margininfoline1'.$line->rowid.'" >' . price($line->sell_price,0, $langs, 1, -1, -1, 'auto') . '</td>';
 				}
 				if (! empty($arrayfields['s.cost_trainer']['checked']))
 					print '<td  nowrap="nowrap"  name="margininfoline2' . $line->rowid . '">' . price($line->cost_trainer, 0, $langs, 1, - 1, - 1, 'auto') . '</td>';
@@ -1000,15 +1021,13 @@ if ($resql != - 1) {
 					print '<td  nowrap="nowrap"  name="margininfoline4' . $line->rowid . '" >';
 					$amount = 0;
 					if (! empty($TTotalBySession[$line->rowid])) {
-						if (! empty($TTotalBySession[$line->rowid]['invoice']['total_ht_without_draft']))
-							$amount = $TTotalBySession[$line->rowid]['invoice']['total_ht_without_draft'];
-						if (! empty($TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices']))
-							$amount -= $TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices'];
+						if (! empty($TTotalBySession[$line->rowid]['invoice']['total_ht']))
+							$amount = $TTotalBySession[$line->rowid]['invoice']['total_ht'];
+						if (! empty($TTotalBySession[$line->rowid]['invoice']['total_ht_onlycharges']))
+							$amount -= $TTotalBySession[$line->rowid]['invoice']['total_ht_onlycharges'];
 					}
 
-					$invoice_total_ht += $amount;
-
-					if ($invoice_total_ht == 0 && $line->sell_price != 0) {
+					if ($amount == 0 && $line->sell_price != 0) {
 						$bgfact = 'red';
 					} else {
 						$bgfact = '';
@@ -1019,9 +1038,9 @@ if ($resql != - 1) {
 
 				if (! empty($arrayfields['AgfMargin']['checked'])) {
 					print '<td nowrap="nowrap"  name="margininfoline5' . $line->rowid . '">';
-					if ($TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices'] > 0) {
-						$margin = $TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices'] - ($line->cost_trainer + $line->cost_other);
-						$percentmargin = price((($margin * 100) / $TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices']), 0, $langs, 1, 0, 1) . '%';
+					if ($TTotalBySession[$line->rowid]['invoice']['total_ht'] > 0) {
+						$margin = $TTotalBySession[$line->rowid]['invoice']['total_ht'] - ($line->cost_trainer + $line->cost_other);
+						$percentmargin = price((($margin * 100) / $TTotalBySession[$line->rowid]['invoice']['total_ht']), 0, $langs, 1, 0, 1) . '%';
 					} else {
 						$margin = 0;
 						$percentmargin = "n/a";
@@ -1198,15 +1217,15 @@ if ($resql != - 1) {
 			print '<td></td>';
 		if ($user->rights->agefodd->session->margin) {
 			if (! empty($arrayfields['s.sell_price']['checked']))
-				print '<td nowrap="nowrap">' . price($pv_total_ht,0, '', 1, -1, -1, 'auto') . '</td>';
+				print '<td nowrap="nowrap">' . price($total_sellprice, 0, '', 1, - 1, - 1, 'auto') . '</td>';
 			if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
-				print '<td nowrap="nowrap">' . price($propal_total_ht, 0, '', 1, - 1, - 1, 'auto') . '</td>';
+				print '<td nowrap="nowrap">' . price($total_propal_hthf, 0, '', 1, - 1, - 1, 'auto') . '</td>';
 			if (! empty($arrayfields['s.cost_trainer']['checked']))
 				print '<td nowrap="nowrap">' . price($total_costtrainer, 0, '', 1, - 1, - 1, 'auto') . '</td>';
 			if (! empty($arrayfields['AgfCostOther']['checked']))
 				print '<td nowrap="nowrap">' . price($total_costother, 0, '', 1, - 1, - 1, 'auto') . '</td>';
 			if (! empty($arrayfields['AgfFactAmount']['checked']))
-				print '<td nowrap="nowrap">' . price($invoice_total_ht, 0, '', 1, - 1, - 1, 'auto') . '</td>';
+				print '<td nowrap="nowrap">' . price($total_invoice_hthf, 0, '', 1, - 1, - 1, 'auto') . '</td>';
 			if (! empty($arrayfields['AgfMargin']['checked']))
 				print '<td nowrap="nowrap">' . price($total_margin, 0, '', 1, - 1, - 1, 'auto') . '(' . $total_percentmargin . ')' . '</td>';
 		}
