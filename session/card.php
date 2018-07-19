@@ -306,9 +306,9 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$agf->date_res_trainer = dol_mktime(0, 0, 0, GETPOST('res_trainmonth', 'int'), GETPOST('res_trainday', 'int'), GETPOST('res_trainyear', 'int'));
 		$agf->date_res_confirm_site = dol_mktime(0, 0, 0, GETPOST('res_siteconfirmmonth', 'int'), GETPOST('res_siteconfirmday', 'int'), GETPOST('res_siteconfirmyear', 'int'));
 
-		
 
-		
+
+
 
 		$fk_soc = GETPOST('fk_soc', 'int');
 		$fk_soc_requester = GETPOST('fk_soc_requester', 'int');
@@ -522,7 +522,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				$error ++;
 			}
 		}
-		
+
 		if ($error == 0 && !empty($fk_order)) {
 		    dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 		    $agf_elem = new Agefodd_session_element($db);
@@ -530,9 +530,9 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		    $agf_elem->fk_session_agefodd =  $agf->id;
 		    $agf_elem->fk_soc = $custid;
 		    $agf_elem->element_type = 'order';
-		    
+
 		    $result = $agf_elem->create($user);
-		    
+
 		    if ($result < 0) {
 		        setEventMessage($agf_elem->error, 'errors');
 		        $error ++;
@@ -673,7 +673,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<tr class="order_intituleCusto"><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
 	print '<td><input size="30" type="text" class="flat" id="intitule_custo" name="intitule_custo" value="' . $agf->intitule_custo . '" /></td></tr>';
 
-	
+
 	print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
 	print '<td>' . $formAgefodd->select_type_session('type_session', $conf->global->AGF_DEFAULT_SESSION_TYPE) . '</td></tr>';
 
@@ -991,9 +991,9 @@ printSessionFieldsWithCustomOrder();
 						print '<tr class="order_sessionContact"><td>' . $langs->trans("AgfSessionContact") . '</td>';
 						print '<td><table class="nobordernopadding"><tr><td>';
 						if (! empty($agf->fk_soc)) {
-							$form->select_contacts($agf->fk_soc, $agf->sourcecontactid, 'contact', 1, '', '', 1, '', 1);
+							$formAgefodd->select_contacts_custom($agf->fk_soc, $agf->sourcecontactid, 'contact', 1, '', '', 1, '', 1);
 						} else {
-							$form->select_contacts(0, $agf->sourcecontactid, 'contact', 1, '', '', 1, '', 1);
+							$formAgefodd->select_contacts_custom(0, $agf->sourcecontactid, 'contact', 1, '', '', 1, '', 1);
 						}
 						print '</td>';
 						print '<td>' . $form->textwithpicto('', $langs->trans("AgfAgefoddDolContactHelp"), 1, 'help') . '</td></tr></table>';
@@ -1032,9 +1032,9 @@ printSessionFieldsWithCustomOrder();
 					print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
 					print '<td><table class="nobordernopadding"><tr><td>';
 					if (! empty($agf->fk_soc_requester)) {
-						$form->select_contacts($agf->fk_soc_requester, $agf->fk_socpeople_requester, 'fk_socpeople_requester', 1, '', '', 1, '', 1);
+						$formAgefodd->select_contacts_custom($agf->fk_soc_requester, $agf->fk_socpeople_requester, 'fk_socpeople_requester', 1, '', '', 1, '', 1);
 					} else {
-						$form->select_contacts(0, $agf->fk_socpeople_requester, 'fk_socpeople_requester', 1, '', '', 1, '', 1);
+						$formAgefodd->select_contacts_custom(0, $agf->fk_socpeople_requester, 'fk_socpeople_requester', 1, '', '', 1, '', 1);
 					}
 					print '</td>';
 					print '<td>' . $form->textwithpicto('', $langs->trans("AgfAgefoddDolRequesterHelp"), 1, 'help') . '</td></tr></table>';
