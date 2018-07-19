@@ -206,9 +206,14 @@ function session_prepare_head($object, $showconv = 0) {
 	$head [$h] [2] = 'document_trainee';
 	$h ++;
 
-	$head [$h] [0] = dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id;
-	$head [$h] [1] = $langs->trans("AgfSendDocuments");
-	$head [$h] [2] = 'send_docs';
+	$head [$h] [0] = dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id;
+	$head[$h][1].= $langs->trans("Events");
+    if (! empty($conf->agenda->enabled) && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read) ))
+    {
+        $head[$h][1].= '/';
+        $head[$h][1].= $langs->trans("Agenda");
+    }
+	$head [$h] [2] = 'agenda';
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/document_files.php', 1) . '?id=' . $id;

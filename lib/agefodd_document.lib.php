@@ -155,7 +155,9 @@ function show_conv($file, $socid, $nom_courrier) {
 			if (count($conv->line_trainee) > 0) {
 				$mess .= '(' . count($conv->line_trainee) . ')';
 			}
+			$mess .=document_send_line( $model, $socid, $nom_courrier, $conv);
 			$mess .= '<BR>';
+			
 		}
 		// Allow to create another
 		$legende = $langs->trans("AgfDocEdit");
@@ -210,6 +212,8 @@ function show_doc($file, $socid, $nom_courrier) {
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=del&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .=img_picto($langs->trans("AgfDocDel"), 'editdelete').'</a>';
 		
+		 if($nom_courrier == 'accueil')$model=$nom_courrier;
+		else if($nom_courrier == 'cloture')$model=$nom_courrier;
 		$mess .=document_send_line( $model, $socid);
 		
 
@@ -839,18 +843,17 @@ function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 
 	print '</tr>';
 }
-function document_send_line( $mdle, $socid = 0, $nom_courrier = '') {
+function document_send_line( $mdle, $socid = 0, $nom_courrier = '', $conv = '') {
 	global $conf, $langs, $id, $idform, $db;
 	$langs->load('mails');
 	
 	if ($mdle == 'convention') {
 		
-		$agf_conv = new Agefodd_convention($db);
-		$result = $agf_conv->fetch_all($id, $socid);
+	
 		$mess = '';
-		if ((count($agf_conv->lines) > 0)) {
-			$mess = '';
-			foreach ( $agf_conv->lines as $conv ) {
+		
+		
+		
 
 				$file = 'convention' . '_' . $id . '_' . $socid;
 				// For backwoard compatibilty check convention file name with id of convention
@@ -867,15 +870,10 @@ function document_send_line( $mdle, $socid = 0, $nom_courrier = '') {
 				$file = $conf->agefodd->dir_output . '/' . $filename;*/
 				if (file_exists($file)) {
 					$mess .= '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',2) . '?id=' . $id . '&socid=' . $socid . '&convid=' . $conv->id . '&action=presend_convention&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0') . '</a>';
-				} else {
-					$mess .= $langs->trans('AgfDocNotDefined');
 				}
 				$mess .= '<BR>';
-			}
-		} else {
-			$mess .= $langs->trans('AgfDocNotDefined');
-		}
-
+			
+		
 		return $mess;
 
 	
