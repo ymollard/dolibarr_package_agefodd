@@ -35,7 +35,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd_sessionformateurcalendrier'; // !< Id that identify managed objects
-	public $table_element = 'agefodd_sessionformateurcalendrier'; // !< Name of table without prefix where object is stored
+	public $table_element = 'agefodd_session_formateur_calendrier'; // !< Name of table without prefix where object is stored
 	public $id;
 	public $fk_agefodd_session_formateur;
 	public $date_session = '';

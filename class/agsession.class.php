@@ -831,6 +831,35 @@ class Agsession extends CommonObject
 		}
 	}
 
+	
+	/**
+	 * Renvoi l'objet Trainer si le user fait bien partie des formateurs de la session
+	 * 
+	 * @param User $user
+	 * @return boolean | Agefodd_teacher
+	 */
+	public function getTrainerFromUser(&$user)
+	{
+		if (empty($this->TTrainer)) $this->fetchTrainers();
+
+		if (!empty($this->TTrainer)) // Maintenant je vais vérifier que l'utilisateur est bien associé en tant que formateur ;)
+		{
+			foreach ($this->TTrainer as &$trainer)
+			{
+				if ($trainer->type_trainer == $trainer->type_trainer_def[0]) // user
+				{
+					if ($user->id == $trainer->fk_user) return $trainer;
+				}
+				else if ($trainer->type_trainer == $trainer->type_trainer_def[1]) // socpeople
+				{
+					if ($user->contactid == $trainer->fk_socpeople) return $trainer;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Load object (company per session) in memory from database
 	 *
@@ -1468,7 +1497,7 @@ class Agsession extends CommonObject
 		
 		$error = 0;
 		
-		$sql = 'SELECT sf.fk_agefodd_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur sf';
+		$sql = 'SELECT sf.fk_agefodd_formateur, sf.rowid as fk_agefodd_session_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur sf';
 		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session s ON (s.rowid = sf.fk_session)';
 		$sql.= ' WHERE sf.fk_session = '.$sessid;
 		$sql.= ' AND s.entity = '.$conf->entity;
@@ -1481,6 +1510,8 @@ class Agsession extends CommonObject
 			{
 				$trainer = new Agefodd_teacher($this->db);
 				$trainer->fetch($obj->fk_agefodd_formateur);
+				$trainer->agefodd_session_formateur = new Agefodd_session_formateur($this->db);
+				$trainer->agefodd_session_formateur->fetch($obj->fk_agefodd_session_formateur);
 				$this->TTrainer[] = $trainer;
 			}
 		} else {

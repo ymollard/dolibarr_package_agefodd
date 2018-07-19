@@ -1878,3 +1878,42 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     print '<div class="underrefbanner clearboth"></div>';
     //print '<div class="underbanner clearboth"></div>';
 }
+
+
+function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $strict=true)
+{
+	global $db;
+	
+	$TRes = array();
+	
+	$sql = 'SELECT c.rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier c';
+//	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
+	$sql.= ' WHERE c.fk_agefodd_session = '.$agf_calendrier_formateur->sessid;
+	if ($strict)
+	{
+		$sql.= ' AND c.heured = \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heured).'\'';
+		$sql.= ' AND c.heuref = \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heuref).'\'';
+	}
+	else
+	{
+		$sql.= ' AND c.heured <= \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heuref).'\'';
+		$sql.= ' AND c.heuref >= \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heured).'\'';
+	}
+	
+	$resql = $db->query($sql);
+	if ($resql)
+	{
+		while ($obj = $db->fetch_object($resql))
+		{
+			$agf_calendrier = new Agefodd_sesscalendar($db);
+			$agf_calendrier->fetch($obj->rowid);
+			$TRes[] = $agf_calendrier;
+		}
+	}
+	else
+	{
+		return false;
+	}
+	
+	return $TRes;
+}

@@ -163,6 +163,7 @@ class ActionsAgefodd
 		if (in_array('externalaccesspage', $TContext))
 		{
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
+			dol_include_once('/agefodd/lib/agefodd.lib.php');
 			dol_include_once('/agefodd/class/agsession.class.php');
 			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
@@ -172,44 +173,118 @@ class ActionsAgefodd
 			$context = Context::getInstance();
 			if ($context->controller == 'agefodd_session_card')
 			{
-				if ($action == 'deleteCalendrierFormateur' && GETPOST('sessid') > 0)
+				if ($action == 'deleteCalendrierFormateur' && GETPOST('sessid') > 0 && GETPOST('fk_agefodd_session_formateur_calendrier') > 0)
 				{
-	//				$fk_agefodd_session = GETPOST('sessid');
 					$agsession = new Agsession($this->db);
 					if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
 					{
-						$agsession->fetchTrainers();
-						if (!empty($agsession->TTrainer)) // Maintenant je vais vérifier que l'utilisateur est bien associé en tant que formateur ;)
+						$trainer = $agsession->getTrainerFromUser($user);
+						if ($trainer)
 						{
-							$found = false;
-							foreach ($agsession->TTrainer as &$trainer)
+							$context->setControllerFound();
+							// TODO 
+							// Faire la suppresion du calendrier formateur ainsi que ceux des participants et de leurs saisie de temps
+							$error = 0;
+							$this->db->begin();
+							$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($this->db);
+							if ($agf_calendrier_formateur->fetch(GETPOST('fk_agefodd_session_formateur_calendrier')) > 0)
 							{
-								if ($trainer->type_trainer == $trainer->type_trainer_def[0]) // user
+								$TCalendrierParticipant = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur);
+								foreach ($TCalendrierParticipant as &$agf_calendrier)
 								{
-									if ($user->id == $trainer->fk_user) { $found = true; break; }
-								}
-								else if ($trainer->type_trainer == $trainer->type_trainer_def[1]) // socpeople
-								{
-									if ($user->contactid == $trainer->fk_socpeople) { $found = true; break; }
+									// TODO fetch Agefodd_session_stagiaire puis Agefoddsessionstagiaireheures pour suppression (agefodd_session_stagiaire_heures->fetchfetch_by_session($fk_session, $fk_stagiaire, $fk_calendrier)
+									if (true) {}
+									else $error++;
 								}
 							}
 
-							if ($found)
-							{
-								$context->setControllerFound();
-								// TODO 
-								// Faire la suppresion du calendrier formateur ainsi que ceux des participants et de leurs saisie de temps
-								
-								$url = $context->getRootUrl(GETPOST('controller'), '&sessid='.$agsession->id);
-								header('Location: '.$url);
-								exit;
-							}
+							if ($error > 0) $this->db->commit();
+							else $this->db->rollback();
+//							var_dump($TCalendrierParticipant, $agf_calendrier_formateur->id);
+//							var_dump($_REQUEST);
+//							exit;
+
+							$url = $context->getRootUrl(GETPOST('controller'), '&sessid='.$agsession->id);
+							header('Location: '.$url);
+							exit;
 						}
 					}
 					
 					header('Location: '.$context->getRootUrl(GETPOST('controller')));
 					exit;
 				}
+			}
+			else if ($context->controller == 'agefodd_session_card_time_slot' && in_array($action, array('add', 'update')) && GETPOST('sessid','int') > 0)
+			{
+				var_dump($_REQUEST);exit;
+				
+				$agsession = new Agsession($this->db);
+				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
+				{
+					$trainer = $agsession->getTrainerFromUser($user); // Est ce que mon user (formateur) est bien associé à la session ?
+					if ($trainer)
+					{
+						$slotid = GETPOST('slotid', 'int');
+						
+//						$agf_session_formateur = ;
+						$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($this->db);
+						if (!empty($slotid)) $agf_calendrier_formateur->fetch($slotid);
+						
+						// Est ce que mon calendrier appartient bien à ma session ? OU que l'id est vide pour un "add"
+						if (($agf_calendrier_formateur->id > 0 && $agf_calendrier_formateur->sessid == $agsession->id) || empty($agf_calendrier_formateur->id))
+						{
+							$date_session = GETPOST('date_session');
+							$heured = GETPOST('heured');
+							$heuref = GETPOST('heuref');
+							$status = GETPOST('status');
+							
+							if (!empty($date_session) && !empty($heured) && !empty($heuref))
+							{
+								$context->setControllerFound();
+								dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
+
+								// TODO update or create calendrier_formateur
+								$agf_calendrier_formateur->sessid = $agsession->id;
+								$agf_calendrier_formateur->date_session = strtotime($date_session);
+								$agf_calendrier_formateur->heured = strtotime($date_session.' '.$heured);
+								$agf_calendrier_formateur->heuref = strtotime($date_session.' '.$heuref);
+								
+								if ($status > 0) $agf_calendrier_formateur->status = 1;
+								else if ($status < 0) $agf_calendrier_formateur->status = -1;
+								else $agf_calendrier_formateur->status = 0;
+								
+								$agf_calendrier_formateur->fk_agefodd_session_formateur = $trainer->agefodd_session_formateur->id;
+								
+								if (empty($agf_calendrier_formateur->id)) $agf_calendrier_formateur->create($user);
+								else $agf_calendrier_formateur->update($user);
+
+								
+								// TODO faire la saisie de temps par stagiaire si heures saisies
+								// => si pas de calendrier pour le stagiaire alors je dois le créer avant de faire la saisie d'heure
+
+								$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur);
+								$agfssh = new Agefoddsessionstagiaireheures($this->db);
+
+								$stagiaires = new Agefodd_session_stagiaire($this->db);
+								$stagiaires->fetch_stagiaire_per_session($agsession->id);
+
+
+	//							$result = $agfssh->fetch_by_session($agsession->id, $stagiaire->id, $TCalendrier[0]->id);
+							}
+							else
+							{
+								$context->errors[] = $langs->trans('AgefoddMissingFieldRequired');
+							}
+							
+						}
+					}
+				}
+				
+				
+				
+				var_dump($action, $context->controller);exit;
+				
+				
 			}
 			
 			
@@ -256,38 +331,40 @@ class ActionsAgefodd
 				print getPageViewSessionListExternalAccess();
 				
 			}
-			else if ($context->controller == 'agefodd_session_card' && GETPOST('sessid') > 0)
+			else if ($context->controller == 'agefodd_session_card' && GETPOST('sessid', 'int') > 0)
 			{
-				$fk_agefodd_session = GETPOST('sessid');
 				$agsession = new Agsession($this->db);
-				if ($agsession->fetch($fk_agefodd_session) > 0) // Vérification que la session existe
+				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
 				{
-					$agsession->fetchTrainers();
-					if (!empty($agsession->TTrainer)) // Maintenant je vais vérifier que l'utilisateur est bien associé en tant que formateur ;)
+					$trainer = $agsession->getTrainerFromUser($user);
+					if ($trainer)
 					{
-						$found = false;
-						foreach ($agsession->TTrainer as &$trainer)
-						{
-							if ($trainer->type_trainer == $trainer->type_trainer_def[0]) // user
-							{
-								if ($user->id == $trainer->fk_user) { $found = true; break; }
-							}
-							else if ($trainer->type_trainer == $trainer->type_trainer_def[1]) // socpeople
-							{
-								if ($user->contactid == $trainer->fk_socpeople) { $found = true; break; }
-							}
-						}
-						
-						if ($found)
-						{
-							$context->setControllerFound();
-							print getPageViewSessionCardExternalAccess($agsession, $trainer);
-						}
+						$context->setControllerFound();
+						print getPageViewSessionCardExternalAccess($agsession, $trainer);
 					}
 				}
 				
 			}
-			
+			else if ($context->controller == 'agefodd_session_card_time_slot' && GETPOST('sessid','int') > 0 && GETPOST('slotid', 'int') > 0)
+			{
+				$agsession = new Agsession($this->db);
+				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
+				{
+					$trainer = $agsession->getTrainerFromUser($user); // Est ce que mon user (formateur) est bien associé à la session ?
+					if ($trainer)
+					{
+						$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($this->db);
+						$agf_calendrier_formateur->fetch(GETPOST('slotid'));
+						if ($agf_calendrier_formateur->sessid == $agsession->id) // Est ce que mon calendrier appartient bien à ma session
+						{
+							dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
+							
+							$context->setControllerFound();
+							print getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur);
+						}
+					}
+				}
+			}
 		}
 		
 		return 0;
