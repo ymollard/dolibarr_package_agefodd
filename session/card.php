@@ -1626,7 +1626,7 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 		$arch = 0;
 	}
 	if ($user->rights->agefodd->modifier) {
-		print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?action=view_actioncomm&id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
+		print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=clone&id=' . $id . '">' . $langs->trans('ToClone') . '</a>';
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?arch=' . $arch . '&id=' . $id . '">' . $button . '</a>';
 	} else {
