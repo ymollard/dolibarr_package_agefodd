@@ -33,7 +33,8 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
-class pdf_certificatecard extends ModelePDFAgefodd {
+class pdf_certificatecard extends ModelePDFAgefodd
+{
 	var $emetteur; // Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
@@ -45,8 +46,8 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 	protected $colorLine;
 
 	/**
-	 * \brief		Constructor
-	 * \param		db		Database handler
+	 * \brief Constructor
+	 * \param db Database handler
 	 */
 	function __construct($db) {
 		global $conf, $langs, $mysoc;
@@ -60,7 +61,7 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = 85.6;
 		$this->page_hauteur = 54.4;
-		$this->format = array (
+		$this->format = array(
 				$this->page_largeur,
 				$this->page_hauteur
 		);
@@ -88,9 +89,9 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 
 	/**
 	 * \brief Fonction generant le document sur le disque
-	 * \param agf		Objet document a generer (ou id si ancienne methode)
-	 * outputlangs	Lang object for output language
-	 * file		Name of file to generate
+	 * \param agf Objet document a generer (ou id si ancienne methode)
+	 * outputlangs Lang object for output language
+	 * file Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
 	function write_file($agf, $outputlangs, $file, $socid) {
@@ -154,160 +155,156 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 			$agf_trainer = new Agefodd_session_formateur($this->db);
 			$result = $agf_trainer->fetch_formateur_per_session($id);
 
-
 			if ($result) {
 				for($i = 0; $i < count($agf2->lines); $i ++) {
-					if (($agf2->lines[$i]->status_in_session == 3 || $agf2->lines[$i]->status_in_session == 4) || ($agf2->lines[$i]->status_in_session == 2)) {
 
-						// New page
-						$pdf->AddPage();
-						$pagenb ++;
-						$this->_pagehead($pdf, $agf, 1, $outputlangs);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-						$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
+					if ($agf2->lines[$i]->status_in_session == 3) {
 
-						// On met en place le cadre
-						$pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
-						$ep_line1 = 1;
-						$pdf->SetLineWidth($ep_line1);
-						// Haut
-						$pdf->Line($this->marge_gauche, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->marge_haute);
-						// Droite
-						$pdf->Line($this->page_largeur - $this->marge_droite, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->page_hauteur - $this->marge_basse);
-						// Bas
-						$pdf->Line($this->marge_gauche, $this->page_hauteur - $this->marge_basse, $this->page_largeur - $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
-						// Gauche
-						$pdf->Line($this->marge_gauche, $this->marge_haute, $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
-
-						$pdf->SetLineWidth(0.3);
-						$decallage = 1.2;
-						// Haut
-						$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage);
-						// Droite
-						$pdf->Line($this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
-						// Bas
-						$pdf->Line($this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage, $this->page_largeur - $this->marge_gauche - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
-						// Gauche
-						$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
-
-						// Logo en haut à gauche
-						$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
-						// Logo en haut à gauche
-						if ($this->emetteur->logo) {
-							if (is_readable($logo))
-								$pdf->Image($logo, $this->marge_gauche + 1, $this->marge_haute + 1, 15);
-						}
-
-						// Affichage du logo commanditaire (optionnel)
-						if ($conf->global->AGF_USE_LOGO_CLIENT) {
-							$staticsoc = new Societe($this->db);
-							$staticsoc->fetch($agf->socid);
-							$dir = $conf->societe->multidir_output[$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
-							if (! empty($staticsoc->logo)) {
-								$logo_client = $dir . $staticsoc->logo;
-								if (file_exists($logo_client) && is_readable($logo_client))
-									$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 2, $this->marge_haute + 2, 3);
-							}
-						}
-
-						$newY = $this->marge_haute + 1;
-						$pdf->SetXY($this->marge_gauche + 10, $newY);
-						$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 10);
-						$pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfPDFCertificate10'), 0, 'C');
-						// $w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0, $valign='T', $fitcell=false
-
-						$newY = $pdf->GetY();
 						$agf_certif = new Agefodd_stagiaire_certif($this->db);
 						$agf_certif->fetch(0, $agf2->lines[$i]->traineeid, $id, $agf2->lines[$i]->stagerowid);
-						$text = '      N°' . $agf_certif->certif_code . '/' . $agf_certif->certif_label;
-						$pdf->SetXY($this->marge_gauche + 5, $newY);
-						$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
-						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+						if (! empty($agf_certif->id)) {
 
-						$newY = $pdf->GetY()+1;
-						$text = $agf->intitule_custo;
-						$pdf->SetXY($this->marge_gauche + 1, $newY);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 10);
-						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+							// New page
+							$pdf->AddPage();
+							$pagenb ++;
+							$this->_pagehead($pdf, $agf, 1, $outputlangs);
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+							$pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
 
-						$newY = $pdf->GetY() + 1;
-						$contact_static = new Contact($this->db);
-						$contact_static->civility_id = $agf2->lines[$i]->civilite;
-						$text = ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf2->lines[$i]->prenom . ' ' . $agf2->lines[$i]->nom;
-						$pdf->SetXY($this->marge_gauche + 1, $newY);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 10);
-						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+							// On met en place le cadre
+							$pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
+							$ep_line1 = 1;
+							$pdf->SetLineWidth($ep_line1);
+							// Haut
+							$pdf->Line($this->marge_gauche, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->marge_haute);
+							// Droite
+							$pdf->Line($this->page_largeur - $this->marge_droite, $this->marge_haute, $this->page_largeur - $this->marge_droite, $this->page_hauteur - $this->marge_basse);
+							// Bas
+							$pdf->Line($this->marge_gauche, $this->page_hauteur - $this->marge_basse, $this->page_largeur - $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
+							// Gauche
+							$pdf->Line($this->marge_gauche, $this->marge_haute, $this->marge_gauche, $this->page_hauteur - $this->marge_basse);
 
+							$pdf->SetLineWidth(0.3);
+							$decallage = 1.2;
+							// Haut
+							$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage);
+							// Droite
+							$pdf->Line($this->page_largeur - $this->marge_droite - $decallage, $this->marge_haute + $decallage, $this->page_largeur - $this->marge_droite - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
+							// Bas
+							$pdf->Line($this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage, $this->page_largeur - $this->marge_gauche - $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
+							// Gauche
+							$pdf->Line($this->marge_gauche + $decallage, $this->marge_haute + $decallage, $this->marge_gauche + $decallage, $this->page_hauteur - $this->marge_basse - $decallage);
 
-						$newY = $pdf->GetY()+1;
-						$text = $outputlangs->transnoentities('AgfPDFCertificate14').' '.dol_print_date($agf->datef,'daytext','tzserver',$outputlangs);
-						$pdf->SetXY($this->marge_gauche + 1, $newY);
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
-						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
-
-						if (!empty($agf_certif->mark)) {
-							$newY = $pdf->GetY()+1;
-							$text = $outputlangs->transnoentities('AgfPDFCertificate15').' '.$agf_certif->mark.' - '.$text = $outputlangs->transnoentities('AgfPDFCertificate16').' '.dol_print_date($agf_certif->certif_dt_end,'daytext','tzserver',$outputlangs);
-							$pdf->SetXY($this->marge_gauche + 1, $newY);
-							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
-							$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
-						}
-
-
-
-					    $newY = $pdf->GetY()+1;
-						$text = $outputlangs->transnoentities('AgfPDFCertificate17');
-						if (is_array($agf_trainer->lines) && count($agf_trainer->lines)>0) {
-							foreach($agf_trainer->lines as $trainer) {
-								$text .= ' '.$trainer->lastname.' '.$trainer->firstname.'   ';
-								$pdf->SetXY($this->marge_gauche + 2, $newY);
-							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
-							$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
+							// Logo en haut à gauche
+							$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
+							// Logo en haut à gauche
+							if ($this->emetteur->logo) {
+								if (is_readable($logo))
+									$pdf->Image($logo, $this->marge_gauche + 1, $this->marge_haute + 1, 15);
 							}
 
+							// Affichage du logo commanditaire (optionnel)
+							if ($conf->global->AGF_USE_LOGO_CLIENT) {
+								$staticsoc = new Societe($this->db);
+								$staticsoc->fetch($agf->socid);
+								$dir = $conf->societe->multidir_output[$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
+								if (! empty($staticsoc->logo)) {
+									$logo_client = $dir . $staticsoc->logo;
+									if (file_exists($logo_client) && is_readable($logo_client))
+										$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 2, $this->marge_haute + 2, 3);
+								}
+							}
+
+							$newY = $this->marge_haute + 1;
+							$pdf->SetXY($this->marge_gauche + 10, $newY);
+							$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 10);
+							$pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfPDFCertificate10'), 0, 'C');
+							// $w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y='', $reseth=true, $stretch=0, $ishtml=false, $autopadding=true, $maxh=0, $valign='T', $fitcell=false
+
+							$newY = $pdf->GetY();
+							$text = '      N°' . $agf_certif->certif_code . '/' . $agf_certif->certif_label;
+							$pdf->SetXY($this->marge_gauche + 5, $newY);
+							$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
+							$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+
+							$newY = $pdf->GetY() + 1;
+							$text = $agf->intitule_custo;
+							$pdf->SetXY($this->marge_gauche + 1, $newY);
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 10);
+							$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+
+							$newY = $pdf->GetY() + 1;
+							$contact_static = new Contact($this->db);
+							$contact_static->civility_id = $agf2->lines[$i]->civilite;
+							$text = ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf2->lines[$i]->prenom . ' ' . $agf2->lines[$i]->nom;
+							$pdf->SetXY($this->marge_gauche + 1, $newY);
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 10);
+							$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+
+							$newY = $pdf->GetY() + 1;
+							$text = $outputlangs->transnoentities('AgfPDFCertificate14') . ' ' . dol_print_date($agf->datef, 'daytext', 'tzserver', $outputlangs);
+							$pdf->SetXY($this->marge_gauche + 1, $newY);
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
+							$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+
+							if (! empty($agf_certif->mark)) {
+								$newY = $pdf->GetY() + 1;
+								$text = $outputlangs->transnoentities('AgfPDFCertificate15') . ' ' . $agf_certif->mark . ' - ' . $text = $outputlangs->transnoentities('AgfPDFCertificate16') . ' ' . dol_print_date($agf_certif->certif_dt_end, 'daytext', 'tzserver', $outputlangs);
+								$pdf->SetXY($this->marge_gauche + 1, $newY);
+								$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
+								$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+							}
+
+							$newY = $pdf->GetY() + 1;
+							$text = $outputlangs->transnoentities('AgfPDFCertificate17');
+							if (is_array($agf_trainer->lines) && count($agf_trainer->lines) > 0) {
+								foreach ( $agf_trainer->lines as $trainer ) {
+									$text .= ' ' . $trainer->lastname . ' ' . $trainer->firstname . '   ';
+									$pdf->SetXY($this->marge_gauche + 2, $newY);
+									$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
+									$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'L');
+								}
+							}
+
+							if (! empty($agf_duree->qr_code_info)) {
+								dol_include_once('/agefodd/class/tcpdfbarcode_agefodd.modules.php');
+								$qr_code = new modTcpdfbarcode_agefood();
+								$qr_code->is2d = true;
+								$result = $qr_code->writeBarCode($agf->qr_code_info, 'QRCODE', 'Y', 1, 0, $agf_duree->id);
+								// Generate on the fly and output barcode with generator
+								$dir = $conf->agefodd->dir_output . '/images/';
+								$img_tampon = $dir . 'barcode_' . $agf_duree->id . '_QRCODE.png';
+								$pdf->Image($img_tampon, $this->marge_gauche + 60, $newY, 15, 15);
+								// Signature MODIFIE PAR FXC
+								$dir = $conf->agefodd->dir_output . '/images/';
+								$img_tampon = $dir . 'signature_' . $trainer->lastname . '.jpg';
+								$pdf->Image($img_tampon, $this->marge_gauche + 30, $newY + 4, 20, 10);
+							}
+
+							// Mise en place du copyright
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
+							$this->str = $outputlangs->transnoentities('copyright ' . date("Y") . ' - ' . $mysoc->name);
+							$this->width = $pdf->GetStringWidth($this->str);
+
+							$newY = $pdf->GetY() + 12;
+							$pdf->SetXY($this->marge_gauche + 1, $newY);
+							$text = $mysoc->url . ' - ' . $mysoc->email . ' - Tel : ' . $mysoc->phone . ' ';
+							$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
+							$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
+
+							// alignement du bord droit du container avec le haut de la page
+							$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
+							$baseline_angle = (M_PI / 2); // angle droit
+							$baseline_x = $this->page_largeur - $this->marge - gauche - 12;
+							$baseline_y = $baseline_ecart + 30;
+							$baseline_width = $this->width;
 						}
-
-						if (!empty($agf_duree->qr_code_info)) {
-							dol_include_once('/agefodd/class/tcpdfbarcode_agefodd.modules.php');
-							$qr_code = new modTcpdfbarcode_agefood;
-							$qr_code->is2d=true;
-							$result=$qr_code->writeBarCode($agf->qr_code_info,'QRCODE','Y',1,0,$agf_duree->id);
-							// Generate on the fly and output barcode with generator
-							$dir = $conf->agefodd->dir_output . '/images/';
-							$img_tampon = $dir . 'barcode_'.$agf_duree->id.'_QRCODE.png';
-							$pdf->Image($img_tampon, $this->marge_gauche + 60, $newY, 15 , 15);
-							// Signature MODIFIE PAR FXC
-							$dir = $conf->agefodd->dir_output . '/images/';
-							$img_tampon = $dir . 'signature_'.$trainer->lastname.'.jpg';
-						    $pdf->Image($img_tampon, $this->marge_gauche + 30, $newY +4, 20 , 10);
-						}
-
-
-						// Mise en place du copyright
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
-						$this->str = $outputlangs->transnoentities('copyright ' . date("Y") . ' - ' . $mysoc->name);
-						$this->width = $pdf->GetStringWidth($this->str);
-
-						$newY = $pdf->GetY()+12;
-						$pdf->SetXY($this->marge_gauche + 1, $newY);
-						$text = $mysoc->url . ' - ' . $mysoc->email . ' - Tel : ' . $mysoc->phone . ' ';
-						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 6);
-						$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
-
-
-
-						// alignement du bord droit du container avec le haut de la page
-						$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
-						$baseline_angle = (M_PI / 2); // angle droit
-						$baseline_x = $this->page_largeur - $this->marge - gauche - 12;
-						$baseline_y = $baseline_ecart + 30;
-						$baseline_width = $this->width;
-					}else {
+					} else {
 						$outputlangs->load('companies');
-						$this->str=$outputlangs->transnoentities('AgfOnlyPresentTraineeGetAttestation', $outputlangs->transnoentities('PL_NONE'));
-						setEventMessage($this->str,'warnings');
+						$this->str = $outputlangs->transnoentities('AgfOnlyPresentTraineeGetAttestation', $outputlangs->transnoentities('PL_NONE'));
+						setEventMessage($this->str, 'warnings');
 					}
 				}
 			}
@@ -330,7 +327,7 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 	 * \param pdf Object PDF
 	 * \param object Object invoice
 	 * \param showaddress 0=no, 1=yes
-	 * \param outputlangs		Object lang for output
+	 * \param outputlangs Object lang for output
 	 */
 	function _pagehead(&$pdf, $object, $showaddress = 1, $outputlangs) {
 		global $conf, $langs;
@@ -341,44 +338,43 @@ class pdf_certificatecard extends ModelePDFAgefodd {
 	}
 
 	/**
-	 * \brief		Show footer of page
-	 * \param		pdf PDF factory
-	 * \param		object			Object invoice
-	 * \param		outputlang		Object lang for output
-	 * \remarks	Need this->emetteur object
+	 * \brief Show footer of page
+	 * \param pdf PDF factory
+	 * \param object Object invoice
+	 * \param outputlang Object lang for output
+	 * \remarks Need this->emetteur object
 	 */
 	function _pagefoot(&$pdf, $object, $outputlangs) {
 		global $conf, $langs, $mysoc;
 
-		$text =  $outputlangs->transnoentities('AgfPDFCertificate18'). ':'. $mysoc->phone.' '.$outputlangs->transnoentities('AgfPDFCertificate19'). ':'. $mysoc->fax;
-		$text .= ' - '.$mysoc->email.' - '.$mysoc->url;
-		$pdf->SetXY($this->marge_gauche + 1, $this->page_hauteur - $this->marge_basse-15);
+		$text = $outputlangs->transnoentities('AgfPDFCertificate18') . ':' . $mysoc->phone . ' ' . $outputlangs->transnoentities('AgfPDFCertificate19') . ':' . $mysoc->fax;
+		$text .= ' - ' . $mysoc->email . ' - ' . $mysoc->url;
+		$pdf->SetXY($this->marge_gauche + 1, $this->page_hauteur - $this->marge_basse - 15);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
 		$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 		$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 
-
-		$text =  $outputlangs->transnoentities('AgfPDFCertificate23'). ':';
+		$text = $outputlangs->transnoentities('AgfPDFCertificate23') . ':';
 		if (! empty($conf->global->AGF_ORGANISME_NUM)) {
 			$text .= $outputlangs->transnoentities('AgfPDFCertificate20', $conf->global->AGF_ORGANISME_NUM);
 		}
 		if (! empty($conf->global->AGF_ORGANISME_PREF)) {
-			$text .= ' '.$outputlangs->transnoentities('AgfPDFCertificate21', $conf->global->AGF_ORGANISME_PREF);
+			$text .= ' ' . $outputlangs->transnoentities('AgfPDFCertificate21', $conf->global->AGF_ORGANISME_PREF);
 		}
 		$pdf->SetXY($this->marge_gauche + 1, $pdf->GetY());
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
 		$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 		$pdf->MultiCell(0, 0, $outputlangs->convToOutputCharset($text), 0, 'C');
 
-		$text =  $outputlangs->transnoentities('AgfPDFCertificate22');
+		$text = $outputlangs->transnoentities('AgfPDFCertificate22');
 		if (! empty($mysoc->forme_juridique_code)) {
-			$text .= ' - ' .getFormeJuridiqueLabel($mysoc->forme_juridique_code);
+			$text .= ' - ' . getFormeJuridiqueLabel($mysoc->forme_juridique_code);
 		}
 		if (! empty($mysoc->idprof2)) {
-			$text .=  ' - ' .$outputlangs->transnoentities(AgfPDFCertificate24).' '.$mysoc->idprof2;
+			$text .= ' - ' . $outputlangs->transnoentities(AgfPDFCertificate24) . ' ' . $mysoc->idprof2;
 		}
 		if (! empty($mysoc->idprof3)) {
-			$text .=  ' - ' .$outputlangs->transnoentities(AgfPDFCertificate25).' '.$mysoc->idprof3;
+			$text .= ' - ' . $outputlangs->transnoentities(AgfPDFCertificate25) . ' ' . $mysoc->idprof3;
 		}
 		$pdf->SetXY($this->marge_gauche + 1, $pdf->GetY());
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
