@@ -558,6 +558,50 @@ class Agefodd_sessadm extends CommonObject {
 			return 1;
 		}
 	}
+
+	/**
+	 * setAllStasus
+	 *
+	 * @param $user int id that modify
+	 * @param $session_id int session to update
+	 * @param  $status int status to set
+	 * @return number
+	 */
+	public function setAllStatus($user, $session_id, $status) {
+		global $conf, $langs;
+		$error = 0;
+
+		// Update request
+		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_session_adminsitu';
+		$sql .= " SET archive=" . $status . ",  fk_user_mod=" . $user->id;
+		if ($status == 1) {
+			$sql .= ",datef='" . $this->db->idate(dol_now()) . "'";
+		}
+
+		$sql .= ' WHERE fk_agefodd_session=' . $session_id;
+
+		$this->db->begin();
+
+		dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if (! $resql) {
+			$error ++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		}
+
+		// Commit or rollback
+		if ($error) {
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog(get_class($this) . "::setAllStasus " . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			$this->db->rollback();
+			return - 1 * $error;
+		} else {
+			$this->db->commit();
+			return 1;
+		}
+	}
 }
 
 /**
