@@ -183,7 +183,7 @@ class ActionsAgefodd
 						{
 							$context->setControllerFound();
 							// TODO 
-							// Faire la suppresion du calendrier formateur ainsi que ceux des participants et de leurs saisie de temps
+							// Faire la suppression du calendrier formateur ainsi que ceux des participants et de leurs saisie de temps
 							$error = 0;
 							$this->db->begin();
 							$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($this->db);
@@ -216,7 +216,7 @@ class ActionsAgefodd
 			}
 			else if ($context->controller == 'agefodd_session_card_time_slot' && in_array($action, array('add', 'update')) && GETPOST('sessid','int') > 0)
 			{
-				var_dump($_REQUEST);exit;
+//				var_dump($_REQUEST);exit;
 				
 				$agsession = new Agsession($this->db);
 				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
@@ -242,34 +242,99 @@ class ActionsAgefodd
 							{
 								$context->setControllerFound();
 								dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
-
-								// TODO update or create calendrier_formateur
+								
+								$error = 0;
+								
+								// Je récupère le/les calendrier participants avant modificatino du calendrier formateur
+								$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur);
+								
+								$this->db->begin();
+								
 								$agf_calendrier_formateur->sessid = $agsession->id;
 								$agf_calendrier_formateur->date_session = strtotime($date_session);
 								$agf_calendrier_formateur->heured = strtotime($date_session.' '.$heured);
 								$agf_calendrier_formateur->heuref = strtotime($date_session.' '.$heuref);
+								$agf_calendrier_formateur->fk_agefodd_session_formateur = $trainer->agefodd_session_formateur->id;
 								
 								if ($status > 0) $agf_calendrier_formateur->status = 1;
 								else if ($status < 0) $agf_calendrier_formateur->status = -1;
 								else $agf_calendrier_formateur->status = 0;
 								
-								$agf_calendrier_formateur->fk_agefodd_session_formateur = $trainer->agefodd_session_formateur->id;
+								if (empty($agf_calendrier_formateur->id)) $r=$agf_calendrier_formateur->create($user);
+								else $r=$agf_calendrier_formateur->update($user);
 								
-								if (empty($agf_calendrier_formateur->id)) $agf_calendrier_formateur->create($user);
-								else $agf_calendrier_formateur->update($user);
-
+								if ($r <= 0) $error++;
 								
-								// TODO faire la saisie de temps par stagiaire si heures saisies
-								// => si pas de calendrier pour le stagiaire alors je dois le créer avant de faire la saisie d'heure
-
-								$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur);
-								$agfssh = new Agefoddsessionstagiaireheures($this->db);
-
+								if (empty($TCalendrier))
+								{
+									$agf_calendrier = new Agefodd_sesscalendar($this->db);
+									$agf_calendrier->sessid = $agsession->id;
+									$agf_calendrier->date_session = $agf_calendrier_formateur->date_session;
+									$agf_calendrier->heured = $agf_calendrier_formateur->heured;
+									$agf_calendrier->heuref = $agf_calendrier_formateur->heuref;
+									$agf_calendrier->status = $agf_calendrier_formateur->status;
+									$r=$agf_calendrier->create($user);
+									if ($r <= 0) $error++;
+									$TCalendrier[] = $agf_calendrier;
+								}
+								else
+								{
+									// TODO normalement je suis sensé avoir 1 seule valeur, mais le mode de fonctionnement fait qu'il est possible d'en avoir plusieurs
+//									foreach ($TCalendrier as &$agf_calendrier)
+//									{
+										$agf_calendrier = $TCalendrier[0];
+										$agf_calendrier->date_session = $agf_calendrier_formateur->date_session;
+										$agf_calendrier->heured = $agf_calendrier_formateur->heured;
+										$agf_calendrier->heuref = $agf_calendrier_formateur->heuref;
+										$agf_calendrier->status = $agf_calendrier_formateur->status;
+										$r=$agf_calendrier->update($user);
+										if ($r <= 0) $error++;
+//									}
+								}
+								
+								$now = dol_now();
+								$THour = GETPOST('hours', 'array');
 								$stagiaires = new Agefodd_session_stagiaire($this->db);
 								$stagiaires->fetch_stagiaire_per_session($agsession->id);
+								foreach ($stagiaires->lines as &$stagiaire)
+								{
+									if ($stagiaire->id <= 0) continue;
 
+									$agfssh = new Agefoddsessionstagiaireheures($this->db);
+									$result = $agfssh->fetch_by_session($agsession->id, $stagiaire->id, $agf_calendrier->id);
+									if ($result < 0) $error++;
+									else
+									{
+										$duree = 0;
+										if ($agf_calendrier->date_session < $now && !empty($THour[$stagiaire->id]))
+										{
+											list($hours, $minutes) = explode(':', $THour[$stagiaire->id]);
+											$duree = $hours + $minutes / 60;
+										}
 
-	//							$result = $agfssh->fetch_by_session($agsession->id, $stagiaire->id, $TCalendrier[0]->id);
+										$agfssh->heures = (float) $duree;
+										if ($result) $r=$agfssh->update($user);
+										else
+										{
+											$agf->fk_stagiaire = $stagiaire->id;
+											$agf->fk_calendrier = $agf_calendrier->id;
+											$agf->fk_session = $agsession->id;
+											$r=$agfssh->create($user);
+										}
+
+										if ($r < 0) $error++;
+									}
+								}
+								
+								if (empty($error)) $this->db->commit();
+								else 
+								{
+									$this->db->rollback();
+									$context->errors[] = $langs->trans('AgfExternalAccessErrorCreateOrUpdateCreneau');
+								}
+								
+								header('Location: '.$context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id));
+								exit;
 							}
 							else
 							{
@@ -279,11 +344,6 @@ class ActionsAgefodd
 						}
 					}
 				}
-				
-				
-				
-				var_dump($action, $context->controller);exit;
-				
 				
 			}
 			

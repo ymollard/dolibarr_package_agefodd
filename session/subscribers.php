@@ -604,6 +604,7 @@ if (! empty($id)) {
 				if ($blocNumber > 0){
 				    for($j = 0; $j < $blocNumber; $j ++) {
 				        $defaultvalue = ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured) / 3600;
+						$warning=false;
 				        if (in_array($stagiaires->lines[$i]->status_in_session, array(3, 4))){
         					$result = $agfssh->fetch_by_session($id, $stagiaires->lines[$i]->id, $calendrier->lines[$j]->id);
         					if($calendrier->lines[$j]->date_session < dol_now()){
@@ -611,6 +612,7 @@ if (! empty($id)) {
             						$val = $agfssh->heures;
             					} else {
             					    $val = $defaultvalue;
+									$warning=true;
             					}
         					} else {
         					    $val = 0;
@@ -619,7 +621,7 @@ if (! empty($id)) {
     					    $val = 0;
     					}
 
-    					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value="' . $val . '" data-default="'.(($calendrier->lines[$j]->date_session < dol_now()) ? $defaultvalue : 0).'" '.(($calendrier->lines[$j]->date_session < dol_now()) ? '' : 'disabled').'></td>';
+    					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value="' . $val . '" data-default="'.(($calendrier->lines[$j]->date_session < dol_now()) ? $defaultvalue : 0).'" '.(($calendrier->lines[$j]->date_session < dol_now()) ? '' : 'disabled').'>'.($warning ? img_warning($langs->trans('AgfWarningTheoreticalValue')) : '').'</td>';
     				}
 				} else {
 				    print '<td align="center">'. (($i == 0) ? $langs->trans("AgfNoCalendar") : '') .'</td>';

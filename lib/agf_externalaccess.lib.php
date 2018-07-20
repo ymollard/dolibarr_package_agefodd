@@ -267,14 +267,11 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	
 	$context = Context::getInstance();
 	
-	$out = '';
-	$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
-//	var_dump($agf_calendrier_formateur);
-	// TODO formulaire de saisie d'heures de présence, confirmation du créneau
-	
 	if (!empty($agf_calendrier_formateur->id)) $action = 'update';
 	else $action = 'add';
 	
+	$out = '';
+	$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
 	$out.= '
 		<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">
 			<input type="hidden" name="action" value="'.$action.'" />
@@ -286,19 +283,15 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			<h4>Créneau</h4>
 			<div class="form-group">
 				<label for="heured">Date</label>
-				<input type="date" class="form-control" id="date_session" name="date_session" value="'.date('Y-m-d', $agf_calendrier_formateur->date_session).'">
+				<input type="date" class="form-control" id="date_session" required name="date_session" value="'.($action == 'update' ? date('Y-m-d', $agf_calendrier_formateur->date_session) : date('Y-m-d')).'">
 			</div>
 			<div class="form-group">
 				<label for="heured">Heure début:</label>
-				<input type="time" class="form-control" id="heured" name="heured" value="'.date('H:i', $agf_calendrier_formateur->heured).'">
+				<input type="time" class="form-control" step="900" id="heured" required name="heured" value="'.($action == 'update' ? date('H:i', $agf_calendrier_formateur->heured) : '09:00' ).'">
 				<label for="heuref">Heure fin:</label>
-				<input type="time" class="form-control" id="heuref" name="heuref" value="'.date('H:i', $agf_calendrier_formateur->heuref).'">
+				<input type="time" class="form-control" step="900" id="heuref" required name="heuref" value="'.($action == 'update' ? date('H:i', $agf_calendrier_formateur->heuref) : '12:00' ).'">
 			</div>
-			<div class="form-group form-check">
-				<label class="form-check-label">
-					<input class="form-check-input" type="checkbox"> Remember me
-				</label>
-			</div>';
+			';
 	
 	$stagiaires = new Agefodd_session_stagiaire($db);
 	$stagiaires->fetch_stagiaire_per_session($agsession->id);
@@ -323,7 +316,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			$out.= '
 				<div class="form-group">
 					<label for="stagiaire_'.$stagiaire->id.'">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</label>
-					<input type="time" class="form-control" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.(!empty($secondes) ? convertSecondToTime($secondes) : '').'" />
+					<input type="time" step="900" max="12:00" class="form-control" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.(!empty($secondes) ? convertSecondToTime($secondes) : '00:00').'" />
 				</div>';
 		}
 	}

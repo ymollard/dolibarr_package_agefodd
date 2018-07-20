@@ -1329,3 +1329,7 @@ AgfStatusCalendar_abandoned=Abandonnée
 
 Agf_EA_DeleteClandrierFormateurTitle=Suppression d'un créneau horaire
 Agf_EA_DeleteClandrierFormateurBody=Êtes-vous sûr de vouloir supprimer ce créneau horaire ?<br /> <small>Ceci supprimera aussi les saisies de temps des participants</small>
+AgfExternalAccessErrorCreateOrUpdateCreneau=Impossible de traiter votre demande, une erreur a été rencontrée
+
+
+AgfWarningTheoreticalValue=Attention : valeur théorique non sauvegardée et ni pris en compte par le total

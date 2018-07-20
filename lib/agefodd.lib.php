@@ -1912,7 +1912,7 @@ function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $stri
 	}
 	else
 	{
-		return false;
+		exit($db->lasterror());
 	}
 	
 	return $TRes;
