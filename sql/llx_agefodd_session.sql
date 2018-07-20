@@ -70,9 +70,3 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   import_key varchar(36) DEFAULT NULL,
   ref_ext varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB;
-
-ALTER TABLE llx_agefodd_session ADD COLUMN fk_soc_employer integer DEFAULT NULL AFTER fk_socpeople_presta;
-
-ALTER TABLE llx_agefodd_session DROP is_date_res_site;
-ALTER TABLE llx_agefodd_session DROP is_date_res_confirm_site;
-ALTER TABLE llx_agefodd_session DROP is_date_res_trainer;
