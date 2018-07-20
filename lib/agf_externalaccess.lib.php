@@ -142,8 +142,9 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	$agf_calendrier_formateur->fetch_all_by_trainer($trainer->id);
 	
 	$out = '';
-	$out.= '<section id="section-session-card"><div class="container">';
+	$out.= '<section id="section-session-card" class="py-5"><div class="container">';
 	
+	$out.= getEaNavbar($context->getRootUrl('agefodd_session_list'), $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0'));
 	
 	$out.= '
 		<ul class="nav nav-tabs mb-3" id="section-session-card-calendrier-formateur-tab" role="tablist">
@@ -224,7 +225,7 @@ function getPageViewSessionCardExternalAccess_crenaux(&$agsession, &$trainer, &$
 	$body = $langs->trans('Agf_EA_DeleteClandrierFormateurBody');
 	$body.= '<input type="hidden" name="sessid" value="'.$agsession->id.'" />';
 	$body.= '<input type="hidden" name="fk_agefodd_session_formateur_calendrier" value="" />';
-	$out.= getModalConfirm('session-card-delete-time-slot', $langs->trans('Agf_EA_DeleteClandrierFormateurTitle'), $body, $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id), 'deleteCalendrierFormateur');
+	$out.= getEaModalConfirm('session-card-delete-time-slot', $langs->trans('Agf_EA_DeleteClandrierFormateurTitle'), $body, $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id), 'deleteCalendrierFormateur');
 	
 	$out.= '<script type="text/javascript" >
 				$(document).ready(function(){
@@ -272,6 +273,8 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	
 	$out = '';
 	$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
+	$out.= getEaNavbar($context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id));
+	
 	$out.= '
 		<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">
 			<input type="hidden" name="action" value="'.$action.'" />
@@ -321,7 +324,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		}
 	}
 	
-	$out.= '<input type="submit" class="btn btn-primary pull-right" value="Submit" />
+	$out.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />
 		</form>';
 	
 	$out.= '</div></section>';

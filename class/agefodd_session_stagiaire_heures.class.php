@@ -148,14 +148,14 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	/**
 	 * Delete object (trainne in session) in database
 	 *
-	 * @param int $id to delete
+	 * @param User $user user object
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0)
+	{
+		$error = 0;
 	    $this->db->begin();
-
-	    $this->fetch($this->id);
 
 	    $sql = "DELETE FROM " . MAIN_DB_PREFIX . $this->table_element;
 	    $sql .= " WHERE rowid = " . $this->id;
@@ -173,7 +173,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    // Commit or rollback
 	    if ($error) {
 	        foreach ( $this->errors as $errmsg ) {
-	            dol_syslog(get_class($this) . "::remove " . $errmsg, LOG_ERR);
+	            dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
 	            $this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 	        }
 	        $this->db->rollback();
@@ -302,6 +302,32 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 	        return - 1;
 	    }
+	}
+	
+	public function fetchAllBy($field_value, $field)
+	{
+		$sql = 'SELECT rowid '.MAIN_DB_PREFIX.$this->table_element.' WHERE '.$field.' = ';
+		if (is_numeric($field_value)) $sql.= $field;
+		else $sql.= "'".$this->db->escape($field_value)."'";
+		
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$this->lines = array();
+			while ($obj = $this->db->fetch_object($resql))
+			{
+				$line = new Agefoddsessionstagiaireheuresline();
+				$line->fetch($obj->rowid);
+				
+				$this->lines[] = $line;
+			}
+		}
+		else
+		{
+			$this->error = "Error " . $this->db->lasterror();
+	        dol_syslog(get_class($this) . "::fetchAllBy " . $this->error, LOG_ERR);
+	        return -1;
+		}
 	}
 
 	/**

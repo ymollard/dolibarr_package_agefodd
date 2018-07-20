@@ -1885,6 +1885,7 @@ function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $stri
 	global $db;
 	
 	$TRes = array();
+	if (empty($agf_calendrier_formateur->id)) return $TRes;
 	
 	$sql = 'SELECT c.rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier c';
 //	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';

@@ -387,6 +387,65 @@ class Agefodd_sesscalendar {
 		}
 	}
 
+	public function delete($user)
+	{
+		$error = 0;
+		
+		dol_syslog(get_class($this) . "::delete", LOG_DEBUG);
+		
+		$this->db->begin();
+		
+		// Event agenda rattaché
+		if (! empty($this->fk_actioncomm))
+		{
+			dol_include_once('/comm/action/class/actioncomm.class.php');
+
+			$action = new ActionComm($this->db);
+			$action->id = $this->fk_actioncomm;
+			$r=$action->delete();
+			if ($r < 0) $error++;
+		}
+
+		if (!$error)
+		{
+			// Les heures saisies pour les participants
+			$agfssh = new Agefoddsessionstagiaireheures($this->db);
+			$agfssh->fetchAllBy($this->id, 'fk_calendrier');
+			if (!empty($agfssh->lines))
+			{
+				foreach ($agfssh->lines as &$line)
+				{
+					$line->delete($user);
+					if ($r < 0) $error++;
+				}
+			}
+		}
+		
+		if (!$error)
+		{
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier";
+			$sql .= " WHERE rowid = " . $this->id;
+			$resql = $this->db->query($sql);
+			if (!$resql)
+			{
+				$error++;
+				$this->error = $this->db->lasterror();
+			}
+		}
+		
+		if (!$error)
+		{
+			$this->db->commit();
+			return 1;
+		}
+		else
+		{
+			$this->db->rollback();
+			$this->error = $this->db->lasterror();
+			return -1 * $error;
+		}
+	}
+	
 	/**
 	 * Delete object in database
 	 *
@@ -394,28 +453,11 @@ class Agefodd_sesscalendar {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function remove($id) {
-		$result = $this->fetch($id);
-		if (! empty($this->fk_actioncomm)) {
-			dol_include_once('/comm/action/class/actioncomm.class.php');
-
-			$action = new ActionComm($this->db);
-			$action->id = $this->fk_actioncomm;
-			$action->delete();
-
-		}
-
-		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier";
-		$sql .= " WHERE rowid = " . $id;
-
+		global $user;
+		
 		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
-		$resql = $this->db->query($sql);
-
-		if ($resql) {
-			return 1;
-		} else {
-			$this->error = $this->db->lasterror();
-			return - 1;
-		}
+		$result = $this->fetch($id);
+		return $this->delete($user);
 	}
 
 	/**
