@@ -405,12 +405,12 @@ if (! empty($id)) {
 
 	// Display consult
 	$head = session_prepare_head($agf);
-	
+
 	dol_fiche_head($head, 'send_docs', $langs->trans("AgfSessionDetail"), 0, 'generic');
-	
+
 	dol_agefodd_banner_tab($agf, 'id');
 	print '<div class="underbanner clearboth"></div>';
-	
+
 	if ($result>0) {
 		$idform = $agf->formid;
 
@@ -1893,6 +1893,7 @@ if (! empty($id)) {
 			$formmail->substit['__FORMDATESESSION__'] = $date_conv;
 
 			$formmail->substit['__SIGNATURE__'] = $user->signature;
+			$formmail->substit['__USER_SIGNATURE__'] = $user->signature;
 
 			if (is_array($withtocompanyname) && count($withtocompanyname) > 0) {
 				if (! empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
@@ -2026,7 +2027,7 @@ if (! empty($id)) {
 			print '</div>' . "\n";
 		}
 
-		
+
 		if ($action != 'view_actioncomm') {
 		    print '<div class="tabsAction">';
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=view_actioncomm&id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';

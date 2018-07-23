@@ -391,25 +391,25 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 		$posx=$this->page_largeur-$this->marge_droite-55;
 
 		// Logo
-		$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
-		if ($this->emetteur->logo)
-		{
-			if (is_readable($logo))
-			{
-				$height=pdf_getHeightForLogo($logo);
+		$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
+		if ($this->emetteur->logo) {
+			if (is_readable($logo)) {
+				$height = pdf_getHeightForLogo($logo);
+				$width_logo = pdf_getWidthForLogo($logo);
+				if ($width_logo > 0) {
+					$posx = $this->page_largeur - $this->marge_droite - $width_logo;
+				} else {
+					$posx = $this->page_largeur - $this->marge_droite - 55;
+				}
 				$pdf->Image($logo, $posx, $posy, 0, $height);
-			}
-			else
-			{
-				$pdf->SetTextColor(200,0,0);
-				$pdf->SetFont('','B',$default_font_size - 2);
-				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'L');
+			} else {
+				$pdf->SetTextColor(200, 0, 0);
+				$pdf->SetFont('', 'B', $default_font_size - 2);
+				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
 				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
 			}
-		}
-		else
-		{
-			$text=$this->emetteur->name;
+		} else {
+			$text = $this->emetteur->name;
 			$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 		// Other Logo

@@ -405,6 +405,43 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			// Pied de page
 			$this->_pagefoot($pdf, $agf, $outputlangs);
 
+			/*
+			 * Page 4 (Annexe 1)
+			 */
+			if (! empty($conf->global->AGF_MERGE_ADVISE_AND_CONVOC)) {
+
+				// this configuration variable is designed like
+				// standard_model_name:new_model_name&standard_model_name:new_model_name&....
+				$model='conseils';
+				$fileconseils = $model . '_' . $agf->id . '.pdf';
+				if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE) && ($model != 'convention')) {
+					$modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+					if (is_array($modelarray) && count($modelarray) > 0) {
+						foreach ( $modelarray as $modeloveride ) {
+							$modeloverridearray = explode(':', $modeloveride);
+							if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
+								if ($modeloverridearray[0] == $model) {
+									$model = $modeloverridearray[1];
+								}
+							}
+						}
+					}
+				}
+				$result = agf_pdf_create($this->db, $agf->id, '', $model, $outputlangs, $fileconseils, 0);
+
+				$infileconseil = $conf->agefodd->dir_output.'/'. $fileconseils;
+				if (is_file($infileconseil)) {
+					$countconseil = $pdf->setSourceFile($infileconseil);
+					// import all page
+					for($iconseil = 1; $iconseil <= $countconseil; $iconseil ++) {
+						// New page
+						$pdf->AddPage();
+						$tplIdxconseil = $pdf->importPage($iconseil);
+						$pdf->useTemplate($tplIdxconseil);
+					}
+				}
+			}
+
 			$pdf->Close();
 			$pdf->Output($file, 'F');
 			if (! empty($conf->global->MAIN_UMASK))
