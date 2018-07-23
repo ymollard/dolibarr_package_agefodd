@@ -362,42 +362,48 @@ if (GETPOST('link_site')){
         $session_invoice = new Agefodd_session_element($db);
         $session_invoice->fk_soc = $object_socid;
         $session_invoice->fk_session_agefodd = $id;
-        $session_invoice->fk_element = $fourninvoice->id;
-        $session_invoice->element_type = 'invoice_supplier_room';
+      if(!empty($fournorder)){
+			 $session_invoice->fk_element = $fournorder->id;
+		     $session_invoice->element_type = 'order_supplier_room';
+		}else {
+			$session_invoice->fk_element = $fourninvoice->id;
+			$session_invoice->element_type = 'invoice_supplier_room';
+		}
         $result = $session_invoice->create($user);
         if ($result < 0) {
             setEventMessage($session_invoice->error, 'errors');
         }
+		if(!empty($fourninvoice)){
+			// Update training cost
+			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_room\'','\'invoice_supplierline_room\''));
+			if ($result < 0) {
+				setEventMessage($session_invoice->error, 'errors');
+			}
+			if (count($session_invoice->lines) > 0) {
+				$suplier_invoice = new FactureFournisseur($db);
+				$totalht = 0;
+				foreach ( $session_invoice->lines as $line ) {
+					if ($line->element_type == 'invoice_supplier_room')
+					{
+						$suplier_invoice->fetch($line->fk_element);
 
-        // Update training cost
-        $result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_room\'','\'invoice_supplierline_room\''));
-        if ($result < 0) {
-            setEventMessage($session_invoice->error, 'errors');
-        }
-        if (count($session_invoice->lines) > 0) {
-            $suplier_invoice = new FactureFournisseur($db);
-            $totalht = 0;
-            foreach ( $session_invoice->lines as $line ) {
-                if ($line->element_type == 'invoice_supplier_room')
-                {
-                    $suplier_invoice->fetch($line->fk_element);
+						$total_ht += $suplier_invoice->total_ht;
+					}
+					else
+					{
+						$suplier_invoiceline->fetch($line->fk_element);
 
-                    $total_ht += $suplier_invoice->total_ht;
-                }
-                else
-                {
-                    $suplier_invoiceline->fetch($line->fk_element);
-
-                    $total_ht += $suplier_invoiceline->total_ht;
-                }
-            }
-        }
-        $sess->cost_site = $total_ht;
-        $result = $sess->update($user, 1);
-        if ($result < 0) {
-            setEventMessage($agf->error, 'errors');
-        }
-    }
+						$total_ht += $suplier_invoiceline->total_ht;
+					}
+				}
+			}
+			$sess->cost_site = $total_ht;
+			$result = $sess->update($user, 1);
+			if ($result < 0) {
+				setEventMessage($agf->error, 'errors');
+			}
+		}
+	}
 
 }
 
@@ -413,48 +419,55 @@ if (GETPOST('link_formateur')){
         $session_invoice = new Agefodd_session_element($db);
         $session_invoice->fk_soc = $object_socid;
         $session_invoice->fk_session_agefodd = $id;
-        $session_invoice->fk_element = $fourninvoice->id;
-        $session_invoice->element_type = 'invoice_supplier_trainer';
+		
+		if(!empty($fournorder)){
+			 $session_invoice->fk_element = $fournorder->id;
+		     $session_invoice->element_type = 'order_supplier_trainer';
+		}else {
+			$session_invoice->fk_element = $fourninvoice->id;
+			$session_invoice->element_type = 'invoice_supplier_trainer';
+		}
         $session_invoice->fk_sub_element = $opsid;
         $result = $session_invoice->create($user);
         if ($result < 0)
         {
             setEventMessage($session_invoice->error, 'errors');
         }
-
+		if(!empty($fourninvoice)){
         // Update training cost
-        $result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
-        if ($result < 0)
-        {
-            setEventMessage($session_invoice->error, 'errors');
-        }
-        if (count($session_invoice->lines) > 0)
-        {
-            $suplier_invoice = new FactureFournisseur($db);
-            $total_ht = 0;
-            foreach ($session_invoice->lines as $line)
-            {
-                if ($line->element_type == 'invoice_supplier_trainer')
-                {
-                    $suplier_invoice->fetch($line->fk_element);
+			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
+			if ($result < 0)
+			{
+				setEventMessage($session_invoice->error, 'errors');
+			}
+			if (count($session_invoice->lines) > 0)
+			{
+				$suplier_invoice = new FactureFournisseur($db);
+				$total_ht = 0;
+				foreach ($session_invoice->lines as $line)
+				{
+					if ($line->element_type == 'invoice_supplier_trainer')
+					{
+						$suplier_invoice->fetch($line->fk_element);
 
-                    $total_ht += $suplier_invoice->total_ht;
-                }
-                else
-                {
-                    $suplier_invoiceline->fetch($line->fk_element);
+						$total_ht += $suplier_invoice->total_ht;
+					}
+					else
+					{
+						$suplier_invoiceline->fetch($line->fk_element);
 
-                    $total_ht += $suplier_invoiceline->total_ht;
-                }
-            }
-        }
-        $sess->cost_trainer = $total_ht;
-        $result = $sess->update($user, 1);
-        if ($result < 0)
-        {
-            setEventMessage($agf->error, 'errors');
-        }
-    }
+						$total_ht += $suplier_invoiceline->total_ht;
+					}
+				}
+			}
+			$sess->cost_trainer = $total_ht;
+			$result = $sess->update($user, 1);
+			if ($result < 0)
+			{
+				setEventMessage($agf->error, 'errors');
+			}
+		}
+	}
 
 }
 
@@ -471,47 +484,53 @@ if (GETPOST('link_mission')){
         $session_invoice->fk_soc = $object_socid;
         $session_invoice->fk_session_agefodd = $id;
         $session_invoice->fk_element = $fourninvoice->id;
-        $session_invoice->element_type = 'invoice_supplier_missions';
-        $session_invoice->fk_sub_element = $opsid;
+        if(!empty($fournorder)){
+			 $session_invoice->fk_element = $fournorder->id;
+		     $session_invoice->element_type = 'order_supplier_missions';
+		}else {
+			$session_invoice->fk_element = $fourninvoice->id;
+			$session_invoice->element_type = 'invoice_supplier_missions';
+		}
         $result = $session_invoice->create($user);
         if ($result < 0)
         {
             setEventMessage($session_invoice->error, 'errors');
         }
+		if(!empty($fourninvoice)){
+			// Update training cost
+			$result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_missions\'', '\'invoice_supplierline_missions\''));
+			if ($result < 0)
+			{
+				setEventMessage($session_invoice->error, 'errors');
+			}
+			if (count($session_invoice->lines) > 0)
+			{
+				$suplier_invoice = new FactureFournisseur($db);
+				$total_ht = 0;
+				foreach ($session_invoice->lines as $line)
+				{
+					if ($line->element_type == 'invoice_supplier_missions')
+					{
+						$suplier_invoice->fetch($line->fk_element);
 
-        // Update training cost
-        $result = $session_invoice->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_missions\'', '\'invoice_supplierline_missions\''));
-        if ($result < 0)
-        {
-            setEventMessage($session_invoice->error, 'errors');
-        }
-        if (count($session_invoice->lines) > 0)
-        {
-            $suplier_invoice = new FactureFournisseur($db);
-            $total_ht = 0;
-            foreach ($session_invoice->lines as $line)
-            {
-                if ($line->element_type == 'invoice_supplier_missions')
-                {
-                    $suplier_invoice->fetch($line->fk_element);
+						$total_ht += $suplier_invoice->total_ht;
+					}
+					else
+					{
+						$suplier_invoiceline->fetch($line->fk_element);
 
-                    $total_ht += $suplier_invoice->total_ht;
-                }
-                else
-                {
-                    $suplier_invoiceline->fetch($line->fk_element);
-
-                    $total_ht += $suplier_invoiceline->total_ht;
-                }
-            }
-        }
-        $sess->cost_trainer = $total_ht;
-        $result = $sess->update($user, 1);
-        if ($result < 0)
-        {
-            setEventMessage($agf->error, 'errors');
-        }
-    }
+						$total_ht += $suplier_invoiceline->total_ht;
+					}
+				}
+			}
+			$sess->cost_trainer = $total_ht;
+			$result = $sess->update($user, 1);
+			if ($result < 0)
+			{
+				setEventMessage($agf->error, 'errors');
+			}
+		}
+	}
 
 }
 
@@ -792,15 +811,57 @@ if (!empty($search_fournorderid)) {
 	}
 
 	print '<table class="noborder" width="100%">';
-	print '<tr>';
-	print '<td align="right">';
-	print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1,0,0,'',0,0,0,'','',1);
-	print '</td>';
-	print '<td align="left">';
-	print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_element"/>';
-	print '</td>';
-	print '</tr>';
-	print "</table>";
+    print '<tr>';
+    print '<th>Type</th>';
+    print '<th>Session</th>';
+    print '<th>'.$langs->trans('Link').'</th>';
+    print '</tr>';
+    print '<tr>';
+    print '<td align="center">'.$langs->trans('AgfFormateur').'</td>';
+    print '<td align="center">';
+    print '<input type="hidden" id="opsid" name="opsid">';
+    print '<select id="ids" style="display:none">';
+    foreach ($sessions as $k => $v) print '<option value='.$k.'>'.$v.'</option>';
+    print '</select>';
+    print $form->selectarray('session_id_form', $sessions, '', 1,0,0,'',0,0,0,'','',1);
+    print '</td>';
+    print '<td align="center">';
+    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_formateur"/>';
+    print '</td>';
+    print '</tr>';
+    print '<tr>';
+    print '<td align="center">'.$langs->trans('AgfTripAndMissions').'</td>';
+    print '<td align="center">';
+    print $form->selectarray('session_id_missions', $sessions, '', 1,0,0,'',0,0,0,'','',1);
+    print '</td>';
+    print '<td align="center">';
+    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_mission"/>';
+    print '</td>';
+    print '</tr>';
+    print '<tr>';
+    print '<td align="center">'.$langs->trans('AgfLieu').'</td>';
+    print '<td align="center">';
+    print $form->selectarray('session_id_site', $sessions, '', 1,0,0,'',0,0,0,'','',1);
+    print '</td>';
+    print '<td align="center">';
+    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_site"/>';
+    print '</td>';
+    print '</tr>';
+    print "</table>";
+
+    ?>
+
+    <script type="text/javascript">
+		$(document).ready(function(){
+			$('#session_id_form').change(function(){
+				sessid = $(this).val();
+				$('#opsid').val($('#ids').find('[value='+sessid+']').html());
+				console.log($('#ids').find('[value='+sessid+']').html());
+			});
+		});
+	</script>
+
+    <?php
 }
 elseif (empty($search_fourninvoiceref)) {
 	$filter=array();

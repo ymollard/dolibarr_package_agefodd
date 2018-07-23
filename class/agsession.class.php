@@ -55,6 +55,10 @@ class Agsession extends CommonObject
 	public $cost_site;
 	public $cost_trip;
 	public $sell_price;
+	public $cost_trainer_planned;
+	public $cost_site_planned;
+	public $cost_trip_planned;
+	public $sell_price_planned;
 	public $invoice_amount;
 	public $cost_buy_charges;
 	public $cost_sell_charges;
@@ -473,6 +477,10 @@ class Agsession extends CommonObject
 		$sql .= " t.cost_site,";
 		$sql .= " t.cost_trip,";
 		$sql .= " t.sell_price,";
+		$sql .= " t.cost_trainer_planned,";
+		$sql .= " t.cost_site_planned,";
+		$sql .= " t.cost_trip_planned,";
+		$sql .= " t.sell_price_planned,";
 		$sql .= " t.invoice_amount,";
 		$sql .= " t.cost_buy_charges,";
 		$sql .= " t.cost_sell_charges,";
@@ -574,6 +582,10 @@ class Agsession extends CommonObject
 				$this->cost_site = $obj->cost_site;
 				$this->cost_trip = $obj->cost_trip;
 				$this->sell_price = $obj->sell_price;
+				$this->cost_trainer_planned = $obj->cost_trainer_planned;
+				$this->cost_site_planned = $obj->cost_site_planned;
+				$this->cost_trip_planned = $obj->cost_trip_planned;
+				$this->sell_price_planned = $obj->sell_price_planned;
 				$this->invoice_amount = $obj->invoice_amount;
 				$this->cost_buy_charges = $obj->cost_buy_charges;
 				$this->cost_sell_charges = $obj->cost_sell_charges;
@@ -1581,6 +1593,14 @@ class Agsession extends CommonObject
 			$this->cost_trip = price2num(trim($this->cost_trip));
 		if (isset($this->sell_price))
 			$this->sell_price = price2num(trim($this->sell_price));
+		if (isset($this->cost_trainer_planned))
+			$this->cost_trainer_planned = price2num(trim($this->cost_trainer_planned));
+		if (isset($this->cost_site_planned))
+			$this->cost_site_planned = price2num(trim($this->cost_site_planned));
+		if (isset($this->cost_trip_planned))
+			$this->cost_trip_planned = price2num(trim($this->cost_trip_planned));
+		if (isset($this->sell_price_planned))
+			$this->sell_price_planned = price2num(trim($this->sell_price_planned));
 		if (isset($this->is_OPCA))
 			$this->is_OPCA = trim($this->is_OPCA);
 
@@ -1657,6 +1677,10 @@ class Agsession extends CommonObject
 			$sql .= " cost_site=" . (isset($this->cost_site) ? $this->cost_site : "null") . ",";
 			$sql .= " cost_trip=" . (isset($this->cost_trip) ? $this->cost_trip : "null") . ",";
 			$sql .= " sell_price=" . (isset($this->sell_price) ? $this->sell_price : "null") . ",";
+			$sql .= " cost_trainer_planned=" . (isset($this->cost_trainer_planned) ? $this->cost_trainer_planned : "null") . ",";
+			$sql .= " cost_site_planned=" . (isset($this->cost_site_planned) ? $this->cost_site_planned : "null") . ",";
+			$sql .= " cost_trip_planned=" . (isset($this->cost_trip_planned) ? $this->cost_trip_planned : "null") . ",";
+			$sql .= " sell_price_planned=" . (isset($this->sell_price_planned) ? $this->sell_price_planned : "null") . ",";
 			$sql .= " date_res_site=" . (dol_strlen($this->date_res_site) != 0 ? "'" . $this->db->idate($this->date_res_site) . "'" : 'null') . ",";
 			$sql .= " date_res_confirm_site=" . (dol_strlen($this->date_res_confirm_site) != 0 ? "'" . $this->db->idate($this->date_res_confirm_site) . "'" : 'null') . ",";
 			$sql .= " date_res_trainer=" . (dol_strlen($this->date_res_trainer) != 0 ? "'" . $this->db->idate($this->date_res_trainer) . "'" : 'null') . ",";
@@ -2175,6 +2199,10 @@ class Agsession extends CommonObject
 		$sql .= " ,s.cost_trainer";
 		$sql .= " ,s.cost_site";
 		$sql .= " ,s.cost_trip";
+		$sql .= " ,s.cost_trainer_planned";
+		$sql .= " ,s.cost_site_planned";
+		$sql .= " ,s.cost_trip_planned";
+		$sql .= " ,s.sell_price_planned";
 		$sql .= " ,s.cost_sell_charges";
 		$sql .= " ,s.cost_buy_charges";
 		$sql .= " ,s.fk_product";

@@ -298,9 +298,9 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$agf->notes = GETPOST('notes', 'alpha');
 		$agf->status = GETPOST('session_status', 'int');
 
-		$agf->cost_trainer = GETPOST('costtrainer', 'alpha');
-		$agf->cost_site = GETPOST('costsite', 'alpha');
-		$agf->sell_price = GETPOST('sellprice', 'alpha');
+		$agf->cost_trainer_planned = GETPOST('costtrainer', 'alpha');
+		$agf->cost_site_planned = GETPOST('costsite', 'alpha');
+		$agf->sell_price_planned = GETPOST('sellprice', 'alpha');
 
 		$agf->date_res_site = dol_mktime(0, 0, 0, GETPOST('res_sitemonth', 'int'), GETPOST('res_siteday', 'int'), GETPOST('res_siteyear', 'int'));
 		$agf->date_res_trainer = dol_mktime(0, 0, 0, GETPOST('res_trainmonth', 'int'), GETPOST('res_trainday', 'int'), GETPOST('res_trainyear', 'int'));
@@ -347,7 +347,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		if (! empty($force_nb_stagiaire))
 			$agf->force_nb_stagiaire = $force_nb_stagiaire;
 		if (! empty($cost_trip))
-			$agf->cost_trip = $cost_trip;
+			$agf->cost_trip_planned = $cost_trip;
 
 		if ($error == 0) {
 			$extrafields->setOptionalsFromPost($extralabels, $agf);
@@ -1137,15 +1137,15 @@ printSessionFieldsWithCustomOrder();
 					// print '<div class="tabBar">';
 					print '<table class="border" width="100%">';
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
-					print '<td><input size="6" type="text" class="flat" name="costtrainer" value="' . price($agf->cost_trainer) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="costtrainer" value="' . price($agf->cost_trainer_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
 
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutSalle") . '</td>';
-					print '<td><input size="6" type="text" class="flat" name="costsite" value="' . price($agf->cost_site) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="costsite" value="' . price($agf->cost_site_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutDeplacement") . '</td>';
-					print '<td><input size="6" type="text" class="flat" name="costtrip" value="' . price($agf->cost_trip) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="costtrip" value="' . price($agf->cost_trip_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
 
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormation") . '</td>';
-					print '<td><input size="6" type="text" class="flat" name="sellprice" value="' . price($agf->sell_price) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . ' ' . $other_amount . '</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="sellprice" value="' . price($agf->sell_price_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . ' ' . $other_amount . '</td></tr>';
 					print '</table>';
 					// print '</div>';
 
