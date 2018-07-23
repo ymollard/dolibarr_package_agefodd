@@ -504,7 +504,7 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter, $user);
 	if ($user->rights->agefodd->session->margin) {
-		
+
 		$total_sellprice = 0;
 		$total_costtrainer = 0;
 		$total_costother = 0;
@@ -532,11 +532,11 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 				} else {
 					$margin = 0;
 				}
-		
+
 				$oldid = $line->rowid;
 			}
 		}
-		
+
 		$result = $agf->getTTotalBySession(1);
 		if ($result > 0) {
 			$TTotalBySession = $agf->TTotalBySession;
@@ -567,7 +567,7 @@ $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, $user
 
 if ($resql != - 1) {
 
-	if (is_array($agf->TTotalBySession) && count($agf->TTotalBySession)==0) {
+	if (is_array($agf->TTotalBySession) && count($agf->TTotalBySession) == 0) {
 		$result = $agf->getTTotalBySession(1);
 		if ($result > 0) {
 			$TTotalBySession = $agf->TTotalBySession;
@@ -713,6 +713,37 @@ if ($resql != - 1) {
 		print '</td>';
 	}
 
+	if (! empty($arrayfields['s.nb_stagiaire']['checked'])) {
+		print '<td class="liste_titre"></td>';
+	}
+
+	if (! empty($arrayfields['s.duree_session']['checked'])) {
+		print '<td class="liste_titre">';
+		print '</td>';
+	}
+
+	if (! empty($arrayfields['s.notes']['checked'])) {
+		print '<td class="liste_titre">';
+		print '</td>';
+	}
+
+	if (! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_socpeople_presta" value="' . $search_socpeople_presta . '" size="15">';
+		print '</td>';
+	}
+
+	if (! empty($arrayfields['s.fk_soc_employer']['checked'])) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_soc_employer" value="' . $search_soc_employer . '" size="15">';
+		print '</td>';
+	}
+
+	if (! empty($arrayfields['s.fk_soc_requester']['checked'])) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_soc_requester" value="' . $search_soc_requester . '" size="15">';
+		print '</td>';
+	}
 	if ($user->rights->agefodd->session->margin) {
 		if (! empty($arrayfields['s.sell_price']['checked']))
 			print '<td class="liste_titre" name="margininfo11" ></td>';
@@ -731,38 +762,6 @@ if ($resql != - 1) {
 
 		if (! empty($arrayfields['AgfMargin']['checked']))
 			print '<td class="liste_titre" name="margininfo10"  ></td>';
-	}
-
-	if (! empty($arrayfields['s.nb_stagiaire']['checked'])) {
-		print '<td class="liste_titre"></td>';
-	}
-	
-		if (! empty($arrayfields['s.duree_session']['checked'])) {
-			print '<td class="liste_titre">';
-			print '</td>';
-		}
-		
-		if (! empty($arrayfields['s.notes']['checked'])) {
-			print '<td class="liste_titre">';
-			print '</td>';
-		}
-		
-	if (! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
-		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_socpeople_presta" value="' . $search_socpeople_presta . '" size="15">';
-		print '</td>';
-	}
-
-	if (! empty($arrayfields['s.fk_soc_employer']['checked'])) {
-		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_soc_employer" value="' . $search_soc_employer . '" size="15">';
-		print '</td>';
-	}
-
-	if (! empty($arrayfields['s.fk_soc_requester']['checked'])) {
-		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_soc_requester" value="' . $search_soc_requester . '" size="15">';
-		print '</td>';
 	}
 
 	if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))
@@ -854,16 +853,15 @@ if ($resql != - 1) {
 		print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['s.nb_stagiaire']['checked']))
 		print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
-	
-		if (! empty($arrayfields['s.duree_session']['checked'])) {
-			print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR['PHP_SELF'], "s.duree_session", '', $option, '', $sortfield, $sortorder);
-		}
-		
-		if (! empty($arrayfields['s.notes']['checked'])) {
-			print_liste_field_titre($langs->trans("AgfNote"), $_SERVEUR['PHP_SELF'], "s.notes", '', $option, '', $sortfield, $sortorder);
-		}
-		
-		
+
+	if (! empty($arrayfields['s.duree_session']['checked'])) {
+		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR['PHP_SELF'], "s.duree_session", '', $option, '', $sortfield, $sortorder);
+	}
+
+	if (! empty($arrayfields['s.notes']['checked'])) {
+		print_liste_field_titre($langs->trans("AgfNote"), $_SERVEUR['PHP_SELF'], "s.notes", '', $option, '', $sortfield, $sortorder);
+	}
+
 	if (! empty($arrayfields['s.fk_socpeople_presta']['checked']))
 		print_liste_field_titre($langs->trans("AgfTypePresta"), $_SERVEUR['PHP_SELF'], "s.fk_socpeople_presta", '', $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['s.fk_soc_employer']['checked']))
@@ -999,13 +997,13 @@ if ($resql != - 1) {
 			if (! empty($arrayfields['s.nb_stagiaire']['checked']))
 				print '<td>' . $line->nb_stagiaire . '</td>';
 
-				if (! empty($arrayfields['s.duree_session']['checked'])) {
-					print '<td>' . $line->duree_session . '</td>';
-				}
-				if (! empty($arrayfields['s.notes']['checked'])) {
-					print '<td>' . stripslashes(dol_trunc($line->notes, 60)) . '</td>';
-				}
-				
+			if (! empty($arrayfields['s.duree_session']['checked'])) {
+				print '<td>' . $line->duree_session . '</td>';
+			}
+			if (! empty($arrayfields['s.notes']['checked'])) {
+				print '<td>' . stripslashes(dol_trunc($line->notes, 60)) . '</td>';
+			}
+
 			if (! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
 				if ($line->fk_socpeople_presta > 0) {
 					$contact = new Contact($db);
@@ -1188,10 +1186,10 @@ if ($resql != - 1) {
 				print '<td></td>';
 			if (! empty($arrayfields['s.nb_stagiaire']['checked']))
 				print '<td></td>';
-				if (! empty($arrayfields['s.duree_session']['checked']))
-					print '<td></td>';
-					if (! empty($arrayfields['s.notes']['checked']))
-						print '<td></td>';
+			if (! empty($arrayfields['s.duree_session']['checked']))
+				print '<td></td>';
+			if (! empty($arrayfields['s.notes']['checked']))
+				print '<td></td>';
 			if (! empty($arrayfields['s.fk_soc_requester']['checked']))
 				print '<td></td>';
 			if ($user->rights->agefodd->session->margin) {
@@ -1230,72 +1228,73 @@ if ($resql != - 1) {
 		$i ++;
 	}
 
+	print '<tr class="liste_total" name="margininfototal" >';
+	print '<td>' . $langs->trans('Total') . '</td>';
+	if (! empty($arrayfields['s.rowid']['checked']) && ! empty($arrayfields['s.ref']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['so.nom']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['f.rowid']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['c.intitule']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['c.ref']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['c.ref_interne']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['s.type_session']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['s.dated']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['s.datef']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['dicstatus.intitule']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['p.ref_interne']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['s.nb_stagiaire']['checked']))
+		print '<td>' . $total_trainee . '</td>';
+	if (! empty($arrayfields['s.duree_session']['checked']))
+		print '<td>' . $total_duration . '</td>';
+	if (! empty($arrayfields['s.notes']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['s.fk_socpeople_presta']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['s.fk_soc_employer']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['s.fk_soc_requester']['checked']))
+		print '<td></td>';
 	if ($user->rights->agefodd->session->margin) {
+		if (! empty($arrayfields['s.sell_price']['checked']))
+			print '<td nowrap="nowrap">' . price($total_sellprice, 0, '', 1, - 1, - 1, 'auto') . '</td>';
+		if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
+			print '<td nowrap="nowrap">' . price($total_propal_hthf, 0, '', 1, - 1, - 1, 'auto') . '</td>';
+		if (! empty($arrayfields['s.cost_trainer']['checked']))
+			print '<td nowrap="nowrap">' . price($total_costtrainer, 0, '', 1, - 1, - 1, 'auto') . '</td>';
+		if (! empty($arrayfields['AgfCostOther']['checked']))
+			print '<td nowrap="nowrap">' . price($total_costother, 0, '', 1, - 1, - 1, 'auto') . '</td>';
+		if (! empty($arrayfields['AgfFactAmount']['checked']))
+			print '<td nowrap="nowrap">' . price($total_invoice_hthf, 0, '', 1, - 1, - 1, 'auto') . '</td>';
+		if (! empty($arrayfields['AgfMargin']['checked']))
+			print '<td nowrap="nowrap">' . price($total_margin, 0, '', 1, - 1, - 1, 'auto') . '(' . $total_percentmargin . ')' . '</td>';
+	}
+	if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['AgfProductServiceLinked']['checked']))
+		print '<td></td>';
 
-		print '<tr class="liste_total" name="margininfototal" >';
-		print '<td>' . $langs->trans('Total') . '</td>';
-		if (! empty($arrayfields['s.rowid']['checked']) && ! empty($arrayfields['s.ref']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['so.nom']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['f.rowid']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['c.intitule']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['c.ref']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['c.ref_interne']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['s.type_session']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['s.dated']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['s.datef']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['dicstatus.intitule']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['p.ref_interne']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['s.nb_stagiaire']['checked']))
-			print '<td></td>';
-			if (! empty($arrayfields['s.duree_session']['checked']))
+	// Extra fields
+	if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
+		foreach ( $extrafields->attribute_label as $key => $val ) {
+			if (! empty($arrayfields["ef." . $key]['checked'])) {
 				print '<td></td>';
-				if (! empty($arrayfields['s.nb_stagiaire']['checked']))
-					print '<td></td>';
-		if (! empty($arrayfields['s.notes']['checked']))
-			print '<td></td>';
-		if ($user->rights->agefodd->session->margin) {
-			if (! empty($arrayfields['s.sell_price']['checked']))
-				print '<td nowrap="nowrap">' . price($total_sellprice, 0, '', 1, - 1, - 1, 'auto') . '</td>';
-			if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
-				print '<td nowrap="nowrap">' . price($total_propal_hthf, 0, '', 1, - 1, - 1, 'auto') . '</td>';
-			if (! empty($arrayfields['s.cost_trainer']['checked']))
-				print '<td nowrap="nowrap">' . price($total_costtrainer, 0, '', 1, - 1, - 1, 'auto') . '</td>';
-			if (! empty($arrayfields['AgfCostOther']['checked']))
-				print '<td nowrap="nowrap">' . price($total_costother, 0, '', 1, - 1, - 1, 'auto') . '</td>';
-			if (! empty($arrayfields['AgfFactAmount']['checked']))
-				print '<td nowrap="nowrap">' . price($total_invoice_hthf, 0, '', 1, - 1, - 1, 'auto') . '</td>';
-			if (! empty($arrayfields['AgfMargin']['checked']))
-				print '<td nowrap="nowrap">' . price($total_margin, 0, '', 1, - 1, - 1, 'auto') . '(' . $total_percentmargin . ')' . '</td>';
-		}
-		if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))
-			print '<td></td>';
-		if (! empty($arrayfields['AgfProductServiceLinked']['checked']))
-			print '<td></td>';
-
-		// Extra fields
-		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
-			foreach ( $extrafields->attribute_label as $key => $val ) {
-				if (! empty($arrayfields["ef." . $key]['checked'])) {
-					print '<td></td>';
-				}
 			}
 		}
-
-		// Action column
-		print '<td>&nbsp;</td>';
-		print "</tr>\n";
 	}
+
+	// Action column
+	print '<td>&nbsp;</td>';
+	print "</tr>\n";
 	print "</table>";
 	print "</div>";
 } else {
