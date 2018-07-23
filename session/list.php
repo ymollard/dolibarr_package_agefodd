@@ -224,6 +224,14 @@ $arrayfields = array(
 				'label' => "AgfNbreParticipants",
 				'checked' => 1
 		),
+		's.duree_session' => array(
+				'label' => "AgfDuree",
+				'checked' => 1
+		),
+		's.notes' => array(
+				'label' => "AgfNote",
+				'checked' => 1
+		),
 		's.fk_socpeople_presta' => array(
 				'label' => 'AgfTypePresta',
 				'checked' => 0
@@ -266,7 +274,6 @@ $arrayfields = array(
 				'checked' => 1,
 				'enabled' => $user->rights->agefodd->session->margin
 		),
-
 		'AgfListParticipantsStatus' => array(
 				'label' => "AgfListParticipantsStatus",
 				'checked' => 1
@@ -425,6 +432,10 @@ if ($status_view == 1) {
 	}
 } elseif ($status_view == 2) {
 	$title = $langs->trans("AgfMenuSessConfList");
+	// Tri J-2
+	if (empty($search_month) && empty($search_year) && empty($search_id) && $conf->global->AGF_FILTER_NEAREST_SESSION) {
+		$filter['s.dated>'] = '3';
+	}
 } elseif ($status_view == 3) {
 	$title = $langs->trans("AgfMenuSessNotDoneList");
 } elseif ($status_view == 4) {
@@ -500,6 +511,7 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 		$total_margin = 0;
 		$total_percentmargin = '';
 		$total_trainee = 0;
+		$total_duration = 0;
 
 		$total_propal_ht = 0;
 		$total_propal_hthf = 0;
@@ -513,6 +525,7 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 				$total_costtrainer += $line->cost_trainer;
 				$total_costother += $line->cost_other;
 				$total_trainee += $line->nb_stagiaire;
+				$total_duration += $line->duree_session;
 
 				if ($line->invoice_amount > 0) {
 					$total_margin += $line->invoice_amount - ($line->cost_trainer + $line->cost_other);
@@ -720,9 +733,20 @@ if ($resql != - 1) {
 			print '<td class="liste_titre" name="margininfo10"  ></td>';
 	}
 
-	if (! empty($arrayfields['s.nb_stagiaire']['checked']))
+	if (! empty($arrayfields['s.nb_stagiaire']['checked'])) {
 		print '<td class="liste_titre"></td>';
-
+	}
+	
+		if (! empty($arrayfields['s.duree_session']['checked'])) {
+			print '<td class="liste_titre">';
+			print '</td>';
+		}
+		
+		if (! empty($arrayfields['s.notes']['checked'])) {
+			print '<td class="liste_titre">';
+			print '</td>';
+		}
+		
 	if (! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_socpeople_presta" value="' . $search_socpeople_presta . '" size="15">';
@@ -830,6 +854,16 @@ if ($resql != - 1) {
 		print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['s.nb_stagiaire']['checked']))
 		print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
+	
+		if (! empty($arrayfields['s.duree_session']['checked'])) {
+			print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR['PHP_SELF'], "s.duree_session", '', $option, '', $sortfield, $sortorder);
+		}
+		
+		if (! empty($arrayfields['s.notes']['checked'])) {
+			print_liste_field_titre($langs->trans("AgfNote"), $_SERVEUR['PHP_SELF'], "s.notes", '', $option, '', $sortfield, $sortorder);
+		}
+		
+		
 	if (! empty($arrayfields['s.fk_socpeople_presta']['checked']))
 		print_liste_field_titre($langs->trans("AgfTypePresta"), $_SERVEUR['PHP_SELF'], "s.fk_socpeople_presta", '', $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['s.fk_soc_employer']['checked']))
@@ -965,6 +999,13 @@ if ($resql != - 1) {
 			if (! empty($arrayfields['s.nb_stagiaire']['checked']))
 				print '<td>' . $line->nb_stagiaire . '</td>';
 
+				if (! empty($arrayfields['s.duree_session']['checked'])) {
+					print '<td>' . $line->duree_session . '</td>';
+				}
+				if (! empty($arrayfields['s.notes']['checked'])) {
+					print '<td>' . stripslashes(dol_trunc($line->notes, 60)) . '</td>';
+				}
+				
 			if (! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
 				if ($line->fk_socpeople_presta > 0) {
 					$contact = new Contact($db);
@@ -1147,6 +1188,10 @@ if ($resql != - 1) {
 				print '<td></td>';
 			if (! empty($arrayfields['s.nb_stagiaire']['checked']))
 				print '<td></td>';
+				if (! empty($arrayfields['s.duree_session']['checked']))
+					print '<td></td>';
+					if (! empty($arrayfields['s.notes']['checked']))
+						print '<td></td>';
 			if (! empty($arrayfields['s.fk_soc_requester']['checked']))
 				print '<td></td>';
 			if ($user->rights->agefodd->session->margin) {
@@ -1213,7 +1258,11 @@ if ($resql != - 1) {
 			print '<td></td>';
 		if (! empty($arrayfields['s.nb_stagiaire']['checked']))
 			print '<td></td>';
-		if (! empty($arrayfields['s.fk_soc_requester']['checked']))
+			if (! empty($arrayfields['s.duree_session']['checked']))
+				print '<td></td>';
+				if (! empty($arrayfields['s.nb_stagiaire']['checked']))
+					print '<td></td>';
+		if (! empty($arrayfields['s.notes']['checked']))
 			print '<td></td>';
 		if ($user->rights->agefodd->session->margin) {
 			if (! empty($arrayfields['s.sell_price']['checked']))
