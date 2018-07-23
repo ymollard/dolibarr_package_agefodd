@@ -46,6 +46,12 @@ require_once ('../class/agefodd_session_element.class.php');
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
+$hookmanager->initHooks(array('agefoddsessionlistopeinter'));
+
+$parameters=array('from'=>'original');
+$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
@@ -132,6 +138,10 @@ if (empty($sortorder)) {
 if (empty($sortfield)) {
 	$sortfield = "s.dated";
 }
+
+$parameters=array('from'=>'original', 'filter' => &$filter, 'option' => &$option, 'sortorder' => &$sortorder, 'sortfield' => &$sortfield);
+$reshook=$hookmanager->executeHooks('overrideFilter',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($page) || $page == -1) { $page = 0; }
 
