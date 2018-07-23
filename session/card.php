@@ -885,6 +885,8 @@ printSessionFieldsWithCustomOrder();
 
 				$agf_fact = new Agefodd_session_element($db);
 				$agf_fact->fetch_by_session($agf->id);
+				$engaged_revenue = $agf_fact->propal_sign_amount;
+				$paied_revenue = $agf_fact->invoice_payed_amount;
 				$other_amount = '(' . $langs->trans('AgfProposalAmountSigned') . ' ' . $agf_fact->propal_sign_amount . ' ' . $langs->trans('Currency' . $conf->currency);
 				if (! empty($conf->commande->enabled)) {
 					$other_amount .= '/' . $langs->trans('AgfOrderAmount') . ' ' . $agf_fact->order_amount . ' ' . $langs->trans('Currency' . $conf->currency);
@@ -1285,7 +1287,11 @@ printSessionFieldsWithCustomOrder();
 
 					print '<tr class="tr_order_cost"><td colspan="4">';
 					print '<table class="border order_cost" width="100%">';
-					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
+					print '<tr class="liste_titre"><td></td><td></td><td width="20%">' . $langs->trans("Planned") . '</td><td width="20%">' . $langs->trans("Engaged") . '</td><td width="20%">' . $langs->trans("Done") . '</td><td width="20%">' . $langs->trans("Result") . '</td></tr>';
+
+					print '<tr><td ><strong>' . $langs->trans("TaxRevenue") . '</strong></td><td >' . $langs->trans("AgfCoutFormation") . '</td>';
+					print '<td>' . price($agf->sell_price_planned) .'</td><td>' .  price($engaged_revenue).'</td><td>' . price($paied_revenue) .'</td><td>' .price($paied_revenue - $agf->sell_price_planned) .'</td></tr>';
+					print '<tr><td rowspan="4" ><strong>' . $langs->trans("Expense") . '</strong></td><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
 					print '<td>' . price($agf->cost_trainer) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
 					$spend_cost += $agf->cost_trainer;
 
@@ -1308,18 +1314,16 @@ printSessionFieldsWithCustomOrder();
 						$spend_cost += $agf->cost_trip;
 					}
 
-					print '<tr><td width="20%"><strong>' . $langs->trans("AgfCoutTotal") . '</strong></td>';
+					print '<tr class="liste_total"><td width="20%"><strong>' . $langs->trans("AgfCoutTotal") . '</strong></td>';
 					if ($agf->nb_stagiaire>0) {
 						$traineeCost = ' ('.$langs->trans('AgfTraineeCost') . ':'.price($spend_cost/$agf->nb_stagiaire).' ' . $langs->trans('Currency' . $conf->currency).')';
 					}
 
 					print '<td><strong>' . price($spend_cost) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong>'.$traineeCost.'</td></tr>';
 
-					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormation") . '</td>';
-					print '<td>' . price($agf->sell_price) . ' ' . $langs->trans('Currency' . $conf->currency) . ' ' . $other_amount . '</td></tr>';
-					$cashed_cost += $agf->sell_price;
+				
 
-					print '<tr><td width="20%"><strong>' . $langs->trans("AgfCoutRevient") . '</strong></td>';
+					print '<tr class="liste_total"><td width="20%"><strong>' . $langs->trans("Benefits") . '</strong></td><td></td>';
 					if ($cashed_cost > 0) {
 						$percentmargin = price(((($cashed_cost - $spend_cost) * 100) / $cashed_cost), 0, $langs, 1, 0, 1) . '%';
 					} else {
