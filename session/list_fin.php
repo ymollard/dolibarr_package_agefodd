@@ -546,6 +546,7 @@ if ($action == 'unlink') {
 
 $agf = new Agsession($db);
 $resql = $agf->fetch_all_by_order_invoice_propal($sortorder, $sortfield, $limit, $offset, $search_orderid, $search_invoiceid, $search_propalid, $search_fourninvoiceid, $search_fournorderid);
+
 if ($resql<0) {
 	setEventMessage($agf->error,'errors');
 }
@@ -584,6 +585,7 @@ if ($resql != - 1) {
 	}
 	if (! (empty($search_fournorderref))) {
 	    print_liste_field_titre($langs->trans("Order"), $_SERVEUR['PHP_SELF'], "fournorder.ref", '', $arg_url, '', $sortfield, $sortorder);
+	    print_liste_field_titre($langs->trans("Type"), $_SERVEUR['PHP_SELF'], "ord_inv.element_type", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	if (! (empty($search_propalref))) {
 		print_liste_field_titre($langs->trans("Proposal"), $_SERVEUR['PHP_SELF'], "propal_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
@@ -648,6 +650,7 @@ if ($resql != - 1) {
 	    print '<td class="liste_titre">';
 	    print '<input type="text" class="flat" name="search_fournorderref" value="' . $search_fournorderref . '" size="20">';
 	    print '</td>';
+		print '<td></td>';
 	}
 	if (! (empty($search_propalref))) {
 		print '<td class="liste_titre">';
@@ -662,7 +665,6 @@ if ($resql != - 1) {
 	print "</tr>\n";
 
 	$var = true;
-
 	foreach ( $agf->lines as $line ) {
 		$session_array_id[$line->rowid] = $line->rowid;
 		// Affichage tableau des sessions
@@ -696,7 +698,8 @@ if ($resql != - 1) {
 			print '<td>' . $line->fourninvoiceref . '</td>';
 		}
 		if (! (empty($search_fournorderref))) {
-		    print '<td>' . $line->fournorderref . '</td>';
+			
+		    print '<td>' . $line->fournorderref . '</td><td>' . $langs->trans($line->element_type) . '</td>';
 		}
 		if (! (empty($search_propalref))) {
 			print '<td>' . $line->propalref . '</td>';
@@ -745,10 +748,11 @@ if ($resql != - 1) {
 		    }
 		}
 		//var_dump($agf_fin);
-
+		if(!empty($line->id_element))$id_element=$line->id_element;
+		
 		print '<td align="right">';
 		$legende = (empty($search_fourninvoiceref)) ? $langs->trans("AgfFactureUnselectFac") : $langs->trans("AgfFactureUnselectSuplierInvoice");
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $idelement . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' .$id_element . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
 		print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
 		print '</td>';
 // 		print '<td></td>';

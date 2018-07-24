@@ -3117,6 +3117,8 @@ class Agsession extends CommonObject
 		$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.intitule, c.ref";
 		$sql .= " ,s.intitule_custo";
+		$sql .= " ,ord_inv.element_type";
+		$sql .= " ,ord_inv.rowid id_element";
 		$sql .= " ,s.duree_session,";
 		$sql .= " p.ref_interne";
 		if (! empty($invoiceid)) {
@@ -3188,7 +3190,7 @@ class Agsession extends CommonObject
 		}
 
 		if (! empty($fournorderid)) {
-		    $sql .= " ,fournorder.ref ";
+		    $sql .= " ,fournorder.ref, ord_inv.element_type ";
 		}
 
 		if (! empty($orderid)) {
@@ -3209,7 +3211,7 @@ class Agsession extends CommonObject
 
 		dol_syslog(get_class($this) . "::fetch_all_by_order_invoice_propal", LOG_DEBUG);
 		$resql = $this->db->query($sql);
-
+		
 		if ($resql) {
 			$this->line = array ();
 			$num = $this->db->num_rows($resql);
@@ -3234,6 +3236,8 @@ class Agsession extends CommonObject
 					$line->duree_session = $obj->duree_session;
 					$line->intitule_custo = $obj->intitule_custo;
 					$line->notes = $obj->notes;
+					$line->element_type = $obj->element_type;
+					$line->id_element = $obj->id_element;
 					if (! empty($invoiceid)) {
 						$line->invoiceref = $obj->invoiceref;
 					}
