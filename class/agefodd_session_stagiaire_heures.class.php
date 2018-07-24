@@ -306,17 +306,16 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	
 	public function fetchAllBy($field_value, $field)
 	{
-		$sql = 'SELECT rowid '.MAIN_DB_PREFIX.$this->table_element.' WHERE '.$field.' = ';
-		if (is_numeric($field_value)) $sql.= $field;
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.$this->table_element.' WHERE '.$field.' = ';
+		if (is_numeric($field_value)) $sql.= $field_value;
 		else $sql.= "'".$this->db->escape($field_value)."'";
-		
 		$resql = $this->db->query($sql);
 		if ($resql)
 		{
 			$this->lines = array();
 			while ($obj = $this->db->fetch_object($resql))
 			{
-				$line = new Agefoddsessionstagiaireheuresline();
+				$line = new Agefoddsessionstagiaireheures($this->db);
 				$line->fetch($obj->rowid);
 				
 				$this->lines[] = $line;

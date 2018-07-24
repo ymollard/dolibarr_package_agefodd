@@ -53,9 +53,9 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public $lines = array ();
 
 	
-	public static $STATUS_DRAFT = 0;
-	public static $STATUS_CONFIRMED = 1;
-	public static $STATUS_ABANDONED = -1;
+	const STATUS_DRAFT = 0;
+	const STATUS_CONFIRMED = 1;
+	const STATUS_ABANDONED = -1;
 	/**
 	 * Constructor
 	 *
@@ -798,17 +798,17 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		global $langs;
 		
 		$out = '';
-		if ($status == self::$STATUS_DRAFT)
+		if ($status == self::STATUS_DRAFT)
 		{
 			if ($mode == 1) $out.= img_picto('', 'statut0').' ';
 			$out.= $langs->trans('AgfStatusCalendar_draft');
 		}
-		else if ($status == self::$STATUS_CONFIRMED)
+		else if ($status == self::STATUS_CONFIRMED)
 		{
 			if ($mode == 1) $out.= img_picto('', 'statut4').' ';
 			$out.= $langs->trans('AgfStatusCalendar_confirmed');
 		}
-		else if ($status == self::$STATUS_ABANDONED)
+		else if ($status == self::STATUS_ABANDONED)
 		{
 			if ($mode == 1) $out.= img_picto('', 'statut6').' ';
 			$out.= $langs->trans('AgfStatusCalendar_abandoned');

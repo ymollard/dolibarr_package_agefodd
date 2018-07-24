@@ -46,9 +46,9 @@ class Agefodd_sesscalendar {
 	public $lines = array ();
 
 	
-	public static $STATUS_DRAFT = 0;
-	public static $STATUS_CONFIRMED = 1;
-	public static $STATUS_ABANDONED = -1;
+	const STATUS_DRAFT = 0;
+	const STATUS_CONFIRMED = 1;
+	const STATUS_ABANDONED = -1;
 	/**
 	 * Constructor
 	 *
@@ -236,38 +236,27 @@ class Agefodd_sesscalendar {
 	 * @param int $id of session
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($id) {
-		global $langs;
-
+	public function fetch_all($id)
+	{
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
+		$sql .= " DISTINCT s.rowid, s.date_session, s.heured";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
-		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.fk_agefodd_session = " . $id;
+		$sql .= " GROUP BY s.rowid, s.date_session, s.heured";
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 
 		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
-			$num = $this->db->num_rows($resql);
-			$i = 0;
-			for($i = 0; $i < $num; $i ++) {
-				$line = new Agefodd_sesscalendar_line();
+			while ($obj = $this->db->fetch_object($resql))
+			{
+				$line = new Agefodd_sesscalendar($this->db);
+				$line->fetch($obj->rowid);
 
-				$obj = $this->db->fetch_object($resql);
-
-				$line->id = $obj->rowid;
-				$line->date_session = $this->db->jdate($obj->date_session);
-				$line->heured = $this->db->jdate($obj->heured);
-				$line->heuref = $this->db->jdate($obj->heuref);
-				$line->sessid = $obj->fk_agefodd_session;
-				$line->calendrier_type = $obj->calendrier_type;
-				$line->calendrier_type_label = $obj->calendrier_type_label;
-				$line->status = $obj->status;
-
-				$this->lines[$i] = $line;
+				$this->lines[] = $line;	
 			}
+			
 			$this->db->free($resql);
 			return 1;
 		} else {
@@ -387,6 +376,23 @@ class Agefodd_sesscalendar {
 		}
 	}
 
+	public function getSumDureePresence()
+	{
+		$duree = 0;
+		
+		$agfssh = new Agefoddsessionstagiaireheures($this->db);
+		$agfssh->fetchAllBy($this->id, 'fk_calendrier');
+		if (!empty($agfssh->lines))
+		{
+			foreach ($agfssh->lines as &$line)
+			{
+				$duree += $line->heures;
+			}
+		}
+		
+		return $duree;
+	}
+	
 	public function delete($user)
 	{
 		$error = 0;

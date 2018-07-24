@@ -159,7 +159,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	
 	$out.= '
 		<div class="tab-content" id="section-session-card-calendrier-formateur-tab-tabContent">
-			<div class="tab-pane fade show active" id="nav-calendrier-info" role="tabpanel" aria-labelledby="nav-calendrier-info-tab">'.getPageViewSessionCardExternalAccess_crenaux($agsession, $trainer, $agf_calendrier_formateur).'</div>
+			<div class="tab-pane fade show active" id="nav-calendrier-info" role="tabpanel" aria-labelledby="nav-calendrier-info-tab">'.getPageViewSessionCardExternalAccess_creneaux($agsession, $trainer, $agf_calendrier_formateur).'</div>
 			<div class="tab-pane fade" id="nav-calendrier-summary" role="tabpanel" aria-labelledby="nav-calendrier-summary-tab">'.getPageViewSessionCardExternalAccess_summary($agsession, $trainer, $agf_calendrier_formateur).'</div>
 		</div>
 	';
@@ -173,7 +173,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	return $out;
 }
 
-function getPageViewSessionCardExternalAccess_crenaux(&$agsession, &$trainer, &$agf_calendrier_formateur)
+function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &$agf_calendrier_formateur)
 {
 	global $langs;
 	
@@ -251,13 +251,90 @@ function getPageViewSessionCardExternalAccess_crenaux(&$agsession, &$trainer, &$
 
 function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$agf_calendrier_formateur)
 {
+	global $langs,$db;
+	
+	$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
+	$agefodd_sesscalendar->fetch_all($agsession->id);
+	$stagiaires = new Agefodd_session_stagiaire($db);
+	$stagiaires->fetch_stagiaire_per_session($agsession->id);
+	
+	$date_deb = dol_print_date($agsession->dated);
+	$date_fin = dol_print_date($agsession->datef);
+	$duree_scheduled = 0;
+	$duree_presence_comptabilise = 0;
+	$duree_presence_comptabilise_cancel = 0;
+	
+	foreach ($agf_calendrier_formateur->lines as &$line)
+	{
+		$duree_scheduled += ($line->heuref - $line->heured) / 60 / 60;
+	}
+	
+	foreach ($agefodd_sesscalendar->lines as &$agf_calendrier)
+	{
+		$duree = $agf_calendrier->getSumDureePresence();
+		if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CONFIRMED) $duree_presence_comptabilise += $duree;
+		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_ABANDONED) $duree_presence_comptabilise_cancel += $duree;
+		else $duree_presence_draft += $duree;
+	}
+	
+	$total_duree_comptabilise = $duree_presence_comptabilise+$duree_presence_comptabilise_cancel;
+	if ($total_duree_comptabilise > 0) $tx_assi = $duree_presence_comptabilise * 100 / ($duree_presence_comptabilise+$duree_presence_comptabilise_cancel);
+	else $tx_assi = 0;
+	
 	$out = '';
 	
-	
+	$out.= '
+		<div class="container px-0">
+			<h5>'.$langs->trans('AgfSessionSummary', $date_deb, $date_fin).'</h5>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="row clearfix">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="col-md-7 px-0" for="AgfSessionSummaryTotalHours">'.$langs->trans('AgfSessionSummaryTotalHours').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', $agsession->duree_session).'</span>
+							</div>
+							<div class="form-group">
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfSessionSummaryTotalScheduled').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfHours', $duree_scheduled).'</span>
+							</div>
+							<div class="form-group">
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfSessionSummaryTotalLeft').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfHours', $agsession->duree_session-$duree_scheduled).'</span>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfSessionSummaryTotalPresence').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfHours', $duree_presence_draft+$duree_presence_comptabilise+$duree_presence_comptabilise_cancel).'</span>
+							</div>
+							<div class="form-group">
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTauxAssiduite">'.$langs->trans('AgfSessionSummaryTauxAssiduite').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTauxAssiduite">'.$tx_assi.' %</span>
+							</div>
+							<div class="form-group">
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursComptabilise">'.$langs->trans('AgfSessionSummaryTotalHoursComptabilise').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabilise">'.$langs->trans('AgfHours', $duree_presence_comptabilise).'</span>
+							</div>
+							<div class="form-group">
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfSessionSummaryTotalHoursComptabiliseCancel').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfHours', $duree_presence_comptabilise_cancel).'</span>
+							</div>
+						</div>
+					</div>
+					
+					<div class="row clearfix">
+						<div class="h5">Liste des participants</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	';
 	
 	return $out;
 }
-
 
 
 
