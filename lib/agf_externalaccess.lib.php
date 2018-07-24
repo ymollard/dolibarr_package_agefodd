@@ -258,8 +258,8 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	$stagiaires = new Agefodd_session_stagiaire($db);
 	$stagiaires->fetch_stagiaire_per_session($agsession->id);
 	
-	$date_deb = dol_print_date($agsession->dated);
-	$date_fin = dol_print_date($agsession->datef);
+	$date_deb = dol_print_date($agsession->dated, 'daytext');
+	$date_fin = dol_print_date($agsession->datef, 'daytext');
 	$duree_scheduled = 0;
 	$duree_presence_comptabilise = 0;
 	$duree_presence_comptabilise_cancel = 0;
@@ -323,10 +323,23 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 							</div>
 						</div>
 					</div>
-					
-					<div class="row clearfix">
-						<div class="h5">Liste des participants</div>
-					</div>
+				</div>
+			</div>
+			
+			<h5>'.$langs->trans('AgfStagiaireList').'</h5>
+			<div class="panel panel-default">
+				<div class="panel-body py-0">';
+	
+	$stagiaires->lines = array_merge($stagiaires->lines,$stagiaires->lines,$stagiaires->lines);
+	$out.= '<ul class="list-group list-group-flush my-0">';
+	foreach ($stagiaires->lines as &$stagiaire)
+	{
+		if ($stagiaire->id <= 0) continue;	
+		$out.= '<li class="list-group-item"><i class="fa fa-'.(in_array($stagiaire->civilite, array('MME', 'MLE')) ? 'female' : 'male').'"></i><span class="ml-2">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</span></li>';
+	}
+	$out.= '</ul>';
+	
+	$out.= '
 				</div>
 			</div>
 		</div>

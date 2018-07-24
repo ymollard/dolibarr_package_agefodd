@@ -1333,14 +1333,14 @@ AgfExternalAccessErrorCreateOrUpdateCreneau=Impossible de traiter votre demande,
 AgfExternalAccessErrorDeleteCreneau=Impossible de supprimer l'élément, une erreur est survenue
 
 AgfWarningTheoreticalValue=Attention : valeur théorique non sauvegardée et ni pris en compte dans le total
-AgfSessionSummary=Formation prévue du %s au %s
+AgfSessionSummary=Formation prévue du <b>%s</b> au <b>%s</b>
 AgfHours=%s heure(s)
 
-AgfSessionSummaryTotalHours=Total heures formation
-AgfSessionSummaryTotalScheduled=Total heures programmée
-AgfSessionSummaryTotalLeft=Total heures restant
+AgfSessionSummaryTotalHours=Total heures de formation
+AgfSessionSummaryTotalScheduled=Total heures programmées
+AgfSessionSummaryTotalLeft=Total heures restantes
 
-AgfSessionSummaryTotalPresence=Total heures déclarée
+AgfSessionSummaryTotalPresence=Total heures déclarées
 AgfSessionSummaryTauxAssiduite=Taux d'assiduité
-AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisé
-AgfSessionSummaryTotalHoursComptabiliseCancel=Total heures annulée
+AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisées
+AgfSessionSummaryTotalHoursComptabiliseCancel=Total heures annulées
