@@ -259,8 +259,10 @@ class ActionsAgefodd
 								$agf_calendrier_formateur->heuref = strtotime($date_session.' '.$heuref);
 								$agf_calendrier_formateur->fk_agefodd_session_formateur = $trainer->agefodd_session_formateur->id;
 								
-								if ($status > 0) $agf_calendrier_formateur->status = 1;
-								else if ($status < 0) $agf_calendrier_formateur->status = -1;
+								if (in_array($status, array(Agefoddsessionformateurcalendrier::STATUS_DRAFT, Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, Agefoddsessionformateurcalendrier::STATUS_CANCELED)))
+								{
+									$agf_calendrier_formateur->status = $status;
+								}
 								else $agf_calendrier_formateur->status = 0;
 								
 								if (empty($agf_calendrier_formateur->id)) $r=$agf_calendrier_formateur->create($user);
@@ -309,7 +311,12 @@ class ActionsAgefodd
 									else
 									{
 										$duree = 0;
-										if ($agf_calendrier->date_session < $now && !empty($THour[$stagiaire->id]))
+										// Si le statut passe à "annulé", alors je force la saisie du compteur d'heure car c'est du consommé
+										if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED)
+										{
+											$duree = ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
+										}
+										else if ($agf_calendrier->date_session < $now && !empty($THour[$stagiaire->id]))
 										{
 											list($hours, $minutes) = explode(':', $THour[$stagiaire->id]);
 											$duree = $hours + $minutes / 60;

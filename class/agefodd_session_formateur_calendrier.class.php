@@ -55,7 +55,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	
 	const STATUS_DRAFT = 0;
 	const STATUS_CONFIRMED = 1;
-	const STATUS_ABANDONED = -1;
+	const STATUS_CANCELED = -1;
 	/**
 	 * Constructor
 	 *
@@ -808,10 +808,10 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			if ($mode == 1) $out.= img_picto('', 'statut4').' ';
 			$out.= $langs->trans('AgfStatusCalendar_confirmed');
 		}
-		else if ($status == self::STATUS_ABANDONED)
+		else if ($status == self::STATUS_CANCELED)
 		{
 			if ($mode == 1) $out.= img_picto('', 'statut6').' ';
-			$out.= $langs->trans('AgfStatusCalendar_abandoned');
+			$out.= $langs->trans('AgfStatusCalendar_canceled');
 		}
 		
 		return $out;

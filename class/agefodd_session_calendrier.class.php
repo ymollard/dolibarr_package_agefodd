@@ -48,7 +48,7 @@ class Agefodd_sesscalendar {
 	
 	const STATUS_DRAFT = 0;
 	const STATUS_CONFIRMED = 1;
-	const STATUS_ABANDONED = -1;
+	const STATUS_CANCELED = -1;
 	/**
 	 * Constructor
 	 *

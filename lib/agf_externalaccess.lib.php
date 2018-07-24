@@ -273,16 +273,16 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	{
 		$duree = $agf_calendrier->getSumDureePresence();
 		if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CONFIRMED) $duree_presence_comptabilise += $duree;
-		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_ABANDONED) $duree_presence_comptabilise_cancel += $duree;
+		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CANCELED) $duree_presence_comptabilise_cancel += $duree;
 		else $duree_presence_draft += $duree;
 	}
-	
+
 	$total_duree_comptabilise = $duree_presence_comptabilise+$duree_presence_comptabilise_cancel;
 	if ($total_duree_comptabilise > 0) $tx_assi = $duree_presence_comptabilise * 100 / ($duree_presence_comptabilise+$duree_presence_comptabilise_cancel);
 	else $tx_assi = 0;
 	
 	$out = '';
-	
+
 	$out.= '
 		<div class="container px-0">
 			<h5>'.$langs->trans('AgfSessionSummary', $date_deb, $date_fin).'</h5>
@@ -292,34 +292,34 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-7 px-0" for="AgfSessionSummaryTotalHours">'.$langs->trans('AgfSessionSummaryTotalHours').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', $agsession->duree_session).'</span>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', price($agsession->duree_session, 0, '', 1, -1, 2)).'</span>
 							</div>
 							<div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfSessionSummaryTotalScheduled').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfHours', $duree_scheduled).'</span>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfHours', price($duree_scheduled, 0, '', 1, -1, 2)).'</span>
 							</div>
 							<div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfSessionSummaryTotalLeft').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfHours', $agsession->duree_session-$duree_scheduled).'</span>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfHours', price($agsession->duree_session-$duree_scheduled, 0, '', 1, -1, 2)).'</span>
 							</div>
 						</div>
 
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfSessionSummaryTotalPresence').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfHours', $duree_presence_draft+$duree_presence_comptabilise+$duree_presence_comptabilise_cancel).'</span>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfHours', price($duree_presence_draft+$duree_presence_comptabilise+$duree_presence_comptabilise_cancel, 0, '', 1, -1, 2)).'</span>
 							</div>
 							<div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTauxAssiduite">'.$langs->trans('AgfSessionSummaryTauxAssiduite').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTauxAssiduite">'.$tx_assi.' %</span>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTauxAssiduite">'.number_format($tx_assi, 2).' %</span>
 							</div>
 							<div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursComptabilise">'.$langs->trans('AgfSessionSummaryTotalHoursComptabilise').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabilise">'.$langs->trans('AgfHours', $duree_presence_comptabilise).'</span>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabilise">'.$langs->trans('AgfHours', price($duree_presence_comptabilise, 0, '', 1, -1, 2)).'</span>
 							</div>
 							<div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfSessionSummaryTotalHoursComptabiliseCancel').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfHours', $duree_presence_comptabilise_cancel).'</span>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfHours', price($duree_presence_comptabilise_cancel, 0, '', 1, -1, 2)).'</span>
 							</div>
 						</div>
 					</div>
@@ -383,6 +383,14 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				<input type="time" class="form-control" step="900" id="heured" required name="heured" value="'.($action == 'update' ? date('H:i', $agf_calendrier_formateur->heured) : '09:00' ).'">
 				<label for="heuref">Heure fin:</label>
 				<input type="time" class="form-control" step="900" id="heuref" required name="heuref" value="'.($action == 'update' ? date('H:i', $agf_calendrier_formateur->heuref) : '12:00' ).'">
+			</div>
+			<div class="form-group">
+				<label for="status">Status</label>
+				<select class="form-control" id="status" name="status">
+					<option value="'.Agefoddsessionformateurcalendrier::STATUS_DRAFT.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_DRAFT, 0).'</option>
+					<option value="'.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, 0).'</option>
+					<option value="'.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CANCELED, 0).'</option>
+				</select>
 			</div>
 			';
 	

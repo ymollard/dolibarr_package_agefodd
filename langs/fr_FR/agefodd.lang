@@ -1324,8 +1324,8 @@ AgfWarning_wrong_def_participant=Attention : %d autre(s) participant(s) mal déf
 
 AgfDateSession=Date session
 AgfStatusCalendar_draft=Brouillon
-AgfStatusCalendar_confirmed=Confirmée
-AgfStatusCalendar_abandoned=Abandonnée
+AgfStatusCalendar_confirmed=Confirmé
+AgfStatusCalendar_canceled=Annulé
 
 Agf_EA_DeleteClandrierFormateurTitle=Suppression d'un créneau horaire
 Agf_EA_DeleteClandrierFormateurBody=Êtes-vous sûr de vouloir supprimer ce créneau horaire ?<br /> <small>Ceci supprimera aussi les saisies de temps des participants</small>
@@ -1337,10 +1337,10 @@ AgfSessionSummary=Formation prévue du <b>%s</b> au <b>%s</b>
 AgfHours=%s heure(s)
 
 AgfSessionSummaryTotalHours=Total heures de formation
-AgfSessionSummaryTotalScheduled=Total heures programmées
-AgfSessionSummaryTotalLeft=Total heures restantes
+AgfSessionSummaryTotalScheduled=Total heures programmée
+AgfSessionSummaryTotalLeft=Totale heures restante
 
-AgfSessionSummaryTotalPresence=Total heures déclarées
+AgfSessionSummaryTotalPresence=Total heures déclarée
 AgfSessionSummaryTauxAssiduite=Taux d'assiduité
-AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisées
-AgfSessionSummaryTotalHoursComptabiliseCancel=Total heures annulées
+AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisée effectuées
+AgfSessionSummaryTotalHoursComptabiliseCancel=Total heures comptabilisée annulées
