@@ -387,9 +387,9 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			<div class="form-group">
 				<label for="status">Status</label>
 				<select class="form-control" id="status" name="status">
-					<option value="'.Agefoddsessionformateurcalendrier::STATUS_DRAFT.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_DRAFT, 0).'</option>
-					<option value="'.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, 0).'</option>
-					<option value="'.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CANCELED, 0).'</option>
+					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_DRAFT ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_DRAFT.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_DRAFT, 0).'</option>
+					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, 0).'</option>
+					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CANCELED, 0).'</option>
 				</select>
 			</div>
 			';
