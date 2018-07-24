@@ -330,7 +330,6 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 			<div class="panel panel-default">
 				<div class="panel-body py-0">';
 	
-	$stagiaires->lines = array_merge($stagiaires->lines,$stagiaires->lines,$stagiaires->lines);
 	$out.= '<ul class="list-group list-group-flush my-0">';
 	foreach ($stagiaires->lines as &$stagiaire)
 	{
