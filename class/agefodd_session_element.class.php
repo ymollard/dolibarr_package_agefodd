@@ -811,6 +811,7 @@ class Agefodd_session_element extends CommonObject {
 		require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.facture.class.php';
+		require_once DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.commande.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
 
 		global $langs;
@@ -826,6 +827,9 @@ class Agefodd_session_element extends CommonObject {
 		$this->trainer_cost_amount = 0;
 		$this->trip_cost_amount = 0;
 		$this->room_cost_amount = 0;
+		$this->trainer_engaged_amount = 0;
+		$this->trip_engaged_amount = 0;
+		$this->room_engaged_amount = 0;
 		$this->invoicetrainerdraft = false;
 
 		$sql = "SELECT";
@@ -927,7 +931,81 @@ class Agefodd_session_element extends CommonObject {
 							}
 							dol_syslog(get_class($this) . "::fetch_by_session  invoice_supplier_room facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
 						}
+					if ($obj->element_type == 'order_supplier_trainer' || $obj->element_type == 'order_supplierline_trainer')
+					{
+						if ($obj->element_type == 'order_supplier_trainer')
+							$commandefourn = new CommandeFournisseur($this->db);
+						else
+							$commandefourn = new CommandeFournisseurLigne($this->db);
 
+						$commandefourn->fetch($obj->fk_element);
+						$sessions = $this->get_linked_sessions($obj->fk_element, $obj->element_type);
+					
+						if (is_array($commandefourn->lines) && count($commandefourn->lines) > 0)
+						{ // facture fournisseur
+							if($commandefourn->statut==0)continue;
+							foreach ($commandefourn->lines as $line)
+							{
+								if (!($action == 'confirm_deleteline' && $lineid == $line->id))
+									$this->trainer_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+							}
+						} else
+						{ // ligne de facture fournisseur
+							$this->trainer_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($commandefourn->total_ht / $sessions['total']) * $sessions[$id] : $commandefourn->total_ht;
+						}
+						$this->ordertrainerdraft = $this->ordertrainerdraft || ($commandefourn->statut == 0);
+
+						dol_syslog(get_class($this)."::fetch_by_session order_supplier_trainer facturefourn->total_ht=".$commandefourn->total_ht, LOG_DEBUG);
+					}
+
+					if ($obj->element_type == 'order_supplier_missions' || $obj->element_type == 'order_supplierline_missions')
+					{
+						if ($obj->element_type == 'order_supplier_missions')
+							$commandefourn = new CommandeFournisseur($this->db);
+						else
+							$commandefourn = new CommandeFournisseurLigne($this->db);
+						$commandefourn->fetch($obj->fk_element);
+
+						$sessions = $this->get_linked_sessions($obj->fk_element, $obj->element_type);
+						if (is_array($commandefourn->lines) && count($commandefourn->lines) > 0)
+						{
+							if($commandefourn->statut==0)continue;
+
+							foreach ($commandefourn->lines as $line)
+							{
+								if (!($action == 'confirm_deleteline' && $lineid == $line->id))
+									$this->trip_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+							}
+						} else
+						{
+							$this->trip_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($commandefourn->total_ht / $sessions['total']) * $sessions[$id] : $commandefourn->total_ht;
+						}
+						dol_syslog(get_class($this)."::fetch_by_session order_supplier_missions facturefourn->total_ht=".$commandefourn->total_ht, LOG_DEBUG);
+					}
+
+					if ($obj->element_type == 'order_supplier_room' || $obj->element_type == 'order_supplierline_room')
+					{
+						if ($obj->element_type == 'order_supplier_room')
+							$commandefourn = new CommandeFournisseur($this->db);
+						else
+							$commandefourn = new CommandeFournisseurLigne($this->db);
+						$commandefourn->fetch($obj->fk_element);
+						$sessions = $this->get_linked_sessions($obj->fk_element, $obj->element_type);
+
+						if (is_array($commandefourn->lines) && count($commandefourn->lines) > 0)
+						{
+							if($commandefourn->statut==0)continue;
+							foreach ($commandefourn->lines as $line)
+							{
+								if (!($action == 'confirm_deleteline' && $lineid == $line->id))
+									$this->room_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+							}
+						} else
+						{
+							$this->room_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($commandefourn->total_ht / $sessions['total']) * $sessions[$id] : $commandefourn->total_ht;
+						}
+						dol_syslog(get_class($this)."::fetch_by_session  order_supplier_room facturefourn->total_ht=".$commandefourn->total_ht, LOG_DEBUG);
+					}
 				}
 
 				$this->db->free($resql);

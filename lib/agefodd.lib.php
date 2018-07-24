@@ -1912,3 +1912,16 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     print '<div class="underrefbanner clearboth"></div>';
     //print '<div class="underbanner clearboth"></div>';
 }
+
+function calcul_margin_percent($cashed_cost,$spend_cost)
+{
+	global $langs;
+	if ($cashed_cost > 0)
+	{
+		return price(((($cashed_cost - $spend_cost) * 100) / $cashed_cost), 0, $langs, 1, 0, 1).'%';
+	}
+	else
+	{
+		return "n/a";
+	}
+}
