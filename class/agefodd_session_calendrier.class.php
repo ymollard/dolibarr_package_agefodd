@@ -376,7 +376,7 @@ class Agefodd_sesscalendar {
 		}
 	}
 
-	public function getSumDureePresence()
+	public function getSumDureePresence($fk_stagiaire=null)
 	{
 		$duree = 0;
 		
@@ -386,6 +386,7 @@ class Agefodd_sesscalendar {
 		{
 			foreach ($agfssh->lines as &$line)
 			{
+				if (!empty($fk_stagiaire) && $line->fk_stagiaire != $fk_stagiaire) continue;
 				$duree += $line->heures;
 			}
 		}

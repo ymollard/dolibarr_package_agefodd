@@ -53,6 +53,7 @@ if (!empty($print))
 dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
 
 $langs->load('agefodd@agefodd');
 $response = new interfaceResponse;
@@ -112,25 +113,7 @@ function _getAgefoddSessionCalendrier($fk_agefodd_session, $date_s, $date_e)
 			$agf_calendrier = new Agefodd_sesscalendar($db);
 			$agf_calendrier->fetch($obj->rowid);
 			
-			$TParticipant = array();
-			list($TFormateur, $TNomUrlFormateur) = _getTFormateur($agf_calendrier, $fk_agefodd_session);
-			
-			$response->data->TEvent[] = array(
-				'id' => $agf_calendrier->id
-				,'title' => $langs->transnoentitiesnoconv('AgfCalendarDates')
-				,'desc' => ''
-				,'start' => dol_print_date($agf_calendrier->heured, '%Y-%m-%d %H:%M:%S') // TODO
-				,'end' => dol_print_date($agf_calendrier->heuref, '%Y-%m-%d %H:%M:%S') // TODO
-				,'allDay' => false
-				,'fk_agefodd_session' => $obj->fk_agefodd_session
-				,'calendrier_type' => !empty($agf_calendrier->calendrier_type) ? $agf_calendrier->calendrier_type : ''
-				,'calendrier_type_label' => !empty($agf_calendrier->calendrier_type_label) ? $agf_calendrier->calendrier_type_label : ''
-				,'startEditable' => $agf_calendrier->heuref < $now ? false : true // si la date de fin est dans le passé, alors plus le droit de déplcer l'event
-//				,'color'=>'#ccc' // background
-				,'TParticipant' => $TParticipant
-				,'TFormateur' => $TFormateur
-				,'TNomUrlFormateur' => $TNomUrlFormateur
-			);
+			$response->data->TEvent[] = _formatEventAsArray($agf_calendrier, $now);
 			
 		}
 		return count($response->data->TEvent);
@@ -268,8 +251,8 @@ function _updateTimeSlotCalendrier($fk_agefodd_session_calendrier, $date_start, 
 				else $response->TError[] = $agf_calendrier_formateur->error;
 			}
 			
-			list($TFormateur, $TNomUrlFormateur) = _getTFormateur($agf_calendrier, $agf_calendrier->sessid);
-			$response->data->event = array('TFormateur' => $TFormateur,'TNomUrlFormateur' => $TNomUrlFormateur);
+			
+			$response->data->event = _formatEventAsArray($agf_calendrier, dol_now());
 		}
 		else $response->TError[] = $agf_calendrier->error;
 	}
@@ -327,32 +310,28 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 				$agfstagiaireheure->heures = $heures;
 				$agfstagiaireheure->create($user);
 			}
-			/*
-			 * TODO faire en sorte que ça check sur la durée totale 
-			 */
+			
+			$duree_total_presence = $agf_calendrier->getSumDureePresence($fk_stagiaire);
+			
+			$stagiaire = new Agefodd_session_stagiaire($db);
+			$stagiaire->fetch_by_trainee($fk_agefodd_session, $fk_stagiaire);
+			
 			if ((float) $dureeCalendrier == (float) $heures)
 			{
 				// stagiaire entièrement présent
-				$stagiaire = new Agefodd_session_stagiaire($db);
-				$stagiaire->fetch_by_trainee($fk_agefodd_session, $fk_stagiaire);
-				$stagiaire->status_in_session = 3;
-				$stagiaire->update($user);
+				$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT;
 			}
 			elseif (!empty($heures))
 			{
 				// stagiaire partiellement présent
-				$stagiaire = new Agefodd_session_stagiaire($db);
-				$stagiaire->fetch_by_trainee($fk_agefodd_session, $fk_stagiaire);
-				$stagiaire->status_in_session = 4;
-				$stagiaire->update($user);
+				$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT;
 			}
 			elseif (empty($heures))
 			{
-				$stagiaire = new Agefodd_session_stagiaire($db);
-				$stagiaire->fetch_by_trainee($fk_agefodd_session, $fk_stagiaire);
-				$stagiaire->status_in_session = 5;
-				$stagiaire->update($user);
+				$stagiaire->status_in_session = $duree_total_presence > 0 ? Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT : Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT;
 			}
+			
+			if (!empty($stagiaire->id)) $stagiaire->update($user);
 		}
 	}
 
@@ -412,4 +391,37 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 	}
 	
 	_getAgefoddSessionCalendrier($fk_agefodd_session, GETPOST('dateStart'), GETPOST('dateEnd'));
+}
+
+function _formatEventAsArray(Agefodd_sesscalendar &$agf_calendrier, $now)
+{
+	global $langs,$db;
+	
+	$TRealHour = array();
+	$agfssh = new Agefoddsessionstagiaireheures($db);
+	$agfssh->fetchAllBy($agf_calendrier->id, 'fk_calendrier');
+	foreach ($agfssh->lines as &$line)
+	{
+		$TRealHour[$line->fk_stagiaire] = $line->heures;
+	}
+	
+	
+	list($TFormateur, $TNomUrlFormateur) = _getTFormateur($agf_calendrier, $agf_calendrier->sessid);
+	
+	return array(
+		'id' => $agf_calendrier->id
+		,'title' => $langs->transnoentitiesnoconv('AgfCalendarDates')
+		,'desc' => ''
+		,'start' => dol_print_date($agf_calendrier->heured, '%Y-%m-%d %H:%M:%S') // TODO
+		,'end' => dol_print_date($agf_calendrier->heuref, '%Y-%m-%d %H:%M:%S') // TODO
+		,'allDay' => false
+		,'fk_agefodd_session' => $agf_calendrier->sessid
+		,'calendrier_type' => !empty($agf_calendrier->calendrier_type) ? $agf_calendrier->calendrier_type : ''
+		,'calendrier_type_label' => !empty($agf_calendrier->calendrier_type_label) ? $agf_calendrier->calendrier_type_label : ''
+		,'startEditable' => $agf_calendrier->heuref < $now ? false : true // si la date de fin est dans le passé, alors plus le droit de déplcer l'event
+//				,'color'=>'#ccc' // background
+		,'TRealHour' => $TRealHour
+		,'TFormateur' => $TFormateur
+		,'TNomUrlFormateur' => $TNomUrlFormateur
+	);
 }

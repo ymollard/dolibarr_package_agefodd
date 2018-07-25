@@ -261,8 +261,7 @@ $(document).ready(function() {
 	
 	_updateEvent = function(event, data)
 	{
-		event.TFormateur = data.event.TFormateur;
-		event.TNomUrlFormateur = data.event.TNomUrlFormateur;
+		event = data.event;
 		$('#agf_session_scheduler').fullCalendar('removeEvents', event.id);
 		$('#agf_session_scheduler').fullCalendar('renderEvent', event);
 	};
@@ -343,7 +342,11 @@ $(document).ready(function() {
 						
 						self = this;
 						
-						var dataObject = $('#form_add_event').serializeObject();
+						$( self ).dialog( 'close' ); // à voir si le fait de close maintenant ne pose pas problème plus tard
+						
+						fullcalendarscheduler_div.find(':disabled').removeAttr('disabled'); // Pour pouvoir récupérer les valeurs avec un serialize
+						var dataObject = fullcalendarscheduler_div.serializeObject();
+						
 						dataObject.json = 1;
 						dataObject.put = 'createOrUpdateCalendrier';
 						dataObject.fk_agefodd_session_calendrier = (typeof event !== 'undefined') ? event.id : 0;
@@ -373,8 +376,6 @@ $(document).ready(function() {
 							{
 								view.calendar.removeEvents();
 								view.calendar.addEventSource(response.data.TEvent);
-								
-								$( self ).dialog( 'close' );
 							}
 							
 						});
@@ -411,14 +412,35 @@ $(document).ready(function() {
 	});
         
 	initEventFormFields = function(start, end, event) {
+		is_past = moment().unix() > end.unix(); // event dans le passé, il faut donc rendre non éditable certains champs
 		
-		var duration = end.diff(start) / 1000 / 60 / 60; //  /1000 pour avoir des secondes; /60 pour avoir des minutes; /60 pour avoir des heures
-		fullcalendarscheduler_div.find('.type_hour').val(duration);
 		
 		if (typeof event !== 'undefined')
 		{
 			// Init inputs
 			fullcalendarscheduler_div.find('[name=calendrier_type]').val(event.calendrier_type);
+			
+			if (typeof event.TFormateur !== 'undefined')
+			{
+				for (let i in event.TFormateur)
+				{
+					fullcalendarscheduler_div.find('input[name^=TFormateurId][value='+(event.TFormateur[i].id)+']').prop('checked', true);
+				}
+			}
+			
+			if (typeof event.TRealHour !== 'undefined')
+			{
+				for (let fk_stagiaire in event.TRealHour)
+				{
+					fullcalendarscheduler_div.find('input[name="TRealHour['+fk_stagiaire+']"]').val(event.TRealHour[fk_stagiaire]);
+				}
+			}
+		}
+		else
+		{
+			// Init des inputs TRealHour
+			var duration = end.diff(start) / 1000 / 60 / 60; //  /1000 pour avoir des secondes; /60 pour avoir des minutes; /60 pour avoir des heures
+			fullcalendarscheduler_div.find('.type_hour').val(duration);
 		}
 		
 		// Format en majuscule pour l'objet moment() si non il renvoie le mauvais format
@@ -429,7 +451,6 @@ $(document).ready(function() {
 		dpChangeDay('date_end', fullcalendarscheduler_date_format);
 		
         
-		
 		var hour_start = start.format('HH');
 		var minute_start = start.format('mm');
 		fullcalendarscheduler_div.find('#date_starthour').val(hour_start);
@@ -440,7 +461,10 @@ $(document).ready(function() {
 		fullcalendarscheduler_div.find('#date_endhour').val(hour_end);
 		fullcalendarscheduler_div.find('#date_endmin').val(minute_end);
 		
-		
+		if (is_past)
+		{
+			fullcalendarscheduler_div.find('.is_past input:visible, .is_past select:visible').prop('disabled', true);
+		}
 	};
 	
 	

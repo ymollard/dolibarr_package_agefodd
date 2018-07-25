@@ -605,7 +605,8 @@ if (! empty($id)) {
 				    for($j = 0; $j < $blocNumber; $j ++) {
 				        $defaultvalue = ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured) / 3600;
 						$warning=false;
-				        if (in_array($stagiaires->lines[$i]->status_in_session, array(3, 4))){
+						// WTF pourquoi afficher 0 si le statut n'est pas 3 ou 4 alors que nous avons potentiellement une donnée en bdd ? J'en ai profité pour ajouter des constantes, histoire que ce soit déjà un poil plus clair mais wtf quand même... :'(
+				        if (in_array($stagiaires->lines[$i]->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT))){
         					$result = $agfssh->fetch_by_session($id, $stagiaires->lines[$i]->id, $calendrier->lines[$j]->id);
         					if($calendrier->lines[$j]->date_session < dol_now()){
             					if ($result > 0) {

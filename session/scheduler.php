@@ -149,7 +149,7 @@ if (!empty($conf->global->AGF_USE_REAL_HOURS))
 		}
 		else
 		{
-			$input = '<input class="type_hour" type="text" name="TRealHour[' . $line->id . ']" size="5" value="1" /> '.$langs->transnoentitiesnoconv('Hours');
+			$input = '<input class="type_hour" type="text" name="TRealHour[' . $line->id . ']" size="5" value="" /> '.$langs->transnoentitiesnoconv('Hours');
 			$content_participants.= '<p style="margin:0"><label>'.strtoupper($line->nom) . ' ' . ucfirst($line->prenom).'</label> : '.$input.'</p>';
 		}
 	}
@@ -159,7 +159,6 @@ if (!empty($conf->global->AGF_USE_REAL_HOURS))
 	$html_participants.='</div>';
 	$html_participants.= $content_participants;
 }
-
 
 
 $html_formateurs.= '<div class="titre">'.$langs->transnoentitiesnoconv('AgfFormateur').'</div>';
@@ -177,7 +176,6 @@ echo '
 	fk_agefodd_session = '.$object->id.';
 	fk_user = '.$user->id.';
 	fullcalendarscheduler_interface = "'.dol_buildpath('/agefodd/scripts/session_scheduler.php', 1).'";
-//	fullcalendarscheduler_interface = "'.dol_buildpath('/fullcalendarscheduler/script/interface.php', 1).'";
 	fullcalendarscheduler_initialLangCode = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_LOCALE_LANG) ? $conf->global->FULLCALENDARSCHEDULER_LOCALE_LANG : 'fr').'";
 	fullcalendarscheduler_snapDuration = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_SNAP_DURATION) ? $conf->global->FULLCALENDARSCHEDULER_SNAP_DURATION : '00:30:00').'";
 	fullcalendarscheduler_aspectRatio = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_ASPECT_RATIO) ? $conf->global->FULLCALENDARSCHEDULER_ASPECT_RATIO : '1.6').'";
@@ -208,10 +206,10 @@ echo '
 	fullcalendarscheduler_div = $(\'<form id="form_add_event" action="#"></form>\');
 	fullcalendarscheduler_div	.append('.json_encode($inputs_hidden).')
 								.append("<p>"+'.json_encode($select_calendrier_type).'+"</p>")
-								.append("<p>"+'.json_encode($select_date_start).'+"</p>")
-								.append("<p>"+'.json_encode($select_date_end).'+"</p>")
+								.append("<p class=\'is_past\'>"+'.json_encode($select_date_start).'+"</p>")
+								.append("<p class=\'is_past\'>"+'.json_encode($select_date_end).'+"</p>")
 								.append("<div>"+'.json_encode($html_participants).'+"</div>")	
-								.append("<div>"+'.json_encode($html_formateurs).'+"</div>");		
+								.append("<div class=\'is_past\'>"+'.json_encode($html_formateurs).'+"</div>");		
 								
 	fullcalendarscheduler_picto_delete = "'.addslashes(img_delete()).'";
 	
