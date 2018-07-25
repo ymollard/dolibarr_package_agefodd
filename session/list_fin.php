@@ -750,7 +750,6 @@ if ($resql != - 1) {
 		        $idelement=$agf_fin->lines[0]->id;
 		    }
 		}
-		//var_dump($agf_fin);
 		if(!empty($line->id_element))$id_element=$line->id_element;
 		
 		print '<td align="right">';
@@ -758,7 +757,6 @@ if ($resql != - 1) {
 		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' .$id_element . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
 		print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
 		print '</td>';
-// 		print '<td></td>';
 		print "</tr>\n";
 
 		$i ++;
@@ -816,6 +814,30 @@ if (!empty($search_fournorderid)) {
 			}
 		}
 	}
+	
+	
+	$sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne
+        FROM ".MAIN_DB_PREFIX."agefodd_session as sess
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = sess.fk_formation_catalogue
+        LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = sess.fk_session_place
+        LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid
+        LEFT JOIN ".MAIN_DB_PREFIX."socpeople as socp ON p.fk_socpeople = socp.rowid
+        WHERE p.entity IN (0,". getEntity('agefodd') .") 
+        AND p.fk_societe = ".$object_socid;
+	
+    if (is_array($session_array_id) && count($session_array_id)>0) {
+    	$sql2 .= " AND sess.rowid NOT IN (".implode(",", $session_array_id).")";
+    }
+	
+    $sql2 .= " ORDER BY sess.rowid ASC";
+	
+    $resql2 = $db->query($sql2);
+    if($resql2){
+        while ($obj = $db->fetch_object($resql2)){
+            !empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
+            $sessionsSite[$obj->sessid] = $obj->sessid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+        }
+    }
 
 	print '<table class="noborder" width="100%">';
     print '<tr>';
@@ -848,7 +870,7 @@ if (!empty($search_fournorderid)) {
     print '<tr>';
     print '<td align="center">'.$langs->trans('AgfLieu').'</td>';
     print '<td align="center">';
-    print $form->selectarray('session_id_site', $sessions, '', 1,0,0,'',0,0,0,'','',1);
+    print $form->selectarray('session_id_site', $sessionsSite, '', 1,0,0,'',0,0,0,'','',1);
     print '</td>';
     print '<td align="center">';
     print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_site"/>';
@@ -925,7 +947,6 @@ elseif (empty($search_fourninvoiceref)) {
 	        while ($obj = $db->fetch_object($resql)){
 	            !empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
 	            $sessions [$obj->rowid] = ' - '.$obj->rowid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
-	            //var_dump($obj->rowid);
 	        }
 	    }
 	}
@@ -966,11 +987,13 @@ elseif (empty($search_fourninvoiceref)) {
             !empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
             $sessionsForm[$obj->sessid] = $obj->sessid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
             $sessids[$obj->sessid] = $obj->opsid;
-            //var_dump($obj->rowid);
         }
     }
 
     // session dont le lieu appartient au tiers
+	/**
+	 * @TODO : Fix ce p.entity mis en dur par (0,". getEntity('agefodd') .") et voir pour y connecter le spécifique
+	 */
     $sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne
         FROM ".MAIN_DB_PREFIX."agefodd_session as sess
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = sess.fk_formation_catalogue
@@ -980,19 +1003,17 @@ elseif (empty($search_fourninvoiceref)) {
         WHERE p.entity IN (4,1)
         AND p.fk_societe = ".$object_socid;
     if (is_array($session_array_id) && count($session_array_id)>0) {
-    	$sql .= " AND s.rowid NOT IN (".implode(",", $session_array_id).")";
+    	$sql2 .= " AND sess.rowid NOT IN (".implode(",", $session_array_id).")";
     }
-    $sql .= " ORDER BY sess.rowid ASC";
-
+    $sql2 .= " ORDER BY sess.rowid ASC";
     $resql2 = $db->query($sql2);
     if($resql2){
         while ($obj = $db->fetch_object($resql2)){
             !empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
             $sessionsSite[$obj->sessid] = $obj->sessid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
-            //var_dump($obj->rowid);
         }
     }
-
+	
     print '<table class="noborder" width="100%">';
     print '<tr>';
     print '<th>Type</th>';
