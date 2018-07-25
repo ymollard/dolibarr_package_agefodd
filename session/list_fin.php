@@ -582,6 +582,8 @@ if ($resql != - 1) {
 	}
 	if (! (empty($search_fourninvoiceref))) {
 		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Type"), $_SERVEUR['PHP_SELF'], "ord_inv.element_type", '', $arg_url, '', $sortfield, $sortorder);
+
 	}
 	if (! (empty($search_fournorderref))) {
 	    print_liste_field_titre($langs->trans("Order"), $_SERVEUR['PHP_SELF'], "fournorder.ref", '', $arg_url, '', $sortfield, $sortorder);
@@ -645,6 +647,7 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="search_fourninvoiceid" value="' . $search_fourninvoiceid . '">';
 		print '<input type="text" class="flat" name="search_fourninvoiceref" value="' . $search_fourninvoiceref . '" size="20">';
 		print '</td>';
+			print '<td></td>';
 	}
 	if (! (empty($search_fournorderref))) {
 	    print '<td class="liste_titre">';
@@ -695,7 +698,7 @@ if ($resql != - 1) {
 			print '<td>' . $line->invoiceref . '</td>';
 		}
 		if (! (empty($search_fourninvoiceref))) {
-			print '<td>' . $line->fourninvoiceref . '</td>';
+			print '<td>' . $line->fourninvoiceref . '</td><td>' . $langs->trans($line->element_type) . '</td>';
 		}
 		if (! (empty($search_fournorderref))) {
 			

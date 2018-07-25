@@ -3186,7 +3186,7 @@ class Agsession extends CommonObject
 		}
 
 		if (! empty($fourninvoiceid)) {
-			$sql .= " ,fourninvoice.ref ";
+			$sql .= " ,fourninvoice.ref, ord_inv.element_type ";
 		}
 
 		if (! empty($fournorderid)) {
