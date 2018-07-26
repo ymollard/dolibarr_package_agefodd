@@ -287,71 +287,22 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	 * @param int $id of session
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($id) {
-		global $langs;
-
-		$sql = "SELECT ";
-		$sql .= "s.rowid,";
-		$sql .= "s.fk_agefodd_session_formateur,";
-		$sql .= "s.date_session,";
-		$sql .= "s.heured,";
-		$sql .= "s.heuref,";
-		$sql .= "s.trainer_cost,";
-		$sql .= "s.trainer_status,";
-		$sql .= "s.fk_actioncomm,";
-		$sql .= "s.fk_user_author,";
-		$sql .= "s.status,";
-		$sql .= "sf.fk_session,";
-		$sql .= "sf.trainer_status as trainer_status_in_session";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf ON sf.rowid=s.fk_agefodd_session_formateur";
-		$sql .= " WHERE s.fk_agefodd_session_formateur = " . $id;
-		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
-
-		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			$this->lines = array ();
-			$num = $this->db->num_rows($resql);
-			$i = 0;
-			for($i = 0; $i < $num; $i ++) {
-				$line = new AgefoddcalendrierformateurLines();
-
-				$obj = $this->db->fetch_object($resql);
-
-				$line->id = $obj->rowid;
-				$line->date_session = $this->db->jdate($obj->date_session);
-				$line->fk_agefodd_session_formateur = $obj->fk_agefodd_session_formateur;
-				$line->heured = $this->db->jdate($obj->heured);
-				$line->heuref = $this->db->jdate($obj->heuref);
-				$line->trainer_cost = $obj->trainer_cost;
-				$line->trainer_status = $obj->trainer_status;
-				$line->fk_actioncomm = $obj->fk_actioncomm;
-				$line->fk_user_author = $obj->fk_user_author;
-				$line->status = $obj->status;
-				$line->fk_session = $obj->fk_session;
-				$line->trainer_status_in_session = $obj->trainer_status_in_session;
-
-				$this->lines[$i] = $line;
-			}
-			$this->db->free($resql);
-			return 1;
-		} else {
-			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
-			return - 1;
-		}
+	public function fetch_all($id)
+	{
+		return $this->fetchAllBy(array('s.fk_agefodd_session_formateur'=>$id));
 	}
-
+	
 	/**
-	 * Load object in memory from database
-	 *
-	 * @param int $id of session
-	 * @return int <0 if KO, >0 if OK
+	 * Méthode à privilégier pour faire du fetchAll
+	 * 
+	 * @param array		$TParam		tableau contenant en clé/valeur le champ par lequel on souhaite filtrer et sa valeur /!\ Si la valeur est un String, alors il faut y ajouter les guillemets à l'avance
+	 * @param string	$order
+	 * @return int
 	 */
-	public function fetch_all_by_trainer($id) {
-		global $langs;
-
+	public function fetchAllBy($TParam, $order = 's.date_session ASC, s.heured ASC')
+	{
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		
 		$sql = "SELECT ";
 		$sql .= "s.rowid,";
 		$sql .= "s.fk_agefodd_session_formateur,";
@@ -368,10 +319,14 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf ON sf.rowid=s.fk_agefodd_session_formateur";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer.rowid=sf.fk_agefodd_formateur";
-		$sql .= " WHERE trainer.rowid = " . $id;
-		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
-
-		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+		$sql .= " WHERE 1";
+		// $field_value => contient déjà les guillemets
+		foreach ($TParam as $field_name => $field_value)
+		{
+			$sql.= ' AND '.$field_name.' = '.$field_value;
+		}
+		if (!empty($order))	$sql .= ' ORDER BY '.$order;
+		
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -394,7 +349,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$line->status = $obj->status;
 				$line->fk_session = $obj->fk_session;
 				$line->trainer_status_in_session = $obj->trainer_status_in_session;
-
+				
 				$this->lines[$i] = $line;
 			}
 			$this->db->free($resql);
@@ -404,6 +359,17 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			dol_syslog(get_class($this) . "::fetch_all_by_trainer " . $this->error, LOG_ERR);
 			return - 1;
 		}
+	}
+
+	/**
+	 * Load object in memory from database
+	 *
+	 * @param int $id of session
+	 * @return int <0 if KO, >0 if OK
+	 */
+	public function fetch_all_by_trainer($id)
+	{
+		return $this->fetchAllBy(array('trainer.rowid'=>$id));
 	}
 
 	/**

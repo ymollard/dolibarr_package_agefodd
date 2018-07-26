@@ -86,13 +86,13 @@ function getPageViewSessionListExternalAccess()
 		{
 			$out.= '<tr>';
 			// TODO replace $item->id by $item->ref when merge master
-			$out.= ' <td data-search="'.$item->rowid.'" data-session="'.$item->rowid.'"  ><a href="'.$context->getRootUrl('agefodd_session_card', '&sessid='.$item->rowid).'">'.$item->rowid.'</a></td>';
-			$out.= ' <td data-search="'.$item->intitule.'" data-session="'.$item->intitule.'"  >'.$item->intitule.'</td>';
-			$out.= ' <td data-search="'.dol_print_date($item->dated).'" data-session="'.$item->dated.'" >'.dol_print_date($item->dated).'</td>';
-			$out.= ' <td data-search="'.dol_print_date($item->datef).'" data-session="'.$item->datef.'" >'.dol_print_date($item->datef).'</td>';
-			$out.= ' <td class="text-center" data-search="'.$item->duree_session.'" data-session="'.$item->duree_session.'"  >'.$item->duree_session.'</td>';
+			$out.= ' <td data-order="'.$item->rowid.'" data-search="'.$item->rowid.'"  ><a href="'.$context->getRootUrl('agefodd_session_card', '&sessid='.$item->rowid).'">'.$item->rowid.'</a></td>';
+			$out.= ' <td data-order="'.$item->intitule.'" data-search="'.$item->intitule.'"  >'.$item->intitule.'</td>';
+			$out.= ' <td data-order="'.$item->dated.'" data-search="'.dol_print_date($item->dated, '%d/%m/%Y').'" >'.dol_print_date($item->dated, '%d/%m/%Y').'</td>';
+			$out.= ' <td data-order="'.$item->datef.'" data-search="'.dol_print_date($item->datef, '%d/%m/%Y').'" >'.dol_print_date($item->datef, '%d/%m/%Y').'</td>';
+			$out.= ' <td class="text-center" data-order="'.$item->duree_session.'" data-session="'.$item->duree_session.'"  >'.$item->duree_session.'</td>';
 			$statut = Agsession::getStaticLibStatut($item->status, 0);
-			$out.= ' <td class="text-center" data-search="'.$statut.'" data-session="'.$statut.'" >'.$statut.'</td>';
+			$out.= ' <td class="text-center" data-search="'.$statut.'" data-order="'.$statut.'" >'.$statut.'</td>';
 
 			$out.= ' <td class="text-right" >&nbsp;</td>';
 
@@ -105,6 +105,7 @@ function getPageViewSessionListExternalAccess()
 		$out.= '<script type="text/javascript" >
 					$(document).ready(function(){
 						$("#session-list").DataTable({
+							stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
 							"language": {
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 							},
@@ -115,7 +116,7 @@ function getPageViewSessionListExternalAccess()
 								"aTargets": [-1]
 							}, {
 								"bSearchable": false,
-								"aTargets": [-1, -2]
+								"aTargets": [-1]
 							}]
 						});
 					});
@@ -139,12 +140,12 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	$context = Context::getInstance();
 	
 	$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
-	$agf_calendrier_formateur->fetch_all_by_trainer($trainer->id);
+	$agf_calendrier_formateur->fetchAllBy(array('trainer.rowid'=>$trainer->id, 'sf.fk_session'=>$agsession->id), '');
 	
 	$out = '';
 	$out.= '<section id="section-session-card" class="py-5"><div class="container">';
 	
-	$out.= getEaNavbar($context->getRootUrl('agefodd_session_list'), $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0'));
+	$out.= getEaNavbar($context->getRootUrl('agefodd_session_list', '&save_lastsearch_values=1'), $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0'));
 	
 	$out.= '
 		<ul class="nav nav-tabs mb-3" id="section-session-card-calendrier-formateur-tab" role="tablist">
@@ -185,7 +186,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 	$out.= '<thead>';
 
 	$out.= '<tr>';
-	$out.= ' <th class="text-center" ></th>';
+	$out.= ' <th class="text-center" >'.$langs->trans('ID').'</th>';
 	$out.= ' <th class="" >'.$langs->trans('AgfDateSession').'</th>';
 	$out.= ' <th class="" >'.$langs->trans('AgfPeriodTimeB').'</th>';
 	$out.= ' <th class="" >'.$langs->trans('AgfPeriodTimeE').'</th>';
@@ -197,20 +198,24 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 	$out.= '<tbody>';
 	foreach ($agf_calendrier_formateur->lines as &$item)
 	{
+		$url = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$item->id);
+		
 		$out.= '<tr>';
 		// TODO replace $item->id by $item->ref when merge master
-		$out.= ' <td class="text-center">'.$item->id.'</td>';
-		$date_session = dol_print_date($item->date_session);
-		$out.= ' <td data-search="'.$date_session.'" data-calendrierf="'.$item->date_session.'"  >'.$date_session.'</td>';
+		$out.= ' <td class="text-center"><a href="'.$url.'&action=view">'.$item->id.'</a></td>';
+		$date_session = dol_print_date($item->date_session, '%d/%m/%Y');
+		$out.= ' <td data-order="'.$item->date_session.'" data-search="'.$date_session.'" >'.$date_session.'</td>';
 		
-		$out.= ' <td data-calendrierf="'.$item->heured.'" >'.dol_print_date($item->heured, '%H:%M').'</td>';
-		$out.= ' <td data-calendrierf="'.$item->heuref.'" >'.dol_print_date($item->heuref, '%H:%M').'</td>';
+		$heured = dol_print_date($item->heured, '%H:%M');
+		$out.= ' <td data-order="'.$heured.'" data-search="'.$heured.'" >'.$heured.'</td>';
+		$heuref = dol_print_date($item->heuref, '%H:%M');
+		$out.= ' <td data-order="'.$heuref.'" data-search="'.$heuref.'" >'.$heuref.'</td>';
 		$duree = ($item->heuref - $item->heured) / 60 / 60;
-		$out.= ' <td class="text-center" data-calendrierf="'.$duree.'"  >'.$duree.'</td>';
+		$out.= ' <td class="text-center" data-order="'.$duree.'" data-search="'.$duree.'" >'.$duree.'</td>';
 		$statut = Agefoddsessionformateurcalendrier::getStaticLibStatut($item->status, 0);
-		$out.= ' <td class="text-center" data-calendrierf="'.$statut.'" >'.$statut.'</td>';
+		$out.= ' <td class="text-center" data-order="'.$statut.'" data-search="'.$statut.'" >'.$statut.'</td>';
 
-		$edit = '<a href="'.$context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$item->id).'"><i class="fa fa-edit"></a></i>';
+		$edit = '<a href="'.$url.'"><i class="fa fa-edit"></a></i>';
 		$delete = '<i class="fa fa-trash" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)"></i>';
 		$out.= ' <td class="text-center" >'.$edit.' '.$delete.'</td>';
 
@@ -230,6 +235,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 	$out.= '<script type="text/javascript" >
 				$(document).ready(function(){
 					$("#session-list").DataTable({
+						stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
 						"language": {
 							"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 						},
@@ -237,10 +243,10 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 						order: [[ 1, "desc" ]],
 						columnDefs: [{
 							orderable: false,
-							"aTargets": [-1,0]
+							"aTargets": [-1]
 						}, {
 							"bSearchable": false,
-							"aTargets": [-1, 0]
+							"aTargets": [-1]
 						}]
 					});
 				});
@@ -351,41 +357,48 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 
 
 
-function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur)
+function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $action='')
 {
 	global $db,$langs;
 	
 	$context = Context::getInstance();
 	
-	if (!empty($agf_calendrier_formateur->id)) $action = 'update';
-	else $action = 'add';
+	if ($action != 'view')
+	{
+		if (!empty($agf_calendrier_formateur->id)) $action = 'update';
+		else $action = 'add';
+	}
 	
 	$out = '';
 	$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
-	$out.= getEaNavbar($context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id));
+	$out.= getEaNavbar($context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id.'&save_lastsearch_values=1'));
+	
+	if ($action != 'view') 
+	{
+		$out.= '
+			<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">
+				<input type="hidden" name="action" value="'.$action.'" />
+				<input type="hidden" name="sessid" value="'.$agsession->id.'" />
+				<input type="hidden" name="trainerid" value="'.$trainer->id.'" />
+				<input type="hidden" name="slotid" value="'.$agf_calendrier_formateur->id.'" />
+				<input type="hidden" name="controller" value="'.$context->controller.'" />';
+	}
 	
 	$out.= '
-		<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">
-			<input type="hidden" name="action" value="'.$action.'" />
-			<input type="hidden" name="sessid" value="'.$agsession->id.'" />
-			<input type="hidden" name="trainerid" value="'.$trainer->id.'" />
-			<input type="hidden" name="slotid" value="'.$agf_calendrier_formateur->id.'" />
-			<input type="hidden" name="controller" value="'.$context->controller.'" />
-				
 			<h4>Créneau</h4>
 			<div class="form-group">
 				<label for="heured">Date</label>
-				<input type="date" class="form-control" id="date_session" required name="date_session" value="'.($action == 'update' ? date('Y-m-d', $agf_calendrier_formateur->date_session) : date('Y-m-d')).'">
+				<input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="date_session" required name="date_session" value="'.(($action == 'update' || $action == 'view') ? date('Y-m-d', $agf_calendrier_formateur->date_session) : date('Y-m-d')).'">
 			</div>
 			<div class="form-group">
 				<label for="heured">Heure début:</label>
-				<input type="time" class="form-control" step="900" id="heured" required name="heured" value="'.($action == 'update' ? date('H:i', $agf_calendrier_formateur->heured) : '09:00' ).'">
+				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heured" required name="heured" value="'.(($action == 'update' || $action == 'view') ? date('H:i', $agf_calendrier_formateur->heured) : '09:00' ).'">
 				<label for="heuref">Heure fin:</label>
-				<input type="time" class="form-control" step="900" id="heuref" required name="heuref" value="'.($action == 'update' ? date('H:i', $agf_calendrier_formateur->heuref) : '12:00' ).'">
+				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heuref" required name="heuref" value="'.(($action == 'update' || $action == 'view') ? date('H:i', $agf_calendrier_formateur->heuref) : '12:00' ).'">
 			</div>
 			<div class="form-group">
 				<label for="status">Status</label>
-				<select class="form-control" id="status" name="status">
+				<select '.($action == 'view' ? 'disabled' : '').' class="form-control" id="status" name="status">
 					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_DRAFT ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_DRAFT.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_DRAFT, 0).'</option>
 					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, 0).'</option>
 					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CANCELED, 0).'</option>
@@ -416,13 +429,17 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			$out.= '
 				<div class="form-group">
 					<label for="stagiaire_'.$stagiaire->id.'">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</label>
-					<input type="time" step="900" max="12:00" class="form-control" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.(!empty($secondes) ? convertSecondToTime($secondes) : '00:00').'" />
+					<input '.($action == 'view' ? 'readonly' : '').' type="time" step="900" max="12:00" class="form-control" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.(!empty($secondes) ? convertSecondToTime($secondes) : '00:00').'" />
 				</div>';
 		}
 	}
 	
-	$out.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />
-		</form>';
+	if ($action != 'view') 
+	{
+		$out.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />
+			</form>';
+	}
+	
 	
 	$out.= '</div></section>';
 	

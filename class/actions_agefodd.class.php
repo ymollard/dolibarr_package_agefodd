@@ -439,13 +439,12 @@ class ActionsAgefodd
 							dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
 							
 							$context->setControllerFound();
-							print getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur);
+							print getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $action);
 						}
-					}
+					} 
 				}
 			}
 		}
-		
 		return 0;
 	}
 	
