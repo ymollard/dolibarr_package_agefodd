@@ -4490,6 +4490,9 @@ class Agsession extends CommonObject
 				$propal = new Propal($this->db);
 				$propal->fetch($frompropalid);
 				$soc->id = $propal->socid;
+                                if(!empty($propal->fk_multicurrency)) $invoice->fk_multicurrency = $propal->fk_multicurrency;
+                                if(!empty($propal->multicurrency_code)) $invoice->multicurrency_code = $propal->multicurrency_code;
+                                if(!empty($propal->multicurrency_tx)) $invoice->multicurrency_tx = $propal->multicurrency_tx;
 
 				if (! empty($propal->id) && is_array($propal->lines) && count($propal->lines) > 0) {
 					foreach ( $propal->lines as $line ) {
@@ -4569,9 +4572,17 @@ class Agsession extends CommonObject
 			}
 
 			$invoice->lines[0]->total_ht = $pu_ht * $invoice->lines[0]->qty;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $propal->lines[0]->multicurrency_total_ht;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $invoice->lines[0]->total_ht;
 			$invoice->lines[0]->total_ttc = $pu_ttc * $invoice->lines[0]->qty;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $propal->lines[0]->multicurrency_total_ttc;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $invoice->lines[0]->total_ttc;
 			$invoice->lines[0]->total_tva = $invoice->lines[0]->total_ttc - $invoice->lines[0]->total_ht;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $propal->lines[0]->multicurrency_total_tva;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $invoice->lines[0]->total_tva;
 			$invoice->lines[0]->subprice = $pu_ht;
+                        if(empty((float)$invoice->lines[0]->multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $propal->lines[0]->multicurrency_subprice;
+                        if(empty((float)$invoice->lines[0]->multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $invoice->lines[0]->subprice;
 			$invoice->lines[0]->tva_tx = $tva_tx;
 			$invoice->lines[0]->vat_src_code=$vat_src_code;
 
