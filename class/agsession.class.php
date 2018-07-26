@@ -4937,6 +4937,8 @@ class Agsession extends CommonObject
 		}
 			// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
+			$this->TConventionFinancialLine=array();
+
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
 				$nbstag = count($obj_agefodd_convention->line_trainee);
@@ -4959,12 +4961,51 @@ class Agsession extends CommonObject
 
 			if ($obj_agefodd_convention->element_type == 'invoice') {
 				$obj_agefodd_convention->fetch_invoice_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT facnumber as ref FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+					}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if ($obj_agefodd_convention->element_type == 'order') {
 				$obj_agefodd_convention->fetch_order_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT ref FROM '.MAIN_DB_PREFIX.'commande WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+					}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if ($obj_agefodd_convention->element_type == 'propal') {
 				$obj_agefodd_convention->fetch_propal_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT ref FROM '.MAIN_DB_PREFIX.'propal WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+					}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if (is_array($obj_agefodd_convention->lines ) && count($obj_agefodd_convention->lines )>0) {
 				foreach($obj_agefodd_convention->lines as $line) {
@@ -4974,13 +5015,16 @@ class Agsession extends CommonObject
 						$this->conv_amount_ttc += $line->total_ttc;
 						$this->conv_qty += $line->qty;
 						$this->conv_products .= $line->description.'<br />';
+						$this->TConventionFinancialLine[]= $line;
 					} elseif (empty($obj_agefodd_convention->only_product_session)) {
 						$this->conv_amount_ht += $line->total_ht;
 						$this->conv_amount_tva += $line->total_tva;
 						$this->conv_amount_ttc += $line->total_ttc;
 						$this->conv_qty += $line->qty;
 						$this->conv_products .= $line->description.'<br />';
+						$this->TConventionFinancialLine[]= $line;
 					}
+
 				}
 
 				$this->conv_tva_tx = $this->conv_amount_tva / $this->conv_amount_ht * 100;
