@@ -17,7 +17,8 @@
 --
 -- ============================================================================
 
-INSERT INTO llx_c_agefodd_session_calendrier_type (rowid, code, label, entity, active) VALUES
-(1, 'AGF_PRESENTIEL', 'Présentiel', 1, 1),
-(2, 'AGF_FOAD', 'FOAD', 1, 1),
-(3, 'AGF_GROUP', 'Groupe', 1, 1);
+INSERT INTO llx_c_agefodd_session_calendrier_type (rowid, code, label, entity, active) VALUES (1, 'AGF_TYPE_F2F', 'Individuel face à face', 1, 1);
+INSERT INTO llx_c_agefodd_session_calendrier_type (rowid, code, label, entity, active) VALUES (2, 'AGF_TYPE_GRP', 'Groupe', 1, 1);
+INSERT INTO llx_c_agefodd_session_calendrier_type (rowid, code, label, entity, active) VALUES (3, 'AGF_TYPE_PHONE', 'Téléphone', 1, 1);
+INSERT INTO llx_c_agefodd_session_calendrier_type (rowid, code, label, entity, active) VALUES (4, 'AGF_TYPE_PLATF', 'Plateforme', 1, 1);
+INSERT INTO llx_c_agefodd_session_calendrier_type (rowid, code, label, entity, active) VALUES (5, 'AGF_TYPE_CRT', 'Certification', 1, 1);
