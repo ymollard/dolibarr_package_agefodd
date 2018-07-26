@@ -991,16 +991,14 @@ elseif (empty($search_fourninvoiceref)) {
     }
 
     // session dont le lieu appartient au tiers
-	/**
-	 * @TODO : Fix ce p.entity mis en dur par (0,". getEntity('agefodd') .") et voir pour y connecter le spécifique
-	 */
+	
     $sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne
         FROM ".MAIN_DB_PREFIX."agefodd_session as sess
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = sess.fk_formation_catalogue
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = sess.fk_session_place
         LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid
         LEFT JOIN ".MAIN_DB_PREFIX."socpeople as socp ON p.fk_socpeople = socp.rowid
-        WHERE p.entity IN (4,1)
+        WHERE p.entity IN (0,". getEntity('agefodd') .") 
         AND p.fk_societe = ".$object_socid;
     if (is_array($session_array_id) && count($session_array_id)>0) {
     	$sql2 .= " AND sess.rowid NOT IN (".implode(",", $session_array_id).")";
