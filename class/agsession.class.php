@@ -318,6 +318,24 @@ class Agsession extends CommonObject
 		}
 	}
 
+	public function getSumDureePresence($fk_stagiaire=null)
+	{
+		$duree = 0;
+		
+		$agfssh = new Agefoddsessionstagiaireheures($this->db);
+		$agfssh->fetchAllBy($this->id, 'fk_session');
+		if (!empty($agfssh->lines))
+		{
+			foreach ($agfssh->lines as &$line)
+			{
+				if (!empty($fk_stagiaire) && $line->fk_stagiaire != $fk_stagiaire) continue;
+				$duree += $line->heures;
+			}
+		}
+		
+		return $duree;
+	}
+	
 	/**
 	 * Load an object from its id and create a new one in database
 	 *

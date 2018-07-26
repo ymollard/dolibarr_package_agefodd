@@ -268,6 +268,8 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 	$agf_calendrier = new Agefodd_sesscalendar($db);
 	if (!empty($fk_agefodd_session_calendrier) && $fk_agefodd_session_calendrier > 0) $agf_calendrier->fetch($fk_agefodd_session_calendrier);
 	
+	$agsession = new Agsession($db);
+	$agsession->fetch($fk_agefodd_session);
 	
 	$agf_calendrier->sessid = $fk_agefodd_session;
 	$agf_calendrier->date_session = strtotime(date('Y-m-d', $time_start));
@@ -311,7 +313,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 				$agfstagiaireheure->create($user);
 			}
 			
-			$duree_total_presence = $agf_calendrier->getSumDureePresence($fk_stagiaire);
+			$duree_total_presence = $agsession->getSumDureePresence($fk_stagiaire);
 			
 			$stagiaire = new Agefodd_session_stagiaire($db);
 			$stagiaire->fetch_by_trainee($fk_agefodd_session, $fk_stagiaire);
