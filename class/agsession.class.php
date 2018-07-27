@@ -4968,6 +4968,13 @@ class Agsession extends CommonObject
 					$this->TStagiairesSessionConvention[]= $stagiaire_conv;
 					$this->nb_stagiaire_convention= count($this->TStagiairesSessionConvention);
 				}
+				if (count($this->TStagiairesSessionConvention)>0) {
+					$Tsta=array();
+					foreach($this->TStagiairesSessionConvention as $sta) {
+						$Tsta[]=$sta->prenom. ' '. $sta->nom;
+					}
+					$this->stagiaire_convention=implode(',',$Tsta);
+				}
 			}
 
 			if ($obj_agefodd_convention->element_type == 'invoice') {
@@ -5059,7 +5066,11 @@ class Agsession extends CommonObject
 		}
 
 		//Trainee link to the company convention
-		$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+		if (!empty($this->contactname)) {
+			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+		} else {
+			$this->signataire_intra ='';
+		}
 		$stagiaires = new Agefodd_session_stagiaire($db);
 		$result=$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
 		if ($result<0) {
@@ -5080,6 +5091,8 @@ class Agsession extends CommonObject
 			if (count($this->signataire_inter_array)>0) {
 				$this->signataire_inter=implode(', ',$this->signataire_inter_array);
 				unset($this->signataire_inter_array);
+			} else {
+				$this->signataire_inter='';
 			}
 		}
 
