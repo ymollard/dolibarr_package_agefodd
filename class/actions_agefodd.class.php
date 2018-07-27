@@ -110,16 +110,21 @@ class ActionsAgefodd
 	 * @return void
 	 */
 	public function addSearchEntry($parameters, &$object, &$action, $hookmanager) {
-		global $conf, $langs, $user;
+		global $conf, $langs, $user, $db;
 		$langs->load('agefodd@agefodd');
+
+		dol_include_once('/agefodd/core/modules/modAgefodd.class.php');
+		$modAgefodd = new modAgefodd($db);
 
 		$arrayresult = array();
 		if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH) && $user->rights->agefodd->lire && empty($user->societe_id)) {
 			$arrayresult['searchintoagefoddsession'] = array(
+					'position' => $modAgefodd->numero,
 					'text' => img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"),
 					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_id=' . urlencode($parameters['search_boxvalue'])
 			);
 			$arrayresult['searchintoagefoddtrainee'] = array(
+					'position' => $modAgefodd->numero,
 					'text' => img_object('', 'contact') . ' ' . $langs->trans("AgfMenuActStagiaire"),
 					'url' => dol_buildpath('/agefodd/trainee/list.php', 1) . '?search_namefirstname=' . urlencode($parameters['search_boxvalue'])
 			);
@@ -767,8 +772,6 @@ class ActionsAgefodd
 						dol_print_error('', $agfsess->error);
 					}
 				}
-
-				// if (is_array($linkedobjects)) $this->results = $linkedobjects + $this->results;
 			} else {
 				dol_print_error('', $agfsess->error);
 			}

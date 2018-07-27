@@ -568,6 +568,23 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+//Agefoddsessioncontact
+
+
+$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_contact WHERE fk_agefodd_contact NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_contact)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session contact'.$obj->rowid.' dans '.MAIN_DB_PREFIX.'agefodd_session_contact qui non un contact agefodd qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_contact WHERE fk_agefodd_contact NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_contact)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
 
 
 print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';

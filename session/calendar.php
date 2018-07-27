@@ -401,7 +401,7 @@ if ($id) {
 		if (! (empty($agf->id))) {
 			$head = session_prepare_head($agf);
 
-			dol_fiche_head($head, 'calendar', $langs->trans("AgfCalendrier"), 0, 'calendarday');
+			dol_fiche_head($head, 'calendar', $langs->trans("AgfSessionDetail"), 0, 'calendarday');
 
 			dol_agefodd_banner_tab($agf, 'id');
 			print '<div class="underbanner clearboth"></div>';

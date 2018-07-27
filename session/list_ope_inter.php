@@ -46,6 +46,12 @@ require_once ('../class/agefodd_session_element.class.php');
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
+$hookmanager->initHooks(array('agefoddsessionlistopeinter'));
+
+$parameters=array('from'=>'original');
+$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
@@ -111,11 +117,11 @@ if (! empty($search_site) && $search_site != - 1) {
 if (! empty($search_room_status) && $search_room_status != - 1) {
 	$option .= '&search_room_status=' . $search_room_status;
 	if ($search_room_status == 'option') {
-		$filter ['s.is_date_res_site'] = 1;
-		$filter ['s.is_date_res_confirm_site'] = 0;
+		$filter ['s.date_res_site'] = 'IS NOT NULL';
+		$filter ['s.date_res_confirm_site'] = 'IS NULL';
 	}
 	if ($search_room_status == 'confirm') {
-		$filter ['s.is_date_res_confirm_site'] = 1;
+		$filter ['s.date_res_confirm_site'] = 'IS NOT NULL';
 	}
 }
 if (! empty($search_trainning_name)) {
@@ -132,6 +138,10 @@ if (empty($sortorder)) {
 if (empty($sortfield)) {
 	$sortfield = "s.dated";
 }
+
+$parameters=array('from'=>'original', 'filter' => &$filter, 'option' => &$option, 'sortorder' => &$sortorder, 'sortfield' => &$sortfield);
+$reshook=$hookmanager->executeHooks('overrideFilter',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($page) || $page == -1) { $page = 0; }
 
@@ -405,9 +415,9 @@ if ($resql != - 1) {
 
 			// Lieu status
 			print '<td>';
-			if ($line->is_date_res_confirm_site) {
+			if (!empty($line->date_res_confirm_site)) {
 				print 'Confirmé';
-			} elseif ($line->is_date_res_site) {
+			} elseif (!empty($line->date_res_site)) {
 				print 'Option';
 			}
 			print '</td>';

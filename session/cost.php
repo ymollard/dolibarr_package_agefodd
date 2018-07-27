@@ -760,8 +760,6 @@ foreach ( $agf_formateurs->lines as $line ) {
 			// Get all document lines
 			$agf_fin->fetch_by_session_by_thirdparty($id, $contact_static->thirdparty->id, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
 
-
-
 			// TODO : cheack if this feautre work without huge data update
 			// $agf_fin->fetch_by_session_by_thirdparty($id, $soc_trainer, 'invoice_supplier_trainer',$line->opsid);
 
@@ -782,8 +780,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 						print '<table class="nobordernopadding"><tr>';
 
 						print '<td nowrap="nowrap">';
-						// print $langs->trans('AgfSelectFournProduct');
-						print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+						print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 						print $form->select_produits_fournisseurs($contact_static->thirdparty->id, $product_fourn, 'product_fourn','','',array(),0,1);
 						print '</td>';
 
@@ -812,7 +809,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 							print '<tr>';
 							// Supplier Invoice inforamtion
 							print '<td nowrap="nowrap">';
-							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 							print '</td>';
 							print '<td>';
 							// Ad invoice line
@@ -828,6 +825,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 							print '</tr>';
 							print '</table>';
 						}else {
+
 							$supplier_invoiceline = new SupplierInvoiceLine($db);
 							$supplier_invoiceline->fetch($line_fin->fk_element);
 							$suplier_invoice = new FactureFournisseur($db);
@@ -838,7 +836,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 							print '<tr>';
 							// Supplier Invoice inforamtion
 							print '<td nowrap="nowrap">';
-							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' - '.$label.' (' . price($supplier_invoiceline->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0) . ' - '.$label.' (' . price($supplier_invoiceline->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 							print '</td>';
 							print '<td>';
 
@@ -959,7 +957,7 @@ foreach ( $agf_fin->lines as $line_fin ) {
 
 				print '<td nowrap="nowrap">';
 				// print $langs->trans('AgfSelectFournProduct');
-				print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+				print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 				print $form->select_produits_fournisseurs($contact_static->thirdparty->id, $product_fourn, 'product_fourn','','',array(),0,1);
 				print '</td>';
 
@@ -987,7 +985,7 @@ foreach ( $agf_fin->lines as $line_fin ) {
 					print '<tr>';
 					// Supplier Invoice inforamtion
 					print '<td nowrap="nowrap">';
-					print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+					print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 					print '</td>';
 					print '<td>';
 					$legende = $langs->trans("AgfFactureAddLineSuplierInvoice");
@@ -1015,7 +1013,7 @@ foreach ( $agf_fin->lines as $line_fin ) {
 						print '<tr>';
 						// Supplier Invoice inforamtion
 						print '<td nowrap="nowrap">';
-						print $suplier_invoice->getLibStatut(2).' '.$suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK).' - '.$label.' ('.price($supplier_invoiceline->total_ht).$langs->getCurrencySymbol($conf->currency).')';
+						print $suplier_invoice->getLibStatut(2).' '.$suplier_invoice->getNomUrl(1, '', 0).' - '.$label.' ('.price($supplier_invoiceline->total_ht).$langs->getCurrencySymbol($conf->currency).')';
 						print '</td>';
 						print '<td>';
 
@@ -1161,7 +1159,7 @@ if (! empty($place->id)) {
 
 					print '<td nowrap="nowrap">';
 					// print $langs->trans('AgfSelectFournProduct');
-					print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+					print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 					print $form->select_produits_fournisseurs($contact_static->thirdparty->id, $product_fourn, 'product_fourn','','',array(),0,1);
 					print '</td>';
 					print '<td align="left" style="padding-left:10px">';
@@ -1187,7 +1185,7 @@ if (! empty($place->id)) {
 						print '<tr>';
 						// Supplier Invoice inforamtion
 						print '<td nowrap="nowrap">';
-						print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+						print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 						print '</td>';
 						print '<td>';
 						$legende = $langs->trans("AgfFactureAddLineSuplierInvoice");
@@ -1216,7 +1214,7 @@ if (! empty($place->id)) {
 						print '<tr>';
 						// Supplier Invoice inforamtion
 						print '<td nowrap="nowrap">';
-						print $suplier_invoice->getLibStatut(2).' '.$suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK).' - '.$label.' ('.price($supplier_invoiceline->total_ht).$langs->getCurrencySymbol($conf->currency).')';
+						print $suplier_invoice->getLibStatut(2).' '.$suplier_invoice->getNomUrl(1, '', 0).' - '.$label.' ('.price($supplier_invoiceline->total_ht).$langs->getCurrencySymbol($conf->currency).')';
 						print '</td>';
 						print '<td>';
 

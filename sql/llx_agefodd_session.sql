@@ -24,6 +24,7 @@
 
 CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   rowid integer NOT NULL auto_increment PRIMARY KEY,
+  ref varchar(40) NOT NULL,
   entity integer NOT NULL DEFAULT 1,
   fk_soc int NULL,
   fk_soc_requester int NULL,
@@ -47,11 +48,8 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   invoice_amount double(24,8) DEFAULT 0, 
   cost_buy_charges double(24,8) DEFAULT 0, 
   cost_sell_charges double(24,8) DEFAULT 0, 
-  is_date_res_site smallint NOT NULL DEFAULT 0,
   date_res_site datetime DEFAULT NULL,
-  is_date_res_confirm_site smallint NOT NULL DEFAULT 0,
   date_res_confirm_site datetime DEFAULT NULL,
-  is_date_res_trainer smallint NOT NULL DEFAULT 0,
   date_res_trainer datetime DEFAULT NULL,
   date_ask_OPCA datetime DEFAULT NULL,
   is_date_ask_OPCA smallint NOT NULL DEFAULT 0,

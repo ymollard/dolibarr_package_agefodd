@@ -533,7 +533,12 @@ function agefodd_admin_prepare_head() {
 	$head [$h] [1] = $langs->trans("AgfCategCostCateg");
 	$head [$h] [2] = 'catcost';
 	$h ++;
-
+	if(!empty($conf->multicompany->enabled)){
+		$head [$h] [0] = dol_buildpath("/agefodd/admin/multicompany_agefodd.php", 1);
+		$head [$h] [1] = $langs->trans("AgefoddSetupMulticompany");
+		$head [$h] [2] = 'multicompany';
+		$h ++;
+	}
 	if (!empty($conf->global->AGF_MANAGE_BPF)) {
 		$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_catbpf.php", 1);
 		$head [$h] [1] = $langs->trans("AgfReportBPFCategTabTitle");
@@ -607,6 +612,42 @@ function agf_calendars_prepare_head($param) {
 
 	return $head;
 }
+
+
+/**
+ * Define head array for tabs of revenue report
+ *
+ * @return array Array of head
+ */
+function agf_revenue_report_prepare_head() {
+	global $langs, $conf, $user;
+
+	$h = 0;
+	$head = array ();
+
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_ca.php", 1);
+	$head[$h][1] = $langs->trans("AgfMenuReportCA");
+	$head[$h][2] = 'card';
+	$h++;
+
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_ca_help.php", 1);
+	$head[$h][1] = $langs->trans("Help");
+	$head[$h][2] = 'help';
+	$h++;
+
+	$object=new stdClass();
+
+	// Show more tabs from modules
+	// Entries must be declared in modules descriptor with line
+	// $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
+	// $this->tabs = array('entity:-tabname);   												to remove a tab
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_report_revenue');
+
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_report_revenue','remove');
+
+	return $head;
+}
+
 
 /**
  *  renvoi le nombre de fichiers joints
@@ -1610,6 +1651,8 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     dol_include_once('/agefodd/class/html.formagefodd.class.php');
     $formAgefodd = new FormAgefodd($db);
 
+    if(!empty($conf->global->AGF_FORCE_ID_AS_REF)) $fieldref = 'id';
+
     $error = 0;
 
     $maxvisiblephotos=1;
@@ -1877,6 +1920,96 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     print '</div><br>';
     print '<div class="underrefbanner clearboth"></div>';
     //print '<div class="underbanner clearboth"></div>';
+}
+
+
+function _getTTotalBySession()
+{
+	global $conf,$db;
+	
+	$TTotalBySession = array();
+	
+	$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd.total_ht) as total_ht_without_draft';
+	$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
+	$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p ON (p.rowid = s.fk_element AND s.element_type = \'propal\')';
+	$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd ON (pd.fk_propal = p.rowid)';
+	$sql_tmp.= ' WHERE 1';
+	$sql_tmp.= ' AND p.fk_statut > 0'; // Propals non brouillon
+	$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
+	
+	$resql_tmp = $db->query($sql_tmp);
+	if ($resql_tmp)
+	{
+		while ($arr = $db->fetch_array($resql_tmp)) $TTotalBySession[$arr['fk_session_agefodd']]['propal']['total_ht_without_draft'] = $arr['total_ht_without_draft'];
+	}
+	else
+	{
+		dol_print_error($db);
+	}
+	
+	if (!empty($conf->global->AGF_CAT_PRODUCT_CHARGES))
+	{
+		$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd2.total_ht) as total_ht_from_all_propals';
+		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p2 ON (p2.rowid = s.fk_element AND s.element_type = \'propal\')';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd2 ON (pd2.fk_propal = p2.rowid)';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = pd2.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
+		$sql_tmp.= ' WHERE 1';
+		$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
+
+		$resql_tmp = $db->query($sql_tmp);
+		if ($resql_tmp)
+		{
+			while ($arr = $db->fetch_array($resql_tmp)) $TTotalBySession[$arr['fk_session_agefodd']]['propal']['total_ht_from_all_propals'] = $arr['total_ht_from_all_propals'];
+		}
+		else
+		{
+			dol_print_error($db);
+		}
+	}
+	
+	
+	$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(fd.total_ht) as total_ht_without_draft';
+	$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
+	$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facture f ON (f.rowid = s.fk_element AND s.element_type = \'invoice\')';
+	$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facturedet fd ON (fd.fk_facture = f.rowid)';
+	$sql_tmp.= ' WHERE 1';
+	$sql_tmp.= ' AND f.fk_statut > 0'; // Factures non brouillon
+	$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
+	
+	$resql_tmp = $db->query($sql_tmp);
+	if ($resql_tmp)
+	{
+		while ($arr = $db->fetch_array($resql_tmp)) $TTotalBySession[$arr['fk_session_agefodd']]['invoice']['total_ht_without_draft'] = $arr['total_ht_without_draft'];
+	}
+	else
+	{
+		dol_print_error($db);
+	}
+	
+	if (!empty($conf->global->AGF_CAT_PRODUCT_CHARGES))
+	{
+		$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(fd.total_ht) as total_ht_from_all_invoices';
+		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facture f ON (f.rowid = s.fk_element AND s.element_type = \'invoice\')';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facturedet fd ON (fd.fk_facture = f.rowid)';
+		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = fd.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
+		$sql_tmp.= ' WHERE 1';
+		$sql_tmp.= ' GROUP BY s.fk_session_agefodd';
+
+		$resql_tmp = $db->query($sql_tmp);
+		if ($resql_tmp)
+		{
+			while ($arr = $db->fetch_array($resql_tmp)) $TTotalBySession[$arr['fk_session_agefodd']]['invoice']['total_ht_from_all_invoices'] = $arr['total_ht_from_all_invoices'];
+		}
+		else
+		{
+			dol_print_error($db);
+		}
+	}
+	// Somme du montant HT des ligne des factures associés (non brouillon) à la session - Somme du monant HT des ligne de factures associés à la session dont le produit sont dans les catégories défini ici : custom/agefodd/admin/admin_catcost.php
+	
+	return $TTotalBySession;
 }
 
 

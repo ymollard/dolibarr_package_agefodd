@@ -529,6 +529,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$art4 = $langs->trans('AgfConvArt4_3');
 	}
 	$art4 .= "\n" . $langs->trans('AgfConvArt4_2');
+	if (!empty($conf->global->AGF_CONV_SOUSTRAITANCE)) {
+		$art4 .= "\n" . $langs->trans('AgfConvArt4_4',$mysoc->name);
+	}
 
 	// texte 5
 	if ($agf_conv->art5)
