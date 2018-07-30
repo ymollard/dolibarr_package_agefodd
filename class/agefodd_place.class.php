@@ -62,6 +62,7 @@ class Agefodd_place extends CommonObject {
 	public $tms = '';
 	public $control_occupation;
 	public $lines = array ();
+	public $nb_place;
 
 	/**
 	 * Constructor
@@ -129,6 +130,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= "cp,";
 		$sql .= "ville,";
 		$sql .= "fk_pays,";
+		$sql .= "nb_place,";
 		$sql .= "tel,";
 		$sql .= "fk_societe,";
 		$sql .= "fk_socpeople,";
@@ -148,6 +150,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= " " . (! isset($this->cp) ? 'NULL' : "'" . $this->db->escape($this->cp) . "'") . ",";
 		$sql .= " " . (! isset($this->ville) ? 'NULL' : "'" . $this->db->escape($this->ville) . "'") . ",";
 		$sql .= " " . (! isset($this->fk_pays) ? 'NULL' : "'" . $this->fk_pays . "'") . ",";
+		$sql .= " " . (empty($this->nb_place) ? 'NULL' : "'" . $this->nb_place . "'") . ",";
 		$sql .= " " . (! isset($this->tel) ? 'NULL' : "'" . $this->db->escape($this->tel) . "'") . ",";
 		$sql .= " " . (! isset($this->fk_societe) ? 'NULL' : "'" . $this->fk_societe . "'") . ",";
 		$sql .= " " . (empty($this->fk_socpeople) ? 'NULL' : "'" . $this->fk_socpeople . "'") . ",";
@@ -209,7 +212,7 @@ class Agefodd_place extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,";
+		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, p.nb_place,  pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql .= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1, p.fk_reg_interieur";
 		$sql .= " ,p.control_occupation";
 		$sql .= " ,p.fk_socpeople";
@@ -256,6 +259,7 @@ class Agefodd_place extends CommonObject {
 				$this->socp_firstname=$obj->socp_firstname;
 				$this->socp_phone=$obj->socp_phone;
 				$this->socp_email=$obj->socp_email;
+				$this->nb_place = $obj->nb_place;
 			}
 			$this->db->free($resql);
 
@@ -281,7 +285,7 @@ class Agefodd_place extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,";
+		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,p.nb_place,";
 		$sql .= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1";
 		$sql .= " ,p.fk_socpeople";
 		$sql .= " ,p.control_occupation";
@@ -349,6 +353,7 @@ class Agefodd_place extends CommonObject {
 				$line->socp_firstname=$obj->socp_firstname;
 				$line->socp_phone=$obj->socp_phone;
 				$line->socp_email=$obj->socp_email;
+				$line->nb_place=$obj->nb_place;
 
 				$this->lines[$i] = $line;
 
@@ -463,6 +468,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= " note1=" . (isset($this->note1) ? "'" . $this->db->escape($this->note1) . "'" : "null") . ",";
 		$sql .= " control_occupation=" . (!empty($this->control_occupation) ? $this->db->escape($this->control_occupation) : "0") . ",";
 		$sql .= " archive=" . $this->archive . ",";
+		$sql .= " nb_place=" . (!empty($this->nb_place) ? $this->nb_place : "null") . ",";
 		if (! empty($this->fk_reg_interieur)) {
 			$sql .= " fk_reg_interieur=" . (isset($this->fk_reg_interieur) ? $this->fk_reg_interieur : "null") . ",";
 		}

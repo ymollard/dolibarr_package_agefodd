@@ -298,9 +298,9 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$agf->notes = GETPOST('notes', 'alpha');
 		$agf->status = GETPOST('session_status', 'int');
 
-		$agf->cost_trainer = GETPOST('costtrainer', 'alpha');
-		$agf->cost_site = GETPOST('costsite', 'alpha');
-		$agf->sell_price = GETPOST('sellprice', 'alpha');
+		$agf->cost_trainer_planned = GETPOST('costtrainer', 'alpha');
+		$agf->cost_site_planned = GETPOST('costsite', 'alpha');
+		$agf->sell_price_planned = GETPOST('sellprice', 'alpha');
 
 		$agf->date_res_site = dol_mktime(0, 0, 0, GETPOST('res_sitemonth', 'int'), GETPOST('res_siteday', 'int'), GETPOST('res_siteyear', 'int'));
 		$agf->date_res_trainer = dol_mktime(0, 0, 0, GETPOST('res_trainmonth', 'int'), GETPOST('res_trainday', 'int'), GETPOST('res_trainyear', 'int'));
@@ -347,7 +347,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		if (! empty($force_nb_stagiaire))
 			$agf->force_nb_stagiaire = $force_nb_stagiaire;
 		if (! empty($cost_trip))
-			$agf->cost_trip = $cost_trip;
+			$agf->cost_trip_planned = $cost_trip;
 
 		if ($error == 0) {
 			$extrafields->setOptionalsFromPost($extralabels, $agf);
@@ -711,9 +711,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						'add-customer-contact' => 'disabled'
 				)
 		);
-		print $form->select_thirdparty_list($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
+		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
 	} else {
-		print $form->select_thirdparty_list($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1);
+		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1);
 	}
 	print '</td></tr>';
 
@@ -749,7 +749,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					'add-customer-contact' => 'disabled'
 			)
 	);
-	print $form->select_thirdparty_list($fk_soc_crea, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
+	print $form->select_company($fk_soc_crea, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
 	print '</td></tr>';
 
 	print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
@@ -770,7 +770,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . $form->textwithpicto('', $langs->trans("AgfTypeEmployeeHelp"), 1, 'help').'</td>';
 	print '<td>';
-	print $form->select_thirdparty_list($fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
+	print $form->select_company($fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
 	print '</td></tr>';
 
 	print '<tr class="order_product"><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
@@ -826,12 +826,23 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			$(this).val(result.fk_product);
 			});
 		-->
+		$("body").on('change','#place',function () {
+			var fk_place = $(this).val();
+			var fk_training = $('#formation').val();
+			data = {"action":"get_nb_place","fk_training":fk_training,"fk_place":fk_place};
+			ajax_set_nbplace(data);
+		
+		});
+		
 		$("body").on('change','#formation',function () {
 			var fk_training = $(this).val();
 			data = {"action":"get_duration_and_product","fk_training":fk_training};
 			ajax_set_duration_and_product(data);
 			var option_txt = $(this).find('option[value='+$(this).val()+']').text();
 			$('#intitule_custo').val(option_txt);
+			var fk_place = $('#place').val();
+			data = {"action":"get_nb_place","fk_training":fk_training,"fk_place":fk_place};
+			ajax_set_nbplace(data);
 		});
 	});
 
@@ -863,6 +874,25 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
     		    }
     		});
     	}
+	function ajax_set_nbplace(data)
+    	{
+    		$.ajax({
+    		    url: "<?php echo dol_buildpath('/agefodd/scripts/interface.php', 1) ; ?>",
+    		    type: "POST",
+    		    dataType: "json",
+    		    data: data,
+    		    success: function(result){
+					if((result.nb_place)!= null){
+						$("input[name='nb_place']").val(result.nb_place);
+					}else {
+						$("input[name='nb_place']").val("");
+					}
+				},
+    		    error: function(error){
+    		    	$.jnotify('AjaxError',"error");
+    		    }
+    		});
+    	}
 </script>
 
 <?php
@@ -885,6 +915,13 @@ printSessionFieldsWithCustomOrder();
 
 				$agf_fact = new Agefodd_session_element($db);
 				$agf_fact->fetch_by_session($agf->id);
+				
+				$cost_trainer_engaged = $agf_fact->trainer_engaged_amount;
+				$cost_site_engaged = $agf_fact->room_engaged_amount;
+				$cost_trip_engaged = $agf_fact->trip_engaged_amount;
+				
+				$engaged_revenue = $agf_fact->propal_sign_amount;
+				$paied_revenue = $agf_fact->invoice_payed_amount;
 				$other_amount = '(' . $langs->trans('AgfProposalAmountSigned') . ' ' . $agf_fact->propal_sign_amount . ' ' . $langs->trans('Currency' . $conf->currency);
 				if (! empty($conf->commande->enabled)) {
 					$other_amount .= '/' . $langs->trans('AgfOrderAmount') . ' ' . $agf_fact->order_amount . ' ' . $langs->trans('Currency' . $conf->currency);
@@ -978,9 +1015,9 @@ printSessionFieldsWithCustomOrder();
 										'add-customer-contact' => 'disabled'
 								)
 						);
-						print $form->select_thirdparty_list($agf->fk_soc, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
+						print $form->select_company($agf->fk_soc, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
 					} else {
-						print $form->select_thirdparty_list($agf->fk_soc, 'fk_soc', '', 'SelectThirdParty', 1);
+						print $form->select_company($agf->fk_soc, 'fk_soc', '', 'SelectThirdParty', 1);
 					}
 					if (! empty($agf->fk_soc) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_cust">' . img_delete($langs->trans('Delete')) . '</a>';
@@ -1023,7 +1060,7 @@ printSessionFieldsWithCustomOrder();
 									'add-customer-contact' => 'disabled'
 							)
 					);
-					print $form->select_thirdparty_list($agf->fk_soc_requester, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
+					print $form->select_company($agf->fk_soc_requester, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
 					if (! empty($agf->fk_soc_requester) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_requester">' . img_delete($langs->trans('Delete')) . '</a>';
 					}
@@ -1055,7 +1092,7 @@ printSessionFieldsWithCustomOrder();
 
 					print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
 					print '<td><table class="nobordernopadding"><tr><td>';
-					print $form->select_thirdparty_list($agf->fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
+					print $form->select_company($agf->fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
 					print '</td>';
 					print '<td>' . $form->textwithpicto('', $langs->trans("AgfTypeEmployeeHelp"), 1, 'help') . '</td></tr></table>';
 					if (! empty($agf->fk_soc_employer) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
@@ -1137,15 +1174,15 @@ printSessionFieldsWithCustomOrder();
 					// print '<div class="tabBar">';
 					print '<table class="border" width="100%">';
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
-					print '<td><input size="6" type="text" class="flat" name="costtrainer" value="' . price($agf->cost_trainer) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="costtrainer" value="' . price($agf->cost_trainer_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
 
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutSalle") . '</td>';
-					print '<td><input size="6" type="text" class="flat" name="costsite" value="' . price($agf->cost_site) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="costsite" value="' . price($agf->cost_site_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutDeplacement") . '</td>';
-					print '<td><input size="6" type="text" class="flat" name="costtrip" value="' . price($agf->cost_trip) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="costtrip" value="' . price($agf->cost_trip_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
 
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormation") . '</td>';
-					print '<td><input size="6" type="text" class="flat" name="sellprice" value="' . price($agf->sell_price) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . ' ' . $other_amount . '</td></tr>';
+					print '<td><input size="6" type="text" class="flat" name="sellprice" value="' . price($agf->sell_price_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . ' ' . $other_amount . '</td></tr>';
 					print '</table>';
 					// print '</div>';
 
@@ -1281,54 +1318,71 @@ printSessionFieldsWithCustomOrder();
 					 * Cost management
 					 */
 					$spend_cost = 0;
+					$spend_cost_planned = 0;
+					$spend_cost_engaged = 0;
 					$cashed_cost = 0;
 
 					print '<tr class="tr_order_cost"><td colspan="4">';
 					print '<table class="border order_cost" width="100%">';
-					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
-					print '<td>' . price($agf->cost_trainer) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
+					print '<tr class="liste_titre"><td></td><td></td><td width="20%">' . $langs->trans("Planned") . '</td><td width="20%">' . $langs->trans("Engaged") . '</td><td width="20%">' . $langs->trans("Done") . '</td><td width="20%">' . $langs->trans("Result") . '</td></tr>';
+
+					print '<tr><td ><strong>' . $langs->trans("TaxRevenue") . '</strong></td><td >' . $langs->trans("AgfCoutFormation") . '</td>';
+					print '<td>' . price($agf->sell_price_planned) .'</td><td>' .  price($engaged_revenue).'</td><td>' . price($paied_revenue) .'</td><td>' .price($paied_revenue - $agf->sell_price_planned) .'</td></tr>';
+					print '<tr><td rowspan="4" ><strong>' . $langs->trans("Expense") . '</strong></td><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
+					print '<td>' . price($agf->cost_trainer_planned) .'</td><td>' . price($cost_trainer_engaged) .'</td><td>' . price($agf->cost_trainer) .'</td><td>' .price($agf->cost_trainer_planned - $agf->cost_trainer) .'</td></tr>';
 					$spend_cost += $agf->cost_trainer;
+					$spend_cost_planned += $agf->cost_trainer_planned;
+					$spend_cost_engaged += $cost_trainer_engaged;
 
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutSalle") . '</td>';
-					print '<td>' . price($agf->cost_site) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
+					print '<td>' . price($agf->cost_site_planned) .'</td><td>' . price($cost_site_engaged) .'</td><td>' . price($agf->cost_site) .'</td><td>' .price($agf->cost_site_planned - $agf->cost_site) .'</td></tr>';
 					$spend_cost += $agf->cost_site;
+					$spend_cost_planned += $agf->cost_site_planned;
+					$spend_cost_engaged += $cost_site_engaged;
 
 					print '<tr><td width="20%">' . $langs->trans("AgfCoutDeplacement") . '</td>';
 					if(! empty($conf->global->AGF_VIEW_TRIP_AND_MISSION_COST_PER_PARTICIPANT)) {
 						if (!empty($agf->nb_stagiaire)) {
+							$costparticipantplanned = price2num($agf->cost_trip_planned/$agf->nb_stagiaire, 'MT');
+							$costparticipantengaged = price2num($cost_trip_engaged/$agf->nb_stagiaire, 'MT');
 							$costparticipant=price2num($agf->cost_trip/$agf->nb_stagiaire, 'MT');
 						} else {
-							$costparticipant=price2num($agf->cost_trip, 'MT');
+							$costparticipantplanned = price2num($agf->cost_trip_planned, 'MT');
+							$costparticipantengaged = price2num($cost_trip_engaged, 'MT');
+							$costparticipant = price2num($agf->cost_trip, 'MT');
 						}
-						print '<td>' . $costparticipant . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
+						print '<td>' . price($costparticipantplanned) .'</td><td>' . price($costparticipantengaged) .'</td><td>' . price($costparticipant) .'</td><td>' .price($costparticipantplanned - $costparticipant) .'</td></tr>';
 						$spend_cost += $costparticipant;
+						$spend_cost_planned += $costparticipantplanned;
+						$spend_cost_engaged += $costparticipantengaged;
 					}
 					else {
-						print '<td>' . price($agf->cost_trip) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td></tr>';
+						print '<td>' . price($agf->cost_trip_planned) .'</td><td>' . price($cost_trip_engaged) .'</td><td>' . price($agf->cost_trip) .'</td><td>' .price($agf->cost_trip_planned - $agf->cost_trip) .'</td></tr>';
 						$spend_cost += $agf->cost_trip;
+						$spend_cost_planned += $agf->cost_trip_planned;
+						$spend_cost_engaged += $cost_trip_engaged;
 					}
 
-					print '<tr><td width="20%"><strong>' . $langs->trans("AgfCoutTotal") . '</strong></td>';
+					print '<tr class="liste_total"><td width="20%"><strong>' . $langs->trans("AgfCoutTotal") . '</strong></td>';
 					if ($agf->nb_stagiaire>0) {
 						$traineeCost = ' ('.$langs->trans('AgfTraineeCost') . ':'.price($spend_cost/$agf->nb_stagiaire).' ' . $langs->trans('Currency' . $conf->currency).')';
 					}
 
-					print '<td><strong>' . price($spend_cost) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong>'.$traineeCost.'</td></tr>';
+					print '<td><strong>' . price($spend_cost_planned) .'</strong></td><td><strong>' . price($spend_cost_engaged) .'</strong></td><td><strong>' . price($spend_cost) .'</strong></td><td><strong>' . price($spend_cost_planned - $spend_cost) .'</strong></td></tr>';
 
-					print '<tr><td width="20%">' . $langs->trans("AgfCoutFormation") . '</td>';
-					print '<td>' . price($agf->sell_price) . ' ' . $langs->trans('Currency' . $conf->currency) . ' ' . $other_amount . '</td></tr>';
-					$cashed_cost += $agf->sell_price;
+				
 
-					print '<tr><td width="20%"><strong>' . $langs->trans("AgfCoutRevient") . '</strong></td>';
-					if ($cashed_cost > 0) {
-						$percentmargin = price(((($cashed_cost - $spend_cost) * 100) / $cashed_cost), 0, $langs, 1, 0, 1) . '%';
-					} else {
-						$percentmargin = "n/a";
-					}
+					print '<tr class="liste_total"><td width="20%"><strong>' . $langs->trans("Benefits") . '</strong></td><td></td>';
+					
+					
+					
 
-					print '<td><strong>' . price($cashed_cost - $spend_cost) . ' ' . $langs->trans('Currency' . $conf->currency) . '</strong> (' . $percentmargin . ')</td></tr>';
+					print '<td><strong>' . price($agf->sell_price_planned - $spend_cost_planned)  . '</strong> (' .  calcul_margin_percent($agf->sell_price_planned,$spend_cost_planned) . ')</td>';
+					print '<td><strong>' . price($engaged_revenue - $spend_cost_engaged)  . '</strong> (' .  calcul_margin_percent($engaged_revenue,$spend_cost_engaged) . ')</td>';
+					print '<td><strong>' . price($paied_revenue - $spend_cost)  . '</strong> (' .  calcul_margin_percent($paied_revenue,$spend_cost) . ')</td>';
+					print '<td></td>';
 
-					print '</table>';
+					print '</tr></table>';
 
 					print '</td></tr>';
 					/*
@@ -1626,7 +1680,7 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 		$arch = 0;
 	}
 	if ($user->rights->agefodd->modifier) {
-		print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?action=view_actioncomm&id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
+		print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=clone&id=' . $id . '">' . $langs->trans('ToClone') . '</a>';
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?arch=' . $arch . '&id=' . $id . '">' . $button . '</a>';
 	} else {

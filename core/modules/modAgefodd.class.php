@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.4';
+		$this->version = '3.5';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -2520,11 +2520,11 @@ class modAgefodd extends DolibarrModules
 						if($last_version_install <='3.2' && $data['toversion']>='3.3') {
 							$this->update_refsession();
 						}
-
-					if ($result <= 0)
-						$error ++;
-					}
-				}
+								
+								if ($result <= 0)
+									$error ++;
+							}
+						}
 
 				if ($error == 0) {
 					$ok = 1;
@@ -2563,6 +2563,24 @@ class modAgefodd extends DolibarrModules
 				$ags->ref = $modSession->getNextValue('', '', $obj->datec);
 
 			$ags->update($user);
+		}
+	}
+	function change_order_supplier_type()
+	{
+		global $db, $user;
+		dol_include_once('/user/class/user.class.php');
+		dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+		$sql = "SELECT rowid FROM ".MAIN_DB_PREFIX."agefodd_session_element WHERE element_type = 'order_supplier' ORDER BY rowid";
+		$resql = $db->query($sql);
+		if(!empty($resql))
+		{
+			while ($obj = $db->fetch_object($resql))
+			{
+				$ags = new Agefodd_session_element($db);
+				$ags->fetch($obj->rowid);
+				$ags->element_type='order_supplier_trainer';
+				$ags->update($user);
+			}
 		}
 	}
 

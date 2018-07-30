@@ -13,10 +13,6 @@ dol_include_once('/core/lib/functions.lib.php');
 
 global $db;
 
-$langs->load('clia2a@clia2a');
-
-
-
 /*
  * Action
  */
@@ -50,8 +46,53 @@ $data['errorMsg'] = ''; // default message for errors
 			}
 
 		}
+		else if ($action == 'get_nb_place')
+	{
+		/*
+		 * On garde le nb_place le plus petit
+		 */
+		$fk_training = GETPOST('fk_training');
+		$fk_place = GETPOST('fk_place');
+		if ($fk_training>0)
+		{
+			$sql = "SELECT cat.nb_place FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue cat";
+			$sql .= " WHERE cat.rowid=".$fk_training;
+			$resql = $db->query($sql);
+			if (!empty($resql))
+			{
+				$obj = $db->fetch_object($resql);
+				
+				$data['nb_place'] = $obj->nb_place;
+				if ($fk_place>0)
+				{
+					$sql_place = "SELECT cat.nb_place FROM ".MAIN_DB_PREFIX."agefodd_place cat";
+					$sql_place .= " WHERE cat.rowid=".$fk_place;
+					$resql_place = $db->query($sql_place);
+					if (!empty($resql_place))
+					{
+						$place = $db->fetch_object($resql_place);
+						if(!empty($obj->nb_place))$data['nb_place'] = ($data['nb_place'] < $place->nb_place) ? $data['nb_place'] : $place->nb_place;
+						else if(!empty($place->nb_place)) $data['nb_place'] =  $place->nb_place;
+											}
+				}
 
+				$data['result'] = 1;
+			}
+		}
+		else if ($fk_place>0)
+		{
+			$sql_place = "SELECT cat.nb_place FROM ".MAIN_DB_PREFIX."agefodd_place cat";
+			$sql_place .= " WHERE cat.rowid=".$fk_place;
+			$resql_place = $db->query($sql_place);
+			if (!empty($resql_place))
+			{
+				$place = $db->fetch_object($resql_place);
+				$data['nb_place'] =$place->nb_place;
+				$data['result'] = 1;
+			}
+		}
 	}
+}
 
 echo json_encode($data);
 
