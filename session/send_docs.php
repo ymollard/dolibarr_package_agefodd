@@ -406,7 +406,7 @@ if (! empty($id)) {
 	// Display consult
 	$head = session_prepare_head($agf);
 
-	dol_fiche_head($head, 'send_docs', $langs->trans("AgfSessionDetail"), 0, 'generic');
+	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
 
 	dol_agefodd_banner_tab($agf, 'id');
 	print '<div class="underbanner clearboth"></div>';
@@ -2028,18 +2028,8 @@ if (! empty($id)) {
 		}
 
 
-		if ($action != 'view_actioncomm') {
-		    print '<div class="tabsAction">';
-			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=view_actioncomm&id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
-			print '</div>';
-		}
-
-		if ($action == 'view_actioncomm') {
-			// List of actions on element
-			include_once (DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php');
-			$formactions = new FormAgefodd($db);
-			$somethingshown = $formactions->showactions($agf, 'agefodd_agsession', $socid);
-		}
+		
+		
 	} elseif ($result==0) {
 	    print '<div style="text-align:center"><br>'.$langs->trans('AgfThirdparyMandatory').'</div>';
 	} else {

@@ -155,7 +155,9 @@ function show_conv($file, $socid, $nom_courrier) {
 			if (count($conv->line_trainee) > 0) {
 				$mess .= '(' . count($conv->line_trainee) . ')';
 			}
+			$mess .=document_send_line( $model, $socid, $nom_courrier, $conv);
 			$mess .= '<BR>';
+			
 		}
 		// Allow to create another
 		$legende = $langs->trans("AgfDocEdit");
@@ -180,7 +182,7 @@ function show_conv($file, $socid, $nom_courrier) {
  */
 function show_doc($file, $socid, $nom_courrier) {
 	global $langs, $conf, $id, $form, $idform;
-
+	
 	$model = $file;
 	if (! empty($nom_courrier))
 		$file = $file . '-' . $nom_courrier . '_' . $id . '_' . $socid . '.pdf';
@@ -209,6 +211,12 @@ function show_doc($file, $socid, $nom_courrier) {
 		$legende = $langs->trans("AgfDocDel");
 		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=del&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .=img_picto($langs->trans("AgfDocDel"), 'editdelete').'</a>';
+		
+		 if($nom_courrier == 'accueil')$model=$nom_courrier;
+		else if($nom_courrier == 'cloture')$model=$nom_courrier;
+		$mess .=document_send_line( $model, $socid);
+		
+
 	} else {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
@@ -835,23 +843,17 @@ function document_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 
 	print '</tr>';
 }
-function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
+function document_send_line( $mdle, $socid = 0, $nom_courrier = '', $conv = '') {
 	global $conf, $langs, $id, $idform, $db;
 	$langs->load('mails');
-	print '<tr style="height:14px">' . "\n";
-	print '<td style="border:0px; width:10px">&nbsp;</td>' . "\n";
-	print '<td style="border-right:0px;">';
-	print $intitule . '</td>' . "\n";
-	if ($mdle == 'bc' || $mdle == 'fac') {
-		print '<td style="border-left:0px;" align="right">' . show_fac($mdle, $socid, $mdle) . '</td></tr>' . "\n";
-	} elseif ($mdle == 'convention') {
-		print '<td style="border-left:0px; width:200px"  align="right">';
-		$agf_conv = new Agefodd_convention($db);
-		$result = $agf_conv->fetch_all($id, $socid);
+	
+	if ($mdle == 'convention') {
+		
+	
 		$mess = '';
-		if ((count($agf_conv->lines) > 0)) {
-			$mess = '';
-			foreach ( $agf_conv->lines as $conv ) {
+		
+		
+		
 
 				$file = 'convention' . '_' . $id . '_' . $socid;
 				// For backwoard compatibilty check convention file name with id of convention
@@ -867,107 +869,93 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 				/*$filename = 'convention_' . $id . '_' . $socid . '.pdf';
 				$file = $conf->agefodd->dir_output . '/' . $filename;*/
 				if (file_exists($file)) {
-					$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&convid=' . $conv->id . '&action=presend_convention&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
-				} else {
-					$mess .= $langs->trans('AgfDocNotDefined');
+					$mess .= '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&socid=' . $socid . '&convid=' . $conv->id . '&action=presend_convention&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0') . '</a>';
 				}
 				$mess .= '<BR>';
-			}
-		} else {
-			$mess .= $langs->trans('AgfDocNotDefined');
-		}
+			
+		
+		return $mess;
 
-		print $mess;
-
-		print '</td></tr>' . "\n";
+	
 	} else if ($mdle == 'fiche_presence') {
 
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		// $filename = 'fiche_presence_'.$id.'_'.$socid.'.pdf';
 		$filename = 'fiche_presence_' . $id . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_presence&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' .dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&action=presend_presence&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0') .  '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
+			return $langs->trans('AgfDocNotDefined');
+	
 	}else if ($mdle == 'fiche_presence_direct') {
 
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		// $filename = 'fiche_presence_'.$id.'_'.$socid.'.pdf';
 		$filename = 'fiche_presence_direct_' . $id . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_presence_direct&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&action=presend_presence_direct&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0'). '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
+			return $langs->trans('AgfDocNotDefined');
+	
 	} else if ($mdle == 'fiche_presence_empty') {
 
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		// $filename = 'fiche_presence_'.$id.'_'.$socid.'.pdf';
 		$filename = 'fiche_presence_empty_' . $id . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_presence_empty&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' .dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&action=presend_presence_empty&mode=init">'.img_picto($langs->trans('AgfSendDoc'), 'stcomm0')  . '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-			print '</td></tr>' . "\n";
+			return $langs->trans('AgfDocNotDefined');
+		
 	} else if ($mdle == 'attestation') {
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		$filename = 'attestation_' . $id . '_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_attestation&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&socid=' . $socid . '&action=presend_attestation&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
+			return $langs->trans('AgfDocNotDefined');
+		
 	} elseif ($mdle == 'cloture') {
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		$filename = 'courrier-cloture_' . $id . '_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_cloture&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&socid=' . $socid . '&action=presend_cloture&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0')  . '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
+			return $langs->trans('AgfDocNotDefined');
+		
 	} elseif ($mdle == 'accueil') {
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		$filename = 'courrier-accueil_' . $id . '_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_accueil&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&socid=' . $socid . '&action=presend_accueil&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
+			return $langs->trans('AgfDocNotDefined');
+		
 	} elseif ($mdle == 'convocation') {
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		$filename = 'convocation_' . $id . '_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_convocation&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&socid=' . $socid . '&action=presend_convocation&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
+			return $langs->trans('AgfDocNotDefined');
+		
 	} elseif ($mdle == 'conseils') {
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		$filename = 'conseils_' . $id . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_conseils&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&action=presend_conseils&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
+			return $langs->trans('AgfDocNotDefined');
+		
 	} elseif ($mdle == 'fiche_pedago') {
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 		$agfTraining = new Formation($db);
@@ -976,41 +964,29 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		$filename = 'fiche_pedago_' . $idform . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=presend_pedago&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&action=presend_pedago&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0')  . '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
+			return $langs->trans('AgfDocNotDefined');
 	}elseif ($mdle == 'mission_trainer') {
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		$filename = 'mission_trainer_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid='.$socid.'&action=presend_mission_trainer&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',1). '?id=' . $id . '&sessiontrainerid='.$socid.'&action=presend_mission_trainer&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
+			return $langs->trans('AgfDocNotDefined');
 	}elseif ($mdle == 'trainer_doc') {
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
-		print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid='.$socid.'&action=presend_trainer_doc&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
-		print '</td></tr>' . "\n";
+		return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&sessiontrainerid='.$socid.'&action=presend_trainer_doc&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0')  . '</a>';
 	} else if ($mdle == 'attestationendtraining') {
-		print '<td style="border-left:0px; width:200px"  align="right">';
 		// Check if file exist
 		$filename = 'attestationendtraining_' . $id . '_' . $socid . '.pdf';
 		$file = $conf->agefodd->dir_output . '/' . $filename;
 		if (file_exists($file)) {
-			print '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=presend_attestationendtraining&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . $langs->trans('SendMail') . '</a>';
+			return '<a href="' .dol_buildpath('/agefodd/session/send_docs.php',1) . '?id=' . $id . '&socid=' . $socid . '&action=presend_attestationendtraining&mode=init">'.img_picto($langs->trans('SendMail'), 'stcomm0') . '</a>';
 		} else
-			print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
-	} else {
-		print '<td style="border-left:0px; width:200px"  align="right">';
-		// Check if file exist
-		print $langs->trans('AgfDocNotDefined');
-		print '</td></tr>' . "\n";
-	}
+			return $langs->trans('AgfDocNotDefined');
+	} 
 }
 
 /**
