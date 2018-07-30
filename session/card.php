@@ -711,9 +711,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						'add-customer-contact' => 'disabled'
 				)
 		);
-		print $form->select_thirdparty_list($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
+		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
 	} else {
-		print $form->select_thirdparty_list($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1);
+		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1);
 	}
 	print '</td></tr>';
 
@@ -749,7 +749,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					'add-customer-contact' => 'disabled'
 			)
 	);
-	print $form->select_thirdparty_list($fk_soc_crea, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
+	print $form->select_company($fk_soc_crea, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
 	print '</td></tr>';
 
 	print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
@@ -770,7 +770,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . $form->textwithpicto('', $langs->trans("AgfTypeEmployeeHelp"), 1, 'help').'</td>';
 	print '<td>';
-	print $form->select_thirdparty_list($fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
+	print $form->select_company($fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
 	print '</td></tr>';
 
 	print '<tr class="order_product"><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
@@ -978,9 +978,9 @@ printSessionFieldsWithCustomOrder();
 										'add-customer-contact' => 'disabled'
 								)
 						);
-						print $form->select_thirdparty_list($agf->fk_soc, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
+						print $form->select_company($agf->fk_soc, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
 					} else {
-						print $form->select_thirdparty_list($agf->fk_soc, 'fk_soc', '', 'SelectThirdParty', 1);
+						print $form->select_company($agf->fk_soc, 'fk_soc', '', 'SelectThirdParty', 1);
 					}
 					if (! empty($agf->fk_soc) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_cust">' . img_delete($langs->trans('Delete')) . '</a>';
@@ -1023,7 +1023,7 @@ printSessionFieldsWithCustomOrder();
 									'add-customer-contact' => 'disabled'
 							)
 					);
-					print $form->select_thirdparty_list($agf->fk_soc_requester, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
+					print $form->select_company($agf->fk_soc_requester, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
 					if (! empty($agf->fk_soc_requester) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_requester">' . img_delete($langs->trans('Delete')) . '</a>';
 					}
@@ -1055,7 +1055,7 @@ printSessionFieldsWithCustomOrder();
 
 					print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
 					print '<td><table class="nobordernopadding"><tr><td>';
-					print $form->select_thirdparty_list($agf->fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
+					print $form->select_company($agf->fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
 					print '</td>';
 					print '<td>' . $form->textwithpicto('', $langs->trans("AgfTypeEmployeeHelp"), 1, 'help') . '</td></tr></table>';
 					if (! empty($agf->fk_soc_employer) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
