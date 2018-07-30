@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_place (
   acces_site text,
   note1 text,
   archive smallint NOT NULL DEFAULT 0,
+  nb_place integer NULL,
   fk_reg_interieur integer,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
@@ -46,3 +47,4 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_place (
   entity integer NOT NULL DEFAULT 1
 ) ENGINE=InnoDB;
 
+ALTER TABLE llx_agefodd_place ADD COLUMN nb_place integer NULL;

@@ -130,6 +130,7 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
 			$agf->fk_c_category_bpf = $categidbpf;
 			$agf->color = GETPOST('color', 'alpha');
 			$agf->qr_code_info = GETPOST('qr_code_info');
+			$agf->nb_place = GETPOST('nb_place', 'int');
 
 			if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 				$certif_year = GETPOST('certif_year', 'int');
@@ -208,6 +209,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 			$agf->ref_obj = GETPOST('ref', 'alpha');
 			$agf->ref_interne = GETPOST('ref_interne', 'alpha');
 			$agf->duree = GETPOST('duree', 'int');
+			$agf->nb_place = GETPOST('nb_place', 'int');
 			$agf->nb_subscribe_min = GETPOST('nbmintarget', 'int');
 			$agf->fk_product = GETPOST('productid', 'int');
 			$agf->fk_c_category = $categid;
@@ -507,6 +509,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 	print '<tr><td width="20%" class="fieldrequired">' . $langs->trans("AgfDuree") . '</td><td>';
 	print '<input name="duree" class="flat" size="4" value="' . GETPOST('duree', 'int') . '"></td></tr>';
+	print '<tr><td width="20%" class="">' . $langs->trans("AgfNbPlace") . '</td><td>';
+	print '<input name="nb_place" class="flat" size="4" value="' . GETPOST('nb_place', 'int') . '"></td></tr>';
 
 	if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 		print '<tr><td width="20%">' . $langs->trans("AgfCertificateDuration") . '</td><td>';
@@ -663,6 +667,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 				print '<tr><td width="20%" class="fieldrequired">' . $langs->trans("AgfDuree") . '</td><td>';
 				print '<input name="duree" class="flat" size="4" value="' . $agf->duree . '"></td></tr>';
+				print '<tr><td width="20%" class="">' . $langs->trans("AgfNbPlace") . '</td><td>';
+				print '<input name="nb_place" class="flat" size="4" value="' . $agf->nb_place . '"></td></tr>';
 
 				if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 					print '<tr><td width="20%">' . $langs->trans("AgfCertificateDuration") . '</td><td>';
@@ -794,6 +800,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 				print '<tr><td>' . $langs->trans("AgfDuree") . '</td><td colspan=2>';
 				print $agf->duree . '</td></tr>';
+				print '<tr><td>' . $langs->trans("AgfNbPlace") . '</td><td colspan=2>';
+				print $agf->nb_place . '</td></tr>';
 
 				if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 					print '<tr><td width="20%">' . $langs->trans("AgfCertificateDuration") . '</td><td>';

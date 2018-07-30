@@ -4513,6 +4513,9 @@ class Agsession extends CommonObject
 				$propal = new Propal($this->db);
 				$propal->fetch($frompropalid);
 				$soc->id = $propal->socid;
+                                if(!empty($propal->fk_multicurrency)) $invoice->fk_multicurrency = $propal->fk_multicurrency;
+                                if(!empty($propal->multicurrency_code)) $invoice->multicurrency_code = $propal->multicurrency_code;
+                                if(!empty($propal->multicurrency_tx)) $invoice->multicurrency_tx = $propal->multicurrency_tx;
 
 				if (! empty($propal->id) && is_array($propal->lines) && count($propal->lines) > 0) {
 					foreach ( $propal->lines as $line ) {
@@ -4592,9 +4595,17 @@ class Agsession extends CommonObject
 			}
 
 			$invoice->lines[0]->total_ht = $pu_ht * $invoice->lines[0]->qty;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $propal->lines[0]->multicurrency_total_ht;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $invoice->lines[0]->total_ht;
 			$invoice->lines[0]->total_ttc = $pu_ttc * $invoice->lines[0]->qty;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $propal->lines[0]->multicurrency_total_ttc;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $invoice->lines[0]->total_ttc;
 			$invoice->lines[0]->total_tva = $invoice->lines[0]->total_ttc - $invoice->lines[0]->total_ht;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $propal->lines[0]->multicurrency_total_tva;
+                        if(empty((float)$invoice->lines[0]->multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $invoice->lines[0]->total_tva;
 			$invoice->lines[0]->subprice = $pu_ht;
+                        if(empty((float)$invoice->lines[0]->multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $propal->lines[0]->multicurrency_subprice;
+                        if(empty((float)$invoice->lines[0]->multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $invoice->lines[0]->subprice;
 			$invoice->lines[0]->tva_tx = $tva_tx;
 			$invoice->lines[0]->vat_src_code=$vat_src_code;
 
@@ -4969,6 +4980,8 @@ class Agsession extends CommonObject
 		}
 			// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
+			$this->TConventionFinancialLine=array();
+
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
 				$nbstag = count($obj_agefodd_convention->line_trainee);
@@ -4987,16 +5000,62 @@ class Agsession extends CommonObject
 					$this->TStagiairesSessionConvention[]= $stagiaire_conv;
 					$this->nb_stagiaire_convention= count($this->TStagiairesSessionConvention);
 				}
+				if (count($this->TStagiairesSessionConvention)>0) {
+					$Tsta=array();
+					foreach($this->TStagiairesSessionConvention as $sta) {
+						$Tsta[]=$sta->prenom. ' '. $sta->nom;
+					}
+					$this->stagiaire_convention=implode(',',$Tsta);
+				}
 			}
 
 			if ($obj_agefodd_convention->element_type == 'invoice') {
 				$obj_agefodd_convention->fetch_invoice_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT facnumber as ref FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+					}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if ($obj_agefodd_convention->element_type == 'order') {
 				$obj_agefodd_convention->fetch_order_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT ref FROM '.MAIN_DB_PREFIX.'commande WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+					}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if ($obj_agefodd_convention->element_type == 'propal') {
 				$obj_agefodd_convention->fetch_propal_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT ref FROM '.MAIN_DB_PREFIX.'propal WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+					}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if (is_array($obj_agefodd_convention->lines ) && count($obj_agefodd_convention->lines )>0) {
 				foreach($obj_agefodd_convention->lines as $line) {
@@ -5006,13 +5065,16 @@ class Agsession extends CommonObject
 						$this->conv_amount_ttc += $line->total_ttc;
 						$this->conv_qty += $line->qty;
 						$this->conv_products .= $line->description.'<br />';
+						$this->TConventionFinancialLine[]= $line;
 					} elseif (empty($obj_agefodd_convention->only_product_session)) {
 						$this->conv_amount_ht += $line->total_ht;
 						$this->conv_amount_tva += $line->total_tva;
 						$this->conv_amount_ttc += $line->total_ttc;
 						$this->conv_qty += $line->qty;
 						$this->conv_products .= $line->description.'<br />';
+						$this->TConventionFinancialLine[]= $line;
 					}
+
 				}
 
 				$this->conv_tva_tx = $this->conv_amount_tva / $this->conv_amount_ht * 100;
@@ -5036,7 +5098,11 @@ class Agsession extends CommonObject
 		}
 
 		//Trainee link to the company convention
-		$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+		if (!empty($this->contactname)) {
+			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+		} else {
+			$this->signataire_intra ='';
+		}
 		$stagiaires = new Agefodd_session_stagiaire($db);
 		$result=$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
 		if ($result<0) {
@@ -5057,6 +5123,8 @@ class Agsession extends CommonObject
 			if (count($this->signataire_inter_array)>0) {
 				$this->signataire_inter=implode(', ',$this->signataire_inter_array);
 				unset($this->signataire_inter_array);
+			} else {
+				$this->signataire_inter='';
 			}
 		}
 
