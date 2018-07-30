@@ -65,6 +65,7 @@ class Formation extends CommonObject {
 	public $qr_code_info;
 	public $lines = array ();
 	public $trainers = array ();
+	public $nb_place;
 
 	/**
 	 * Constructor
@@ -126,7 +127,7 @@ class Formation extends CommonObject {
 
 			// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_formation_catalogue(";
-		$sql .= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but,";
+		$sql .= "datec, ref,ref_interne,intitule, duree, nb_place, public, methode, prerequis, but,";
 		$sql .= "programme, note1, note2, fk_user_author,fk_user_mod,entity,";
 		$sql .= "fk_product,nb_subscribe_min,fk_c_category,certif_duration";
 		$sql .= ",pedago_usage";
@@ -139,6 +140,7 @@ class Formation extends CommonObject {
 		$sql .= " " . (! isset($this->ref_interne) ? 'NULL' : "'" . $this->ref_interne . "'") . ",";
 		$sql .= " " . (! isset($this->intitule) ? 'NULL' : "'" . $this->intitule . "'") . ",";
 		$sql .= " " . (! isset($this->duree) ? 'NULL' : $this->duree) . ",";
+		$sql .= " " . (empty($this->nb_place) ? 'NULL' : $this->nb_place) . ",";
 		$sql .= " " . (! isset($this->public) ? 'NULL' : "'" . $this->public . "'") . ",";
 		$sql .= " " . (! isset($this->methode) ? 'NULL' : "'" . $this->methode . "'") . ",";
 		$sql .= " " . (! isset($this->prerequis) ? 'NULL' : "'" . $this->prerequis . "'") . ",";
@@ -158,9 +160,7 @@ class Formation extends CommonObject {
 		$sql .= " " . (empty($this->qr_code_info) ? "null" : "'" . $this->qr_code_info . "'") . ', ';
 		$sql .= " " . (empty($this->fk_c_category_bpf) ? "null" : $this->fk_c_category_bpf);
 		$sql .= ")";
-
 		$this->db->begin();
-
 		dol_syslog(get_class($this) . "::create ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -221,7 +221,7 @@ class Formation extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " c.rowid, c.ref, c.ref_interne, c.intitule, c.duree,";
+		$sql .= " c.rowid, c.ref, c.ref_interne, c.intitule, c.duree, c.nb_place,";
 		$sql .= " c.public, c.methode, c.prerequis, but, c.programme, c.archive, c.note1, c.note2 ";
 		$sql .= " ,c.note_private, c.note_public, c.fk_product,c.nb_subscribe_min,c.fk_c_category,dictcat.code as catcode ,dictcat.intitule as catlib ";
 		$sql .= " ,c.certif_duration";
@@ -255,6 +255,7 @@ class Formation extends CommonObject {
 				$this->ref_interne = $obj->ref_interne;
 				$this->intitule = stripslashes($obj->intitule);
 				$this->duree = $obj->duree;
+				$this->nb_place = $obj->nb_place;
 				$this->public = stripslashes($obj->public);
 				$this->methode = stripslashes($obj->methode);
 				$this->prerequis = stripslashes($obj->prerequis);
@@ -389,6 +390,7 @@ class Formation extends CommonObject {
 		$sql .= " ref_interne=" . (isset($this->ref_interne) ? "'" . $this->ref_interne . "'" : "null") . ",";
 		$sql .= " intitule=" . (isset($this->intitule) ? "'" . $this->intitule . "'" : "null") . ",";
 		$sql .= " duree=" . (isset($this->duree) ? price2num($this->duree) : "null") . ",";
+		$sql .= " nb_place=" . (!empty($this->nb_place) ? ($this->nb_place) : "null") . ",";
 		$sql .= " public=" . (isset($this->public) ? "'" . $this->public . "'" : "null") . ",";
 		$sql .= " methode=" . (isset($this->methode) ? "'" . $this->methode . "'" : "null") . ",";
 		$sql .= " prerequis=" . (isset($this->prerequis) ? "'" . $this->prerequis . "'" : "null") . ",";
@@ -783,7 +785,7 @@ class Formation extends CommonObject {
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array(), $array_options_keys=array()) {
 		global $langs;
 
-		$sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.ref, c.datec, c.duree, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
+		$sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.ref, c.datec, c.duree,c.nb_place, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
 		$sql .= "dictcatbpf.code as catcodebpf ,dictcatbpf.intitule as catlibbpf,";
 		$sql .= " (SELECT MAX(sess1.datef) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.status IN (4,5)) as lastsession,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.status IN (4,5)) as nbsession";
@@ -863,6 +865,7 @@ class Formation extends CommonObject {
 					$line->ref_interne = $obj->ref_interne;
 					$line->datec = $this->db->jdate($obj->datec);
 					$line->duree = $obj->duree;
+					$line->nb_place = $obj->nb_place;
 					$line->lastsession = $obj->lastsession;
 					$line->nbsession = $obj->nbsession;
 					$line->fk_product = $obj->fk_product;

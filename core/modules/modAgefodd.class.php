@@ -384,7 +384,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Mask of certificate code';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-
+		
 		$r ++;
 		$this->const[$r][0] = "AGF_SESSION_ADDON";
 		$this->const[$r][1] = "chaine";
@@ -2284,7 +2284,7 @@ class modAgefodd extends DolibarrModules
 		);
 
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array(
 		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
 		    'type' => 'left',
 		    'titre' => 'AgfMenuReportCA',
@@ -2485,7 +2485,7 @@ class modAgefodd extends DolibarrModules
 										$filetorun[$fileversion_array[0]]=array('fromversion'=>$fileversion_array[0],'toversion'=>$fileversion,'file'=>$file);
 										dol_syslog(get_class($this) . "::_load_tables_agefodd run file:" . $file, LOG_DEBUG);
 									}
-
+									
 								}
 							} else {
 									$this->error = "Error " . $this->db->lasterror();
@@ -2493,7 +2493,7 @@ class modAgefodd extends DolibarrModules
 								$error ++;
 								}
 
-
+								
 						}
 					}
 					closedir($handle);
@@ -2509,11 +2509,11 @@ class modAgefodd extends DolibarrModules
 						if($last_version_install <='3.2' && $data['toversion']>='3.3') {
 							$this->update_refsession();
 						}
-
-					if ($result <= 0)
-						$error ++;
-					}
-				}
+								
+								if ($result <= 0)
+									$error ++;
+							}
+						}
 
 				if ($error == 0) {
 					$ok = 1;
@@ -2533,7 +2533,7 @@ class modAgefodd extends DolibarrModules
 
 		return $ok;
 	}
-
+	
 	function update_refsession()
 	{
 		global $db, $user;
