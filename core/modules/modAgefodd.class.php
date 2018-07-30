@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.4';
+		$this->version = '3.5';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -384,7 +384,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Mask of certificate code';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r ++;
 		$this->const[$r][0] = "AGF_SESSION_ADDON";
 		$this->const[$r][1] = "chaine";
@@ -2284,7 +2284,7 @@ class modAgefodd extends DolibarrModules
 		);
 
 		$r ++;
-		$this->menu[$r] = array(
+		$this->menu [$r] = array (
 		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
 		    'type' => 'left',
 		    'titre' => 'AgfMenuReportCA',
@@ -2485,7 +2485,7 @@ class modAgefodd extends DolibarrModules
 										$filetorun[$fileversion_array[0]]=array('fromversion'=>$fileversion_array[0],'toversion'=>$fileversion,'file'=>$file);
 										dol_syslog(get_class($this) . "::_load_tables_agefodd run file:" . $file, LOG_DEBUG);
 									}
-									
+
 								}
 							} else {
 									$this->error = "Error " . $this->db->lasterror();
@@ -2493,7 +2493,7 @@ class modAgefodd extends DolibarrModules
 								$error ++;
 								}
 
-								
+
 						}
 					}
 					closedir($handle);
@@ -2533,7 +2533,7 @@ class modAgefodd extends DolibarrModules
 
 		return $ok;
 	}
-	
+
 	function update_refsession()
 	{
 		global $db, $user;
@@ -2552,6 +2552,24 @@ class modAgefodd extends DolibarrModules
 				$ags->ref = $modSession->getNextValue('', '', $obj->datec);
 
 			$ags->update($user);
+		}
+	}
+	function change_order_supplier_type()
+	{
+		global $db, $user;
+		dol_include_once('/user/class/user.class.php');
+		dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+		$sql = "SELECT rowid FROM ".MAIN_DB_PREFIX."agefodd_session_element WHERE element_type = 'order_supplier' ORDER BY rowid";
+		$resql = $db->query($sql);
+		if(!empty($resql))
+		{
+			while ($obj = $db->fetch_object($resql))
+			{
+				$ags = new Agefodd_session_element($db);
+				$ags->fetch($obj->rowid);
+				$ags->element_type='order_supplier_trainer';
+				$ags->update($user);
+			}
 		}
 	}
 
