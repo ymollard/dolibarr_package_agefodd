@@ -709,9 +709,9 @@ if (! empty($id)) {
 					}
 
 					print '<br>' . $langs->trans('AgfTraineeSocDocUse') . ' ';
-					print $form->select_thirdparty_list($stagiaires->lines[$i]->fk_soc_link, 'fk_soc_link', '', 'SelectThirdParty', 1, 0);
+					print $form->select_company($stagiaires->lines[$i]->fk_soc_link, 'fk_soc_link', '', 'SelectThirdParty', 1, 0);
 					print '<br>' . $langs->trans('AgfTypeRequester') . ' ';
-					print $form->select_thirdparty_list($stagiaires->lines[$i]->fk_soc_requester, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
+					print $form->select_company($stagiaires->lines[$i]->fk_soc_requester, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
 					if (! empty($conf->global->AGF_MANAGE_BPF)) {
 						print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
 						print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . $stagiaires->lines[$i]->hour_foad . '" />';
@@ -748,7 +748,7 @@ if (! empty($id)) {
 										'add-customer-contact' => 'disabled'
 								)
 						);
-						print $form->select_thirdparty_list($agf_opca->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2))', 'SelectThirdParty', 1, 0, $events);
+						print $form->select_company($agf_opca->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2))', 'SelectThirdParty', 1, 0, $events);
 						if (! empty($agf_opca->fk_soc_OPCA) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 							print '<a href="' . $_SERVER['PHP_SELF'] . '?sessid=' . $agf->id . '&amp;action=remove_opcafksocOPCA&amp;stagerowid='.$stagiaires->lines[$i]->stagerowid.'&amp;fk_soc_trainee='.$stagiaires->lines[$i]->socid.'&amp;modstagid='.$stagiaires->lines[$i]->id.'">' . img_delete($langs->trans('Delete')) . '</a>';
 						}
@@ -952,9 +952,9 @@ if (! empty($id)) {
 			}
 
 			print '<br>' . $langs->trans('AgfTraineeSocDocUse') . ' ';
-			print $form->select_thirdparty_list(0, 'fk_soc_link', '', 'SelectThirdParty', 1, 0);
+			print $form->select_company(0, 'fk_soc_link', '', 'SelectThirdParty', 1, 0);
 			print '<br>' . $langs->trans('AgfTypeRequester') . ' ';
-			print $form->select_thirdparty_list(0, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
+			print $form->select_company(0, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
 			if (! empty($conf->global->AGF_MANAGE_BPF)) {
 				print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
 				print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . GETPOST('hour_load') . '" />';
@@ -1071,7 +1071,7 @@ if (! empty($id)) {
 								'add-customer-contact' => 'disabled'
 						)
 				);
-				print $form->select_thirdparty_list($agf->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2,3))', 'SelectThirdParty', 1, 0, $events);
+				print $form->select_company($agf->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2,3))', 'SelectThirdParty', 1, 0, $events);
 				if (! empty($agf->fk_soc_OPCA) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 					print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_fksocOPCA">' . img_delete($langs->trans('Delete')) . '</a>';
 				}

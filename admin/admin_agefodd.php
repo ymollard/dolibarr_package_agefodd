@@ -258,6 +258,8 @@ if ($action == 'setvar') {
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT', $default_training_cat, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
+	
+
 
 	$default_training_cat_bpf = GETPOST('AGF_DEFAULT_TRAINNING_CAT_BPF', 'int');
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT_BPF', $default_training_cat_bpf, 'chaine', 0, '', $conf->entity);
@@ -955,6 +957,8 @@ print $formAgefodd->select_training_categ_bpf($conf->global->AGF_DEFAULT_TRAINNI
 print '<td align="center">';
 print '</td>';
 print '</tr>';
+
+
 
 print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
 print '</tr>';

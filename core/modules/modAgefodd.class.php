@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.3.1';
+		$this->version = '3.4';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -82,6 +82,7 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/trainee",
 				"/agefodd/report",
 				"/agefodd/report/bpf",
+				"/agefodd/report/ca",
 				"/agefodd/background"
 		);
 		$r = 0;
@@ -132,7 +133,7 @@ class modAgefodd extends DolibarrModules
 				3
 		);
 		$this->need_dolibarr_version = array(
-				4,
+				6,
 				0
 		);
 		$this->langfiles = array(
@@ -2284,6 +2285,20 @@ class modAgefodd extends DolibarrModules
 
 		$r ++;
 		$this->menu[$r] = array(
+		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+		    'type' => 'left',
+		    'titre' => 'AgfMenuReportCA',
+		    'url' => '/agefodd/report/report_ca.php',
+		    'langs' => 'agefodd@agefodd',
+		    'position' => 900 + $r,
+		    'enabled' => '$user->rights->agefodd->report',
+		    'perms' => '$user->rights->agefodd->report',
+		    'target' => '',
+		    'user' => 0
+		);
+
+		$r ++;
+		$this->menu[$r] = array(
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
 				'titre' => 'AgfMenuDemoAdmin',
@@ -2446,8 +2461,8 @@ class modAgefodd extends DolibarrModules
 				$handle = @opendir($dir);
 				// Dir may not exist
 				if (is_resource($handle)) {
+					$filetorun=array();
 					while ( ($file = readdir($handle)) !== false ) {
-						$dorun = false;
 						if (preg_match('/\.sql$/i', $file) && ! preg_match('/\.key\.sql$/i', $file) && substr($file, 0, 6) == 'update') {
 							dol_syslog(get_class($this) . "::_load_tables_agefodd analyse file:" . $file, LOG_DEBUG);
 
@@ -2467,9 +2482,7 @@ class modAgefodd extends DolibarrModules
 									$fileversion = str_replace('.sql', '', $fileversion_array[1]);
 									dol_syslog(get_class($this) . "::_load_tables_agefodd fileversion:" . $fileversion, LOG_DEBUG);
 									if (version_compare($last_version_install, $fileversion) == - 1) {
-										
-										
-										$dorun = true;
+										$filetorun[$fileversion_array[0]]=array('fromversion'=>$fileversion_array[0],'toversion'=>$fileversion,'file'=>$file);
 										dol_syslog(get_class($this) . "::_load_tables_agefodd run file:" . $file, LOG_DEBUG);
 									}
 									
@@ -2480,18 +2493,27 @@ class modAgefodd extends DolibarrModules
 								$error ++;
 								}
 
-							if ($dorun) {
-								$result = run_sql($dir . $file, 1, '', 1);
 								
-								if($last_version_install <='3.2' && $fileversion>='3.3')$this->update_refsession();
+						}
+					}
+					closedir($handle);
+				}
+
+				if (count($filetorun)>0) {
+					//Sort file array to be sure data is upgrade script are executed in correct order
+					ksort($filetorun);
+					foreach($filetorun as $key=>$data) {
+						dol_syslog(get_class($this) . "::_load_tables_agefodd run file from sorted array :" . $data['file'], LOG_DEBUG);
+						$result = run_sql($dir . $data['file'], 1, '', 1);
+
+						if($last_version_install <='3.2' && $data['toversion']>='3.3') {
+							$this->update_refsession();
+						}
 								
 								if ($result <= 0)
 									$error ++;
 							}
 						}
-					}
-					closedir($handle);
-				}
 
 				if ($error == 0) {
 					$ok = 1;
