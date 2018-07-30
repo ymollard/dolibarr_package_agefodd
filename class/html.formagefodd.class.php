@@ -1604,9 +1604,10 @@ class FormAgefodd extends Form
 	 * @param int $filter_trainer Trainer
 	 * @param int $canedit edit filter
 	 * @param bool $set_select_thirdparty_multiple transforme le select thirdparty en multiselect
+	 * @param string $filter_customer Customer
 	 * @return void
 	 */
-	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action = '', $filter_session_status = '', $filter_trainee = 0, $filter_control_occupation=false, $set_select_thirdparty_multiple=false) {
+	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action = '', $filter_session_status = '', $filter_trainee = 0, $filter_control_occupation=false, $set_select_thirdparty_multiple=false, $filter_customer_place=array()) {
 		global $conf, $langs;
 
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
@@ -1649,13 +1650,13 @@ class FormAgefodd extends Form
 				print '<td class="nowrap">';
 				print $langs->trans("or") . ' ' . $langs->trans("Customer");
 				print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
-				
+
 				$moreparam = '';
 				if ($set_select_thirdparty_multiple && (float) DOL_VERSION <= 8.0)
 				{
 					$moreparam = ' name="fk_soc[]" multiple >'.";//"; // OMG j'ose vraiment le faire ? .. oui je l'ai fait :'( [@see => https://github.com/Dolibarr/dolibarr/pull/9028]
 				}
-				
+
 				if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 					$events = array();
 					$events[] = array(
@@ -1666,12 +1667,12 @@ class FormAgefodd extends Form
 									'add-customer-contact' => 'disabled'
 							)
 					);
-					
+
 					$html_select_thirdparty_list = $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events, '', 0, 0, 'minwidth100', $moreparam, $set_select_thirdparty_multiple);
 				} else {
 					$html_select_thirdparty_list = $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1, 0, array(), '', 0, 0, 'minwidth100', $moreparam, $set_select_thirdparty_multiple);
 				}
-				
+
 				// MOUAHAHAHAH, comme je peux pas hack le 1er param de la méthode select_thirdparty_list() pour réécrire le test, je fist le contenu html qui est retourné par cette même méthode (je suis diabolique, oui je le sais...)
 				if ($set_select_thirdparty_multiple && (float) DOL_VERSION <= 8.0)
 				{
@@ -1680,9 +1681,9 @@ class FormAgefodd extends Form
 						 $html_select_thirdparty_list = preg_replace('/<option value="'.$fk_soc.'">/', '<option value="'.$fk_soc.'" selected>', $html_select_thirdparty_list);
 					}
 				}
-				
+
 				print $html_select_thirdparty_list;
-					
+
 				print '</td></tr>';
 				print '<tr>';
 				print '<td class="nowrap maxwidthonsmartphone">';
@@ -1699,6 +1700,31 @@ class FormAgefodd extends Form
 				}
 				print '</td></tr>';
 			}
+
+
+			print '<tr>';
+			print '<td class="nowrap">';
+			print $langs->trans("or") . ' ' . $langs->trans("AgfLieu"). ' '. $langs->trans("Customer");
+			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
+
+			$moreparam = '';
+			if ($set_select_thirdparty_multiple && (float) DOL_VERSION <= 8.0)
+			{
+				$moreparam = ' name="fk_soc_place[]" multiple >'.";//"; // OMG j'ose vraiment le faire ? .. oui je l'ai fait :'( [@see => https://github.com/Dolibarr/dolibarr/pull/9028]
+			}
+			$html_select_thirdparty_place_list = $form->select_thirdparty_list($filter_customer_place, 'fk_soc_place', '', 'SelectThirdParty', 1, 0, array(), '', 0, 0, 'minwidth100', $moreparam, $set_select_thirdparty_multiple);
+
+			if ($set_select_thirdparty_multiple && (float) DOL_VERSION <= 8.0)
+			{
+				foreach ($filter_customer_place as $fk_soc)
+				{
+					$html_select_thirdparty_place_list = preg_replace('/<option value="'.$fk_soc.'">/', '<option value="'.$fk_soc.'" selected>', $html_select_thirdparty_place_list);
+				}
+			}
+
+			print $html_select_thirdparty_place_list;
+			print '</td></tr>';
+
 			print '<tr>';
 			print '<td class="nowrap">';
 			print $langs->trans("or") . ' ' . $langs->trans("AgfFormateur");
@@ -1788,7 +1814,7 @@ class FormAgefodd extends Form
 			}
 			print $form->multiselectarray('search_session_status', $data_status, $filter_session_status, '', 0, '', 0, '100%');
 			print '</td></tr>';
-			
+
 			if ($filter_control_occupation !== false)
 			{
 				print '<tr>';

@@ -48,11 +48,8 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   invoice_amount double(24,8) DEFAULT 0, 
   cost_buy_charges double(24,8) DEFAULT 0, 
   cost_sell_charges double(24,8) DEFAULT 0, 
-  is_date_res_site smallint NOT NULL DEFAULT 0,
   date_res_site datetime DEFAULT NULL,
-  is_date_res_confirm_site smallint NOT NULL DEFAULT 0,
   date_res_confirm_site datetime DEFAULT NULL,
-  is_date_res_trainer smallint NOT NULL DEFAULT 0,
   date_res_trainer datetime DEFAULT NULL,
   date_ask_OPCA datetime DEFAULT NULL,
   is_date_ask_OPCA smallint NOT NULL DEFAULT 0,
@@ -73,5 +70,3 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   import_key varchar(36) DEFAULT NULL,
   ref_ext varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB;
-
-ALTER TABLE llx_agefodd_session ADD COLUMN fk_soc_employer integer DEFAULT NULL AFTER fk_socpeople_presta;
