@@ -45,7 +45,7 @@ class Agefodd_sesscalendar {
 	public $status = 0;
 	public $lines = array ();
 
-	
+
 	const STATUS_DRAFT = 0;
 	const STATUS_CONFIRMED = 1;
 	const STATUS_CANCELED = -1;
@@ -254,9 +254,9 @@ class Agefodd_sesscalendar {
 				$line = new Agefodd_sesscalendar($this->db);
 				$line->fetch($obj->rowid);
 
-				$this->lines[] = $line;	
+				$this->lines[] = $line;
 			}
-			
+
 			$this->db->free($resql);
 			return 1;
 		} else {
@@ -280,7 +280,7 @@ class Agefodd_sesscalendar {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.rowid = " . $id;
-			
+
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -379,7 +379,7 @@ class Agefodd_sesscalendar {
 	public function getSumDureePresence($fk_stagiaire=null)
 	{
 		$duree = 0;
-		
+
 		$agfssh = new Agefoddsessionstagiaireheures($this->db);
 		$agfssh->fetchAllBy($this->id, 'fk_calendrier');
 		if (!empty($agfssh->lines))
@@ -390,18 +390,18 @@ class Agefodd_sesscalendar {
 				$duree += $line->heures;
 			}
 		}
-		
+
 		return $duree;
 	}
-	
+
 	public function delete($user)
 	{
 		$error = 0;
-		
+
 		dol_syslog(get_class($this) . "::delete", LOG_DEBUG);
-		
+
 		$this->db->begin();
-		
+
 		// Event agenda rattaché
 		if (! empty($this->fk_actioncomm))
 		{
@@ -415,6 +415,7 @@ class Agefodd_sesscalendar {
 
 		if (!$error)
 		{
+			dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
 			// Les heures saisies pour les participants
 			$agfssh = new Agefoddsessionstagiaireheures($this->db);
 			$agfssh->fetchAllBy($this->id, 'fk_calendrier');
@@ -427,7 +428,7 @@ class Agefodd_sesscalendar {
 				}
 			}
 		}
-		
+
 		if (!$error)
 		{
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier";
@@ -439,7 +440,7 @@ class Agefodd_sesscalendar {
 				$this->error = $this->db->lasterror();
 			}
 		}
-		
+
 		if (!$error)
 		{
 			$this->db->commit();
@@ -452,7 +453,7 @@ class Agefodd_sesscalendar {
 			return -1 * $error;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
@@ -461,7 +462,7 @@ class Agefodd_sesscalendar {
 	 */
 	public function remove($id) {
 		global $user;
-		
+
 		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$result = $this->fetch($id);
 		return $this->delete($user);
