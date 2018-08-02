@@ -3179,7 +3179,7 @@ class Agsession extends CommonObject
 		}
 		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
-		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
+		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne,ord_inv.rowid";
 
 		if (! empty($invoiceid)) {
 			$sql .= " ,invoice.facnumber ";
