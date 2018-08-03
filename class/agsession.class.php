@@ -4459,6 +4459,7 @@ class Agsession extends CommonObject
 
 				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 					$desc_trainee .= "\n";
+					$nbtrainee = 0;
 					$num_OPCA_file_array=array();
 					foreach ( $session_trainee->lines as $line ) {
 
@@ -4481,10 +4482,17 @@ class Agsession extends CommonObject
 								}
 							}
 							$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
+							$nbtrainee ++;
 						}
 					}
 				}
-				$desc .= ' ' . $desc_OPCA . $desc_trainee;
+				$desc_trainee_head = "\n" . $nbtrainee . ' ';
+				if ($nbtrainee > 1) {
+					$desc_trainee_head .= $langs->trans('AgfParticipants');
+				} else {
+					$desc_trainee_head .= $langs->trans('AgfParticipant');
+				}
+				$desc .= ' ' . $desc_OPCA . $desc_trainee_head . $desc_trainee;
 			}
 			$invoice->lines[0]->desc = $desc;
 
