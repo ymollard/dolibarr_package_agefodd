@@ -637,7 +637,7 @@ class ReportCA extends AgefoddExportExcel {
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 				$sql .= " ON so.rowid = f.fk_soc";
-				if (array_key_exists('group_by_session', $filter) || array_key_exists('s.type_session', $filter) || array_key_exists('socrequester.nom', $filter) || array_key_exists('so.parent|sorequester.parent', $filter)) {
+				if (array_key_exists('sale.fk_user', $filter) || array_key_exists('group_by_session', $filter) || array_key_exists('s.type_session', $filter) || array_key_exists('socrequester.nom', $filter) || array_key_exists('so.parent|sorequester.parent', $filter)) {
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselement";
 					$sql .= " ON sesselement.element_type='invoice' AND f.rowid = sesselement.fk_element";
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -646,8 +646,12 @@ class ReportCA extends AgefoddExportExcel {
 					$sql .= " ON socrequester.rowid = s.fk_soc_requester";
 				}
 				if (array_key_exists('sale.fk_user', $filter)) {
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ass";
+					$sql .= " ON ass.fk_session_agefodd = s.rowid";
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire trainee";
+					$sql .= " ON trainee.rowid = ass.fk_stagiaire";
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sale";
-					$sql .= " ON f.fk_soc = sale.fk_soc";
+					$sql .= " ON sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)";
 				}
 
 				$sql .= " WHERE YEAR(f.datef)=" . $year_todo;
@@ -743,7 +747,7 @@ class ReportCA extends AgefoddExportExcel {
 				//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "categorie_product as catprod ON catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . ") AND catprod.fk_product=prod.rowid ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 				$sql .= " ON so.rowid = f.fk_soc";
-				if (array_key_exists('group_by_session', $filter) || array_key_exists('s.type_session', $filter) || array_key_exists('socrequester.nom', $filter) || array_key_exists('so.parent|sorequester.parent', $filter)) {
+				if (array_key_exists('sale.fk_user', $filter) || array_key_exists('group_by_session', $filter) || array_key_exists('s.type_session', $filter) || array_key_exists('socrequester.nom', $filter) || array_key_exists('so.parent|sorequester.parent', $filter)) {
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselement";
 					$sql .= " ON sesselement.element_type='invoice' AND f.rowid = sesselement.fk_element";
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -752,8 +756,12 @@ class ReportCA extends AgefoddExportExcel {
 					$sql .= " ON socrequester.rowid = s.fk_soc_requester";
 				}
 				if (array_key_exists('sale.fk_user', $filter)) {
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ass";
+					$sql .= " ON ass.fk_session_agefodd = s.rowid";
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire trainee";
+					$sql .= " ON trainee.rowid = ass.fk_stagiaire";
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sale";
-					$sql .= " ON f.fk_soc = sale.fk_soc";
+					$sql .= " ON sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)";
 				}
 				$sql .= " WHERE YEAR(f.datef)=" . $year_todo;
 				$sql .= " AND MONTH(f.datef)=" . $month_todo;
