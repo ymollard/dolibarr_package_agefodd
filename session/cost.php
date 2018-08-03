@@ -806,14 +806,35 @@ foreach ( $agf_formateurs->lines as $line ) {
 			// Get all document lines
 			$agf_fin->fetch_by_session_by_thirdparty($id, $contact_static->thirdparty->id, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
 
-			// TODO : cheack if this feautre work without huge data update
-			// $agf_fin->fetch_by_session_by_thirdparty($id, $soc_trainer, 'invoice_supplier_trainer',$line->opsid);
-
-			if (count($agf_fin->lines) > 0) {
-
+			//Manage trainer with multicompany
+			$soc_trainer_array=array();
+			if ($conf->companycontacts->enabled) {
+				
+				$sql_innercontact = "SELECT c.fk_soc_source ";
+				$sql_innercontact .= " FROM " . MAIN_DB_PREFIX . "company_contacts as c";
+				$sql_innercontact .= " WHERE c.fk_contact=" . $contact_static->id;
+				
+				$resql_innercontact = $db->query($sql_innercontact);
+				if ($resql_innercontact) {
+					while ( $obj_innercontact = $db->fetch_object($resql_innercontact) ) {
+						$soc_trainer_array[$obj_innercontact->fk_soc_source] = $obj_innercontact->fk_soc_source;
+					}
+				} else {
+					setEventMessage($db->lasterror(),'errors');
+				}
+			}
+			$soc_trainer_array[$contact_static->thirdparty->id] = $contact_static->thirdparty->id;
+			
+			$invoice_trainer_array=array();
+			foreach($soc_trainer_array as $soc_trainer) {
+				// Get all document lines
+				$agf_fin->fetch_by_session_by_thirdparty($id, $soc_trainer, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
+				$invoice_trainer_array=array_merge($invoice_trainer_array,$agf_fin->lines);
+			}
+			if (count($invoice_trainer_array) > 0) {
 				print '<td>';
 
-				foreach ( $agf_fin->lines as $line_fin ) {
+				foreach ( $invoice_trainer_array as $line_fin ) {
 
 					if ($action == 'addline' && $idelement == $line_fin->id) {
 
@@ -909,8 +930,36 @@ foreach ( $agf_formateurs->lines as $line ) {
 				print '<input type="hidden" name="action" value="invoice_supplier_trainer_confirm">';
 				print '<input type="hidden" name="opsid" value="' . $line->opsid . '">';
 				print '<input type="hidden" name="id" value="' . $id . '">';
-				print '<input type="hidden" name="socid" value="' . $contact_static->thirdparty->id . '">';
+				
+				if ($conf->companycontacts->enabled) {
+					
+					$sql_innercontact = "SELECT c.fk_soc_source ";
+					$sql_innercontact .= " FROM " . MAIN_DB_PREFIX . "company_contacts as c";
+					$sql_innercontact .= " WHERE c.fk_contact=" . $contact_static->id;
+					
+					$resql_innercontact = $db->query($sql_innercontact);
+					if ($resql_innercontact) {
+						while ( $obj_innercontact = $db->fetch_object($resql_innercontact) ) {
+							$soc_trainer_array[$obj_innercontact->fk_soc_source] = $obj_innercontact->fk_soc_source;
+						}
+					} else {
+						setEventMessage($db->lasterror(),'errors');
+					}
+				}
+				$soc_trainer_array[$contact_static->thirdparty->id] = $contact_static->thirdparty->id;
+				
+				if (count($soc_trainer_array)==1) {
+					print '<input type="hidden" name="socid" value="' . $contact_static->thirdparty->id . '">';
+				}
+				
 				print '<table class="nobordernopadding"><tr>';
+				
+				if ($conf->companycontacts->enabled && count($soc_trainer_array)>1) {
+					print '<td nowrap="nowrap">';
+					// print $langs->trans('AgfSelectFournProduct');
+					print $form->select_company($contact_static->thirdparty->id, 'socid', 's.rowid IN ('.implode(',',$soc_trainer_array).')', 0, 1, 1);
+					print '</td>';
+				}
 
 				print '<td nowrap="nowrap">';
 				// print $langs->trans('AgfSelectFournProduct');
