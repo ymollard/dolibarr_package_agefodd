@@ -45,6 +45,7 @@ class Agefodd_session_formateur {
 	public $lines = array ();
 	public $labelstatut;
 	public $labelstatut_short;
+	public $socpeopleid;
 	
 	/**
 	 * Constructor
@@ -186,6 +187,7 @@ class Agefodd_session_formateur {
 				$this->trainer_status = $obj->trainer_status;
 				$this->trainer_type = $obj->trainer_type;
 				$this->trainer_type_label = $obj->trainertypelabel;
+				$this->socpeopleid = $obj->fk_socpeople;
 			}
 			$this->db->free($resql);
 			
@@ -257,6 +259,7 @@ class Agefodd_session_formateur {
 					$line->trainer_status = $obj->trainer_status;
 					$line->trainer_type = $obj->trainertype;
 					$line->trainer_type_label = $obj->trainertypelabel;
+					$this->socpeopleid = $obj->fk_socpeople;
 					
 					$this->lines[$i] = $line;
 					

@@ -675,6 +675,52 @@ if ($action == 'link' || ($action == 'invoice_supplier_missions_confirm' && ! em
 		}
 	}
 
+	if ($conf->companycontacts->enabled && $type == 'invoice_supplier_trainer') {
+
+		// Find extra thirdarties link to trainer (case of trainer that are invoiced themselves or from other company)
+		$agf_formateurs = new Agefodd_session_formateur($db);
+		$result=$agf_formateurs->fetch($opsid);
+		if ($result < 0) {
+			setEventMessage($compcontact->error, 'errors');
+		} else {
+			if (!empty($agf_formateurs->socpeopleid)) {
+				dol_include_once('/companycontacts/class/companycontacts.class.php');
+				$compcontact=new Companycontacts($db);
+				$result=$compcontact->fetchAll('t.fk_soc_source','',0,0,array('t.fk_contact'=>$agf_formateurs->socpeopleid));
+				if ($result < 0) {
+					setEventMessage($compcontact->error, 'errors');
+				} else {
+					if (is_array($compcontact->lines) && count($compcontact->lines)>0) {
+						foreach($compcontact->lines as $trainersocline) {
+							$contact_static = new Contact($db);
+							$contact_static->fetch($line->socpeopleid);
+
+							$agf_liste = new Agefodd_session_element($db);
+							$result = $agf_liste->fetch_invoice_supplier_by_thridparty($trainersocline->fk_soc_source);
+							if ($result < 0) {
+								setEventMessage($agf_liste->error, 'errors');
+							} else {
+								foreach ( $agf_liste->lines as $line ) {
+									$invoice_array[$line->id] = $line->ref . ' ' . $line->ref_supplier;
+									$facfourn = new FactureFournisseur($db);
+									$facfourn->fetch($line->id);
+									$facfourn->fetch_lines();
+									foreach($facfourn->lines as $facline){
+										if (!array_key_exists($facline->id, $lines_invoice_array)) {
+											if(!empty($facline->label))$label =  $facline->label;
+											else $label =  $facline->description;
+											$lines_invoice_array[$facline->id] = $line->ref . ' ' . $line->ref_supplier.' => '.$label.' x'.$facline->qty.' -- '.price($facline->subprice).'€';
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	$form_question = array ();
 	$form_question[] = array (
 			'label' => $langs->trans("AgfFactureSelectInvoice"),
