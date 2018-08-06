@@ -2484,10 +2484,12 @@ class modAgefodd extends DolibarrModules
 					closedir($handle);
 				}
 
-				if (count($filetorun)>0) {
+				if (!empty($filetorun) && is_array($filetorun) && count($filetorun)>0) 
+				{
 					//Sort file array to be sure data is upgrade script are executed in correct order
 					ksort($filetorun);
-					foreach($filetorun as $key=>$data) {
+					foreach($filetorun as $key=>$data) 
+					{
 						dol_syslog(get_class($this) . "::_load_tables_agefodd run file from sorted array :" . $data['file'], LOG_DEBUG);
 						$result = run_sql($dir . $data['file'], 1, '', 1);
 
@@ -2495,10 +2497,11 @@ class modAgefodd extends DolibarrModules
 							$this->update_refsession();
 						}
 								
-								if ($result <= 0)
-									$error ++;
-							}
+						if ($result <= 0){
+							$error ++;
 						}
+					}
+				}
 
 				if ($error == 0) {
 					$ok = 1;
