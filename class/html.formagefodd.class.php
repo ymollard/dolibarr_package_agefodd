@@ -64,30 +64,30 @@ class FormAgefodd extends Form
 
 			if ($selectid )
 			{
-			
+
 				$formationtmpselect = new Formation($this->db);
 				$formationtmpselect->fetch($selectid);
 				$selected_input_value = $formationtmpselect->intitule;
-			
+
 				unset($formationtmpselect);
 			}
 			// mode=1 means customers products
 			$filter=json_encode($filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
-			
+
 			print ajax_autocompleter($selectid, $htmlname, '../ajax/formation.php', $urloption,  $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT, 0, '');
 
-			
-			
+
+
 			return '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'" />';
-			
+
 		}
 		else
 		{
 			return  $this->select_formation_liste($selectid, $htmlname , $sort , $showempty , $forcecombo, $event, $filters );
 		}
 	}
-	
+
 	/**
 	 * Affiche un champs select contenant la liste des formations disponibles.
 	 *
@@ -399,20 +399,20 @@ class FormAgefodd extends Form
 			// mode=1 means customers products
 			$filter=str_replace('FROM', 'TOREPLACE', $filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
-			
+
 			print ajax_autocompleter($selectid, $htmlname, '../ajax/lieu.php', $urloption,  $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT , 0, '');
 
-			
-			
+
+
 			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'" />';
-			
+
 		}
 		else
 		{
 			return  $this->select_site_forma_liste($selectid, $htmlname ,  $showempty , $forcecombo , $event,$class );
 		}
 	}
-	
+
 	/**
 	 * affiche un champs select contenant la liste des sites de formation déjà référéencés.
 	 *
@@ -432,7 +432,7 @@ class FormAgefodd extends Form
 		$sql .= " WHERE archive = 0";
 		if (!empty($filter))
 				$sql .= ' AND '.$filter;
-		
+
 		$sql .= " AND p.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 		$sql .= " ORDER BY p.ref_interne";
 
@@ -470,12 +470,12 @@ class FormAgefodd extends Form
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::select_site_forma " . $this->error, LOG_ERR);
-			
+
 			if(empty($mode)) return - 1;
 			else return $arrayout;
 		}
 	}
-	
+
 
 	/**
 	 * affiche un champs select contenant la liste des stagiaires déjà référéencés.
@@ -506,20 +506,20 @@ class FormAgefodd extends Form
 			// mode=1 means customers products
 			$filter=str_replace('FROM', 'TOREPLACE', $filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
-			
+
 			print ajax_autocompleter($selectid, $htmlname, '../ajax/stagiaire.php', $urloption, $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT , 0, '');
 
-			
-			
+
+
 			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'" />';
-			
+
 		}
 		else
 		{
 			return  $this->select_stagiaire_list($selectid, $htmlname , $filter , $showempty , $forcecombo , $event );
 		}
 	}
-	
+
 	public function select_stagiaire_list($selectid = '', $htmlname = 'stagiaire', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(), $mode=0)
 	{
 		$arrayout= array();
@@ -530,7 +530,7 @@ class FormAgefodd extends Form
 			$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe as so";
 
 			$sql .= " ON so.rowid = s.fk_soc";
-			
+
 			if (!empty($filter))
 			{
 				$sql .= ' WHERE '.$filter;
@@ -541,7 +541,7 @@ class FormAgefodd extends Form
 				$sql .= " WHERE s.entity IN (".getEntity('agefodd'/* agsession */).")";
 			}
 			$sql .= " ORDER BY fullname";
-			
+
 			dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
 			$result = $this->db->query($sql);
 			if ($result)
@@ -564,7 +564,7 @@ class FormAgefodd extends Form
 					while ($i < $num)
 					{
 						$obj = $this->db->fetch_object($result);
-						
+
 						$label = $obj->fullname;
 						if ($obj->socname)
 							$label .= ' ('.$obj->socname.')';
@@ -591,7 +591,7 @@ class FormAgefodd extends Form
 				dol_syslog(get_class($this)."::select_stagiaire ".$this->error, LOG_ERR);
 				if(empty($mode))return - 1;
 				else return array();
-			
+
 			}
 	}
 
@@ -852,20 +852,20 @@ class FormAgefodd extends Form
 			// mode=1 means customers products
 			$filter=str_replace('FROM', 'TOREPLACE', $filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
-			
+
 			print ajax_autocompleter($selectid, $htmlname, '../ajax/formateur.php', $urloption, $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT, 0, '');
 
-			
-			
+
+
 			print '<input type="text" class="minwidth100" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="'.$selected_input_value.'" />';
-			
+
 		}
 		else
 		{
 			return  $this->select_formateur_liste($selectid, $htmlname , $filter , $showempty , $forcecombo , $event );
 		}
 	}
-	
+
 	/**
 	 * affiche un champs select contenant la liste des formateurs déjà référéencés.
 	 *
@@ -879,7 +879,7 @@ class FormAgefodd extends Form
 	 */
 	public function select_formateur_liste($selectid = '', $htmlname = 'formateur', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(),$mode=0) {
 		global $conf, $langs;
-		
+
 		$arrayout=array();
 
 		$sql = "SELECT";
@@ -897,7 +897,7 @@ class FormAgefodd extends Form
 			$sql .= ' AND ' . $filter;
 		}
 		$sql .= " ORDER BY sp.lastname,u.lastname";
-		
+
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
@@ -1763,7 +1763,7 @@ class FormAgefodd extends Form
 				print "</tr>\n";
 			}
 
-			if (strpos($_SERVER["PHP_SELF"], 'pertrainer.php') !== false) {
+			if (strpos($_SERVER["PHP_SELF"], 'pertrainer.php') !== false || strpos($_SERVER["PHP_SELF"], 'perlocation.php') !== false) {
 				print '<tr>';
 				print '<td class="nowrap">' . $langs->trans("DateStart") . '</td>';
 				print '<td>';
