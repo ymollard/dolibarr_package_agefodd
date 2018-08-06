@@ -562,12 +562,43 @@ if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			print 'Session '.$obj->rowid.' dans '.MAIN_DB_PREFIX.'agefodd_session qui non une formation qui n existe plus<BR>';
 		}
-		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session WHERE fk_formation_catalogue NOT IN (SELECT rowid FROM llx_agefodd_formation_catalogue)<BR><BR><BR>';
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM `'.MAIN_DB_PREFIX.'_agefodd_session_stagiaire`  WHERE (fk_stagiaire IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'_agefodd_stagiaire WHERE (fk_soc NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'_societe) OR fk_soc IS NULL)));';
+		
+		print '<BR>DELETE FROM '.MAIN_DB_PREFIX.'_agefodd_stagiaire WHERE (fk_soc NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'_societe) OR fk_soc IS NULL);<BR><BR><BR>';
+		
+		
+		
 	}
 }else {
 	dol_print_error($db);
 }
 
+
+//Collation
+$sql = 'SELECT CONCAT(\'ALTER TABLE `\', TABLE_NAME,\'` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;\') AS    mySQL 
+        FROM INFORMATION_SCHEMA.TABLES
+        WHERE TABLE_SCHEMA= "'.$dolibarr_main_db_name.'" 
+                AND TABLE_TYPE="BASE TABLE"
+                AND TABLE_COLLATION != \'utf8_general_ci\' ';
+//echo $sql;
+$resql = $db->query($sql);
+if ($resql) {
+    if ($db->num_rows($resql)) {
+        
+        print 'Certaines tables ne sont pas en collation utf8';
+        print '<BR><BR><BR>Suggestion de correction<BR><BR>';
+        
+        print '<BR>SET foreign_key_checks = 0;';
+        while ( $obj = $db->fetch_object($resql) ) {
+            print $obj->mySQL.'<BR>';
+        }
+        print '<BR>SET foreign_key_checks = 1;<BR><BR><BR>';
+       
+        
+    }
+}else {
+    dol_print_error($db);
+}
 
 
 print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';
