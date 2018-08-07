@@ -579,7 +579,7 @@ $sql = 'SELECT CONCAT(\'ALTER TABLE `\', TABLE_NAME,\'` CONVERT TO CHARACTER SET
         WHERE TABLE_SCHEMA= "'.$dolibarr_main_db_name.'" 
                 AND TABLE_TYPE="BASE TABLE"
                 AND TABLE_COLLATION != \''.$dolibarr_main_db_collation.'\' 
-                AND TABLE_NAME = \''.MAIN_DB_PREFIX.'agefodd%\' ';
+                AND TABLE_NAME LIKE \''.MAIN_DB_PREFIX.'agefodd%\' ';
 //echo $sql;
 $resql = $db->query($sql);
 if ($resql) {
