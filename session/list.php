@@ -441,9 +441,9 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, $user, array_keys($extrafields->attribute_label));
 
 if ($resql != - 1) {
-	
+
 	$TTotalBySession = _getTTotalBySession();
-	
+
 	$num = $resql;
 
 	$arrayofselected=is_array($toselect)?$toselect:array();
@@ -729,7 +729,7 @@ if ($resql != - 1) {
 	print "</tr>\n";
 
 	$propal_total_ht = $pv_total_ht = $invoice_total_ht = 0;
-	
+
 	$var = true;
 	$oldid=0;
 	foreach ( $agf->lines as $line ) {
@@ -846,7 +846,7 @@ if ($resql != - 1) {
 						if (!empty($TTotalBySession[$line->rowid]['propal']['total_ht_without_draft'])) $amount = $TTotalBySession[$line->rowid]['propal']['total_ht_without_draft'];
 						if (!empty($TTotalBySession[$line->rowid]['propal']['total_ht_from_all_propals'])) $amount-= $TTotalBySession[$line->rowid]['propal']['total_ht_from_all_propals'];
 					}
-					
+
 					$propal_total_ht+=$amount;
 					print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" >' . price($amount,0, $langs, 1, -1, -1, 'auto') . '</td>';
 //					print '<td  nowrap="nowrap" name="margininfoline1'.$line->rowid.'" >' . price($line->sell_price,0, $langs, 1, -1, -1, 'auto') . '</td>';
@@ -872,9 +872,9 @@ if ($resql != - 1) {
 						if (!empty($TTotalBySession[$line->rowid]['invoice']['total_ht_without_draft'])) $amount = $TTotalBySession[$line->rowid]['invoice']['total_ht_without_draft'];
 						if (!empty($TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_propals'])) $amount-= $TTotalBySession[$line->rowid]['invoice']['total_ht_from_all_invoices'];
 					}
-					
+
 					$invoice_total_ht+=$amount;
-					
+
 					if ($invoice_total_ht == 0 && $line->sell_price!=0) {
 						$bgfact = 'red';
 					} else {
@@ -1015,9 +1015,9 @@ if ($resql != - 1) {
 
 		$i ++;
 	}
-	
+
 	if ($user->rights->agefodd->session->margin) {
-		
+
 		print '<tr class="liste_total" name="margininfototal" >';
 		print '<td>'.$langs->trans('Total').'</td>';
 		if (! empty($arrayfields['s.rowid']['checked']) && ! empty($arrayfields['s.ref']['checked']))					print '<td></td>';
@@ -1060,11 +1060,11 @@ if ($resql != - 1) {
 			{
 				if (! empty($arrayfields["ef.".$key]['checked']))
 				{
-					print print '<td></td>';
+					print '<td></td>';
 				}
 			}
 		}
-		
+
 		//Action column
 		print '<td>&nbsp;</td>';
 		print "</tr>\n";
