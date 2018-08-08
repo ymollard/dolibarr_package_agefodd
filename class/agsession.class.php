@@ -5221,10 +5221,41 @@ class Agsession extends CommonObject
 		}
 
 		if(!empty($id_trainer)) {
+			$this->trainer_datehourtextline='';
+			$this->trainer_datetextline='';
+			$this->TFormateursSessionCal=array();
+			$trainercalarray=array();
 		    dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+		    dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 
 			$agf_session_trainer = new Agefodd_session_formateur($this->db);
+			$formateurs_cal = new Agefoddsessionformateurcalendrier($db);
+
 			$agf_session_trainer->fetch($id_trainer);
+
+			$result=$formateurs_cal->fetch_all($id_trainer);
+			if ($result<0) {
+				//I know nothing is bad
+			}
+			if (is_array($formateurs_cal->lines) && count($formateurs_cal->lines)>0) {
+				$old_date='';
+				foreach($formateurs_cal->lines as $trainercalline) {
+					if ($trainercalline->date_session != $old_date) {
+						$this->TFormateursSessionCal[$trainercalline->date_session]=dol_print_date($trainercalline->date_session,'daytext');
+						$this->trainer_datehourtextline .= "<br>";
+						$this->trainer_datehourtextline .= dol_print_date($trainercalline->date_session, 'daytext') . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($trainercalline->heured, 'hour') . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($trainercalline->heuref, 'hour');
+					} else {
+						$this->trainer_datehourtextline .= ", ";
+						$this->trainer_datehourtextline .= dol_print_date($trainercalline->heured, 'hour') . ' - ' . dol_print_date($trainercalline->heuref, 'hour');
+					}
+					$old_date = $trainercalline->date_session;
+
+				}
+				$this->trainer_datetextline=implode(', ',$this->TFormateursSessionCal);
+			} else {
+				$this->trainer_datehourtextline='';
+				$this->trainer_datetextline='';
+			}
 
 			$this->formateur_session = $agf_session_trainer;
 			$this->formateur_session_societe = $agf_session_trainer->thirdparty;
