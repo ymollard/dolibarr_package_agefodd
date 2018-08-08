@@ -3211,7 +3211,7 @@ class Agsession extends CommonObject
 
 		dol_syslog(get_class($this) . "::fetch_all_by_order_invoice_propal", LOG_DEBUG);
 		$resql = $this->db->query($sql);
-		
+
 		if ($resql) {
 			$this->line = array ();
 			$num = $this->db->num_rows($resql);
@@ -5172,6 +5172,7 @@ class Agsession extends CommonObject
 					$old_date = $line->date_session;
 				}
 				$this->trainer_day_cost=$this->cost_trainer / count($dates);
+				$this->session_nb_days=count($dates);
 			}
 		}
 		$this->date_text=$this->libSessionDate();
