@@ -4570,19 +4570,24 @@ class Agsession extends CommonObject
 				$price_base_type = $product->price_base_type;
 				// dol_syslog ( get_class ( $this ) . "::createInvoice si amount non empty comme from propal tva_tx=".$tva_tx." price2num(amount)=".price2num($amount)." pu_ttc=" . $pu_ttc, LOG_DEBUG );
 			}
-
+			
+			$multicurrency_total_ht = floatval($invoice->lines[0]->multicurrency_total_ht);
+			$multicurrency_total_ttc = floatval($invoice->lines[0]->multicurrency_total_ttc);
+			$multicurrency_total_tva = floatval($invoice->lines[0]->multicurrency_total_tva);
+			$multicurrency_subprice = floatval($invoice->lines[0]->multicurrency_subprice);
+			
 			$invoice->lines[0]->total_ht = $pu_ht * $invoice->lines[0]->qty;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $propal->lines[0]->multicurrency_total_ht;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $invoice->lines[0]->total_ht;
+			if(empty($multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $propal->lines[0]->multicurrency_total_ht;
+			if(empty($multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $invoice->lines[0]->total_ht;
 			$invoice->lines[0]->total_ttc = $pu_ttc * $invoice->lines[0]->qty;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $propal->lines[0]->multicurrency_total_ttc;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $invoice->lines[0]->total_ttc;
+			if(empty($multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $propal->lines[0]->multicurrency_total_ttc;
+			if(empty($multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $invoice->lines[0]->total_ttc;
 			$invoice->lines[0]->total_tva = $invoice->lines[0]->total_ttc - $invoice->lines[0]->total_ht;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $propal->lines[0]->multicurrency_total_tva;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $invoice->lines[0]->total_tva;
+			if(empty($multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $propal->lines[0]->multicurrency_total_tva;
+			if(empty($multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $invoice->lines[0]->total_tva;
 			$invoice->lines[0]->subprice = $pu_ht;
-                        if(empty((float)$invoice->lines[0]->multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $propal->lines[0]->multicurrency_subprice;
-                        if(empty((float)$invoice->lines[0]->multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $invoice->lines[0]->subprice;
+			if(empty($multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $propal->lines[0]->multicurrency_subprice;
+			if(empty($multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $invoice->lines[0]->subprice;
 			$invoice->lines[0]->tva_tx = $tva_tx;
 			$invoice->lines[0]->vat_src_code=$vat_src_code;
 
