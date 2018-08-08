@@ -546,7 +546,8 @@ if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			print 'participants '.$obj->nom.' / '.$obj->prenom.' dans '.MAIN_DB_PREFIX.'agefodd_stagiaire qui n a plus de société associer<BR>';
 		}
-		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE (fk_soc NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe) OR fk_soc IS NULL)<BR><BR><BR>';
+		print '<BR><BR><BR>Suggestion de correction :  DELETE FROM `'.MAIN_DB_PREFIX.'agefodd_session_stagiaire`  WHERE (fk_stagiaire IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE (fk_soc NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe) OR fk_soc IS NULL)));';
+		print '<BR>DELETE FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE (fk_soc NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe) OR fk_soc IS NULL)<BR><BR><BR>';
 	}
 }else {
 	dol_print_error($db);
@@ -562,7 +563,10 @@ if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			print 'Session '.$obj->rowid.' dans '.MAIN_DB_PREFIX.'agefodd_session qui non une formation qui n existe plus<BR>';
 		}
-		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session WHERE fk_formation_catalogue NOT IN (SELECT rowid FROM llx_agefodd_formation_catalogue)<BR><BR><BR>';
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE (fk_soc NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe) OR fk_soc IS NULL);<BR><BR><BR>';
+		
+		
+		
 	}
 }else {
 	dol_print_error($db);
@@ -586,8 +590,67 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+//Collation, PS: il existe aussi un script dans abricot pour ça.
+$sql = 'SELECT CONCAT(\'ALTER TABLE `\', TABLE_NAME,\'` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;\') AS    mySQL 
+        FROM INFORMATION_SCHEMA.TABLES
+        WHERE TABLE_SCHEMA= "'.$dolibarr_main_db_name.'" 
+                AND TABLE_TYPE="BASE TABLE"
+                AND TABLE_COLLATION != \''.$dolibarr_main_db_collation.'\' 
+                AND TABLE_NAME LIKE \''.MAIN_DB_PREFIX.'agefodd%\' ';
+//echo $sql;
+$resql = $db->query($sql);
+if ($resql) {
+    if ($db->num_rows($resql)) {
+        
+        print 'Certaines tables ne sont pas en collation utf8';
+        print '<BR><BR><BR>Suggestion de correction<BR><BR>';
+        
+        print '<BR>SET foreign_key_checks = 0;';
+        while ( $obj = $db->fetch_object($resql) ) {
+            print $obj->mySQL.'<BR>';
+        }
+        print '<BR>SET foreign_key_checks = 1;<BR><BR><BR>';
+       
+        
+    }
+}else {
+    dol_print_error($db);
+}
+
+
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier');
+_datec_check(MAIN_DB_PREFIX.'agefodd_formateur_category');
 
 print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';
 
 llxFooter();
 $db->close();
+
+
+function _datec_check($table){
+    
+    global $db;
+    // datec agefodd_session_formateur calendrier
+    $sql = 'SELECT COUNT(*) as nb FROM '.$table.' WHERE CAST(datec AS CHAR(20)) = \'0000-00-00 00:00:00\';';
+    //echo $sql;
+    $resql = $db->query($sql);
+    if ($resql) {
+        if ($db->num_rows($resql)) {
+            $obj = $db->fetch_object($resql) ;
+            
+            if($obj->nb>0){
+                
+                print 'Certaines lignes de la table '.$table.' utilisent une valeur de date incompatible ';
+                print '<BR>Suggestion de correction';
+                print '<BR>ALTER TABLE `'.$table.'` CHANGE `datec` `datec` DATETIME NULL DEFAULT NULL;';
+                print '<BR>UPDATE '.$table.' SET datec = NULL   WHERE CAST(datec AS CHAR(20)) = \'0000-00-00 00:00:00\'; <BR><BR><BR>';
+                
+            }
+            
+        }
+    }else {
+        dol_print_error($db);
+    }
+    
+}

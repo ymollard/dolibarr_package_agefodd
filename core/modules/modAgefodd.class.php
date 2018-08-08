@@ -2499,7 +2499,8 @@ class modAgefodd extends DolibarrModules
 					closedir($handle);
 				}
 
-				if (count($filetorun)>0) {
+				if (!empty($filetorun) && is_array($filetorun) && count($filetorun)>0) {
+
 					//Sort file array to be sure data is upgrade script are executed in correct order
 					ksort($filetorun);
 					foreach($filetorun as $key=>$data) {
@@ -2510,10 +2511,10 @@ class modAgefodd extends DolibarrModules
 							$this->update_refsession();
 						}
 
-								if ($result <= 0)
-									$error ++;
-							}
-						}
+						if ($result <= 0)
+							$error ++;
+					}
+				}
 
 				if ($error == 0) {
 					$ok = 1;
