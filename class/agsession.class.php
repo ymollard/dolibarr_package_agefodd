@@ -4957,6 +4957,8 @@ class Agsession extends CommonObject
 		}
 			// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
+			$this->TConventionFinancialLine=array();
+
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
 				$nbstag = count($obj_agefodd_convention->line_trainee);
@@ -4975,16 +4977,62 @@ class Agsession extends CommonObject
 					$this->TStagiairesSessionConvention[]= $stagiaire_conv;
 					$this->nb_stagiaire_convention= count($this->TStagiairesSessionConvention);
 				}
+				if (count($this->TStagiairesSessionConvention)>0) {
+					$Tsta=array();
+					foreach($this->TStagiairesSessionConvention as $sta) {
+						$Tsta[]=$sta->prenom. ' '. $sta->nom;
+					}
+					$this->stagiaire_convention=implode(',',$Tsta);
+				}
 			}
 
 			if ($obj_agefodd_convention->element_type == 'invoice') {
 				$obj_agefodd_convention->fetch_invoice_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT facnumber as ref FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+			}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if ($obj_agefodd_convention->element_type == 'order') {
 				$obj_agefodd_convention->fetch_order_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT ref FROM '.MAIN_DB_PREFIX.'commande WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+					}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if ($obj_agefodd_convention->element_type == 'propal') {
 				$obj_agefodd_convention->fetch_propal_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT ref FROM '.MAIN_DB_PREFIX.'propal WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+					}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if (is_array($obj_agefodd_convention->lines ) && count($obj_agefodd_convention->lines )>0) {
 				foreach($obj_agefodd_convention->lines as $line) {
@@ -4994,12 +5042,20 @@ class Agsession extends CommonObject
 						$this->conv_amount_ttc += $line->total_ttc;
 						$this->conv_qty += $line->qty;
 						$this->conv_products .= $line->description.'<br />';
+						$line->form_label = $langs->trans('AgfTraining')."  ".(!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
+						$this->TConventionFinancialLine[]= $line;
 					} elseif (empty($obj_agefodd_convention->only_product_session)) {
 						$this->conv_amount_ht += $line->total_ht;
 						$this->conv_amount_tva += $line->total_tva;
 						$this->conv_amount_ttc += $line->total_ttc;
 						$this->conv_qty += $line->qty;
 						$this->conv_products .= $line->description.'<br />';
+						if ($line->fk_product==$this->fk_product) {
+							$line->form_label = $langs->trans('AgfTraining')."  ".(!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
+						} else {
+							$line->form_label = $line->description;
+						}
+						$this->TConventionFinancialLine[]= $line;
 					}
 				}
 
@@ -5024,7 +5080,11 @@ class Agsession extends CommonObject
 		}
 
 		//Trainee link to the company convention
-		$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+		if (!empty($this->contactname)) {
+			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+		} else {
+			$this->signataire_intra ='';
+		}
 		$stagiaires = new Agefodd_session_stagiaire($db);
 		$result=$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
 		if ($result<0) {
@@ -5045,6 +5105,8 @@ class Agsession extends CommonObject
 			if (count($this->signataire_inter_array)>0) {
 				$this->signataire_inter=implode(', ',$this->signataire_inter_array);
 				unset($this->signataire_inter_array);
+			} else {
+				$this->signataire_inter='';
 			}
 		}
 
@@ -5078,9 +5140,13 @@ class Agsession extends CommonObject
 					$old_date = $line->date_session;
 				}
 				$this->trainer_day_cost=$this->cost_trainer / count($dates);
+				$this->session_nb_days=count($dates);
 			}
 		}
 		$this->date_text=$this->libSessionDate();
+		if (empty($this->session_nb_days) && !empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
+			$this->session_nb_days=$this->duree_session / $conf->global->AGF_NB_HOUR_IN_DAYS;
+		}
 
 		$this->trainer_text='';
 		$trainerarray=array();
