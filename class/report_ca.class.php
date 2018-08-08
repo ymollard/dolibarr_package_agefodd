@@ -494,7 +494,7 @@ class ReportCA extends AgefoddExportExcel {
 				$line_to_output[$i] = 0;
 				$line_to_output[$i+1] = $array_total_ht[$year_todo];
 				if (array_key_exists($year_todo - 1, $array_total_ht)) {
-					if ($array_total_ht[$year_todo] != 0) {
+					if ($array_total_ht[$year_todo - 1] != 0) {
 						$line_to_output[$i + 2] = (($array_total_ht[$year_todo] - $array_total_ht[$year_todo - 1]) / $array_total_ht[$year_todo - 1]);
 					} else {
 						$line_to_output[$i + 2] = 'N/A';
@@ -519,7 +519,7 @@ class ReportCA extends AgefoddExportExcel {
 				$line_to_output[$i] = 0;
 				$line_to_output[$i+1] = $array_total_ttc[$year_todo];
 				if (array_key_exists($year_todo - 1, $array_total_ttc)) {
-					if ($array_total_ttc[$year_todo] != 0) {
+					if ($array_total_ttc[$year_todo - 1] != 0) {
 						$line_to_output[$i + 2] = (($array_total_ttc[$year_todo] - $array_total_ttc[$year_todo - 1]) / $array_total_ttc[$year_todo - 1]);
 					} else {
 						$line_to_output[$i + 2] = 'N/A';
@@ -549,7 +549,7 @@ class ReportCA extends AgefoddExportExcel {
 					$line_to_output[$i+1] = ${'array_total_ht_trim' . $trim}[$year_todo];
 
 					if (array_key_exists($year_todo - 1, ${'array_total_ht_trim' . $trim})) {
-						if (${'array_total_ht_trim' . $trim}[$year_todo] != 0) {
+						if (${'array_total_ht_trim' . $trim}[$year_todo - 1] != 0) {
 							$line_to_output[$i + 2] = ((${'array_total_ht_trim' . $trim}[$year_todo] - ${'array_total_ht_trim' . $trim}[$year_todo - 1]) / ${'array_total_ht_trim' . $trim}[$year_todo - 1]);
 						} else {
 							$line_to_output[$i + 2] = 'N/A';
