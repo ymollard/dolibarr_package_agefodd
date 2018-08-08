@@ -5173,12 +5173,12 @@ class Agsession extends CommonObject
 				}
 				$this->trainer_day_cost=$this->cost_trainer / count($dates);
 				$this->session_nb_days=count($dates);
-				if ($this->session_nb_days && !empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
-					$this->session_nb_days=$this->duree_session / $conf->global->AGF_NB_HOUR_IN_DAYS;
-				}
 			}
 		}
 		$this->date_text=$this->libSessionDate();
+		if (empty($this->session_nb_days) && !empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
+			$this->session_nb_days=$this->duree_session / $conf->global->AGF_NB_HOUR_IN_DAYS;
+		}
 
 		$this->trainer_text='';
 		$trainerarray=array();
