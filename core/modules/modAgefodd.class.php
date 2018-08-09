@@ -383,7 +383,7 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][3] = 'Mask of certificate code';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
-		
+
 		$r ++;
 		$this->const[$r][0] = "AGF_SESSION_ADDON";
 		$this->const[$r][1] = "chaine";
@@ -1319,6 +1319,12 @@ class modAgefodd extends DolibarrModules
 		$keyforaliasextra = 'extrasession';
 		include DOL_DOCUMENT_ROOT . '/core/extrafieldsinexport.inc.php';
 
+		$keyforselect = 'agefodd_stagiaire';
+		$keyforelement = 'AgfNbreParticipants';
+		$keyforaliasextra = 'extratrainee';
+		include DOL_DOCUMENT_ROOT . '/core/extrafieldsinexport.inc.php';
+
+
 		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_session as s';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_calendrier as cal ON s.rowid = cal.fk_agefodd_session';
@@ -1346,7 +1352,7 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_contact as agfcontact ON agfcontact.rowid = sesscontact.fk_agefodd_contact';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactsession ON contactsession.rowid = agfcontact.fk_socpeople';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as extrasession ON extrasession.fk_object = s.rowid';
-		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_extrafields as extracatalogue ON extracatalogue.fk_object = c.rowid';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_extrafields as extratrainee ON extratrainee.fk_object = sta.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as sosta ON sosta.rowid = sta.fk_soc';
 		$this->export_sql_end[$r] .= ' WHERE 1 ';
 
@@ -2470,7 +2476,7 @@ class modAgefodd extends DolibarrModules
 										$filetorun[$fileversion_array[0]]=array('fromversion'=>$fileversion_array[0],'toversion'=>$fileversion,'file'=>$file);
 										dol_syslog(get_class($this) . "::_load_tables_agefodd run file:" . $file, LOG_DEBUG);
 									}
-									
+
 								}
 							} else {
 									$this->error = "Error " . $this->db->lasterror();
@@ -2478,17 +2484,17 @@ class modAgefodd extends DolibarrModules
 								$error ++;
 								}
 
-								
+
 						}
 					}
 					closedir($handle);
 				}
 
-				if (!empty($filetorun) && is_array($filetorun) && count($filetorun)>0) 
+				if (!empty($filetorun) && is_array($filetorun) && count($filetorun)>0)
 				{
 					//Sort file array to be sure data is upgrade script are executed in correct order
 					ksort($filetorun);
-					foreach($filetorun as $key=>$data) 
+					foreach($filetorun as $key=>$data)
 					{
 						dol_syslog(get_class($this) . "::_load_tables_agefodd run file from sorted array :" . $data['file'], LOG_DEBUG);
 						$result = run_sql($dir . $data['file'], 1, '', 1);
@@ -2496,7 +2502,7 @@ class modAgefodd extends DolibarrModules
 						if($last_version_install <='3.2' && $data['toversion']>='3.3') {
 							$this->update_refsession();
 						}
-								
+
 						if ($result <= 0){
 							$error ++;
 						}
@@ -2521,7 +2527,7 @@ class modAgefodd extends DolibarrModules
 
 		return $ok;
 	}
-	
+
 	function update_refsession()
 	{
 		global $db, $user;
