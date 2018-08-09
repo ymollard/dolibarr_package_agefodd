@@ -392,23 +392,29 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 
 		// Logo
 		$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
-		if ($this->emetteur->logo) {
-			if (is_readable($logo)) {
-				$height = pdf_getHeightForLogo($logo);
-				$width_logo = pdf_getWidthForLogo($logo);
-				if ($width_logo > 0) {
-					$posx = $this->page_largeur - $this->marge_droite - $width_logo;
-				} else {
-					$posx = $this->page_largeur - $this->marge_droite - 55;
-				}
-				$pdf->Image($logo, $posx, $posy, 0, $height);
-			} else {
-				$pdf->SetTextColor(200, 0, 0);
-				$pdf->SetFont('', 'B', $default_font_size - 2);
-				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
+		if ($this->emetteur->logo)
+		{
+			if (is_readable($logo))
+			{
+				$height=(empty($conf->global->MAIN_DOCUMENTS_LOGO_HEIGHT)?22:$conf->global->MAIN_DOCUMENTS_LOGO_HEIGHT);
+				$maxwidth=130;
+				dol_include_once('/core/lib/images.lib.php');
+				$TSizes = dol_getImageSize($logo);
+				$width = round($height * $TSizes['width'] / $TSizes['height']);
+				if ($width > $maxwidth) $height = $height * $maxwidth / $width;
+
+				$pdf->Image($logo, $this->page_largeur - $this->marge_droite - $width, $posy, $width, $height);
+			}
+			else
+			{
+				$pdf->SetTextColor(200,0,0);
+				$pdf->SetFont('','B',$default_font_size - 2);
+				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound",$logo), 0, 'L');
 				$pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
 			}
-		} else {
+		}
+		else
+		{
 			$text = $this->emetteur->name;
 			$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
