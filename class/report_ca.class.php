@@ -854,24 +854,17 @@ class ReportCA extends AgefoddExportExcel {
 				dol_syslog(get_class($this) . "::fetch_ca HFHT sql=" . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
+					$this->value_ca_total_hthf[$year_todo][$month_todo] = $this->value_ca_total_ht[$year_todo][$month_todo];
 					if ($this->db->num_rows($resql)) {
 						while ( $obj = $this->db->fetch_object($resql) ) {
 							if (! empty($obj->amount_ht)) {
-								$this->value_ca_total_hthf[$year_todo][$month_todo]['total'] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'] - $obj->amount_ht;
-							} else {
-								$this->value_ca_total_hthf[$year_todo][$month_todo]['total'] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
-							}
+								$this->value_ca_total_hthf[$year_todo][$month_todo]['total'] -= $obj->amount_ht;
 
-							if($filter['group_by_session']) {
-								if (! empty($obj->amount_ht)) {
-									$this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$obj->rowid] = $this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$obj->rowid] - $obj->amount_ht;
-								} else {
-									$this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$obj->rowid] = $this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$obj->rowid];
+								if($filter['group_by_session']) {
+									$this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$obj->rowid] -= $obj->amount_ht;
 								}
 							}
 						}
-					} else {
-						$this->value_ca_total_hthf[$year_todo][$month_todo] = $this->value_ca_total_ht[$year_todo][$month_todo];
 					}
 				} else {
 					$this->error = "Error " . $this->db->lasterror();
