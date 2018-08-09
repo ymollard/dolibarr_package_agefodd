@@ -396,8 +396,14 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 		{
 			if (is_readable($logo))
 			{
-				$height=pdf_getHeightForLogo($logo);
-				$pdf->Image($logo, $posx, $posy, 0, $height);
+				$height=(empty($conf->global->MAIN_DOCUMENTS_LOGO_HEIGHT)?22:$conf->global->MAIN_DOCUMENTS_LOGO_HEIGHT);
+				$maxwidth=130;
+				dol_include_once('/core/lib/images.lib.php');
+				$TSizes = dol_getImageSize($logo);
+				$width = round($height * $TSizes['width'] / $TSizes['height']);
+				if ($width > $maxwidth) $height = $height * $maxwidth / $width;
+
+				$pdf->Image($logo, $this->page_largeur - $this->marge_droite - $width, $posy, $width, $height);
 			}
 			else
 			{
