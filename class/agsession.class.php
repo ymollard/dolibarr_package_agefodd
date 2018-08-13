@@ -4601,12 +4601,12 @@ class Agsession extends CommonObject
 				$price_base_type = $product->price_base_type;
 				// dol_syslog ( get_class ( $this ) . "::createInvoice si amount non empty comme from propal tva_tx=".$tva_tx." price2num(amount)=".price2num($amount)." pu_ttc=" . $pu_ttc, LOG_DEBUG );
 			}
-			
+
 			$multicurrency_total_ht = floatval($invoice->lines[0]->multicurrency_total_ht);
 			$multicurrency_total_ttc = floatval($invoice->lines[0]->multicurrency_total_ttc);
 			$multicurrency_total_tva = floatval($invoice->lines[0]->multicurrency_total_tva);
 			$multicurrency_subprice = floatval($invoice->lines[0]->multicurrency_subprice);
-			
+
 			$invoice->lines[0]->total_ht = $pu_ht * $invoice->lines[0]->qty;
 			if(empty($multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $propal->lines[0]->multicurrency_total_ht;
 			if(empty($multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $invoice->lines[0]->total_ht;
@@ -5301,6 +5301,8 @@ class Agsession extends CommonObject
 	{
 		global $conf,$db;
 
+		$this->TTotalBySession = array();
+
 		if ($use_lines) {
 			$TSessionIds=array();
 			$sql_filterSession='';
@@ -5309,10 +5311,11 @@ class Agsession extends CommonObject
 			}
 			if (count($TSessionIds)>0) {
 				$sql_filterSession=' AND s.fk_session_agefodd IN ('.implode(',',$TSessionIds).')';
+			} else {
+				return 1;
 			}
 		}
 
-		$this->TTotalBySession = array();
 		$error=0;
 
 		$sql_tmp = 'SELECT s.fk_session_agefodd, SUM(pd.total_ht) as total_ht';
