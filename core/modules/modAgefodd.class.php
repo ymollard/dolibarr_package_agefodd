@@ -1205,12 +1205,16 @@ class modAgefodd extends DolibarrModules
 				's.is_opca as sessionisopca' => 'AgfSubrocation',
 				'socsessopca.nom as sessionsocopca' => 'AgfOPCAName',
 				'contactsessopca.civility as contactsessopcaciv' => 'AgfOPCASessContactCiv',
-				'contactsessopca.lastname as contactsessopcalastname' => 'AgfOPCASessContactFirstName',
+				'contactsessopca.lastname as contactsessopcafirstname' => 'AgfOPCASessContactFirstName',
 				'contactsessopca.firstname as contactsessopcalastname' => 'AgfOPCASessContactLastName',
 				'contactsession.firstname as contactsessionfirstname' => 'AgfSessionContactFirstName',
 				'contactsession.lastname as contactsessionlastname' => 'AgfSessionContactLastName',
 				'contactsession.email as contactsessionemail' => 'AgfSessionContactEmail',
 				'contactsession.phone as contactsessionphone' => 'AgfSessionContactPhone',
+				'socpresta.nom as prestanom' => 'AgfTypePresta',
+				'presta.civility as prestasessciv' => 'AgfTypePrestaCiv',
+				'presta.lastname as prestasesslastname' => 'AgfTypePrestaFirstName',
+				'presta.firstname as prestasessfirstname' => 'AgfTypePrestaLastName',
 				'c.intitule' => 'AgfFormIntitule',
 				'c.ref' => 'Ref',
 				'c.ref_interne' => 'AgfFormCodeInterne',
@@ -1235,6 +1239,8 @@ class modAgefodd extends DolibarrModules
 				'sta.nom as traineelastname' => 'AgfStaLastname',
 				'sta.prenom as traineefirstname' => 'AgfStaFirstname',
 				'sta.mail as traineemail' => 'AgfStaMail',
+				'sta.date_birth' => "DateToBirth",
+				'sta.place_birth' => "AgfPlaceBirth",
 				'ssdicttype.intitule as statype' => 'AgfStagiaireModeFinancement',
 				'sosta.nom as traineecustomer' => 'Customer',
 				's.is_opca as staisopca' => 'AgfSubrocation',
@@ -1251,7 +1257,8 @@ class modAgefodd extends DolibarrModules
 				'c.ref_interne' => 'Text',
 				's.dated' => 'Date',
 				's.datef' => 'Date',
-				'sosta.nom' => 'Text'
+				'sosta.nom' => 'Text',
+				'sta.date_birth' => "Date",
 		);
 		$this->export_entities_array[$r] = array(
 				's.rowid' => "Id",
@@ -1270,12 +1277,16 @@ class modAgefodd extends DolibarrModules
 				's.is_opca as sessionisopca' => 'AgfSessionDetail',
 				'socsessopca.nom as sessionsocopca' => 'AgfSessionDetail',
 				'contactsessopca.civility as contactsessopcaciv' => 'AgfSessionDetail',
-				'contactsessopca.lastname as contactsessopcalastname' => 'AgfSessionDetail',
+				'contactsessopca.lastname as contactsessopcafirstname' => 'AgfSessionDetail',
 				'contactsessopca.firstname as contactsessopcalastname' => 'AgfSessionDetail',
 				'contactsession.firstname as contactsessionfirstname' => 'AgfSessionDetail',
 				'contactsession.lastname as contactsessionlastname' => 'AgfSessionDetail',
 				'contactsession.email as contactsessionemail' => 'AgfSessionDetail',
 				'contactsession.phone as contactsessionphone' => 'AgfSessionDetail',
+				'socpresta.nom as prestanom' => 'AgfSessionDetail',
+				'presta.civility as prestasessciv' => 'AgfSessionDetail',
+				'presta.lastname as prestasesslastname' => 'AgfSessionDetail',
+				'presta.firstname as prestasessfirstname' => 'AgfSessionDetail',
 				'c.intitule' => 'AgfCatalogDetail',
 				'c.ref' => 'AgfCatalogDetail',
 				'c.ref_interne' => 'AgfCatalogDetail',
@@ -1300,6 +1311,8 @@ class modAgefodd extends DolibarrModules
 				'sta.nom as traineelastname' => 'AgfNbreParticipants',
 				'sta.prenom as traineefirstname' => 'AgfNbreParticipants',
 				'sta.mail as traineemail' => 'AgfNbreParticipants',
+				'sta.date_birth' => "AgfNbreParticipants",
+				'sta.place_birth' => "AgfNbreParticipants",
 				'ssdicttype.intitule as statype' => 'AgfNbreParticipants',
 				'sosta.nom as traineecustomer' => 'AgfNbreParticipants',
 				's.is_opca as staisopca' => 'AgfNbreParticipants',
@@ -1329,6 +1342,7 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_session as s';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_calendrier as cal ON s.rowid = cal.fk_agefodd_session';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_extrafields as extracatalogue ON c.rowid = extracatalogue.fk_object';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_place as p ON p.rowid = s.fk_session_place';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as ss ON s.rowid = ss.fk_session_agefodd';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as sta ON sta.rowid = ss.fk_stagiaire';
@@ -1354,6 +1368,8 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as extrasession ON extrasession.fk_object = s.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_extrafields as extratrainee ON extratrainee.fk_object = sta.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as sosta ON sosta.rowid = sta.fk_soc';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as presta ON s.fk_socpeople_presta = presta.rowid';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socpresta ON socpresta.rowid = presta.fk_soc';
 		$this->export_sql_end[$r] .= ' WHERE 1 ';
 
 		// training export
