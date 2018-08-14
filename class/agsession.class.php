@@ -5198,10 +5198,12 @@ class Agsession extends CommonObject
 			$this->TFormateursSessionCal=array();
 			$trainercalarray=array();
 		    dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+		    dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 		    dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 
 			$agf_session_trainer = new Agefodd_session_formateur($this->db);
 			$formateurs_cal = new Agefoddsessionformateurcalendrier($db);
+			$formateurs = new Agefodd_teacher($db);
 
 			$agf_session_trainer->fetch($id_trainer);
 
@@ -5230,7 +5232,8 @@ class Agsession extends CommonObject
 			}
 
 			$this->formateur_session = $agf_session_trainer;
-			$this->formateur_session_societe = $agf_session_trainer->thirdparty;
+			$formateurs->fetch($agf_session_trainer->formid);
+			$this->formateur_session_societe = $formateurs->thirdparty;
 		}
 
 		if(!empty($id_trainee)) {
