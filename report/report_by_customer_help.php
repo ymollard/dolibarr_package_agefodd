@@ -93,7 +93,7 @@ print '<table class="centpercent">';
 
 foreach($TExplainations as $i => $explaination) {
 	print '<tr>';
-	print '<td style="width:30px">'.$i.'</td><td>'.$langs->trans('AgfReportUserHelpExplaination'.$explaination).'</td></tr>';
+	print '<td style="width:30px" valign="top" >'.$i.'</td><td>'.$langs->trans('AgfReportUserHelpExplaination'.$explaination).'</td></tr>';
 
 }
 
