@@ -266,7 +266,6 @@ $arrayfields = array(
 				'checked' => 1,
 				'enabled' => $user->rights->agefodd->session->margin
 		),
-
 		'AgfListParticipantsStatus' => array(
 				'label' => "AgfListParticipantsStatus",
 				'checked' => 1
@@ -567,7 +566,7 @@ if ($resql != - 1) {
 
 	$massactionbutton = $formAgefodd->selectMassSessionsAction();
 
-	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$morefilter = '';
 	// If the user can view prospects other than his'
@@ -1127,9 +1126,9 @@ if ($resql != - 1) {
 			if (! empty($arrayfields['s.fk_soc_requester']['checked']))
 				print '<td></td>';
 			if ($user->rights->agefodd->session->margin) {
-				if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
-					print '<td name="margininfolineb11' . $line->rowid . '" ></td>';
 				if (! empty($arrayfields['s.sell_price']['checked']))
+					print '<td name="margininfolineb11' . $line->rowid . '" ></td>';
+				if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
 					print '<td name="margininfolineb1' . $line->rowid . '" ></td>';
 				if (! empty($arrayfields['s.cost_trainer']['checked']))
 					print '<td name="margininfolineb2' . $line->rowid . '" ></td>';
@@ -1190,6 +1189,10 @@ if ($resql != - 1) {
 			print '<td></td>';
 		if (! empty($arrayfields['s.nb_stagiaire']['checked']))
 			print '<td></td>';
+	if (! empty($arrayfields['s.fk_socpeople_presta']['checked']))
+		print '<td></td>';
+	if (! empty($arrayfields['s.fk_soc_employer']['checked']))
+		print '<td></td>';
 		if (! empty($arrayfields['s.fk_soc_requester']['checked']))
 			print '<td></td>';
 		if ($user->rights->agefodd->session->margin) {

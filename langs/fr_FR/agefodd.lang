@@ -1324,3 +1324,6 @@ AgefoddSetupMulticompany=Partage entre entités
 SessionRef=Ref. Session
 AgfSimpleNumRefModelSessionDesc=	Renvoie le numéro sous la forme SESyymm-nnnnn où yy est l'année, mm le mois, et nnnnn un compteur séquentiel sans rupture et sans remise à 0
 AgfAdminSessionNumber=Numérotation des sessions
+AgfTypePrestaCiv=Civilité sous traitant
+AgfTypePrestaFirstName=Nom sous traitant
+AgfTypePrestaLastName=Prénom sous traitant

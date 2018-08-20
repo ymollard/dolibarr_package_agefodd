@@ -177,12 +177,12 @@ class Agsession extends CommonObject
 		}
 		$obj = empty($conf->global->AGF_SESSION_ADDON) ? 'mod_agefoddsession_simple' : $conf->global->AGF_SESSION_ADDON;
 		$path_rel = dol_buildpath('/agefodd/core/modules/agefodd/session/' . $conf->global->AGF_SESSION_ADDON . '.php');
-	
+
 		if (! empty($conf->global->AGF_SESSION_ADDON) && is_readable($path_rel) && (empty($ref))) {
 			dol_include_once('/agefodd/core/modules/agefodd/session/' . $conf->global->AGF_SESSION_ADDON . '.php');
 			$modAgefodd = new $obj();
 			$ref = $modAgefodd->getNextValue();
-			
+
 		}
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session(";
@@ -1644,7 +1644,7 @@ class Agsession extends CommonObject
 
 			// Update request
 			$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session SET";
-			
+
 			$sql .= " ref='" . (isset($this->ref) ? $this->db->escape($this->ref) : "") . "',";
 			$sql .= " fk_soc=" . (isset($this->fk_soc) ? $this->fk_soc : "null") . ",";
 			$sql .= " fk_soc_requester=" . (isset($this->fk_soc_requester) ? $this->fk_soc_requester : "null") . ",";
@@ -4570,19 +4570,24 @@ class Agsession extends CommonObject
 				$price_base_type = $product->price_base_type;
 				// dol_syslog ( get_class ( $this ) . "::createInvoice si amount non empty comme from propal tva_tx=".$tva_tx." price2num(amount)=".price2num($amount)." pu_ttc=" . $pu_ttc, LOG_DEBUG );
 			}
-
+			
+			$multicurrency_total_ht = floatval($invoice->lines[0]->multicurrency_total_ht);
+			$multicurrency_total_ttc = floatval($invoice->lines[0]->multicurrency_total_ttc);
+			$multicurrency_total_tva = floatval($invoice->lines[0]->multicurrency_total_tva);
+			$multicurrency_subprice = floatval($invoice->lines[0]->multicurrency_subprice);
+			
 			$invoice->lines[0]->total_ht = $pu_ht * $invoice->lines[0]->qty;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $propal->lines[0]->multicurrency_total_ht;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $invoice->lines[0]->total_ht;
+			if(empty($multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $propal->lines[0]->multicurrency_total_ht;
+			if(empty($multicurrency_total_ht)) $invoice->lines[0]->multicurrency_total_ht = $invoice->lines[0]->total_ht;
 			$invoice->lines[0]->total_ttc = $pu_ttc * $invoice->lines[0]->qty;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $propal->lines[0]->multicurrency_total_ttc;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $invoice->lines[0]->total_ttc;
+			if(empty($multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $propal->lines[0]->multicurrency_total_ttc;
+			if(empty($multicurrency_total_ttc)) $invoice->lines[0]->multicurrency_total_ttc = $invoice->lines[0]->total_ttc;
 			$invoice->lines[0]->total_tva = $invoice->lines[0]->total_ttc - $invoice->lines[0]->total_ht;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $propal->lines[0]->multicurrency_total_tva;
-                        if(empty((float)$invoice->lines[0]->multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $invoice->lines[0]->total_tva;
+			if(empty($multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $propal->lines[0]->multicurrency_total_tva;
+			if(empty($multicurrency_total_tva)) $invoice->lines[0]->multicurrency_total_tva = $invoice->lines[0]->total_tva;
 			$invoice->lines[0]->subprice = $pu_ht;
-                        if(empty((float)$invoice->lines[0]->multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $propal->lines[0]->multicurrency_subprice;
-                        if(empty((float)$invoice->lines[0]->multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $invoice->lines[0]->subprice;
+			if(empty($multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $propal->lines[0]->multicurrency_subprice;
+			if(empty($multicurrency_subprice)) $invoice->lines[0]->multicurrency_subprice = $invoice->lines[0]->subprice;
 			$invoice->lines[0]->tva_tx = $tva_tx;
 			$invoice->lines[0]->vat_src_code=$vat_src_code;
 
@@ -4957,6 +4962,8 @@ class Agsession extends CommonObject
 		}
 			// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
+			$this->TConventionFinancialLine=array();
+
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
 				$nbstag = count($obj_agefodd_convention->line_trainee);
@@ -4975,16 +4982,62 @@ class Agsession extends CommonObject
 					$this->TStagiairesSessionConvention[]= $stagiaire_conv;
 					$this->nb_stagiaire_convention= count($this->TStagiairesSessionConvention);
 				}
+				if (count($this->TStagiairesSessionConvention)>0) {
+					$Tsta=array();
+					foreach($this->TStagiairesSessionConvention as $sta) {
+						$Tsta[]=$sta->prenom. ' '. $sta->nom;
+					}
+					$this->stagiaire_convention=implode(',',$Tsta);
+				}
 			}
 
 			if ($obj_agefodd_convention->element_type == 'invoice') {
 				$obj_agefodd_convention->fetch_invoice_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT facnumber as ref FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+			}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if ($obj_agefodd_convention->element_type == 'order') {
 				$obj_agefodd_convention->fetch_order_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT ref FROM '.MAIN_DB_PREFIX.'commande WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+					}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if ($obj_agefodd_convention->element_type == 'propal') {
 				$obj_agefodd_convention->fetch_propal_lines($obj_agefodd_convention->fk_element);
+				$sql='SELECT ref FROM '.MAIN_DB_PREFIX.'propal WHERE rowid='.$obj_agefodd_convention->fk_element;
+				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+
+					if ($obj = $this->db->fetch_object($resql)) {
+						$this->ref_findoc=$obj->ref;
+					}
+
+				} else {
+					//I know nothing is bad
+				}
 			}
 			if (is_array($obj_agefodd_convention->lines ) && count($obj_agefodd_convention->lines )>0) {
 				foreach($obj_agefodd_convention->lines as $line) {
@@ -4994,12 +5047,20 @@ class Agsession extends CommonObject
 						$this->conv_amount_ttc += $line->total_ttc;
 						$this->conv_qty += $line->qty;
 						$this->conv_products .= $line->description.'<br />';
+						$line->form_label = $langs->trans('AgfTraining')."  ".(!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
+						$this->TConventionFinancialLine[]= $line;
 					} elseif (empty($obj_agefodd_convention->only_product_session)) {
 						$this->conv_amount_ht += $line->total_ht;
 						$this->conv_amount_tva += $line->total_tva;
 						$this->conv_amount_ttc += $line->total_ttc;
 						$this->conv_qty += $line->qty;
 						$this->conv_products .= $line->description.'<br />';
+						if ($line->fk_product==$this->fk_product) {
+							$line->form_label = $langs->trans('AgfTraining')."  ".(!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
+						} else {
+							$line->form_label = $line->description;
+						}
+						$this->TConventionFinancialLine[]= $line;
 					}
 				}
 
@@ -5024,7 +5085,11 @@ class Agsession extends CommonObject
 		}
 
 		//Trainee link to the company convention
-		$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+		if (!empty($this->contactname)) {
+			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+		} else {
+			$this->signataire_intra ='';
+		}
 		$stagiaires = new Agefodd_session_stagiaire($db);
 		$result=$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
 		if ($result<0) {
@@ -5040,11 +5105,12 @@ class Agsession extends CommonObject
 						$this->signataire_inter_array[$line->fk_socpeople_sign]= $socpsign->getFullName($langs).' ';
 					}
 				}
-
 			}
 			if (count($this->signataire_inter_array)>0) {
 				$this->signataire_inter=implode(', ',$this->signataire_inter_array);
 				unset($this->signataire_inter_array);
+			} else {
+				$this->signataire_inter='';
 			}
 		}
 
@@ -5078,9 +5144,13 @@ class Agsession extends CommonObject
 					$old_date = $line->date_session;
 				}
 				$this->trainer_day_cost=$this->cost_trainer / count($dates);
+				$this->session_nb_days=count($dates);
 			}
 		}
 		$this->date_text=$this->libSessionDate();
+		if (empty($this->session_nb_days) && !empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
+			$this->session_nb_days=$this->duree_session / $conf->global->AGF_NB_HOUR_IN_DAYS;
+		}
 
 		$this->trainer_text='';
 		$trainerarray=array();
@@ -5123,14 +5193,47 @@ class Agsession extends CommonObject
 		}
 
 		if(!empty($id_trainer)) {
+			$this->trainer_datehourtextline='';
+			$this->trainer_datetextline='';
+			$this->TFormateursSessionCal=array();
+			$trainercalarray=array();
 		    dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+		    dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+		    dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 
 			$agf_session_trainer = new Agefodd_session_formateur($this->db);
+			$formateurs_cal = new Agefoddsessionformateurcalendrier($db);
+			$formateurs = new Agefodd_teacher($db);
+
 			$agf_session_trainer->fetch($id_trainer);
 
-			$this->formateur_session = $agf_session_trainer;
-			$this->formateur_session_societe = $agf_session_trainer->thirdparty;
+			$result=$formateurs_cal->fetch_all($id_trainer);
+			if ($result<0) {
+				//I know nothing is bad
+			}
+			if (is_array($formateurs_cal->lines) && count($formateurs_cal->lines)>0) {
+				$old_date='';
+				foreach($formateurs_cal->lines as $trainercalline) {
+					if ($trainercalline->date_session != $old_date) {
+						$this->TFormateursSessionCal[$trainercalline->date_session]=dol_print_date($trainercalline->date_session,'daytext');
+						$this->trainer_datehourtextline .= "<br>";
+						$this->trainer_datehourtextline .= dol_print_date($trainercalline->date_session, 'daytext') . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($trainercalline->heured, 'hour') . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($trainercalline->heuref, 'hour');
+					} else {
+						$this->trainer_datehourtextline .= ", ";
+						$this->trainer_datehourtextline .= dol_print_date($trainercalline->heured, 'hour') . ' - ' . dol_print_date($trainercalline->heuref, 'hour');
+					}
+					$old_date = $trainercalline->date_session;
 
+				}
+				$this->trainer_datetextline=implode(', ',$this->TFormateursSessionCal);
+			} else {
+				$this->trainer_datehourtextline='';
+				$this->trainer_datetextline='';
+			}
+
+			$this->formateur_session = $agf_session_trainer;
+			$formateurs->fetch($agf_session_trainer->formid);
+			$this->formateur_session_societe = $formateurs->thirdparty;
 		}
 
 		if(!empty($id_trainee)) {
