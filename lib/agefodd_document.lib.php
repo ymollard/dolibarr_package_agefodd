@@ -202,7 +202,7 @@ function show_doc($file, $socid, $nom_courrier) {
 		}
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
-		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refresh&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&socid=' . $socid . '&action=refresh&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '" name="builddoc__'.$model.'">';
 		$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 
 		// Supprimer
@@ -213,7 +213,7 @@ function show_doc($file, $socid, $nom_courrier) {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
 			$legende = $langs->trans("AgfDocCreate");
-			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&socid=' . $socid . '&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&socid=' . $socid . '&model=' . $model . '&cour=' . $nom_courrier . '&idform=' . $idform . '" alt="' . $legende . '" title="' . $legende . '" name="builddoc__'.$model.'">';
 			$mess .=img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 		} else {
 			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
@@ -247,7 +247,7 @@ function show_convo_trainee($file, $session_traineeid) {
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
-		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '" name="builddoc__'.$model.'__'.$session_traineeid.'">';
 		$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 
 		// Supprimer
@@ -263,7 +263,7 @@ function show_convo_trainee($file, $session_traineeid) {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
 			$legende = $langs->trans("AgfDocCreate");
-			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontraineeid=' . $session_traineeid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontraineeid=' . $session_traineeid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '" name="builddoc__'.$model.'__'.$session_traineeid.'">';
 			$mess .= img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 		} else {
 			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
@@ -297,7 +297,7 @@ function show_attestation_trainee($file, $session_traineeid) {
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
-		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '" name="builddoc__'.$model.'__'.$session_traineeid.'">';
 		$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 
 		// Supprimer
@@ -313,7 +313,7 @@ function show_attestation_trainee($file, $session_traineeid) {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
 			$legende = $langs->trans("AgfDocCreate");
-			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontraineeid=' . $session_traineeid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontraineeid=' . $session_traineeid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '" name="builddoc__'.$model.'__'.$session_traineeid.'">';
 			$mess .= img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 		} else {
 			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
@@ -347,7 +347,7 @@ function show_attestationendtraining_trainee($file, $session_traineeid) {
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
-		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '" name="builddoc__'.$model.'__'.$session_traineeid.'">';
 		$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 
 		// Supprimer
@@ -363,7 +363,7 @@ function show_attestationendtraining_trainee($file, $session_traineeid) {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
 			$legende = $langs->trans("AgfDocCreate");
-			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontraineeid=' . $session_traineeid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontraineeid=' . $session_traineeid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '" name="builddoc__'.$model.'__'.$session_traineeid.'">';
 			$mess .= img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 		} else {
 			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
@@ -395,7 +395,7 @@ function show_trainer_mission($session_trainerid) {
 
 		// Regenerer
 		$legende = $langs->trans("AgfDocRefresh");
-		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid=' . $session_trainerid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontrainerid=' . $session_trainerid . '&action=refresh&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '" name="builddoc__'.$model.'__'.$session_trainerid.'">';
 		$mess .=img_picto($langs->trans("AgfDocRefresh"), 'refresh').'</a>';
 
 		// Supprimer
@@ -407,7 +407,7 @@ function show_trainer_mission($session_trainerid) {
 		// Génereration des documents
 		if (file_exists(dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_' . $model . '.modules.php'))) {
 			$legende = $langs->trans("AgfDocCreate");
-			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontrainerid=' . $session_trainerid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '">';
+			$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=create&sessiontrainerid=' . $session_trainerid . '&model=' . $model . '" alt="' . $legende . '" title="' . $legende . '" name="builddoc_'.$model.'_'.$session_trainerid.'">';
 			$mess .= img_picto($langs->trans("AgfDocCreate"), 'filenew').'</a>';
 		} else {
 			$mess = $form->textwithpicto('', $langs->trans("AgfDocNoTemplate"), 1, 'warning');
@@ -1020,14 +1020,14 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
  * @return string
  */
 function getSelectAgefoddModels($mdle, $socid=0) {
-	
+
 	dol_include_once('referenceletters/class/referenceletters_tools.class.php');
 	require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
-	
+
 	$form = new Form($db);
-	
+
 	if($mdle !== 'convention') $type='rfltr_agefodd_'.$mdle;
-	
+
 	if (class_exists('RfltrTools') && method_exists('RfltrTools','getAgefoddModelList')) {
 		$TModels = RfltrTools::getAgefoddModelList();
 		if(!empty($type) && !empty($TModels[$type])) {
@@ -1036,6 +1036,6 @@ function getSelectAgefoddModels($mdle, $socid=0) {
 			return $form->selectarray('id_external_model', $TModels[$type], '', 1, 0, 0, $params, 0, 0, 0, '', 'custom_models_'.$mdle.$socid);
 		}
 	}
-	
+
 }
 
