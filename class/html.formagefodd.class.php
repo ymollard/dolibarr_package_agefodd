@@ -1694,16 +1694,18 @@ class FormAgefodd extends Form
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 		if (class_exists('RfltrTools') && method_exists('RfltrTools', 'getAgefoddModelListDefault')) {
 			$TModelAgefodd = RfltrTools::getAgefoddModelListDefault();
-			foreach ( $TModelAgefodd as $line ) {
-				if ($line->element_type=='rfltr_agefodd_convention') {
+			if (is_array($TModelAgefodd) && count ($TModelAgefodd)>0) {
+				foreach ( $TModelAgefodd as $line ) {
+					if ($line->element_type=='rfltr_agefodd_convention') {
 
-					$selected = '';
-					$defaultaffect=false;
-					if (($model === 'rfltr_agefodd_' . $line->rowid || !empty($line->default_doc)) && ! $defaultaffect) {
-						$selected = 'selected="selected"';
-						$defaultaffect=true;
+						$selected = '';
+						$defaultaffect=false;
+						if (($model === 'rfltr_agefodd_' . $line->rowid || !empty($line->default_doc)) && ! $defaultaffect) {
+							$selected = 'selected="selected"';
+							$defaultaffect=true;
+						}
+						$outselect .= '<option value="rfltr_agefodd_' . $line->rowid . '" ' . $selected . '>' . $line->title . '</option>';
 					}
-					$outselect .= '<option value="rfltr_agefodd_' . $line->rowid . '" ' . $selected . '>' . $line->title . '</option>';
 				}
 			}
 		}
