@@ -61,6 +61,7 @@ AgfNewObjRemove=Supprimer la dernière ligne de saisie
 AgfObjPoids=Poids
 AgfObjDesc=Descriptif de l'objectif
 AgfPublic=Type de public
+AgfPublicTrainee=Type de financement
 AgfMethode=Méthodes pédagogiques
 AgfFichePedagogique=Programme de formation
 AgfProgramme=Programme
