@@ -1904,16 +1904,28 @@ class FormAgefodd extends Form
 
 		return $outselect;
 	}
+
+	/**
+	 *
+	 * @param unknown $outselect
+	 * @param string $model
+	 */
 	function addReferenceLettersModelsToSelect(&$outselect, $model = '') {
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-		if (class_exists('RfltrTools') && method_exists('RfltrTools', 'getAgefoddModelList')) {
-			$TModelAgefodd = RfltrTools::getAgefoddModelList();
-			if (! empty($TModelAgefodd['rfltr_agefodd_convention'])) {
-				foreach ( $TModelAgefodd['rfltr_agefodd_convention'] as $id_model => $model_name ) {
-					$selected = '';
-					if ($model === 'rfltr_agefodd_' . $id_model)
-						$selected = 'selected="selected"';
-					$outselect .= '<option value="rfltr_agefodd_' . $id_model . '" ' . $selected . '>' . $model_name . '</option>';
+		if (class_exists('RfltrTools') && method_exists('RfltrTools', 'getAgefoddModelListDefault')) {
+			$TModelAgefodd = RfltrTools::getAgefoddModelListDefault();
+			if (is_array($TModelAgefodd) && count ($TModelAgefodd)>0) {
+				foreach ( $TModelAgefodd as $line ) {
+					if ($line->element_type=='rfltr_agefodd_convention') {
+
+						$selected = '';
+						$defaultaffect=false;
+						if (($model === 'rfltr_agefodd_' . $line->rowid || !empty($line->default_doc)) && ! $defaultaffect) {
+							$selected = 'selected="selected"';
+							$defaultaffect=true;
+						}
+						$outselect .= '<option value="rfltr_agefodd_' . $line->rowid . '" ' . $selected . '>' . $line->title . '</option>';
+					}
 				}
 			}
 		}

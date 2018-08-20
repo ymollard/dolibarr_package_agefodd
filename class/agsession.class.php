@@ -5263,7 +5263,8 @@ class Agsession extends CommonObject
 			}
 
 			$this->formateur_session = $agf_session_trainer;
-			$this->formateur_session_societe = $agf_session_trainer->thirdparty;
+			$formateurs->fetch($agf_session_trainer->formid);
+			$this->formateur_session_societe = $formateurs->thirdparty;
 
 		}
 

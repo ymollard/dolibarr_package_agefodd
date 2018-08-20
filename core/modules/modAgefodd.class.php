@@ -2511,8 +2511,9 @@ class modAgefodd extends DolibarrModules
 							$this->update_refsession();
 						}
 
-						if ($result <= 0)
+						if ($result <= 0){
 							$error ++;
+						}
 					}
 				}
 
