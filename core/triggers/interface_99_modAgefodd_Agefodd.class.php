@@ -96,32 +96,49 @@ class InterfaceAgefodd {
 	 * @param conf $conf conf
 	 * @return int <0 if KO, 0 if no triggered ran, >0 if OK
 	 */
+	function runTrigger($action, $object, $user, $langs, $conf) {
+		//For 8.0 remove warning
+		$result=$this->run_trigger($action, $object, $user, $langs, $conf);
+		return $result;
+	}
+
+	/**
+	 * Function called when a Dolibarrr business event is done.
+	 * All functions "run_trigger" are triggered if file is inside directory htdocs/core/triggers
+	 *
+	 * @param string $action code
+	 * @param Object $object
+	 * @param User $user user
+	 * @param Translate $langs langs
+	 * @param conf $conf conf
+	 * @return int <0 if KO, 0 if no triggered ran, >0 if OK
+	 */
 	function run_trigger($action, $object, $user, $langs, $conf) {
 		dol_include_once('/comm/action/class/actioncomm.class.php');
 		dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 		dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 		// Put here code you want to execute when a Dolibarr business events occurs.
 		// Data and type of action are stored into $object and $action
-		
+
 		global $conf, $mc;
 
 		// multicompagny tweak
 		if (is_object($mc))
 		{
-		    
+
 		    if(!in_array('agefodd', $mc->sharingelements)){
 		        $mc->sharingelements[] = 'agefodd';
 		    }
-		    
+
 		    if(!isset($mc->sharingobjects['agefodd'])){
 		        $mc->sharingobjects['agefodd'] = array('element'=>'agefodd');
 		    }
-			
+
 			$mc->setValues($conf);
 		}
-		
-		
-		
+
+
+
 
 		// Users
 		if ($action == 'ACTION_MODIFY') {

@@ -1455,13 +1455,13 @@ class FormAgefodd extends Form
 				print '<td class="nowrap">';
 				print $langs->trans("or") . ' ' . $langs->trans("Customer");
 				print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
-				
+
 				$moreparam = '';
 				if ($set_select_thirdparty_multiple && (float) DOL_VERSION <= 8.0)
 				{
 					$moreparam = ' name="fk_soc[]" multiple >'.";//"; // OMG j'ose vraiment le faire ? .. oui je l'ai fait :'( [@see => https://github.com/Dolibarr/dolibarr/pull/9028]
 				}
-				
+
 				if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 					$events = array();
 					$events[] = array(
@@ -1472,12 +1472,12 @@ class FormAgefodd extends Form
 									'add-customer-contact' => 'disabled'
 							)
 					);
-					
+
 					$html_select_thirdparty_list = $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events, '', 0, 0, 'minwidth100', $moreparam, $set_select_thirdparty_multiple);
 				} else {
 					$html_select_thirdparty_list = $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1, 0, array(), '', 0, 0, 'minwidth100', $moreparam, $set_select_thirdparty_multiple);
 				}
-				
+
 				// MOUAHAHAHAH, comme je peux pas hack le 1er param de la méthode select_thirdparty_list() pour réécrire le test, je fist le contenu html qui est retourné par cette même méthode (je suis diabolique, oui je le sais...)
 				if ($set_select_thirdparty_multiple && (float) DOL_VERSION <= 8.0)
 				{
@@ -1486,9 +1486,9 @@ class FormAgefodd extends Form
 						 $html_select_thirdparty_list = preg_replace('/<option value="'.$fk_soc.'">/', '<option value="'.$fk_soc.'" selected>', $html_select_thirdparty_list);
 					}
 				}
-				
+
 				print $html_select_thirdparty_list;
-					
+
 				print '</td></tr>';
 				print '<tr>';
 				print '<td class="nowrap maxwidthonsmartphone">';
@@ -1594,7 +1594,7 @@ class FormAgefodd extends Form
 			}
 			print $form->multiselectarray('search_session_status', $data_status, $filter_session_status, '', 0, '', 0, '100%');
 			print '</td></tr>';
-			
+
 			if ($filter_control_occupation !== false)
 			{
 				print '<tr>';
@@ -1684,16 +1684,26 @@ class FormAgefodd extends Form
 
 		return $outselect;
 	}
+
+	/**
+	 *
+	 * @param unknown $outselect
+	 * @param string $model
+	 */
 	function addReferenceLettersModelsToSelect(&$outselect, $model = '') {
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-		if (class_exists('RfltrTools') && method_exists('RfltrTools', 'getAgefoddModelList')) {
-			$TModelAgefodd = RfltrTools::getAgefoddModelList();
-			if (! empty($TModelAgefodd['rfltr_agefodd_convention'])) {
-				foreach ( $TModelAgefodd['rfltr_agefodd_convention'] as $id_model => $model_name ) {
+		if (class_exists('RfltrTools') && method_exists('RfltrTools', 'getAgefoddModelListDefault')) {
+			$TModelAgefodd = RfltrTools::getAgefoddModelListDefault();
+			foreach ( $TModelAgefodd as $line ) {
+				if ($line->element_type=='rfltr_agefodd_convention') {
+
 					$selected = '';
-					if ($model === 'rfltr_agefodd_' . $id_model)
+					$defaultaffect=false;
+					if (($model === 'rfltr_agefodd_' . $line->rowid || !empty($line->default_doc)) && ! $defaultaffect) {
 						$selected = 'selected="selected"';
-					$outselect .= '<option value="rfltr_agefodd_' . $id_model . '" ' . $selected . '>' . $model_name . '</option>';
+						$defaultaffect=true;
+					}
+					$outselect .= '<option value="rfltr_agefodd_' . $line->rowid . '" ' . $selected . '>' . $line->title . '</option>';
 				}
 			}
 		}
