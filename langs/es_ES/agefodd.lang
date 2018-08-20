@@ -55,6 +55,7 @@ AgfNewObjRemove=Borrar la última línea
 AgfObjPoids=Peso
 AgfObjDesc=Descripción del objetivo
 AgfPublic=Tipo de público
+AgfPublicTrainee=Tipo de financio
 AgfMethode=Método
 AgfFichePedagogique=Temario de la formación
 AgfProgramme=Temario

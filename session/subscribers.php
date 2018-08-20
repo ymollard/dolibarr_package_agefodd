@@ -702,7 +702,7 @@ if (! empty($id)) {
 					print $formAgefodd->select_stagiaire($stagiaires->lines[$i]->id, 'stagiaire', '(s.rowid NOT IN (SELECT fk_stagiaire FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire WHERE fk_session_agefodd=' . $id . ')) OR (s.rowid=' . $stagiaires->lines[$i]->id . ')');
 
 					if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef <= dol_now()) {
-						print $formAgefodd->select_stagiaire_session_status('stagiaire_session_status', $stagiaires->lines[$i]->status_in_session);
+						print '<br>'.$langs->trans('Status').' '.$formAgefodd->select_stagiaire_session_status('stagiaire_session_status', $stagiaires->lines[$i]->status_in_session);
 					} else {
 						print $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
 						print '<input type="hidden" name="stagiaire_session_status" value="' . $stagiaires->lines[$i]->status_in_session . '">';
@@ -790,7 +790,7 @@ if (! empty($id)) {
 					}
 
 					if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
-						print '</td><td valign="top">' . $formAgefodd->select_type_stagiaire($stagiaires->lines[$i]->typeid, 'stagiaire_type', '', 1);
+						print '</td><td valign="top">' .$langs->trans('AgfPublicTrainee').' '. $formAgefodd->select_type_stagiaire($stagiaires->lines[$i]->typeid, 'stagiaire_type', '', 1);
 					}
 					if ($user->rights->agefodd->modifier) {
 						print '</td><td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="stag_update" alt="' . $langs->trans("AgfModSave") . '" ">';
@@ -945,10 +945,10 @@ if (! empty($id)) {
 			print $formAgefodd->select_stagiaire('', 'stagiaire', 's.rowid NOT IN (SELECT fk_stagiaire FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire WHERE fk_session_agefodd=' . $id . ')', 1);
 
 			if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
-				print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'stagiaire_type');
+				print '<br>'.$langs->trans('AgfPublicTrainee').' '. $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'stagiaire_type');
 			}
 			if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef <= dol_now()) {
-				print $formAgefodd->select_stagiaire_session_status('stagiaire_session_status', 0);
+				print '<br>'.$langs->trans('Status').' '.$formAgefodd->select_stagiaire_session_status('stagiaire_session_status', 0);
 			}
 
 			print '<br>' . $langs->trans('AgfTraineeSocDocUse') . ' ';

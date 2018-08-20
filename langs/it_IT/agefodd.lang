@@ -54,6 +54,7 @@ AgfNewObjRemove=Delete the last input line
 AgfObjPoids=Weights
 AgfObjDesc=Learning objectives description
 AgfPublic=Public type
+AgfPublicTrainnee=Type of funding
 AgfMethode=Teachning Method
 AgfFichePedagogique=Training Programme Outline
 AgfProgramme=Programme

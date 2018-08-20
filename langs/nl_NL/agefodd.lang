@@ -54,6 +54,7 @@ AgfNewObjRemove=Verwijder de laatste ingevoerde regel
 AgfObjPoids=Weging
 AgfObjDesc=Leerdoelen Beschrijving
 AgfPublic=Doelgroep
+AgfPublicTrainee=Type of funding
 AgfMethode=Leer Methode
 AgfFichePedagogique=Opleidingsblad
 AgfProgramme=Programma
