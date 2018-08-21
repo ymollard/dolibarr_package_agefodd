@@ -770,7 +770,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 		$hselected = 'convention';
 
-		dol_fiche_head($head, $hselected, $langs->trans("AgfConvention"), 0, 'bill');
+		dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'bill');
 
 		// Affichage en mode "édition"
 		if ($action == 'edit') {
