@@ -1106,6 +1106,7 @@ AgfAmoutHTHF=Montant HT & HF
 AgfCostTrainer=Coût formateur(s)/trice(s)
 AgfCostOther=Coût(s) autre(s)
 AgfFactAmount=Montant fact. HT & HF
+AgfFactAmountHT=Montant fact. HT
 AgfMargin=Marge
 AgfHideMarginInfo=Cacher les colonnes de marges et coûts
 AgfDisplayMarginInfo=Afficher les colonnes de marges et coûts

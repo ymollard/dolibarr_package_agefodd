@@ -1071,6 +1071,7 @@ AgfAmoutHTHF=Importe sin IVA y sin gastos
 AgfCostTrainer=Precio profesor(es)
 AgfCostOther=Otros precios
 AgfFactAmount=Importe fact. sin IVA y sin gastos
+AgfFactAmountHT=Importe fact. sin IVA
 AgfMargin=Margen
 AgfHideMarginInfo=Ocultar las columnas de márgenes y costos
 AgfDisplayMarginInfo=Mostrar las columnas de márgenes y costos
