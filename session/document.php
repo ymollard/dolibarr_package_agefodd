@@ -498,6 +498,22 @@ if (! empty($id)) {
 				}
 			}
 
+			?>
+			<script type="text/javascript">
+				$(document).ready(function(){
+					$tramount = $('#dialog-confirm #amount').parent().parent();
+					$tramount.hide(0);
+					$('#dialog-confirm').on('change', '#propalid', function(){
+						if($(this).val() == '0') {
+							$tramount.show(0);
+						}else{
+							$tramount.hide(0);
+						}
+					});
+				});
+			</script>
+			<?php
+
 			$form_question = array ();
 			$form_question[] = array (
 					'label' => $langs->trans("AgfCreateInvoiceFromPropal"),
