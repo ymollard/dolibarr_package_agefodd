@@ -615,7 +615,7 @@ if ($conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) {
 	$target = '';
 }
 
-dol_fiche_head($head, 'cost', $langs->trans("AgfCostManagement"), 0, 'bill');
+dol_fiche_head($head, 'cost', $langs->trans("AgfSessionDetail"), 0, 'bill');
 
 dol_agefodd_banner_tab($agf, 'id');
 print '<div class="underbanner clearboth"></div>';

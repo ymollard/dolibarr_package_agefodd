@@ -401,6 +401,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	if ($id) {
 		$agf = new Agefodd_place($db);
 		$result = $agf->fetch($id);
+		$result = $agf->fetch_thirdparty();
 
 		if ($result > 0) {
 			$head = site_prepare_head($agf);
@@ -554,7 +555,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				print '<tr>';
 				print '<td>';
 				$img = picto_from_langcode($agf->country_code);
-				if ($agf->isInEEC())
+				if (method_exists($agf->thirdparty, 'isInEEC') && $agf->thirdparty->isInEEC())
 					print $form->textwithpicto(($img ? $img . ' ' : '') . $agf->country, $langs->trans("CountryIsInEEC"), 1, 0);
 				else
 					print ($img ? $img . ' ' : '') . $agf->country;
