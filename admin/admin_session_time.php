@@ -40,7 +40,7 @@ $langs->load('agefodd@agefodd');
 
 if (! $user->rights->agefodd->admin && ! $user->admin)
     accessforbidden();
-    
+
 $action = GETPOST('action', 'alpha');
 
 if ($action == 'sessioncalendar_create') {
@@ -48,7 +48,7 @@ if ($action == 'sessioncalendar_create') {
     $tmpl_calendar->day_session = GETPOST('newday', 'int');
     $tmpl_calendar->heured = GETPOST('periodstart', 'alpha');
     $tmpl_calendar->heuref = GETPOST('periodend', 'alpha');
-    
+
     $result = $tmpl_calendar->create($user);
     if ($result != 1) {
         setEventMessage($tmpl_calendar->error, 'errors');
@@ -65,7 +65,7 @@ if ($action == 'sessioncalendar_delete') {
 }
 
 if ($action == 'updatedaytodate') {
-    
+
     $weekday=GETPOST('AGF_WEEKADAY','array');
     foreach(array(1,2,3,4,5,6,0) as $daynum) {
         if (in_array($daynum, $weekday)) {
@@ -78,14 +78,14 @@ if ($action == 'updatedaytodate') {
                 $error ++;
         }
     }
-    
+
     foreach(array(1,2,3,4) as $shiftnum) {
         $val=GETPOST('AGF_'.$shiftnum.'DAYSHIFT');
         $res = dolibarr_set_const($db, 'AGF_'.$shiftnum.'DAYSHIFT', $val, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
     }
-    
+
     if (! $error) {
         setEventMessage($langs->trans("SetupSaved"), 'mesgs');
     } else {
@@ -131,7 +131,7 @@ print '</tr>';
 $tmpl_calendar = new Agefoddcalendrier($db);
 $tmpl_calendar->fetch_all();
 foreach ( $tmpl_calendar->lines as $line ) {
-    
+
     print '<form name="SessionCalendar_' . $line->id . '" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
     print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
     print '<input type="hidden" name="action" value="sessioncalendar_delete">' . "\n";
@@ -166,6 +166,7 @@ print '</form>';
 print_titre($langs->trans("AgfAdminCalendarDayToDate"));
 print '<form name="daytodate" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
 print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
+print '<input type="hidden" name="action" value="updatedaytodate">' . "\n";
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
 print '<td width="20%">' . $langs->trans("Name") . '</td>';
