@@ -644,16 +644,16 @@ if ($resql != - 1) {
 	print '<tr class="liste_titre_filter">';
 
 	if (! empty($arrayfields['s.rowid']['checked']))
-		print '<td class="liste_titre"><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
+		print '<td class="liste_titre"><input type="text" class="flat" name="search_id" id="search_id" value="' . $search_id . '" size="2"></td>';
 
 	if (! empty($arrayfields['s.ref']['checked'])) {
 		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_session_ref" value="' . $search_session_ref . '" size="15">';
+		print '<input type="text" class="flat" name="search_session_ref" id="search_session_ref" value="' . $search_session_ref . '" size="15">';
 		print '</td>';
 	}
 	if (! empty($arrayfields['so.nom']['checked'])) {
 		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
+		print '<input type="text" class="flat" name="search_soc" id="search_soc" value="' . $search_soc . '" size="20">';
 		print '</td>';
 	}
 
@@ -665,19 +665,19 @@ if ($resql != - 1) {
 
 	if (! empty($arrayfields['c.intitule']['checked'])) {
 		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
+		print '<input type="text" class="flat" name="search_trainning_name" id="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
 		print '</td>';
 	}
 
 	if (! empty($arrayfields['c.ref']['checked'])) {
 		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_training_ref" value="' . $search_training_ref . '" size="10">';
+		print '<input type="text" class="flat" name="search_training_ref" id="search_training_ref" value="' . $search_training_ref . '" size="10">';
 		print '</td>';
 	}
 
 	if (! empty($arrayfields['c.ref_interne']['checked'])) {
 		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_training_ref_interne" value="' . $search_training_ref_interne . '" size="10">';
+		print '<input type="text" class="flat" name="search_training_ref_interne" id="search_training_ref_interne" value="' . $search_training_ref_interne . '" size="10">';
 		print '</td>';
 	}
 
@@ -727,19 +727,19 @@ if ($resql != - 1) {
 
 	if (! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
 		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_socpeople_presta" value="' . $search_socpeople_presta . '" size="15">';
+		print '<input type="text" class="flat" name="search_socpeople_presta" id="search_socpeople_presta" value="' . $search_socpeople_presta . '" size="15">';
 		print '</td>';
 	}
 
 	if (! empty($arrayfields['s.fk_soc_employer']['checked'])) {
 		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_soc_employer" value="' . $search_soc_employer . '" size="15">';
+		print '<input type="text" class="flat" name="search_soc_employer" id="search_soc_employer" value="' . $search_soc_employer . '" size="15">';
 		print '</td>';
 	}
 
 	if (! empty($arrayfields['s.fk_soc_requester']['checked'])) {
 		print '<td class="liste_titre">';
-		print '<input type="text" class="flat" name="search_soc_requester" value="' . $search_soc_requester . '" size="15">';
+		print '<input type="text" class="flat" name="search_soc_requester" id="search_soc_requester" value="' . $search_soc_requester . '" size="15">';
 		print '</td>';
 	}
 	if ($user->rights->agefodd->session->margin) {
@@ -800,7 +800,7 @@ if ($resql != - 1) {
 								'double'
 						)))
 							$searchclass = 'searchnum';
-						print '<input class="flat' . ($searchclass ? ' ' . $searchclass : '') . '" size="4" type="text" name="search_options_' . $tmpkey . '" value="' . dol_escape_htmltag($search_array_options['search_options_' . $tmpkey]) . '">';
+						print '<input class="flat' . ($searchclass ? ' ' . $searchclass : '') . '" size="4" type="text" name="search_options_' . $tmpkey . '" id="search_options_' . $tmpkey . '" value="' . dol_escape_htmltag($search_array_options['search_options_' . $tmpkey]) . '">';
 					} else {
 						// for the type as 'checkbox', 'chkbxlst', 'sellist' we should use code instead of id (example: I declare a 'chkbxlst' to have a link with dictionnairy, I have to extend it with the 'code' instead 'rowid')
 						echo $extrafields->showInputField($key, $search_array_options['search_options_' . $key], '', '', 'search_');
