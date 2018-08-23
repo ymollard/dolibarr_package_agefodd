@@ -200,7 +200,7 @@ $arrayfields = array(
 		),
 		'c.ref_interne' => array(
 				'label' => "AgfRefInterne",
-				'checked' => 1
+				'checked' => 0
 		),
 		's.type_session' => array(
 				'label' => "AgfFormTypeSession",
@@ -273,8 +273,8 @@ $arrayfields = array(
 				'checked' => 1
 		),
 		's.fk_product' => array(
-				'label' => "AgfListParticipantsStatus",
-				'checked' => 1
+				'label' => "AgfProductServiceLinked",
+				'checked' => 0
 		)
 );
 
