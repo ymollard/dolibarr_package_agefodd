@@ -110,6 +110,7 @@ $search_socpeople_presta = GETPOST('search_socpeople_presta', 'alpha');
 $search_soc_employer = GETPOST('search_soc_employer', 'alpha');
 $search_soc_requester = GETPOST('search_soc_requester', 'alpha');
 $search_session_status = GETPOST('search_session_status');
+$search_product = GETPOST('search_product');
 
 $search_sale = GETPOST('search_sale', 'int');
 
@@ -155,6 +156,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_soc_employer = '';
 	$search_soc_requester = '';
 	$search_session_status = '';
+	$search_product = '';
 }
 
 $hookmanager->initHooks(array(
@@ -220,22 +222,6 @@ $arrayfields = array(
 				'label' => "AgfLieu",
 				'checked' => 1
 		),
-		's.nb_stagiaire' => array(
-				'label' => "AgfNbreParticipants",
-				'checked' => 1
-		),
-		's.fk_socpeople_presta' => array(
-				'label' => 'AgfTypePresta',
-				'checked' => 0
-		),
-		's.fk_soc_employer' => array(
-				'label' => 'AgfTypeEmployee',
-				'checked' => 0
-		),
-		's.fk_soc_requester' => array(
-				'label' => 'AgfTypeRequester',
-				'checked' => 0
-		),
 		's.sell_price' => array(
 				'label' => "AgfCoutFormation",
 				'checked' => 1,
@@ -266,7 +252,27 @@ $arrayfields = array(
 				'checked' => 1,
 				'enabled' => $user->rights->agefodd->session->margin
 		),
+		's.nb_stagiaire' => array(
+				'label' => "AgfNbreParticipants",
+				'checked' => 1
+		),
+		's.fk_socpeople_presta' => array(
+				'label' => 'AgfTypePresta',
+				'checked' => 0
+		),
+		's.fk_soc_employer' => array(
+				'label' => 'AgfTypeEmployee',
+				'checked' => 0
+		),
+		's.fk_soc_requester' => array(
+				'label' => 'AgfTypeRequester',
+				'checked' => 0
+		),
 		'AgfListParticipantsStatus' => array(
+				'label' => "AgfListParticipantsStatus",
+				'checked' => 1
+		),
+		's.fk_product' => array(
 				'label' => "AgfListParticipantsStatus",
 				'checked' => 1
 		)
@@ -361,6 +367,10 @@ if (! empty($search_year)) {
 if (! empty($search_session_status)) {
 	$filter['s.status'] = $search_session_status;
 	$option .= '&search_session_status=' . $search_session_status;
+}
+if (! empty($search_product)) {
+	$filter['s.fk_product'] = $search_product;
+	$option .= '&search_product=' . $search_product;
 }
 if (! empty($limit)) {
 	$option .= '&limit=' . $limit;
@@ -713,10 +723,14 @@ if ($resql != - 1) {
 		print '</td>';
 	}
 
-	if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))
+	if (! empty($arrayfields['AgfListParticipantsStatus']['checked'])) {
 		print '<td class="liste_titre"></td>';
-	if (! empty($arrayfields['AgfProductServiceLinked']['checked']))
-		print '<td class="liste_titre"></td>';
+	}
+	if (! empty($arrayfields['s.fk_product']['checked'])) {
+		print '<td class="liste_titre">';
+		print $form->select_produits($search_product, 'search_product', '', 10000);
+		print '</td>';
+	}
 
 	// Extra fields
 	if (file_exists(DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php')) {
@@ -800,15 +814,6 @@ if ($resql != - 1) {
 		print_liste_field_titre($langs->trans("AgfStatusSession"), $_SERVEUR['PHP_SELF'], "dictstatus.intitule", "", $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['p.ref_interne']['checked']))
 		print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
-	if (! empty($arrayfields['s.nb_stagiaire']['checked']))
-		print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
-	if (! empty($arrayfields['s.fk_socpeople_presta']['checked']))
-		print_liste_field_titre($langs->trans("AgfTypePresta"), $_SERVEUR['PHP_SELF'], "s.fk_socpeople_presta", '', $option, '', $sortfield, $sortorder);
-	if (! empty($arrayfields['s.fk_soc_employer']['checked']))
-		print_liste_field_titre($langs->trans("AgfTypeEmployee"), $_SERVEUR['PHP_SELF'], "s.fk_soc_employer", '', $option, '', $sortfield, $sortorder);
-	if (! empty($arrayfields['s.fk_soc_requester']['checked']))
-		print_liste_field_titre($langs->trans("AgfTypeRequester"), $_SERVEUR['PHP_SELF'], "s.fk_soc_requester", '', $option, '', $sortfield, $sortorder);
-
 	if ($user->rights->agefodd->session->margin) {
 		// var_dump($langs->trans('AgfCostOther'));exit;
 		if (! empty($arrayfields['s.sell_price']['checked']))
@@ -824,9 +829,17 @@ if ($resql != - 1) {
 		if (! empty($arrayfields['AgfMargin']['checked']))
 			print_liste_field_titre($langs->trans("AgfMargin"), $_SERVER['PHP_SELF'], "", "", $option, ' name="margininfo5"  ', $sortfield, $sortorder);
 	}
+	if (! empty($arrayfields['s.nb_stagiaire']['checked']))
+		print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['s.fk_socpeople_presta']['checked']))
+		print_liste_field_titre($langs->trans("AgfTypePresta"), $_SERVEUR['PHP_SELF'], "s.fk_socpeople_presta", '', $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['s.fk_soc_employer']['checked']))
+		print_liste_field_titre($langs->trans("AgfTypeEmployee"), $_SERVEUR['PHP_SELF'], "s.fk_soc_employer", '', $option, '', $sortfield, $sortorder);
+	if (! empty($arrayfields['s.fk_soc_requester']['checked']))
+		print_liste_field_titre($langs->trans("AgfTypeRequester"), $_SERVEUR['PHP_SELF'], "s.fk_soc_requester", '', $option, '', $sortfield, $sortorder);
 	if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))
 		print_liste_field_titre($langs->trans("AgfListParticipantsStatus"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	if (! empty($arrayfields['AgfProductServiceLinked']['checked']))
+	if (! empty($arrayfields['s.fk_product']['checked']))
 		print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 
 	// Extra fields
@@ -927,38 +940,6 @@ if ($resql != - 1) {
 
 			if (! empty($arrayfields['p.ref_interne']['checked']))
 				print '<td><a href="' . dol_buildpath('/agefodd/site/card.php?id=', 2) . $line->fk_session_place . '">' . stripslashes($line->ref_interne) . '</a></td>';
-			if (! empty($arrayfields['s.nb_stagiaire']['checked']))
-				print '<td>' . $line->nb_stagiaire . '</td>';
-
-			if (! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
-				if ($line->fk_socpeople_presta > 0) {
-					$contact = new Contact($db);
-					$contact->fetch($line->fk_socpeople_presta);
-					print '<td>' . $contact->getNomUrl(1) . '</td>';
-					unset($contact);
-				} else
-					print '<td></td>';
-			}
-
-			if (! empty($arrayfields['s.fk_soc_employer']['checked'])) {
-				if ($line->fk_soc_employer > 0) {
-					$soc = new Societe($db);
-					$soc->fetch($line->fk_soc_employer);
-					print '<td>' . $soc->getNomUrl(1) . '</td>';
-					unset($soc);
-				} else
-					print '<td></td>';
-			}
-
-			if (! empty($arrayfields['s.fk_soc_requester']['checked'])) {
-				if ($line->socrequesterid > 0) {
-					$soc = new Societe($db);
-					$soc->fetch($line->socrequesterid);
-					print '<td>' . $soc->getNomUrl(1) . '</td>';
-					unset($soc);
-				} else
-					print '<td></td>';
-			}
 
 			if ($user->rights->agefodd->session->margin) {
 				$pv_total_ht += $line->sell_price;
@@ -984,15 +965,6 @@ if ($resql != - 1) {
 
 				if (! empty($arrayfields['AgfFactAmount']['checked'])) {
 					print '<td  nowrap="nowrap"  name="margininfoline4' . $line->rowid . '" >';
-					// $amount_act_invoiced_less_charges=0;
-					// // Remove charges of product of category 'frais'
-					// if (! empty($line->cost_sell_charges) && $line->cost_sell_charges != - 1 && $line->cost_sell_charges <= $line->invoice_amount) {
-					// $amount_act_invoiced_less_charges = $line->invoice_amount - $line->cost_sell_charges;
-					// } else {
-					// $amount_act_invoiced_less_charges = $line->invoice_amount;
-					// }
-					// $totalfacththf += $amount_act_invoiced_less_charges;
-
 					$amount = 0;
 					if (! empty($TTotalBySession[$line->rowid])) {
 						if (! empty($TTotalBySession[$line->rowid]['invoice']['total_ht_without_draft']))
@@ -1026,22 +998,61 @@ if ($resql != - 1) {
 				}
 			}
 
-			if (! empty($line->nb_subscribe_min)) {
-				if ($line->nb_confirm >= $line->nb_subscribe_min) {
-					$style = 'style="background: green"';
-				} else {
-					$style = 'style="background: red"';
-				}
-			} else {
-				$style = '';
+			if (! empty($arrayfields['s.nb_stagiaire']['checked']))
+				print '<td>' . $line->nb_stagiaire . '</td>';
+
+			if (! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
+				if ($line->fk_socpeople_presta > 0) {
+					$contact = new Contact($db);
+					$contact->fetch($line->fk_socpeople_presta);
+					print '<td>' . $contact->getNomUrl(1) . '</td>';
+					unset($contact);
+				} else
+					print '<td></td>';
 			}
 
-			if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))
-				print '<td ' . $style . '>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
-			if (! empty($arrayfields['AgfProductServiceLinked']['checked'])) {
-				$product = new Product($db);
-				$product->fetch($line->fk_product);
-				print '<td>' . $product->getNomUrl(1) . '</td>';
+			if (! empty($arrayfields['s.fk_soc_employer']['checked'])) {
+				if ($line->fk_soc_employer > 0) {
+					$soc = new Societe($db);
+					$soc->fetch($line->fk_soc_employer);
+					print '<td>' . $soc->getNomUrl(1) . '</td>';
+					unset($soc);
+				} else
+					print '<td></td>';
+			}
+
+			if (! empty($arrayfields['s.fk_soc_requester']['checked'])) {
+				if ($line->socrequesterid > 0) {
+					$soc = new Societe($db);
+					$soc->fetch($line->socrequesterid);
+					print '<td>' . $soc->getNomUrl(1) . '</td>';
+					unset($soc);
+				} else
+					print '<td></td>';
+			}
+
+			if (! empty($arrayfields['AgfListParticipantsStatus']['checked'])) {
+				if (! empty($line->nb_subscribe_min)) {
+					if ($line->nb_confirm >= $line->nb_subscribe_min) {
+						$styleminstatus = 'style="background: green"';
+					} else {
+						$styleminstatus = 'style="background: red"';
+					}
+				} else {
+					$styleminstatus = '';
+				}
+				print '<td ' . $styleminstatus . '>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
+			}
+
+			if (! empty($arrayfields['s.fk_product']['checked'])) {
+				if (!empty($line->fk_product)) {
+					$product = new Product($db);
+					$product->fetch($line->fk_product);
+					$productlink=$product->getNomUrl(1);
+				} else {
+					$productlink='';
+				}
+				print '<td>' . $productlink . '</td>';
 			}
 
 			// Extra fields
@@ -1121,10 +1132,6 @@ if ($resql != - 1) {
 				print '<td></td>';
 			if (! empty($arrayfields['p.ref_interne']['checked']))
 				print '<td></td>';
-			if (! empty($arrayfields['s.nb_stagiaire']['checked']))
-				print '<td></td>';
-			if (! empty($arrayfields['s.fk_soc_requester']['checked']))
-				print '<td></td>';
 			if ($user->rights->agefodd->session->margin) {
 				if (! empty($arrayfields['s.sell_price']['checked']))
 					print '<td name="margininfolineb11' . $line->rowid . '" ></td>';
@@ -1139,7 +1146,14 @@ if ($resql != - 1) {
 				if (! empty($arrayfields['AgfMargin']['checked']))
 					print '<td name="margininfolineb5' . $line->rowid . '" ></td>';
 			}
+			if (! empty($arrayfields['s.nb_stagiaire']['checked']))
+				print '<td></td>';
+			if (! empty($arrayfields['s.fk_soc_requester']['checked']))
+				print '<td></td>';
+
 			if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))
+				print '<td></td>';
+			if (! empty($arrayfields['s.fk_product']['checked']))
 				print '<td></td>';
 
 			// Extra fields
@@ -1187,23 +1201,7 @@ if ($resql != - 1) {
 			print '<td></td>';
 		if (! empty($arrayfields['p.ref_interne']['checked']))
 			print '<td></td>';
-		if (! empty($arrayfields['s.nb_stagiaire']['checked']))
-			print '<td></td>';
-	if (! empty($arrayfields['s.fk_socpeople_presta']['checked']))
-		print '<td></td>';
-	if (! empty($arrayfields['s.fk_soc_employer']['checked']))
-		print '<td></td>';
-		if (! empty($arrayfields['s.fk_soc_requester']['checked']))
-			print '<td></td>';
 		if ($user->rights->agefodd->session->margin) {
-			// $big_propal_total_ht = $big_invoice_total_ht = 0;
-			// array_walk($TTotalBySession, function(&$tab) use (&$big_propal_total_ht, &$big_invoice_total_ht) {
-			// if (!empty($tab['propal']['total_ht_without_draft'])) $big_propal_total_ht += $tab['propal']['total_ht_without_draft'];
-			// if (!empty($tab['propal']['total_ht_from_all_propals'])) $big_propal_total_ht -= $tab['propal']['total_ht_from_all_propals'];
-			// if (!empty($tab['invoice']['total_ht_without_draft'])) $big_invoice_total_ht += $tab['invoice']['total_ht_without_draft'];
-			// if (!empty($tab['invoice']['total_ht_from_all_propals'])) $big_invoice_total_ht -= $tab['invoice']['total_ht_from_all_propals'];
-			// });
-			// if (! empty($arrayfields['s.sell_price']['checked'])) print '<td nowrap="nowrap">'.price($total_sellprice,0, '', 1, -1, -1, 'auto').'</td>';
 			if (! empty($arrayfields['s.sell_price']['checked']))
 				print '<td nowrap="nowrap">' . price($pv_total_ht, 0, '', 1, - 1, - 1, 'auto') . '</td>';
 			if (! empty($arrayfields['AgfAmoutHTHF']['checked']))
@@ -1212,15 +1210,22 @@ if ($resql != - 1) {
 				print '<td nowrap="nowrap">' . price($total_costtrainer, 0, '', 1, - 1, - 1, 'auto') . '</td>';
 			if (! empty($arrayfields['AgfCostOther']['checked']))
 				print '<td nowrap="nowrap">' . price($total_costother, 0, '', 1, - 1, - 1, 'auto') . '</td>';
-			// if (! empty($arrayfields['AgfFactAmount']['checked'])) print '<td nowrap="nowrap">'.price($total_facththf,0, '', 1, -1, -1, 'auto').'</td>';
 			if (! empty($arrayfields['AgfFactAmount']['checked']))
 				print '<td nowrap="nowrap">' . price($invoice_total_ht, 0, '', 1, - 1, - 1, 'auto') . '</td>';
 			if (! empty($arrayfields['AgfMargin']['checked']))
 				print '<td nowrap="nowrap">' . price($total_margin, 0, '', 1, - 1, - 1, 'auto') . '(' . $total_percentmargin . ')' . '</td>';
 		}
+		if (! empty($arrayfields['s.nb_stagiaire']['checked']))
+			print '<td></td>';
+		if (! empty($arrayfields['s.fk_socpeople_presta']['checked']))
+			print '<td></td>';
+		if (! empty($arrayfields['s.fk_soc_employer']['checked']))
+			print '<td></td>';
+		if (! empty($arrayfields['s.fk_soc_requester']['checked']))
+			print '<td></td>';
 		if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))
 			print '<td></td>';
-		if (! empty($arrayfields['AgfProductServiceLinked']['checked']))
+		if (! empty($arrayfields['s.fk_product']['checked']))
 			print '<td></td>';
 
 		// Extra fields
