@@ -1321,6 +1321,11 @@ class modAgefodd extends DolibarrModules
 				'contactstaopca.lastname as contactstaopcalastname' => 'AgfNbreParticipants',
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfNbreParticipants'
 		);
+		
+		$keyforselect = 'agefodd_stagiaire';
+		$keyforelement = 'AgfMailTypeContactTrainee';
+		$keyforaliasextra = 'extratrainee';
+		include DOL_DOCUMENT_ROOT . '/core/extrafieldsinexport.inc.php';
 
 		$keyforselect = 'agefodd_formation_catalogue';
 		$keyforelement = 'AgfCatalogDetail';
