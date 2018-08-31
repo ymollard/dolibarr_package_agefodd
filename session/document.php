@@ -593,6 +593,7 @@ if (! empty($id)) {
 
 		$agf_fin = new Agefodd_session_element($db);
 		$agf_fin->fetch_element_by_session($id);
+		$doclinkwithoutcust = array ();
 		if (is_array($agf_fin->lines) && count($agf_fin->lines) > 0) {
 
 			// Build array with
@@ -603,7 +604,6 @@ if (! empty($id)) {
 				}
 			}
 			// Build doc list
-			$doclinkwithoutcust = array ();
 			foreach ( $agf_fin->lines as $linedoc ) {
 				if (! in_array($linedoc->fk_soc, $array_soc) && ! empty($linedoc->urllink)) {
 					$doclinkwithoutcust[] = $linedoc->urllink;
