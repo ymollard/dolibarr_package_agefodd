@@ -719,7 +719,7 @@ if (! empty($id)) {
 
 					if ($agf->type_session == 1) {
 						print '<br>' . $langs->trans('AgfContactSign') . ' ';
-						$form->select_contacts($stagiaires->lines[$i]->socid, $fk_socpeople_sign, 'fk_socpeople_sign', 1, '', '', 1, '', 1);
+						$form->select_contacts($stagiaires->lines[$i]->socid, (!empty($fk_socpeople_sign) ? $fk_socpeople_sign : $stagiaires->lines[$i]->fk_socpeople_sign), 'fk_socpeople_sign', 1, '', '', 1, '', 1);
 					}
 					/*
 					 * Manage trainee Funding for inter-enterprise
