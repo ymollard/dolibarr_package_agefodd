@@ -2375,9 +2375,6 @@ class Agsession extends CommonObject
 			$i = 0;
 
 			if ($num) {
-			    $nbsess = 0;
-			    $Tsessid = array();
-			    
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
 
@@ -2441,18 +2438,13 @@ class Agsession extends CommonObject
 					{
 						$line->array_options['options_'.$key] = $obj->{$key};
 					}
-					
-					if (!in_array($line->rowid, $Tsessid)) {
-					    $Tsessid[] = $line->rowid;
-					    $nbsess++;
-					}
 
 					$this->lines[$i] = $line;
 					$i ++;
 				}
 			}
 			$this->db->free($resql);
-			return $nbsess;
+			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
