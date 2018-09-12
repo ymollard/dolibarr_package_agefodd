@@ -317,6 +317,8 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 								$pdf->SetXY($this->posxacquired+4, $beforeY);
 								if (empty($conf->global->AGF_ATTESTION_PDF_DEFAULT_NOTAQUIS)) {
 									$pdf->MultiCell($width, 0, $outputlangs->transnoentities('X'), 0, 'L', 0);
+								} else {
+									$pdf->MultiCell($width, 0, '', 0, 'L', 0);
 								}
 							}
 						}
