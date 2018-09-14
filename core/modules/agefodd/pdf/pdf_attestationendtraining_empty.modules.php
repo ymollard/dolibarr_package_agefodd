@@ -249,13 +249,13 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 			$pdf->Cell($this->width2, - 3, $this->str2, 0, 0, 'C', 0);*/
 
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$newY = $newY + 20;
+			$newY = $newY + 10;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$this->str = ' ' . $outputlangs->transnoentities('AgfPDFAttestation3');
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
-			$newY = $newY + 10;
+			$newY = $newY + 7;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$pdf->MultiCell($this->page_largeur - $this->marge_gauche - $this->marge_droite, 0, $outputlangs->transnoentities('« ' . $agf->intitule_custo . ' »'), 0, 'C', 0);
 			$newY = $pdf->GetY();
@@ -264,7 +264,7 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 			$this->str .= $agf->libSessionDate();
 			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $agf->duree_session . $outputlangs->transnoentities('AgfPDFAttestation6');
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$newY = $newY + 10;
+			$newY = $newY + 7;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 
