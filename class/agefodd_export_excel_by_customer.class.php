@@ -617,10 +617,12 @@ class AgefoddExportExcelByCustomer {
 									$this->workbook->getActiveSheet()->getStyleByColumnAndRow(18, $next_block_row_product)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 									
 									$next_block_row_product ++;
+									$next_block_row_invoice ++;
 								}
 							}
-							
-							$next_block_row_invoice ++;
+							else{
+							    $next_block_row_invoice ++;
+							}
 						}
 					}
 				} elseif ($col == 19) {
