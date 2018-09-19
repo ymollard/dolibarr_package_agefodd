@@ -38,6 +38,11 @@ class ReportCA extends AgefoddExportExcel {
 	private $year_to_report_array = array ();
 
 	public $status_array = array();
+	const T_ACCOUNTING_DATE_CHOICES = array(
+		'invoice' => 'DateInvoice'
+		, 'session_start' => 'AgfDateSessionStart'
+		, 'session_end' => 'AgfDateSessionEnd'
+	);
 
 	/**
 	 * Constructor
@@ -171,6 +176,10 @@ class ReportCA extends AgefoddExportExcel {
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfReportCASessionDetail'));
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('Yes'));
 							$this->row[$keysheet] ++;
+						} elseif ($key == 'accounting_date') {
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfReportCAInvoiceAccountingDate'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities(self::T_ACCOUNTING_DATE_CHOICES[$value]));
+							$this->row[$keysheet] ++;
 						}
 					}
 				}
@@ -194,6 +203,9 @@ class ReportCA extends AgefoddExportExcel {
 		$str_sub_name = '';
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
+				if ($key == 'accounting_date') {
+					$str_sub_name .= str_replace(' ', '', ucwords($this->outputlangs->transnoentities(self::T_ACCOUNTING_DATE_CHOICES[$value])));
+				}
 				if ($key == 'startyear') {
 					$str_sub_name .= $this->outputlangs->transnoentities('Year');
 					$str_sub_name .= $value;
@@ -482,7 +494,7 @@ class ReportCA extends AgefoddExportExcel {
 				$line_to_output[$i] = 0;
 				$line_to_output[$i+1] = $array_total_ht[$year_todo];
 				if (array_key_exists($year_todo - 1, $array_total_ht)) {
-					if ($array_total_ht[$year_todo] != 0) {
+					if ($array_total_ht[$year_todo - 1] != 0) {
 						$line_to_output[$i + 2] = (($array_total_ht[$year_todo] - $array_total_ht[$year_todo - 1]) / $array_total_ht[$year_todo - 1]);
 					} else {
 						$line_to_output[$i + 2] = 'N/A';
@@ -507,7 +519,7 @@ class ReportCA extends AgefoddExportExcel {
 				$line_to_output[$i] = 0;
 				$line_to_output[$i+1] = $array_total_ttc[$year_todo];
 				if (array_key_exists($year_todo - 1, $array_total_ttc)) {
-					if ($array_total_ttc[$year_todo] != 0) {
+					if ($array_total_ttc[$year_todo - 1] != 0) {
 						$line_to_output[$i + 2] = (($array_total_ttc[$year_todo] - $array_total_ttc[$year_todo - 1]) / $array_total_ttc[$year_todo - 1]);
 					} else {
 						$line_to_output[$i + 2] = 'N/A';
@@ -537,7 +549,7 @@ class ReportCA extends AgefoddExportExcel {
 					$line_to_output[$i+1] = ${'array_total_ht_trim' . $trim}[$year_todo];
 
 					if (array_key_exists($year_todo - 1, ${'array_total_ht_trim' . $trim})) {
-						if (${'array_total_ht_trim' . $trim}[$year_todo] != 0) {
+						if (${'array_total_ht_trim' . $trim}[$year_todo - 1] != 0) {
 							$line_to_output[$i + 2] = ((${'array_total_ht_trim' . $trim}[$year_todo] - ${'array_total_ht_trim' . $trim}[$year_todo - 1]) / ${'array_total_ht_trim' . $trim}[$year_todo - 1]);
 						} else {
 							$line_to_output[$i + 2] = 'N/A';
@@ -626,6 +638,22 @@ class ReportCA extends AgefoddExportExcel {
 		$this->value_ca_total_ttc = array ();
 		$this->value_ca_total_hthf = array ();
 
+		switch($filter['accounting_date']) {
+			case 'session_start':
+				$accounting_date = 's.dated';
+				break;
+
+			case 'session_end':
+				$accounting_date = 's.datef';
+				break;
+
+			case 'invoice':
+			default:
+				$accounting_date = 'f.datef';
+		}
+
+		unset($filter['accounting_date']);
+
 		// Amount
 		foreach ( $this->year_to_report_array as $year_todo ) {
 			for($month_todo = 1; $month_todo <= 12; $month_todo ++) {
@@ -637,7 +665,14 @@ class ReportCA extends AgefoddExportExcel {
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 				$sql .= " ON so.rowid = f.fk_soc";
-				if (array_key_exists('group_by_session', $filter) || array_key_exists('s.type_session', $filter) || array_key_exists('socrequester.nom', $filter) || array_key_exists('so.parent|sorequester.parent', $filter)) {
+				if (
+						array_key_exists('sale.fk_user', $filter)
+					||	array_key_exists('group_by_session', $filter)
+					||	array_key_exists('s.type_session', $filter)
+					||	array_key_exists('socrequester.nom', $filter)
+					||	array_key_exists('so.parent|sorequester.parent', $filter)
+					||	preg_match('/^s\./', $accounting_date)
+				) {
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselement";
 					$sql .= " ON sesselement.element_type='invoice' AND f.rowid = sesselement.fk_element";
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -646,12 +681,16 @@ class ReportCA extends AgefoddExportExcel {
 					$sql .= " ON socrequester.rowid = s.fk_soc_requester";
 				}
 				if (array_key_exists('sale.fk_user', $filter)) {
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ass";
+					$sql .= " ON ass.fk_session_agefodd = s.rowid";
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire trainee";
+					$sql .= " ON trainee.rowid = ass.fk_stagiaire";
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sale";
-					$sql .= " ON f.fk_soc = sale.fk_soc";
+					$sql .= " ON sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)";
 				}
 
-				$sql .= " WHERE YEAR(f.datef)=" . $year_todo;
-				$sql .= " AND MONTH(f.datef)=" . $month_todo;
+				$sql .= " WHERE YEAR(".$accounting_date.")=" . $year_todo;
+				$sql .= " AND MONTH(".$accounting_date.")=" . $month_todo;
 				$sql .= " AND f.fk_statut IN (1,2)";
 				if (! empty($conf->global->FACTURE_DEPOSITS_ARE_JUST_PAYMENTS))
 					$sql .= " AND f.type IN (0,1,2)";
@@ -743,7 +782,14 @@ class ReportCA extends AgefoddExportExcel {
 				//$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "categorie_product as catprod ON catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . ") AND catprod.fk_product=prod.rowid ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 				$sql .= " ON so.rowid = f.fk_soc";
-				if (array_key_exists('group_by_session', $filter) || array_key_exists('s.type_session', $filter) || array_key_exists('socrequester.nom', $filter) || array_key_exists('so.parent|sorequester.parent', $filter)) {
+				if (
+						array_key_exists('sale.fk_user', $filter)
+					||	array_key_exists('group_by_session', $filter)
+					||	array_key_exists('s.type_session', $filter)
+					||	array_key_exists('socrequester.nom', $filter)
+					||	array_key_exists('so.parent|sorequester.parent', $filter)
+					||	preg_match('/^s\./', $accounting_date)
+				) {
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as sesselement";
 					$sql .= " ON sesselement.element_type='invoice' AND f.rowid = sesselement.fk_element";
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -752,11 +798,15 @@ class ReportCA extends AgefoddExportExcel {
 					$sql .= " ON socrequester.rowid = s.fk_soc_requester";
 				}
 				if (array_key_exists('sale.fk_user', $filter)) {
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ass";
+					$sql .= " ON ass.fk_session_agefodd = s.rowid";
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire trainee";
+					$sql .= " ON trainee.rowid = ass.fk_stagiaire";
 					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sale";
-					$sql .= " ON f.fk_soc = sale.fk_soc";
+					$sql .= " ON sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)";
 				}
-				$sql .= " WHERE YEAR(f.datef)=" . $year_todo;
-				$sql .= " AND MONTH(f.datef)=" . $month_todo;
+				$sql .= " WHERE YEAR(".$accounting_date.")=" . $year_todo;
+				$sql .= " AND MONTH(".$accounting_date.")=" . $month_todo;
 				$sql .= " AND f.fk_statut in (1,2)";
 				$sql .= " AND facdet.fk_product IN (SELECT fk_product FROM " . MAIN_DB_PREFIX . "categorie_product WHERE fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . "))";
 				if (! empty($conf->global->FACTURE_DEPOSITS_ARE_JUST_PAYMENTS))
@@ -804,24 +854,17 @@ class ReportCA extends AgefoddExportExcel {
 				dol_syslog(get_class($this) . "::fetch_ca HFHT sql=" . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
+					$this->value_ca_total_hthf[$year_todo][$month_todo] = $this->value_ca_total_ht[$year_todo][$month_todo];
 					if ($this->db->num_rows($resql)) {
 						while ( $obj = $this->db->fetch_object($resql) ) {
 							if (! empty($obj->amount_ht)) {
-								$this->value_ca_total_hthf[$year_todo][$month_todo]['total'] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'] - $obj->amount_ht;
-							} else {
-								$this->value_ca_total_hthf[$year_todo][$month_todo]['total'] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
-							}
+								$this->value_ca_total_hthf[$year_todo][$month_todo]['total'] -= $obj->amount_ht;
 
-							if($filter['group_by_session']) {
-								if (! empty($obj->amount_ht)) {
-									$this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$obj->rowid] = $this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$obj->rowid] - $obj->amount_ht;
-								} else {
-									$this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$obj->rowid] = $this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$obj->rowid];
+								if($filter['group_by_session']) {
+									$this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$obj->rowid] -= $obj->amount_ht;
 								}
 							}
 						}
-					} else {
-						$this->value_ca_total_hthf[$year_todo][$month_todo] = $this->value_ca_total_ht[$year_todo][$month_todo];
 					}
 				} else {
 					$this->error = "Error " . $this->db->lasterror();

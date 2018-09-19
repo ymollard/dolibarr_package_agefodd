@@ -83,6 +83,7 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/report",
 				"/agefodd/report/bpf",
 				"/agefodd/report/ca",
+		        "/agefodd/report/bycust/",
 				"/agefodd/background"
 		);
 		$r = 0;
@@ -1320,6 +1321,11 @@ class modAgefodd extends DolibarrModules
 				'contactstaopca.lastname as contactstaopcalastname' => 'AgfNbreParticipants',
 				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfNbreParticipants'
 		);
+		
+		$keyforselect = 'agefodd_stagiaire';
+		$keyforelement = 'AgfMailTypeContactTrainee';
+		$keyforaliasextra = 'extratrainee';
+		include DOL_DOCUMENT_ROOT . '/core/extrafieldsinexport.inc.php';
 
 		$keyforselect = 'agefodd_formation_catalogue';
 		$keyforelement = 'AgfCatalogDetail';
@@ -1357,6 +1363,7 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_contact as sesscontact ON sesscontact.fk_session_agefodd = s.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_contact as agfcontact ON agfcontact.rowid = sesscontact.fk_agefodd_contact';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactsession ON contactsession.rowid = agfcontact.fk_socpeople';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_extrafields as extratrainee ON extratrainee.fk_object = sta.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as extrasession ON extrasession.fk_object = s.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_extrafields as extracatalogue ON extracatalogue.fk_object = c.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as sosta ON sosta.rowid = sta.fk_soc';
@@ -2336,6 +2343,38 @@ class modAgefodd extends DolibarrModules
 				'target' => '',
 				'user' => 0
 		);
+		
+		
+		$r ++;
+		$this->menu [$r] = array (
+		    'fk_menu' => 'fk_mainmenu=agefodd',
+		    'type' => 'left',
+		    'titre' => 'AgfMenuReport',
+		    'leftmenu' => 'AgfMenuReport',
+		    'url' => '/agefodd/report/report_by_customer.php',
+		    'langs' => 'agefodd@agefodd',
+		    'position' => 801,
+		    'enabled' => '$user->rights->agefodd->report',
+		    'perms' => '$user->rights->agefodd->report',
+		    'target' => '',
+		    'user' => 0
+		);
+		
+		$r ++;
+		$this->menu [$r] = array (
+		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+		    'type' => 'left',
+		    'titre' => 'AgfMenuReportByCustomer',
+		    'url' => '/agefodd/report/report_by_customer.php',
+		    'langs' => 'agefodd@agefodd',
+		    'position' => 802,
+		    'enabled' => '$user->rights->agefodd->report',
+		    'perms' => '$user->rights->agefodd->report',
+		    'target' => '',
+		    'user' => 0
+		);
+		
+		
 	}
 
 	/**
@@ -2510,7 +2549,8 @@ class modAgefodd extends DolibarrModules
 					closedir($handle);
 				}
 
-				if (count($filetorun)>0) {
+				if (!empty($filetorun) && is_array($filetorun) && count($filetorun)>0) {
+
 					//Sort file array to be sure data is upgrade script are executed in correct order
 					ksort($filetorun);
 					foreach($filetorun as $key=>$data) {
@@ -2521,10 +2561,11 @@ class modAgefodd extends DolibarrModules
 							$this->update_refsession();
 						}
 
-								if ($result <= 0)
-									$error ++;
-							}
+						if ($result <= 0){
+							$error ++;
 						}
+					}
+				}
 
 				if ($error == 0) {
 					$ok = 1;

@@ -588,13 +588,16 @@ if (! empty($id)) {
 				$formmail->clear_attached_files();
 				if ($action == 'presend_convocation_trainee') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
-					$formmail->param['fileinit'] = $file;
+					if((float) DOL_VERSION >= 7.0) $formmail->param['fileinit'][] = $file;
+                    else $formmail->param['fileinit'] = $file;
 				} elseif ($action == 'presend_attestation_trainee') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
-					$formmail->param['fileinit'] = $file;
+					if((float) DOL_VERSION >= 7.0) $formmail->param['fileinit'][] = $file;
+                    else $formmail->param['fileinit'] = $file;
 				} elseif ($action == 'presend_attestationendtraining_trainee') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
-					$formmail->param['fileinit'] = $file;
+					if((float) DOL_VERSION >= 7.0) $formmail->param['fileinit'][] = $file;
+                    else $formmail->param['fileinit'] = $file;
 				}
 			}
 
@@ -609,7 +612,7 @@ if (! empty($id)) {
 			$formmail->withtoccsocid = 0;
 			$formmail->withtoccc = $conf->global->MAIN_EMAIL_USECCC;
 			$formmail->withtocccsocid = 0;
-			$formmail->withfile = 1;
+			$formmail->withfile = 2;
 
 			$formmail->withdeliveryreceipt = 1;
 			$formmail->withdeliveryreceiptreadonly = 0;

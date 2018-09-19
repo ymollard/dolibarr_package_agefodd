@@ -54,7 +54,13 @@ $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
 $filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth','int'), GETPOST('dt_start_filterday','int'), GETPOST('dt_start_filteryear','int'));
 $filter_session_status = GETPOST('search_session_status', 'array');
 $filter_control_occupation = GETPOST('control_occupation');
-if ($filter_control_occupation === '') $filter_control_occupation = -1; // -1 = tous; 0 = Non cochée; 1 = Cochée
+if ($filter_control_occupation === '') {
+	if (!is_null($conf->global->AGF_DEFAULT_AGENDA_LOCATION_FILTER_ROOM)) {
+		$filter_control_occupation = $conf->global->AGF_DEFAULT_AGENDA_LOCATION_FILTER_ROOM;
+	} else {
+		$filter_control_occupation = -1; // -1 = tous; 0 = Non cochée; 1 = Cochée
+	}
+}
 
 if ($type == 'trainer' || $type == 'trainerext') {
 	$canedit = 0;

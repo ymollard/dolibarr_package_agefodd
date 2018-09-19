@@ -45,6 +45,8 @@ $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 
 $search_year = GETPOST('search_year','int');
+$search_accounting_date = GETPOST('search_accounting_date');
+if(empty($search_accounting_date))  $search_accounting_date = 'invoice';
 $search_sale = GETPOST('search_sale', 'int');
 $search_type_session = GETPOST("search_type_session", 'int');
 $search_parent = GETPOST('search_parent', 'int');
@@ -83,7 +85,7 @@ $formAgefodd = new FormAgefodd($db);
 $formother = new FormOther($db);
 $formfile = new FormFile($db);
 
-$filter = array ();
+$filter = array ('accounting_date' => $search_accounting_date);
 
 if (! empty($search_year)) {
 	$filter['startyear'] = $search_year;
@@ -186,6 +188,13 @@ print '<tr>';
 print '<td>' . $langs->trans('Year').'</td>';
 print '<td>';
 print $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 15, 0);
+print '</td>';
+print '</tr>';
+
+print '<tr>';
+print '<td>' . $langs->trans('AgfReportCAInvoiceAccountingDate').'</td>';
+print '<td>';
+print $form->selectarray('search_accounting_date', ReportCA::T_ACCOUNTING_DATE_CHOICES, $search_accounting_date, 0, 0, 0, '', 1);
 print '</td>';
 print '</tr>';
 

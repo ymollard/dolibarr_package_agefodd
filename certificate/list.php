@@ -150,6 +150,8 @@ $pagenext = $page + 1;
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
+$hookmanager->initHooks(array('certificatlist'));
+
 $title = $langs->trans("AgfListCertificate");
 
 llxHeader('', $title);
@@ -162,61 +164,19 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_certif_customer($socid, $sortorder, $sortfield, 0, 0, $filter);
 }
 $resql = $agf->fetch_certif_customer($socid, $sortorder, $sortfield, $limit, $offset, $filter);
-
+print '<div width="100%" align="right">';
 if ($resql>=0) {
 	$num = $resql;
 
-	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+	print '<form method="get" action="' . $url_form . '" name="searchFormList" id="searchFormList">' . "\n";
 	print '<input type="hidden" name="socid" value="' . $socid . '"/>';
 
 	$option = '&socid=' . $socid . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
 	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$i = 0;
-	print '<table class="noborder" width="100%">';
-	print '<tr class="liste_titre">';
-	$arg_url = '&page=' . $page . '&socid=' . $socid . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "certif.fk_session_agefodd", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "soc.nom", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfParticipant"), $_SERVEUR ['PHP_SELF'], "sta.nom", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifCode"), $_SERVEUR ['PHP_SELF'], 'certif.certif_code', '', $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifLabel"), $_SERVEUR ['PHP_SELF'], 'certif.certif_label', '', $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifDateSt"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_start", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifDateEnd"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_end", '', $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifDateWarning").' '.$form->textwithpicto('', $langs->trans("AgfCertifLegend"), 1, 'help'), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_warning", '', $arg_url, '', $sortfield, $sortorder);
-	print "</tr>\n";
-	//AgfCertificateValidity
-	// Search bar
-	$url_form = $_SERVER ["PHP_SELF"];
-	$addcriteria = false;
-	if (! empty($sortorder)) {
-		$url_form .= '?sortorder=' . $sortorder;
-		$addcriteria = true;
-	}
-	if (! empty($sortfield)) {
-		if ($addcriteria) {
-			$url_form .= '&sortfield=' . $sortfield;
-		} else {
-			$url_form .= '?sortfield=' . $sortfield;
-		}
-		$addcriteria = true;
-	}
-	if (! empty($page)) {
-		if ($addcriteria) {
-			$url_form .= '&page=' . $page;
-		} else {
-			$url_form .= '?page=' . $page;
-		}
-		$addcriteria = true;
-	}
-
-
-	print '<tr class="liste_titre">';
+	print '<table class="noborder tagtable liste listwithfilterbefore" width="100%">';
+	print '<tr class="liste_titre_filter">';
 
 	print '<td>&nbsp;</td>';
 
@@ -272,7 +232,48 @@ if ($resql>=0) {
 	print '</td>';
 
 	print "</tr>\n";
-	print '</form>';
+
+
+	print '<tr class="liste_titre">';
+	$arg_url = '&page=' . $page . '&socid=' . $socid . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
+	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "certif.fk_session_agefodd", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "soc.nom", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfParticipant"), $_SERVEUR ['PHP_SELF'], "sta.nom", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifCode"), $_SERVEUR ['PHP_SELF'], 'certif.certif_code', '', $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifLabel"), $_SERVEUR ['PHP_SELF'], 'certif.certif_label', '', $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifDateSt"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_start", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifDateEnd"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_end", '', $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifDateWarning").' '.$form->textwithpicto('', $langs->trans("AgfCertifLegend"), 1, 'help'), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_warning", '', $arg_url, '', $sortfield, $sortorder);
+	print "</tr>\n";
+	//AgfCertificateValidity
+	// Search bar
+	$url_form = $_SERVER ["PHP_SELF"];
+	$addcriteria = false;
+	if (! empty($sortorder)) {
+		$url_form .= '?sortorder=' . $sortorder;
+		$addcriteria = true;
+	}
+	if (! empty($sortfield)) {
+		if ($addcriteria) {
+			$url_form .= '&sortfield=' . $sortfield;
+		} else {
+			$url_form .= '?sortfield=' . $sortfield;
+		}
+		$addcriteria = true;
+	}
+	if (! empty($page)) {
+		if ($addcriteria) {
+			$url_form .= '&page=' . $page;
+		} else {
+			$url_form .= '?page=' . $page;
+		}
+		$addcriteria = true;
+	}
 
 	$var = true;
 	foreach ( $agf->lines as $line ) {
@@ -325,11 +326,12 @@ if ($resql>=0) {
 
 		$i ++;
 	}
-
+	print '</form>';
 	print "</table>";
 } else {
 	setEventMessage($agf->error, 'errors');
 }
+print '</div>';
 
 llxFooter();
 $db->close();

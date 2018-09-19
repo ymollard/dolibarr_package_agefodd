@@ -69,7 +69,7 @@ $langs->load("companies");
 
 /*
  * Actions delete
-*/
+ */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer) {
 
 	$agf = new Agefodd_convention($db);
@@ -85,9 +85,9 @@ if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->
 
 /*
  * Actions archive/active (convention de formation)
-*/
+ */
 if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer) {
-	if ($_POST ["confirm"] == "yes") {
+	if ($_POST["confirm"] == "yes") {
 		$agf = new Agefodd_convention($db);
 
 		$result = $agf->fetch(0, 0, $id);
@@ -96,20 +96,20 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer) {
 		$result = $agf->update($user);
 
 		if ($result > 0) {
-			Header('Location: ' . $_SERVER ['PHP_SELF'] . '?sessid=' . $sessid . '&socid=' . $agf->socid);
+			Header('Location: ' . $_SERVER['PHP_SELF'] . '?sessid=' . $sessid . '&socid=' . $agf->socid);
 			exit();
 		} else {
 			setEventMessage($agf->error, 'errors');
 		}
 	} else {
-		Header('Location: ' . $_SERVER ['PHP_SELF'] . '?sessid=' . $sessid);
+		Header('Location: ' . $_SERVER['PHP_SELF'] . '?sessid=' . $sessid);
 		exit();
 	}
 }
 
 /*
  * Action generate fiche pédagogique
-*/
+ */
 if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 	$agf = new Agefodd_convention($db);
 
@@ -129,11 +129,13 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 
 	$file = 'convention' . '_' . $agf->sessid . '_' . $agf->socid . '_' . $agf->id . '.pdf';
 
-	$field='id';
+	$field = 'id';
 	if (strpos($agf->model_doc, 'rfltr_agefodd') !== false) {
 		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
-		$id_model_rfltr = (int)strtr($agf->model_doc, array('rfltr_agefodd_'=>''));
-		$field='sessid'; // Si on est sur un modèle externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les données
+		$id_model_rfltr = ( int ) strtr($agf->model_doc, array(
+				'rfltr_agefodd_' => ''
+		));
+		$field = 'sessid'; // Si on est sur un modèle externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les données
 	}
 
 	$result = agf_pdf_create($db, $agf->{$field}, '', $model, $outputlangs, $file, $agf->socid, '', $path_external_model, $id_model_rfltr, $agf);
@@ -148,9 +150,9 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 
 /*
  * Action update (convention de formation)
-*/
+ */
 if ($action == 'update' && $user->rights->agefodd->creer) {
-	if (! $_POST ["cancel"]) {
+	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_convention($db);
 
 		$result = $agf->fetch(0, 0, $id);
@@ -175,8 +177,8 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		$idtypeelement = GETPOST('idtypelement', 'alpha');
 		if (! empty($idtypeelement)) {
 			$idtypeelement_array = explode(':', $idtypeelement);
-			$fk_element = $idtypeelement_array [0];
-			$element_type = $idtypeelement_array [1];
+			$fk_element = $idtypeelement_array[0];
+			$element_type = $idtypeelement_array[1];
 		}
 
 		if (! empty($intro1))
@@ -219,23 +221,23 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		$result = $agf->update($user);
 
 		if ($result > 0) {
-			Header('Location: ' . $_SERVER ['PHP_SELF'] . '?id=' . $id);
+			Header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $id);
 			exit();
 		} else {
 			setEventMessage($agf->error, 'errors');
 		}
 	} else {
-		Header('Location: ' . $_SERVER ['PHP_SELF'] . '?id=' . $id);
+		Header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $id);
 		exit();
 	}
 }
 
 /*
  * Action create (training contract)
-*/
+ */
 
 if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
-	if (! $_POST ["cancel"]) {
+	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_convention($db);
 
 		$intro1 = GETPOST('intro1');
@@ -258,8 +260,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		$idtypeelement = GETPOST('idtypelement', 'alpha');
 		if (! empty($idtypeelement)) {
 			$idtypeelement_array = explode(':', $idtypeelement);
-			$fk_element = $idtypeelement_array [0];
-			$element_type = $idtypeelement_array [1];
+			$fk_element = $idtypeelement_array[0];
+			$element_type = $idtypeelement_array[1];
 		}
 
 		if (empty($fk_element) && empty($conf->global->AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC)) {
@@ -308,31 +310,31 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 			$result = $agf->create($user);
 
 			if ($result > 0) {
-				Header('Location: ' . $_SERVER ['PHP_SELF'] . '?id=' . $result);
+				Header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $result);
 				exit();
 			} else {
 				setEventMessage($agf->error, 'errors');
 			}
 		}
 	} else {
-		Header('Location: ' . $_SERVER ['PHP_SELF'] . '?sessid=' . $sessid);
+		Header('Location: ' . $_SERVER['PHP_SELF'] . '?sessid=' . $sessid);
 		exit();
 	}
 }
 
 if ((empty($id)) && (empty($socid)) && (empty($action))) {
-	Header('Location: ' . $_SERVER ['PHP_SELF'] . '?sessid=' . $sessid . '&action=create');
+	Header('Location: ' . $_SERVER['PHP_SELF'] . '?sessid=' . $sessid . '&action=create');
 	exit();
 }
 
 /*
  * View
-*/
+ */
 
-$extrajs = array (
+$extrajs = array(
 		'/agefodd/includes/multiselect/js/ui.multiselect.js'
 );
-$extracss = array (
+$extracss = array(
 		'/agefodd/includes/multiselect/css/ui.multiselect.css',
 		'/agefodd/css/agefodd.css'
 );
@@ -344,7 +346,7 @@ $formAgefodd = new FormAgefodd($db);
 
 /*
  * Affichage de la fiche convention en mode création
-*/
+ */
 if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	$agf = new Agsession($db);
@@ -357,7 +359,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$result = $agf_last->fetch_last_conv_per_socity($socid);
 	if ($result > 0) {
 		$agf_conv = new Agefodd_convention($db);
-		if (!empty($agf_last->sessid)) {
+		if (! empty($agf_last->sessid)) {
 			$result = $agf_conv->fetch($agf_last->sessid, $socid);
 			if ($agf_last->sessid) {
 				$last_conv = 'ok';
@@ -373,7 +375,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$intro1 .= ' ' . $mysoc->capital . ' ' . $langs->trans("Currency" . $conf->currency);
 	}
 
-	$addr = preg_replace( "/\r|\n/", " ", $mysoc->address . ', ' . $mysoc->zip . ' ' . $mysoc->town );
+	$addr = preg_replace("/\r|\n/", " ", $mysoc->address . ', ' . $mysoc->zip . ' ' . $mysoc->town);
 	$intro1 .= $langs->trans('AgfConvIntro1_3') . ' ' . $addr;
 	if (! empty($mysoc->idprof1)) {
 		$intro1 .= $langs->trans('AgfConvIntro1_4') . ' ' . $mysoc->idprof1;
@@ -382,7 +384,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$intro1 .= ' ' . $langs->trans('AgfConvIntro1_5') . ' ' . $conf->global->AGF_ORGANISME_PREF;
 	} else {
 		$intro1 .= ' ' . $langs->trans('AgfConvIntro1_6');
-		$intro1 .= ' ' . $conf->global->AGF_ORGANISME_PREF . ' ' . $langs->trans('AgfConvIntro1_7') . ' ' . $conf->global->AGF_ORGANISME_NUM. ' '. $langs->trans('AgfConvOrg1');
+		$intro1 .= ' ' . $conf->global->AGF_ORGANISME_PREF . ' ' . $langs->trans('AgfConvIntro1_7') . ' ' . $conf->global->AGF_ORGANISME_NUM . ' ' . $langs->trans('AgfConvOrg1');
 	}
 	if (! empty($conf->global->AGF_ORGANISME_REPRESENTANT)) {
 		$intro1 .= $langs->trans('AgfConvIntro1_8') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . $langs->trans('AgfConvIntro1_9');
@@ -393,45 +395,42 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$agf_soc = new Societe($db);
 	$result = $agf_soc->fetch($socid);
 
-
 	// intro2
-	$addr = preg_replace( "/\r|\n/", " ", $agf_soc->address. ", " . $agf_soc->zip . " " . $agf_soc->town );
-	$intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name ;
-	if (!empty($addr)) {
-		$intro2 .= ", ". $langs->trans('AgfConvIntro2_2') . ' ' . $addr ;
+	$addr = preg_replace("/\r|\n/", " ", $agf_soc->address . ", " . $agf_soc->zip . " " . $agf_soc->town);
+	$intro2 = $langs->trans('AgfConvIntro2_1') . ' ' . $agf_soc->name;
+	if (! empty($addr)) {
+		$intro2 .= ", " . $langs->trans('AgfConvIntro2_2') . ' ' . $addr;
 	}
-	if (!empty($agf_soc->idprof2)) {
-		$intro2 .= ", ". $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
+	if (! empty($agf_soc->idprof2)) {
+		$intro2 .= ", " . $langs->trans('AgfConvIntro2_3') . ' ' . $agf_soc->idprof2;
 	}
 
-	$signataire='';
-	$contactname=trim($agf->contactname);
-	if (!empty($contactname)) {
+	$signataire = '';
+	$contactname = trim($agf->contactname);
+	if (! empty($contactname)) {
 		$intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' ';
 		$intro2 .= ucfirst(strtolower($agf->contactcivilite)) . ' ' . $agf->contactname;
 		$intro2 .= ' ' . $langs->trans('AgfConvIntro2_5');
 	} else {
 
-		//Trainee link to the company convention
+		// Trainee link to the company convention
 		$stagiaires = new Agefodd_session_stagiaire($db);
-		$result=$stagiaires->fetch_stagiaire_per_session($sessid,$socid,1);
-		if ($result<0) {
-			setEventMessage($stagiaires->error,'errors');
+		$result = $stagiaires->fetch_stagiaire_per_session($sessid, $socid, 1);
+		if ($result < 0) {
+			setEventMessage($stagiaires->error, 'errors');
 		} else {
-			if (is_array($stagiaires->lines) && count($stagiaires->lines)>0) {
+			if (is_array($stagiaires->lines) && count($stagiaires->lines) > 0) {
 
-				foreach ($stagiaires->lines as $line) {
-					if (!empty($line->fk_socpeople_sign)) {
-						$socpsign=new Contact($db);
+				foreach ( $stagiaires->lines as $line ) {
+					if (! empty($line->fk_socpeople_sign)) {
+						$socpsign = new Contact($db);
 						$socpsign->fetch($line->fk_socpeople_sign);
-						$signataire=$socpsign->getFullName($langs).' ';
+						$signataire = $socpsign->getFullName($langs) . ' ';
 					}
 				}
-				if (!empty($signataire)) {
-					$intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' '.$signataire.' '. $langs->trans('AgfConvIntro2_5');
+				if (! empty($signataire)) {
+					$intro2 .= ', ' . $langs->trans('AgfConvIntro2_4') . ' ' . $signataire . ' ' . $langs->trans('AgfConvIntro2_5');
 				}
-
-
 			}
 		}
 	}
@@ -444,20 +443,20 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	// '## ', une puce de second niveau est mis en place
 	// '### ', une puce de troisième niveau est mis en place
 	$art1 = $langs->trans('AgfConvArt1_1') . "\n";
-	$art1 .= $langs->trans('AgfConvArt1_2') . ' ' . $agf->formintitule . ' ' . $langs->trans('AgfConvArt1_3') . " \n". "\n";
+	$art1 .= $langs->trans('AgfConvArt1_2') . ' ' . $agf->formintitule . ' ' . $langs->trans('AgfConvArt1_3') . " \n" . "\n";
 
 	$obj_peda = new Formation($db);
 	$resql = $obj_peda->fetch_objpeda_per_formation($agf->formid);
-	if (count( $obj_peda->lines)>0) {
+	if (count($obj_peda->lines) > 0) {
 		$art1 .= $langs->trans('AgfConvArt1_4') . "\n";
 	}
 	foreach ( $obj_peda->lines as $line ) {
 		$art1 .= "-	" . $line->intitule . "\n";
 	}
-	if (count( $obj_peda->lines)>0) {
+	if (count($obj_peda->lines) > 0) {
 		$art1 .= "\n";
 	}
-	$art1 .= $langs->trans('AgfConvArt1_6') . "\n". "\n";
+	$art1 .= $langs->trans('AgfConvArt1_6') . "\n" . "\n";
 	$art1 .= $langs->trans('AgfConvArt1_7');
 
 	if ($agf->dated == $agf->datef)
@@ -476,40 +475,39 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$old_date = 0;
 	$duree = 0;
 	for($i = 0; $i < $blocNumber; $i ++) {
-		if ($calendrier->lines [$i]->date_session != $old_date) {
+		if ($calendrier->lines[$i]->date_session != $old_date) {
 			if ($i > 0)
 				$art1 .= "), ";
-			$art1 .= dol_print_date($calendrier->lines [$i]->date_session, 'daytext') . ' (';
+			$art1 .= dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . ' (';
 		} else
 			$art1 .= '/';
-		$art1 .= dol_print_date($calendrier->lines [$i]->heured, 'hour');
+		$art1 .= dol_print_date($calendrier->lines[$i]->heured, 'hour');
 		$art1 .= ' - ';
-		$art1 .= dol_print_date($calendrier->lines [$i]->heuref, 'hour');
+		$art1 .= dol_print_date($calendrier->lines[$i]->heuref, 'hour');
 		if ($i == $blocNumber - 1)
 			$art1 .= ').' . "\n";
 
-		$old_date = $calendrier->lines [$i]->date_session;
+		$old_date = $calendrier->lines[$i]->date_session;
 	}
 
 	// Formateur
 	$formateurs = new Agefodd_session_formateur($db);
 	$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-	foreach($formateurs->lines as $trainer) {
+	foreach ( $formateurs->lines as $trainer ) {
 		$TTrainer[] = $trainer->firstname . ' ' . $trainer->lastname;
 	}
-	if ($nbform>0) {
-		$art1 .= "\n". $langs->trans('AgfTrainingTrainer') . ' : ' . implode(', ', $TTrainer) . "\n";
+	if ($nbform > 0) {
+		$art1 .= "\n" . $langs->trans('AgfTrainingTrainer') . ' : ' . implode(', ', $TTrainer) . "\n";
 	}
 
-	$art1 .= "\n". $langs->trans('AgfConvArt1_13') . "\n". "\n";
-
+	$art1 .= "\n" . $langs->trans('AgfConvArt1_13') . "\n" . "\n";
 
 	$art1 .= $langs->trans('AgfConvArt1_14') . ' Nb_participants ';
-	$art1 .= $langs->trans('AgfConvArt1_17') . "\n". "\n";
+	$art1 .= $langs->trans('AgfConvArt1_17') . "\n" . "\n";
 	// Adresse lieu de formation
 	$agf_place = new Agefodd_place($db);
 	$resql3 = $agf_place->fetch($agf->placeid);
-	$addr = preg_replace( "/\r|\n/", " ", $agf_place->adresse . ", " . $agf_place->cp . " " . $agf_place->ville );
+	$addr = preg_replace("/\r|\n/", " ", $agf_place->adresse . ", " . $agf_place->cp . " " . $agf_place->ville);
 	$art1 .= $langs->trans('AgfConvArt1_18') . $agf_place->ref_interne . $langs->trans('AgfConvArt1_19') . ' ' . $addr . '.';
 
 	// texte 2
@@ -539,23 +537,23 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	else {
 		$listOPCA = '';
 
-		if(! empty($agf->type_session)) { // Session inter-entreprises : OPCA gérés par participant
+		if (! empty($agf->type_session)) { // Session inter-entreprises : OPCA gérés par participant
 			dol_include_once('/agefodd/class/agefodd_opca.class.php');
 			$stagiaires = new Agefodd_session_stagiaire($db);
 			$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id);
 
-			foreach($stagiaires->lines as $line) {
+			foreach ( $stagiaires->lines as $line ) {
 
 				$opca = new Agefodd_opca($db);
 				$opca->getOpcaForTraineeInSession($line->socid, $agf->id, $line->stagerowid);
 
-				if(! empty($opca->soc_OPCA_name)) { // Au moins un participant avec un OPCA
-					$listOPCA = ' ('.$langs->trans('AgfMailTypeContactOPCA').' : List_OPCA)';
+				if (! empty($opca->soc_OPCA_name)) { // Au moins un participant avec un OPCA
+					$listOPCA = ' (' . $langs->trans('AgfMailTypeContactOPCA') . ' : List_OPCA)';
 					break;
 				}
 			}
-		} elseif(! empty($agf->fk_soc_OPCA)) {
-			$listOPCA = ' ('.$langs->trans('AgfMailTypeContactOPCA').' : List_OPCA)';
+		} elseif (! empty($agf->fk_soc_OPCA)) {
+			$listOPCA = ' (' . $langs->trans('AgfMailTypeContactOPCA') . ' : List_OPCA)';
 		}
 
 		$art5 = $langs->trans('AgfConvArt5_1', $listOPCA);
@@ -564,37 +562,37 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	// texte 9
 	if ($agf_conv->art9)
 		$art9 = $agf_conv->art9;
-		else {
-			$art9 = $langs->trans('AgfConvArt9_1'). "\n";
-			$art9 .= $langs->trans('AgfConvArt9_2');
-		}
+	else {
+		$art9 = $langs->trans('AgfConvArt9_1') . "\n";
+		$art9 .= $langs->trans('AgfConvArt9_2');
+	}
 
 	// article 6
 	if ($agf_conv->art6) {
 		$art6 = $agf_conv->art6;
 	} else {
-		$art6 = $langs->trans('AgfConvArt6_1') . "\n". "\n";
-		$art6 .= $langs->trans('AgfConvArt6_2') . "\n". "\n";
-		$art6 .= $langs->trans('AgfConvArt6_3') . "\n". "\n";
-		$art6 .= $langs->trans('AgfConvArt6_4') . "\n". "\n";
+		$art6 = $langs->trans('AgfConvArt6_1') . "\n" . "\n";
+		$art6 .= $langs->trans('AgfConvArt6_2') . "\n" . "\n";
+		$art6 .= $langs->trans('AgfConvArt6_3') . "\n" . "\n";
+		$art6 .= $langs->trans('AgfConvArt6_4') . "\n" . "\n";
 	}
 
 	// article 7
 	if ($agf_conv->art7)
 		$art7 = $agf_conv->art7;
 	else {
-		$art7 = $langs->trans('AgfConvArt7_1'). ' ';
+		$art7 = $langs->trans('AgfConvArt7_1') . ' ';
 		$art7 .= $langs->trans('AgfConvArt7_2') . ' ' . $mysoc->town . ".";
 	}
 
 	// Signature du client
 	$sig = $agf_soc->name . "\n";
 	$sig .= $langs->trans('AgfConvArtSigCli') . ' ';
-	//$sig .= ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->firstname . ' ' . $agf_contact->lastname . " (*)";
-	$contactname=trim($agf->contactname);
-	if (!empty($contactname)) {
+	// $sig .= ucfirst(strtolower($agf_contact->civilite)) . ' ' . $agf_contact->firstname . ' ' . $agf_contact->lastname . " (*)";
+	$contactname = trim($agf->contactname);
+	if (! empty($contactname)) {
 		$sig .= $agf->contactname;
-	} elseif (!empty($signataire)) {
+	} elseif (! empty($signataire)) {
 		$sig .= $signataire;
 	}
 	$sig .= " (*)";
@@ -605,7 +603,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	($last_conv == 'ok') ? print $langs->trans("AgfConvLastWarning") : print $langs->trans("AgfConvDefaultWarning");
 	print '</div>' . "\n";
 	print '<form name="create" action="convention.php" method="post">' . "\n";
-	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 	print '<input type="hidden" name="action" value="create_confirm">' . "\n";
 	print '<input type="hidden" name="sessid" value="' . $sessid . '">' . "\n";
 	print '<input type="hidden" name="socid" value="' . $socid . '">' . "\n";
@@ -613,7 +611,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<table class="border" width="100%">' . "\n";
 
 	print '<tr><td valign="top" width="200px">' . $langs->trans("Company") . '</td>';
-	print '<td>' . $agf_soc->name. '</td></tr>';
+	print '<td>' . $agf_soc->name . '</td></tr>';
 
 	print '<tr><td valign="top" width="200px">' . $langs->trans("AgfElementToUse") . '</td>';
 	print '<td>';
@@ -652,9 +650,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		}
 	}
 	print '</select>';
-	if (!empty($agf->fk_product)) {
+	if (! empty($agf->fk_product)) {
 		print '<BR>';
-		print '<input type="checkbox" value="1" name="only_product_session" id="only_product_session">'.$langs->trans('AgfOutputOnlySessionProductInConv');
+		print '<input type="checkbox" value="1" name="only_product_session" id="only_product_session">' . $langs->trans('AgfOutputOnlySessionProductInConv');
 	}
 	print '</td></tr>';
 
@@ -663,33 +661,31 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print $formAgefodd->select_conv_model('', 'model_doc');
 	print '</td></tr>';
 
-    print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvTrainees") . '</td>';
+	print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvTrainees") . '</td>';
 	print '<td>';
 
-	$options_trainee_array = array ();
-	$options_trainee_array_id = array ();
+	$options_trainee_array = array();
+	$options_trainee_array_id = array();
 
 	$stagiaires = new Agefodd_session_stagiaire($db);
-	//Trainee link to thhe company convention
-	$stagiaires->fetch_stagiaire_per_session($sessid,$socid,1);
+	// Trainee link to thhe company convention
+	$stagiaires->fetch_stagiaire_per_session($sessid, $socid, 1);
 
 	foreach ( $stagiaires->lines as $traine_line ) {
-		//$options_trainee_array_selected [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
-		$options_trainee_array_selected_id [] = $traine_line->stagerowid;
+		// $options_trainee_array_selected [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
+		$options_trainee_array_selected_id[] = $traine_line->stagerowid;
 	}
 
 	$stagiaires->fetch_stagiaire_per_session($sessid);
 	foreach ( $stagiaires->lines as $traine_line ) {
-		//if (!array_key_exists($traine_line->stagerowid,$options_trainee_array_selected)) {
-		$options_trainee_array [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
-		//$options_trainee_array_id [] = $traine_line->stagerowid;
-		//}
+		// if (!array_key_exists($traine_line->stagerowid,$options_trainee_array_selected)) {
+		$options_trainee_array[$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
+		// $options_trainee_array_id [] = $traine_line->stagerowid;
+		// }
 	}
 
 	print $formAgefodd->agfmultiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_selected_id);
 	print '</td></tr>';
-
-
 
 	print '<tr class="standardConventionModel"><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
 	print '<td><textarea name="intro1" rows="7" cols="5" class="flat" style="width:560px;">' . $intro1 . '</textarea></td></tr>';
@@ -697,45 +693,45 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
 	print '<td><textarea name="intro2" rows="7" cols="5" class="flat" style="width:560px;">' . $intro2 . '</textarea></td></tr>';
 
-	$chapter=1;
+	$chapter = 1;
 
-	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 	print '<td><textarea name="art1" rows="7" cols="5" class="flat" style="width:560px;">' . $art1 . '</textarea>';
-	print img_picto($langs->trans('AgfExplainNbparticipants'), 'info').$langs->trans('AgfExplainNbparticipants');
+	print img_picto($langs->trans('AgfExplainNbparticipants'), 'info') . $langs->trans('AgfExplainNbparticipants');
 	print '</td></tr>';
 
-	if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
-		$chapter++;
-		print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+	if (! empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
+		$chapter ++;
+		print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 		print '<td><textarea name="art2" rows="7" cols="5" class="flat" style="width:560px;">' . $art2 . '</textarea></td></tr>';
 	}
 
-	$chapter++;
-	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+	$chapter ++;
+	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 	print '<td><textarea name="art3" rows="7" cols="5" class="flat" style="width:560px;">' . $art3 . '</textarea>';
-	print img_picto($langs->trans('AgfExplainListTrainee'), 'info').$langs->trans('AgfExplainListTrainee');
+	print img_picto($langs->trans('AgfExplainListTrainee'), 'info') . $langs->trans('AgfExplainListTrainee');
 	print '</td></tr>';
 
-	$chapter++;
-	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+	$chapter ++;
+	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 	print '<td><textarea name="art4" rows="7" cols="5" class="flat" style="width:560px;">' . $art4 . '</textarea></td></tr>';
 
-	$chapter++;
-	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+	$chapter ++;
+	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 	print '<td><textarea name="art5" rows="7" cols="5" class="flat" style="width:560px;">' . $art5 . '</textarea>';
-	print img_picto($langs->trans('AgfExplainListOPCA'), 'info').$langs->trans('AgfExplainListOPCA');
+	print img_picto($langs->trans('AgfExplainListOPCA'), 'info') . $langs->trans('AgfExplainListOPCA');
 	print '</td></tr>';
 
-	$chapter++;
-	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+	$chapter ++;
+	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 	print '<td><textarea name="art9" rows="7" cols="5" class="flat" style="width:560px;">' . $art9 . '</textarea></td></tr>';
 
-	$chapter++;
-	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+	$chapter ++;
+	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 	print '<td><textarea name="art6" rows="7" cols="5" class="flat" style="width:560px;">' . $art6 . '</textarea></td></tr>';
 
-	$chapter++;
-	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+	$chapter ++;
+	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 	print '<td><textarea name="art7" rows="7" cols="5" class="flat" style="width:560px;">' . $art7 . '</textarea></td></tr>';
 
 	print '<tr class="standardConventionModel"><td valign="top">' . $langs->trans("AgfConventionSig") . '</td>';
@@ -760,8 +756,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$result = $agf->fetch(0, 0, $id);
 
 	// Modèles personnalisés referenceletters
-	if(!empty($conf->referenceletters->enabled) && strpos($agf->model_doc, 'rfltr_agefodd') !== false) {
-		$id_model_rfltr = (int)strtr($agf->model_doc, array('rfltr_agefodd_'=>''));
+	if (! empty($conf->referenceletters->enabled) && strpos($agf->model_doc, 'rfltr_agefodd') !== false) {
+		$id_model_rfltr = ( int ) strtr($agf->model_doc, array(
+				'rfltr_agefodd_' => ''
+		));
 	}
 
 	if ($result) {
@@ -772,12 +770,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 		$hselected = 'convention';
 
-		dol_fiche_head($head, $hselected, $langs->trans("AgfConvention"), 0, 'bill');
+		dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'bill');
 
 		// Affichage en mode "édition"
 		if ($action == 'edit') {
 			print '<form name="update" action="convention.php" method="post">' . "\n";
-			print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 			print '<input type="hidden" name="action" value="update">' . "\n";
 			print '<input type="hidden" name="id" value="' . $id . '">' . "\n";
 			print '<input type="hidden" name="socid" value="' . $agf->socid . '">' . "\n";
@@ -827,9 +825,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				}
 			}
 			print '</select>';
-			if (!empty($agf_session->fk_product)) {
+			if (! empty($agf_session->fk_product)) {
 				print '<BR>';
-				print '<input type="checkbox" value="1" name="only_product_session"  id="only_product_session" '.(empty($agf->only_product_session)?'':'checked="checked"').'>'.$langs->trans('AgfOutputOnlySessionProductInConv');
+				print '<input type="checkbox" value="1" name="only_product_session"  id="only_product_session" ' . (empty($agf->only_product_session) ? '' : 'checked="checked"') . '>' . $langs->trans('AgfOutputOnlySessionProductInConv');
 			}
 			print '</td></tr>';
 
@@ -841,60 +839,60 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvTrainees") . '</td>';
 			print '<td>';
 
-			$options_trainee_array = array ();
+			$options_trainee_array = array();
 			$options_trainee_array_selected = $agf->line_trainee;
 			$stagiaires = new Agefodd_session_stagiaire($db);
 			$nbstag = $stagiaires->fetch_stagiaire_per_session($agf->sessid);
 			foreach ( $stagiaires->lines as $traine_line ) {
-				$options_trainee_array [$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
+				$options_trainee_array[$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom . ' (' . $traine_line->socname . ')';
 			}
 
 			print $formAgefodd->agfmultiselectarray('trainee_id', $options_trainee_array, $options_trainee_array_selected);
 			print '</td></tr>';
 
-			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
+			print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
 			print '<td><textarea name="intro1" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->intro1 . '</textarea></td></tr>';
 
-			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
+			print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
 			print '<td><textarea name="intro2" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->intro2 . '</textarea></td></tr>';
 
-			$chapter=1;
-			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			$chapter = 1;
+			print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 			print '<td><textarea name="art1" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->art1 . '</textarea></td></tr>';
 
-			if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
-				$chapter++;
-				print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			if (! empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
+				$chapter ++;
+				print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 				print '<td><textarea name="art2" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->art2 . '</textarea></td></tr>';
 			}
 
-			$chapter++;
-			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			$chapter ++;
+			print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 			print '<td><textarea name="art3" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->art3 . '</textarea>';
-			print img_picto($langs->trans('AgfExplainListTrainee'), 'info').$langs->trans('AgfExplainListTrainee');
+			print img_picto($langs->trans('AgfExplainListTrainee'), 'info') . $langs->trans('AgfExplainListTrainee');
 			print '</td></tr>';
 
-			$chapter++;
-			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			$chapter ++;
+			print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 			print '<td><textarea name="art4" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->art4 . '</textarea></td></tr>';
 
-			$chapter++;
-			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			$chapter ++;
+			print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 			print '<td><textarea name="art5" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->art5 . '</textarea></td></tr>';
 
-			$chapter++;
-			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			$chapter ++;
+			print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 			print '<td><textarea name="art9" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->art9 . '</textarea></td></tr>';
 
-			$chapter++;
-			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			$chapter ++;
+			print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 			print '<td><textarea name="art6" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->art6 . '</textarea></td></tr>';
 
-			$chapter++;
-			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
+			$chapter ++;
+			print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
 			print '<td><textarea name="art7" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->art7 . '</textarea></td></tr>';
 
-			print '<tr class="standardConventionModel" '.(empty($id_model_rfltr) ? '' : 'style="display:none;"').'><td valign="top">' . $langs->trans("AgfConventionSig") . '</td>';
+			print '<tr class="standardConventionModel" ' . (empty($id_model_rfltr) ? '' : 'style="display:none;"') . '><td valign="top">' . $langs->trans("AgfConventionSig") . '</td>';
 			print '<td><textarea name="sig" rows="7" cols="5" class="flat" style="width:560px;">' . $agf->sig . '</textarea></td></tr>';
 
 			print '<tr><td valign="top">' . $langs->trans("AgfNote") . '<br /><span style=" font-size:smaller; font-style:italic;">' . $langs->trans("AgfConvNotesExplic") . '</span></td>';
@@ -916,15 +914,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 			/*
 			 * Confirmation de la suppression
-			*/
+			 */
 			if ($action == 'delete') {
 				print $form->formconfirm("convention.php?id=" . $id . '&sessid=' . $agf->sessid, $langs->trans("AgfDeleteConvention"), $langs->trans("AgfConfirmDeleteConvention"), "confirm_delete", '', '', 1);
 			}
 			/*
 			 * Confirmation de l'archivage/activation suppression
-			*/
-			if (isset($_GET ["arch"])) {
-				print $form->formconfirm("convention.php?arch=" . $_GET ["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
+			 */
+			if (isset($_GET["arch"])) {
+				print $form->formconfirm("convention.php?arch=" . $_GET["arch"] . "&id=" . $id, $langs->trans("AgfFormationArchiveChange"), $langs->trans("AgfConfirmArchiveChange"), "arch_confirm_delete", '', '', 1);
 			}
 
 			// Create a list of customer for each convention
@@ -940,19 +938,19 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 			/*if ($result_sess_soc >= 1)
 			 {
-			print '<form name="update" action="convention_fiche.php?id='.$id.'" method="GET">'."\n";
-			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-			print '<input type="hidden" name="id" value="'.$id.'">'."\n";
-			print '<input type="hidden" name="sessid" value="'.$sessid.'">'."\n";
-			print '<select name="socid">';
-			foreach ($agf_sess->line as $line)
-			{
-			print '<option value="'.$line->socid.'">'.$line->socname.'</option>';
-			}
-			print '</select>';
-			print '<input type="button" value="voir"/>';
-			print '</form>';
-			}*/
+			 print '<form name="update" action="convention_fiche.php?id='.$id.'" method="GET">'."\n";
+			 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
+			 print '<input type="hidden" name="id" value="'.$id.'">'."\n";
+			 print '<input type="hidden" name="sessid" value="'.$sessid.'">'."\n";
+			 print '<select name="socid">';
+			 foreach ($agf_sess->line as $line)
+			 {
+			 print '<option value="'.$line->socid.'">'.$line->socname.'</option>';
+			 }
+			 print '</select>';
+			 print '<input type="button" value="voir"/>';
+			 print '</form>';
+			 }*/
 			print '</td></tr>';
 
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfElementToUse") . '</td>';
@@ -980,7 +978,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<td>';
 			if (! empty($agf->model_doc)) {
 
-				if(!empty($id_model_rfltr)) {
+				if (! empty($id_model_rfltr)) {
 					dol_include_once('/referenceletters/class/referenceletters.class.php');
 					if (class_exists('ReferenceLetters')) {
 						$model_rfltr = new ReferenceLetters($db);
@@ -991,14 +989,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					$dir = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
 					$file = $agf->model_doc . '.modules.php';
 					$class = $agf->model_doc;
-					if (file_exists($dir . $file) || file_exists($dir.'override/'.$file)) {
-						if (file_exists($dir . $file)) require_once ($dir . $file);
-						else require_once ($dir . 'override/' . $file);
+					if (file_exists($dir . $file) || file_exists($dir . 'override/' . $file)) {
+						if (file_exists($dir . $file))
+							require_once ($dir . $file);
+						else
+							require_once ($dir . 'override/' . $file);
 						$module = new $class($db);
 						print $module->description;
 					}
 				}
-
 			}
 			print print '</td></tr>';
 
@@ -1024,51 +1023,50 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 			print '</td></tr>';
 
-			if(empty($id_model_rfltr)) {
+			if (empty($id_model_rfltr)) {
 
-			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
-			print '<td>' . nl2br($agf->intro1) . '</td></tr>';
+				print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConventionIntro1") . '</td>';
+				print '<td>' . nl2br($agf->intro1) . '</td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
-			print '<td>' . nl2br($agf->intro2) . '</td></tr>';
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionIntro2") . '</td>';
+				print '<td>' . nl2br($agf->intro2) . '</td></tr>';
 
-			$chapter=1;
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-			print '<td>' . ebi_liste_a_puce($agf->art1, true) . '</td></tr>';
+				$chapter = 1;
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
+				print '<td>' . ebi_liste_a_puce($agf->art1, true) . '</td></tr>';
 
-			if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
-				$chapter++;
-				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-				print '<td>' . nl2br($agf->art2) . '</td></tr>';
-			}
+				if (! empty($conf->global->AGF_ADD_PROGRAM_TO_CONV)) {
+					$chapter ++;
+					print '<tr><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
+					print '<td>' . nl2br($agf->art2) . '</td></tr>';
+				}
 
-			$chapter++;
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-			print '<td>' . nl2br($agf->art3) . '</td></tr>';
+				$chapter ++;
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
+				print '<td>' . nl2br($agf->art3) . '</td></tr>';
 
-			$chapter++;
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-			print '<td>' . nl2br($agf->art4) . '</td></tr>';
+				$chapter ++;
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
+				print '<td>' . nl2br($agf->art4) . '</td></tr>';
 
-			$chapter++;
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-			print '<td>' . nl2br($agf->art5) . '</td></tr>';
+				$chapter ++;
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
+				print '<td>' . nl2br($agf->art5) . '</td></tr>';
 
-			$chapter++;
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-			print '<td>' . nl2br($agf->art9) . '</td></tr>';
+				$chapter ++;
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
+				print '<td>' . nl2br($agf->art9) . '</td></tr>';
 
-			$chapter++;
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-			print '<td>' . nl2br($agf->art6) . '</td></tr>';
+				$chapter ++;
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
+				print '<td>' . nl2br($agf->art6) . '</td></tr>';
 
-			$chapter++;
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionArt".$chapter) . '</td>';
-			print '<td>' . nl2br($agf->art7) . '</td></tr>';
+				$chapter ++;
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionArt" . $chapter) . '</td>';
+				print '<td>' . nl2br($agf->art7) . '</td></tr>';
 
-			print '<tr><td valign="top">' . $langs->trans("AgfConventionSig") . '</td>';
-			print '<td>' . nl2br($agf->sig) . '</td></tr>';
-
+				print '<tr><td valign="top">' . $langs->trans("AgfConventionSig") . '</td>';
+				print '<td>' . nl2br($agf->sig) . '</td></tr>';
 			}
 
 			print '<tr><td valign="top">' . $langs->trans("AgfNote") . '<br /><span style=" font-size:smaller; font-style:italic;">' . $langs->trans("AgfConvNotesExplic") . '</span></td>';
@@ -1082,8 +1080,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 /*
  * Action tabs
-*
-*/
+ *
+ */
 
 print '<div class="tabsAction">';
 
@@ -1099,7 +1097,7 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
 	}
 	if ($user->rights->agefodd->creer) {
-		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=builddoc&id=' . $id . '">' . $langs->trans('AgfDocCreate') . ' ' . $langs->trans('AgfConvention') . '</a>';
+		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=builddoc&id=' . $id . '">' . $langs->trans('AgfDocCreate') . ' ' . $langs->trans('AgfConvention') . '</a>';
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfDocCreate') . ' ' . $langs->trans('AgfConvention') . '</a>';
 	}
@@ -1112,6 +1110,12 @@ print '</div>';
 <script type="text/javascript">
 
 	$(document).ready(function() {
+		var res = $('#model_doc').val().indexOf("rfltr_agefodd_");
+		if(res > -1) { // Oui
+			$('.standardConventionModel').hide();
+		}else { // Non
+			$('.standardConventionModel').show();
+		}
 		$('#model_doc').change(function() {
 			var res = $(this).val().indexOf("rfltr_agefodd_"); // Est-ce un modèle externe reference letters ?
 			if(res > -1) { // Oui
