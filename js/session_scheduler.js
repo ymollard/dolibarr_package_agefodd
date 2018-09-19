@@ -414,7 +414,7 @@ $(document).ready(function() {
 	initEventFormFields = function(start, end, event) {
 		is_past = moment().unix() > end.unix(); // event dans le passé, il faut donc rendre non éditable certains champs
 		
-		
+		fullcalendarscheduler_div.find('input[name^=TFormateurId]').prop('checkef', false);
 		if (typeof event !== 'undefined')
 		{
 			// Init inputs
@@ -424,7 +424,7 @@ $(document).ready(function() {
 			{
 				for (let i in event.TFormateur)
 				{
-					fullcalendarscheduler_div.find('input[name^=TFormateurId][value='+(event.TFormateur[i].id)+']').prop('checked', true);
+					fullcalendarscheduler_div.find('input[name^=TFormateurId][value='+(event.TFormateur[i].opsid)+']').prop('checked', true);
 				}
 			}
 			

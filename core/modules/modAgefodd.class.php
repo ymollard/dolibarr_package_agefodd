@@ -2548,7 +2548,7 @@ class modAgefodd extends DolibarrModules
 					}
 					closedir($handle);
 				}
-
+				
 				if (!empty($filetorun) && is_array($filetorun) && count($filetorun)>0) {
 
 					//Sort file array to be sure data is upgrade script are executed in correct order

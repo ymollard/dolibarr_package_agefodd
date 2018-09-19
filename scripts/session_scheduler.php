@@ -132,7 +132,7 @@ function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 	$TFormateur = array();
 	$TNomUrl = array();
 	
-	$sql = 'SELECT af.rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
+	$sql = 'SELECT af.rowid, agsf.rowid AS opsid FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur af ON (af.rowid = agsf.fk_agefodd_formateur)';
 	$sql.= ' WHERE agsf.fk_session = '.$fk_agefodd_session;
@@ -147,6 +147,7 @@ function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 			$formateur = new Agefodd_teacher($db);
 			$formateur->fetch($obj->rowid);
 			$formateur->getnomurl = $formateur->getNomUrl();
+			$formateur->opsid = $obj->opsid;
 			$TFormateur[] = $formateur;
 			$TNomUrl[] = $formateur->getnomurl;
 		}
@@ -167,7 +168,7 @@ function _getCalendrierFormateurFromCalendrier(&$agf_calendrier)
 	
 	$TRes = array();
 	
-	$sql = 'SELECT agsfc.rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
+	$sql = 'SELECT agsfc.rowid, agsf.fk_agefodd_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
 	$sql.= ' WHERE agsf.fk_session = '.$agf_calendrier->sessid;
 	$sql.= ' AND agsfc.heured < \''.date('Y-m-d H:i:s', $agf_calendrier->heuref).'\'';
@@ -337,17 +338,16 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 		}
 	}
 
+	dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
+	$calendriers = _getCalendrierFormateurFromCalendrier($agf_calendrier);
 	if (!empty($TFormateurId))
 	{
-		dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 		foreach ($TFormateurId as $fk_trainer)
 		{
+			$is_update = 0;
 			$agftrainercalendar = new Agefoddsessionformateurcalendrier($db);
-			$calendriers = _getCalendrierFormateurFromCalendrier($agf_calendrier);
 			if (!empty($calendriers))
 			{
-
-
 				/*
 				 *  TODO Gérer la partie fetch et modifier la condition de façon adéquat
 				 */
@@ -389,6 +389,15 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 				//$agftrainercalendar->fk_actioncomm = 5;
 				$agftrainercalendar->create($user);
 			}
+		}
+	}
+	
+	// Suppression des dates des formateurs qui ne sont pas cochés
+	foreach ($calendriers as $calendrier)
+	{
+		if (!in_array($calendrier->fk_agefodd_session_formateur, $TFormateurId))
+		{
+			$calendrier->delete($user);
 		}
 	}
 	
