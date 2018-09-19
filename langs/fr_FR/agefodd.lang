@@ -20,6 +20,7 @@ AgfCatActive=Active
 AgfCatArchivee=Archivée
 AgfCatActif=Actif
 AgfCatArchive=Archivé
+AgfScheduler=Vue planning
 AgfMenuCatNew=Nouvelle formation
 AgfMenuSess=Sessions de formation
 AgfMenuSessAct=Sessions de formation en cours
