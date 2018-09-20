@@ -1641,6 +1641,11 @@ printSessionFieldsWithCustomOrder();
 
 					print '</td></tr>';
 					print '</table>';
+					
+					$parameters=array();
+					$reshook=$hookmanager->executeHooks('formObjectOptions',$parameters,$agf,$action);    // Note that $action and $object may have been modified by hook
+					print $hookmanager->resPrint;
+					
 			print '</div>';
 					print '</div>';
 				}
