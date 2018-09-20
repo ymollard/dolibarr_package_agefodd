@@ -36,7 +36,7 @@ class Agsession extends CommonObject
 	public $errors = array ();
 	public $element = 'agefodd_agsession';
 	public $table_element = 'agefodd_session';
-	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $id;
 	public $fk_soc;
 	public $client;
@@ -2375,6 +2375,9 @@ class Agsession extends CommonObject
 			$i = 0;
 
 			if ($num) {
+			    $nbsess = 0;
+			    $Tsessid = array();
+			    
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
 
@@ -2438,13 +2441,18 @@ class Agsession extends CommonObject
 					{
 						$line->array_options['options_'.$key] = $obj->{$key};
 					}
+					
+					if (!in_array($line->rowid, $Tsessid)) {
+					    $Tsessid[] = $line->rowid;
+					    $nbsess++;
+					}
 
 					$this->lines[$i] = $line;
 					$i ++;
 				}
 			}
 			$this->db->free($resql);
-			return $num;
+			return $nbsess;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);

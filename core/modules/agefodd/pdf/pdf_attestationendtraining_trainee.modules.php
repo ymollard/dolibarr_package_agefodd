@@ -258,7 +258,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 			$this->debut_cell = ($this->marge_gauche + 1) + ($this->milieu - (($this->width1 + $this->width2) / 2));
-			$newY = $newY + 10;
+						$newY = $newY + 7;
 			$pdf->SetXY($this->debut_cell, $newY);
 			$pdf->Cell($this->width1, 0, $this->str1, 0, 0, 'C', 0);
 			$pdf->SetXY($pdf->GetX(), $newY - 1.5);
@@ -266,13 +266,13 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			$pdf->Cell($this->width2, - 3, $this->str2, 0, 0, 'C', 0);
 
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$newY = $newY + 10;
+						$newY = $newY + 7;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$this->str = ' ' . $outputlangs->transnoentities('AgfPDFAttestation3');
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
-			$newY = $newY + 10;
+						$newY = $newY + 7;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$pdf->MultiCell($this->page_largeur - $this->marge_gauche - $this->marge_droite, 0, $outputlangs->transnoentities('« ' . $agf->intitule_custo . ' »'), 0, 'C', 0);
 			$newY = $pdf->GetY();
@@ -290,7 +290,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 
 			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $duree_session . $outputlangs->transnoentities('AgfPDFAttestation6');
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$newY = $newY + 10;
+						$newY = $newY + 7;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 
@@ -339,6 +339,8 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 					$pdf->SetXY($this->posxacquired+4, $beforeY);
 					if (empty($conf->global->AGF_ATTESTION_PDF_DEFAULT_NOTAQUIS)) {
 						$pdf->MultiCell($width, 0, $outputlangs->transnoentities('X'), 0, 'L', 0);
+					} else {
+						$pdf->MultiCell($width, 0, '', 0, 'L', 0);
 					}
 				}
 			}

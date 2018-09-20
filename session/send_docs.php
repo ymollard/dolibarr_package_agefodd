@@ -124,7 +124,6 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 		$deliveryreceipt = GETPOST('deliveryreceipt');
 
 		// Envoi du mail + trigger pour chaque contact
-		$i = 0;
 		foreach ( $sendto as $send_contact_id => $send_email ) {
 
 			$models = GETPOST('models', 'alpha');
@@ -342,7 +341,6 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					if ($error) {
 						setEventMessage($object->errors, 'errors');
 					} else {
-						$i ++;
 						$action = '';
 					}
 				} else {
@@ -355,6 +353,10 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					}
 				}
 			}
+		}
+		if (empty($error)) {
+			Header("Location: " . dol_buildpath('/agefodd/session/document.php',2) . "?id=" . $id);
+			exit();
 		}
 	} else {
 		$langs->load("other");

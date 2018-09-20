@@ -31,7 +31,7 @@ class Agefoddcalendrier extends CommonObject {
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd_calendrier'; // !< Id that identify managed objects
 	public $table_element = 'agefodd_calendrier'; // !< Name of table without prefix where object is stored
-	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $id;
 	public $entity;
 	public $day_session;
