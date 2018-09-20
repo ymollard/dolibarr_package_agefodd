@@ -831,9 +831,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			var fk_training = $('#formation').val();
 			data = {"action":"get_nb_place","fk_training":fk_training,"fk_place":fk_place};
 			ajax_set_nbplace(data);
-		
+
 		});
-		
+
 		$("body").on('change','#formation',function () {
 			var fk_training = $(this).val();
 			data = {"action":"get_duration_and_product","fk_training":fk_training};
@@ -915,13 +915,13 @@ printSessionFieldsWithCustomOrder();
 
 				$agf_fact = new Agefodd_session_element($db);
 				$agf_fact->fetch_by_session($agf->id);
-				
+
 				$cost_trainer_engaged = $agf_fact->trainer_engaged_amount;
 				$cost_site_engaged = $agf_fact->room_engaged_amount;
 				$cost_trip_engaged = $agf_fact->trip_engaged_amount;
-				
+
 				$engaged_revenue = $agf_fact->propal_sign_amount;
-				$paied_revenue = $agf_fact->invoice_payed_amount;
+				$paied_revenue = $agf_fact->invoice_ongoing_amount + $agf_fact->invoice_payed_amount;
 				$other_amount = '(' . $langs->trans('AgfProposalAmountSigned') . ' ' . $agf_fact->propal_sign_amount . ' ' . $langs->trans('Currency' . $conf->currency);
 				if (! empty($conf->commande->enabled)) {
 					$other_amount .= '/' . $langs->trans('AgfOrderAmount') . ' ' . $agf_fact->order_amount . ' ' . $langs->trans('Currency' . $conf->currency);
@@ -1370,12 +1370,12 @@ printSessionFieldsWithCustomOrder();
 
 					print '<td><strong>' . price($spend_cost_planned) .'</strong></td><td><strong>' . price($spend_cost_engaged) .'</strong></td><td><strong>' . price($spend_cost) .'</strong></td><td><strong>' . price($spend_cost_planned - $spend_cost) .'</strong></td></tr>';
 
-				
+
 
 					print '<tr class="liste_total"><td width="20%"><strong>' . $langs->trans("Benefits") . '</strong></td><td></td>';
-					
-					
-					
+
+
+
 
 					print '<td><strong>' . price($agf->sell_price_planned - $spend_cost_planned)  . '</strong> (' .  calcul_margin_percent($agf->sell_price_planned,$spend_cost_planned) . ')</td>';
 					print '<td><strong>' . price($engaged_revenue - $spend_cost_engaged)  . '</strong> (' .  calcul_margin_percent($engaged_revenue,$spend_cost_engaged) . ')</td>';
