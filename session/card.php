@@ -847,9 +847,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			var fk_training = $('#formation').val();
 			data = {"action":"get_nb_place","fk_training":fk_training,"fk_place":fk_place};
 			ajax_set_nbplace(data);
-		
+
 		});
-		
+
 		$("body").on('change','#formation',function () {
 			var fk_training = $(this).val();
 			data = {"action":"get_duration_and_product","fk_training":fk_training};
@@ -931,13 +931,13 @@ printSessionFieldsWithCustomOrder();
 
 				$agf_fact = new Agefodd_session_element($db);
 				$agf_fact->fetch_by_session($agf->id);
-				
+
 				$cost_trainer_engaged = $agf_fact->trainer_engaged_amount;
 				$cost_site_engaged = $agf_fact->room_engaged_amount;
 				$cost_trip_engaged = $agf_fact->trip_engaged_amount;
-				
+
 				$engaged_revenue = $agf_fact->propal_sign_amount;
-				$paied_revenue = $agf_fact->invoice_payed_amount;
+				$paied_revenue = $agf_fact->invoice_payed_amount + $agf_fact->invoice_ongoing_amount;
 				$other_amount = '(' . $langs->trans('AgfProposalAmountSigned') . ' ' . $agf_fact->propal_sign_amount . ' ' . $langs->trans('Currency' . $conf->currency);
 				if (! empty($conf->commande->enabled)) {
 					$other_amount .= '/' . $langs->trans('AgfOrderAmount') . ' ' . $agf_fact->order_amount . ' ' . $langs->trans('Currency' . $conf->currency);
@@ -1180,11 +1180,11 @@ printSessionFieldsWithCustomOrder();
 					if (! empty($extrafields->attribute_label)) {
 						print $agf->showOptionals($extrafields, 'edit');
 					}
-					
+
 					$parameters=array();
 					$reshook=$hookmanager->executeHooks('formObjectOptions',$parameters,$agf,$action);    // Note that $action and $object may have been modified by hook
 					print $hookmanager->resPrint;
-					
+
 					print '</table>';
 
 					/*
@@ -1390,12 +1390,12 @@ printSessionFieldsWithCustomOrder();
 
 					print '<td><strong>' . price($spend_cost_planned) .'</strong></td><td><strong>' . price($spend_cost_engaged) .'</strong></td><td><strong>' . price($spend_cost) .'</strong></td><td><strong>' . price($spend_cost_planned - $spend_cost) .'</strong></td></tr>';
 
-				
+
 
 					print '<tr class="liste_total"><td width="20%"><strong>' . $langs->trans("Benefits") . '</strong></td><td></td>';
-					
-					
-					
+
+
+
 
 					print '<td><strong>' . price($agf->sell_price_planned - $spend_cost_planned)  . '</strong> (' .  calcul_margin_percent($agf->sell_price_planned,$spend_cost_planned) . ')</td>';
 					print '<td><strong>' . price($engaged_revenue - $spend_cost_engaged)  . '</strong> (' .  calcul_margin_percent($engaged_revenue,$spend_cost_engaged) . ')</td>';
@@ -1645,11 +1645,11 @@ printSessionFieldsWithCustomOrder();
 
 					print '</td></tr>';
 					print '</table>';
-					
+
 					$parameters=array();
 					$reshook=$hookmanager->executeHooks('formObjectOptions',$parameters,$agf,$action);    // Note that $action and $object may have been modified by hook
 					print $hookmanager->resPrint;
-					
+
 			print '</div>';
 					print '</div>';
 				}
@@ -1670,7 +1670,7 @@ printSessionFieldsWithCustomOrder();
 print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
-    
+
     $parameters=array();
     $reshook=$hookmanager->executeHooks('addMoreActionsButtons',$parameters,$agf,$action);    // Note that $action and $object may have been modified by hook
     if (empty($reshook))
@@ -1690,13 +1690,13 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
     	} else {
     		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifyCalendar') . '</a>';
     	}
-    
+
     	if ($user->rights->agefodd->creer) {
     		print '<a class="butAction" href="trainer.php?action=edit&id=' . $id . '">' . $langs->trans('AgfModifyTrainer') . '</a>';
     	} else {
     		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifyTrainer') . '</a>';
     	}
-    
+
     	if ($user->rights->agefodd->creer) {
     		print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
     	} else {
