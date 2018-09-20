@@ -56,6 +56,9 @@ $id = GETPOST('id', 'int');
 $session_trainee_id = GETPOST('sessiontraineeid', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $id_external_model = GETPOST('id_external_model');
+$addfile = GETPOST('addfile');
+$removedfile = GETPOST('removedfile');
+$pre_action = GETPOST('pre_action', 'alpha');
 
 if (GETPOST('modelselected')) {
 	$action = GETPOST('pre_action');
@@ -106,6 +109,37 @@ if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->cre
 	}
 
 	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, $session_trainee_id, $cour, $path_external_model, $id_external_model);
+}
+
+/*
+ * Add file in email form
+ */
+if (! empty($addfile)) {
+	require_once (DOL_DOCUMENT_ROOT . "/core/lib/files.lib.php");
+
+	// Set tmp user directory TODO Use a dedicated directory for temp mails files
+	$vardir = $conf->user->dir_output . "/" . $user->id;
+	$upload_dir_tmp = $vardir . '/temp';
+
+	$mesg = dol_add_file_process($upload_dir_tmp, 0, 0, 'addedfile', '', null, $formmail->trackid);
+
+	$action = $pre_action;
+}
+
+/*
+ * Remove file in email form
+ */
+if (! empty($removedfile)) {
+	require_once (DOL_DOCUMENT_ROOT . "/core/lib/files.lib.php");
+
+	// Set tmp user directory
+	$vardir = $conf->user->dir_output . "/" . $user->id;
+	$upload_dir_tmp = $vardir . '/temp';
+
+	// TODO Delete only files that was uploaded from email form
+	$mesg = dol_remove_file_process($removedfile, 0, 1, $formmail->trackid);
+
+	$action = $pre_action;
 }
 
 if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $_POST ['cancel']) {
@@ -160,6 +194,7 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 
 			// Envoi du mail + trigger pour chaque contact
 			$i = 0;
+//            var_dump($sendto);exit;
 			foreach ( $sendto as $send_id => $send_email ) {
 
 				$models = GETPOST('models', 'alpha');
@@ -724,6 +759,7 @@ if (! empty($id)) {
 			$formmail->param ['sessiontraineeid'] = $session_trainee_id;
 			$formmail->param ['id'] = $agf->id;
 			$formmail->param ['models_id'] = GETPOST('modelmailselected');
+            $formmail->param ['pre_action'] = $action;
 			$formmail->param ['returnurl'] = $_SERVER ["PHP_SELF"] . '?id=' . $agf->id;
 
 			if ($action == 'presend_convocation_trainee') {
