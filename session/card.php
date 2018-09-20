@@ -812,6 +812,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		print $agf->showOptionals($extrafields, 'edit');
 	}
 
+	$parameters=array();
+	$reshook=$hookmanager->executeHooks('formObjectOptions',$parameters,$agf,$action);    // Note that $action and $object may have been modified by hook
+	print $hookmanager->resPrint;
+	
 	print '</table>';
 	print '</div>';
 
