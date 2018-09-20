@@ -124,7 +124,6 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 		$deliveryreceipt = GETPOST('deliveryreceipt');
 
 		// Envoi du mail + trigger pour chaque contact
-		$i = 0;
 		foreach ( $sendto as $send_contact_id => $send_email ) {
 
 			$models = GETPOST('models', 'alpha');
@@ -342,7 +341,6 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					if ($error) {
 						setEventMessage($object->errors, 'errors');
 					} else {
-						$i ++;
 						$action = '';
 					}
 				} else {
@@ -355,6 +353,10 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					}
 				}
 			}
+		}
+		if (empty($error)) {
+			Header("Location: " . dol_buildpath('/agefodd/session/document.php',2) . "?id=" . $id);
+			exit();
 		}
 	} else {
 		$langs->load("other");
@@ -405,12 +407,12 @@ if (! empty($id)) {
 
 	// Display consult
 	$head = session_prepare_head($agf);
-	
+
 	dol_fiche_head($head, 'send_docs', $langs->trans("AgfSessionDetail"), 0, 'generic');
-	
+
 	dol_agefodd_banner_tab($agf, 'id');
 	print '<div class="underbanner clearboth"></div>';
-	
+
 	if ($result>0) {
 		$idform = $agf->formid;
 
@@ -2026,7 +2028,7 @@ if (! empty($id)) {
 			print '</div>' . "\n";
 		}
 
-		
+
 		if ($action != 'view_actioncomm') {
 		    print '<div class="tabsAction">';
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=view_actioncomm&id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
