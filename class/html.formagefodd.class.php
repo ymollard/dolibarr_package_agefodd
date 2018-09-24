@@ -75,7 +75,7 @@ class FormAgefodd extends Form
 			$filter=json_encode($filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
 
-			print ajax_autocompleter($selectid, $htmlname, '../ajax/formation.php', $urloption,  $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT, 0, '');
+			print ajax_autocompleter($selectid, $htmlname, dol_buildpath('/agefodd/ajax/formation.php',2), $urloption,  $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT, 0, '');
 
 
 
@@ -1989,7 +1989,7 @@ class FormAgefodd extends Form
 
 		return $return;
 	}
-	
+
 	public function selectMassSessionsAction() {
 		global $langs;
 
@@ -2006,7 +2006,7 @@ class FormAgefodd extends Form
 
 		return $this->selectMassAction('', $TStatut);
 	}
-	
+
 	/**
 	 * Display multiselect of session status from dictionnary
 	 *
@@ -2017,20 +2017,20 @@ class FormAgefodd extends Form
 	 */
 	function multiselect_session_status($htmlname = 'search_session_status', $selected_array = array(), $filter = array()) {
 	    global $conf, $langs;
-	    
+
 	    $options_array = array ();
-	    
+
 	    $sql = "SELECT t.rowid, t.code ,t.intitule ";
 	    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
 	    if (! empty($filter)) {
 	        $sql .= ' WHERE ' . $filter;
 	    }
 	    $sql .= " ORDER BY t.sort";
-	    
+
 	    dol_syslog(get_class($this) . "::multiselect_session_status sql=" . $sql, LOG_DEBUG);
 	    $result = $this->db->query($sql);
 	    if ($result) {
-	        
+
 	        $num = $this->db->num_rows($result);
 	        $i = 0;
 	        if ($num) {
@@ -2040,9 +2040,9 @@ class FormAgefodd extends Form
 	                } else {
 	                    $label = $langs->trans('AgfStatusSession_' . $obj->code);
 	                }
-	                
+
 	                $options_array[$obj->rowid] = $label;
-	                
+
 	                $i ++;
 	            }
 	        }
@@ -2050,7 +2050,7 @@ class FormAgefodd extends Form
 	    } else {
 	        dol_print_error($this->db);
 	    }
-	    
+
 	    return $this->multiselectarray($htmlname, $options_array, $selected_array);
 	}
 }
