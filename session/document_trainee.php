@@ -729,7 +729,7 @@ if (! empty($id)) {
 							$('#sendto').val('<?php echo $agf_trainee->mail; ?>');
 						});
 					</script>
-					<?
+					<?php
 				}
 
 			}
