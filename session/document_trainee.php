@@ -595,7 +595,9 @@ if (! empty($id)) {
 			print '<script type="text/javascript">
 					jQuery(document).ready(function () {
 						jQuery(function() {
-		    				$(\'html, body\').animate({scrollTop: $("#sessiontraineeid' . $session_trainee_id . '").offset().top}, 500,\'easeInOutCubic\');
+							if(typeof $("#sessiontraineeid' . $session_trainee_id . '").val() != "undefined") {
+				    				$(\'html, body\').animate({scrollTop: $("#sessiontraineeid' . $session_trainee_id . '").offset().top}, 500,\'easeInOutCubic\');
+							}
 						});
 					});
 					</script> ';
@@ -717,7 +719,19 @@ if (! empty($id)) {
 				$withto[$agf_trainee->fk_socpeople . '_socp'] = $agf_trainee->nom . ' ' . $agf_trainee->prenom . ' - ' . $agf_trainee->mail;
 				$withtoname[] = $agf_trainee->nom . ' ' . $agf_trainee->prenom;
 			} else {
-				setEventMessage($langs->trans('AgfTraineeIsNotAContact',$agf_trainee->nom . ' ' . $agf_trainee->prenom . ' - ' . $agf_trainee->mail ),'warnings');
+
+				if(empty($conf->global->AGF_FILL_SENDTO_WITH_TRAINEE_MAIL_IF_NOT_SOCPEOPLE)) {
+					setEventMessage($langs->trans('AgfTraineeIsNotAContact',$agf_trainee->nom . ' ' . $agf_trainee->prenom . ' - ' . $agf_trainee->mail ),'warnings');
+				} else {
+					?>
+					<script type="text/javascript">
+						$(document).ready(function() {
+							$('#sendto').val('<?php echo $agf_trainee->mail; ?>');
+						});
+					</script>
+					<?
+				}
+
 			}
 			if (! empty($withto)) {
 				$formmail->withto = $withto;
