@@ -340,16 +340,11 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 
 		$cost_trip = GETPOST('costtrip', 'alpha');
 
-		if (! empty($fk_soc))
-			$agf->fk_soc = $fk_soc;
-		if (! empty($fk_soc_requester))
-			$agf->fk_soc_requester = $fk_soc_requester;
-		if (! empty($fk_soc_employer))
-			$agf->fk_soc_employer = $fk_soc_employer;
-		if (! empty($fk_socpeople_requester))
-			$agf->fk_socpeople_requester = $fk_socpeople_requester;
-		if (! empty($fk_socpeople_presta))
-			$agf->fk_socpeople_presta = $fk_socpeople_presta;
+		$agf->fk_soc = $fk_soc;
+		$agf->fk_soc_requester = $fk_soc_requester;
+		$agf->fk_soc_employer = $fk_soc_employer;
+		$agf->fk_socpeople_requester = $fk_socpeople_requester;
+		$agf->fk_socpeople_presta = $fk_socpeople_presta;
 		if (! empty($color))
 			$agf->color = $color;
 		if (! empty($nb_place))
@@ -815,7 +810,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$parameters=array();
 	$reshook=$hookmanager->executeHooks('formObjectOptions',$parameters,$agf,$action);    // Note that $action and $object may have been modified by hook
 	print $hookmanager->resPrint;
-	
+
 	print '</table>';
 	print '</div>';
 
