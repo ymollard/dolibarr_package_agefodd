@@ -2294,7 +2294,7 @@ class Agsession extends CommonObject
 		}
 
 		// Manage filter
-		if (count($filter) > 0) {
+		if (!empty($filter)) {
 			foreach ( $filter as $key => $value ) {
 				if (($key == 'YEAR(s.dated)') || ($key == 'MONTH(s.dated)')) {
 					$sql .= ' AND ' . $key . ' IN (' . $value . ')';
