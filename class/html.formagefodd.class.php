@@ -75,7 +75,7 @@ class FormAgefodd extends Form
 			$filter=json_encode($filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
 
-			print ajax_autocompleter($selectid, $htmlname, dol_buildpath('/agefodd/ajax/formation.php',2), $urloption,  $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT, 0, '');
+			print ajax_autocompleter($selectid, $htmlname, dol_buildpath('/agefodd/ajax/formation.php',1), $urloption,  $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT, 0, '');
 
 
 

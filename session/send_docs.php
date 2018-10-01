@@ -355,7 +355,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 			}
 		}
 		if (empty($error)) {
-			Header("Location: " . dol_buildpath('/agefodd/session/document.php',2) . "?id=" . $id);
+			Header("Location: " . dol_buildpath('/agefodd/session/document.php',1) . "?id=" . $id);
 			exit();
 		}
 	} else {

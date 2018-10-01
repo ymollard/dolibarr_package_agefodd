@@ -1000,7 +1000,7 @@ if ($resql != - 1) {
 			}
 
 			if (! empty($arrayfields['p.ref_interne']['checked']))
-				print '<td><a href="' . dol_buildpath('/agefodd/site/card.php?id=', 2) . $line->fk_session_place . '">' . stripslashes($line->ref_interne) . '</a></td>';
+				print '<td><a href="' . dol_buildpath('/agefodd/site/card.php?id=', 1) . $line->fk_session_place . '">' . stripslashes($line->ref_interne) . '</a></td>';
 			if ($user->rights->agefodd->session->margin) {
 
 				if (! empty($arrayfields['s.sell_price']['checked'])) {

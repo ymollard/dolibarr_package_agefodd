@@ -845,7 +845,7 @@ if (! empty($id)) {
 	    print '<div style="text-align:center"><br>'.$langs->trans('AgfNobody').'</div>';
 	    print '<div class="tabsAction">';
 	    if (($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && $agf->status != 4) {
-	        print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/subscribers.php', 2) . '?action=edit&id=' . $id . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
+	        print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/subscribers.php', 1) . '?action=edit&id=' . $id . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
 	    } else {
 	        print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifyTrainee') . '</a>';
 	    }
