@@ -1559,11 +1559,11 @@ class Agsession extends CommonObject
 
 		if (isset($this->fk_soc_requester))
 			$this->fk_soc_requester = trim($this->fk_soc_requester);
-		if ($this->fk_soc_requester == - 1)
+		if ($this->fk_soc_requester == - 1 || empty($this->fk_soc_requester) )
 			unset($this->fk_soc_requester);
 		if (isset($this->fk_soc_employer))
 			$this->fk_soc_employer = trim($this->fk_soc_employer);
-		if ($this->fk_soc_employer == - 1)
+		if ($this->fk_soc_employer == - 1 || empty($this->fk_soc_employer))
 			unset($this->fk_soc_employer);
 		if (isset($this->fk_socpeople_requester))
 			$this->fk_socpeople_requester = trim($this->fk_socpeople_requester);
