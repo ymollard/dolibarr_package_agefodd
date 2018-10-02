@@ -120,7 +120,6 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 					$opca->fk_session_trainee = $agfsta->id;
 					$opca->fk_soc_trainee = GETPOST('fk_soc_trainee', 'int');
 					$opca->fk_session_agefodd = GETPOST('sessid', 'int');
-					$opca->is_date_ask_OPCA = GETPOST('isdateaskOPCA', 'int');
 					$opca->date_ask_OPCA = dol_mktime(0, 0, 0, GETPOST('ask_OPCAmonth', 'int'), GETPOST('ask_OPCAday', 'int'), GETPOST('ask_OPCAyear', 'int'));
 					$opca->is_OPCA = GETPOST('isOPCA', 'int');
 					$opca->fk_soc_OPCA = GETPOST('fksocOPCA', 'int');
@@ -363,7 +362,6 @@ if ($action == 'update_subrogation' && ($user->rights->agefodd->creer || $user->
 			} else {
 				$isdateressite = GETPOST('isdateaskOPCA', 'int');
 			}
-			$agf->is_date_ask_OPCA = $isdateressite;
 
 			if ($error == 0) {
 				$result = $agf->update($user);
@@ -547,10 +545,8 @@ if (! empty($id)) {
 			print '</td></tr>';
 
 			print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-			if ($agf->is_date_ask_OPCA == 1) {
-				$chckisDtOPCA = 'checked="checked"';
-			}
-			print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" name="isdateaskOPCA" value="1" ' . $chckisDtOPCA . ' />';
+			
+			print '<td>';
 			print dol_print_date($agf->date_ask_OPCA, 'daytext');
 			print '</td></tr>';
 
@@ -769,13 +765,8 @@ if (! empty($id)) {
 						print '<td><input size="30" type="text" class="flat" name="numOPCAsoc" value="' . $agf_opca->num_OPCA_soc . '" /></td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-						if ($agf_opca->is_date_ask_OPCA == 1) {
-							$chckisDtOPCA = 'checked="checked"';
-						} else {
-							$chckisDtOPCA = '';
-						}
-						print '<td><table class="nobordernopadding"><tr><td>';
-						print '<input type="checkbox" class="flat" name="isdateaskOPCA" value="1" ' . $chckisDtOPCA . ' /></td>';
+						
+						print '<td><table class="nobordernopadding"><tr>';
 						print '<td>';
 						print $form->select_date($agf_opca->date_ask_OPCA, 'ask_OPCA', '', '', 1, 'update', 1, 1);
 						print '</td><td>';
@@ -841,13 +832,8 @@ if (! empty($id)) {
 							print '<td>' . $agf_opca->num_OPCA_soc . '</td></tr>';
 
 							print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-							if ($agf_opca->is_date_ask_OPCA == 1) {
-								$chckisDtOPCA = 'checked="checked"';
-							} else {
-								$chckisDtOPCA = '';
-							}
-							print '<td><table class="nobordernopadding"><tr><td>';
-							print '<input type="checkbox" class="flat" name="isdateaskOPCA" disabled="disabled" readonly="readonly" value="1" ' . $chckisDtOPCA . ' /></td>';
+							
+							print '<td><table class="nobordernopadding"><tr>';
 							print '<td>';
 							print dol_print_date($agf_opca->date_ask_OPCA, 'daytext');
 							print '</td><td>';
@@ -1095,11 +1081,8 @@ if (! empty($id)) {
 				print '<td><input size="30" type="text" class="flat" name="numOPCAsoc" value="' . $agf->num_OPCA_soc . '" /></td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-				if ($agf->is_date_ask_OPCA == 1) {
-					$chckisDtOPCA = 'checked="checked"';
-				}
-				print '<td><table class="nobordernopadding"><tr><td>';
-				print '<input type="checkbox" class="flat" name="isdateaskOPCA" value="1" ' . $chckisDtOPCA . ' /></td>';
+				
+				print '<td><table class="nobordernopadding"><tr>';
 				print '<td>';
 				print $form->select_date($agf->date_ask_OPCA, 'ask_OPCA', '', '', 1, 'update', 1, 1);
 				print '</td><td>';
@@ -1156,12 +1139,8 @@ if (! empty($id)) {
 				print '</td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-				if ($agf->is_date_ask_OPCA == 1) {
-					$chckisDtOPCA = 'checked="checked"';
-				} else {
-					$chckisDtOPCA = '';
-				}
-				print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" name="isdateaskOPCA" value="1" ' . $chckisDtOPCA . ' />';
+				
+				print '<td>';
 				print dol_print_date($agf->date_ask_OPCA, 'daytext');
 				print '</td></tr>';
 
@@ -1248,13 +1227,9 @@ if (! empty($id)) {
 						print '<td>' . $agf_opca->num_OPCA_soc . '</td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-						if ($agf_opca->is_date_ask_OPCA == 1) {
-							$chckisDtOPCA = 'checked="checked"';
-						} else {
-							$chckisDtOPCA = '';
-						}
-						print '<td><table class="nobordernopadding"><tr><td>';
-						print '<input type="checkbox" class="flat" name="isdateaskOPCA" disabled="disabled" readonly="readonly" value="1" ' . $chckisDtOPCA . ' /></td>';
+						
+						print '<td><table class="nobordernopadding"><tr>';
+						
 						print '<td>';
 						print dol_print_date($agf_opca->date_ask_OPCA, 'daytext');
 						print '</td><td>';

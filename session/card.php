@@ -1310,12 +1310,8 @@ printSessionFieldsWithCustomOrder();
 						print '</td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-						if ($agf->is_date_ask_OPCA == 1) {
-							$chckisDtOPCA = 'checked="checked"';
-						} else {
-							$chckisDtOPCA = '';
-						}
-						print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" name="isdateaskOPCA" value="1" ' . $chckisDtOPCA . ' />';
+					
+						print '<td>';
 						print dol_print_date($agf->date_ask_OPCA, 'daytext');
 						print '</td></tr>';
 
@@ -1590,13 +1586,8 @@ printSessionFieldsWithCustomOrder();
 									print '<td>' . $opca->num_OPCA_soc . '</td></tr>';
 
 									print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-									if ($opca->is_date_ask_OPCA == 1) {
-										$chckisDtOPCA = 'checked="checked"';
-									} else {
-										$chckisDtOPCA = '';
-									}
-									print '<td><table class="nobordernopadding"><tr><td>';
-									print '<input type="checkbox" class="flat" name="isdateaskOPCA" disabled="disabled" readonly="readonly" value="1" ' . $chckisDtOPCA . ' /></td>';
+								
+									print '<td><table class="nobordernopadding"><tr>';
 									print '<td>';
 									print dol_print_date($opca->date_ask_OPCA, 'daytext');
 									print '</td><td>';

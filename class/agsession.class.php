@@ -66,7 +66,6 @@ class Agsession extends CommonObject
 	public $date_res_confirm_site = '';
 	public $date_res_trainer = '';
 	public $date_ask_OPCA = '';
-	public $is_date_ask_OPCA;
 	public $is_OPCA;
 	public $fk_soc_OPCA;
 	public $soc_OPCA_name;
@@ -488,7 +487,6 @@ class Agsession extends CommonObject
 		$sql .= " t.date_res_confirm_site,";
 		$sql .= " t.date_res_trainer,";
 		$sql .= " t.date_ask_OPCA as date_ask_opca,";
-		$sql .= " t.is_date_ask_OPCA as is_date_ask_opca,";
 		$sql .= " t.is_OPCA as is_opca,";
 		$sql .= " t.fk_soc_OPCA as fk_soc_opca,";
 		$sql .= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
@@ -593,7 +591,6 @@ class Agsession extends CommonObject
 				$this->date_res_confirm_site = $this->db->jdate($obj->date_res_confirm_site);
 				$this->date_res_trainer = $this->db->jdate($obj->date_res_trainer);
 				$this->date_ask_OPCA = $this->db->jdate($obj->date_ask_opca);
-				$this->is_date_ask_OPCA = $obj->is_date_ask_opca;
 				$this->is_OPCA = $obj->is_opca;
 				$this->fk_soc_OPCA = $obj->fk_soc_opca;
 				$this->soc_OPCA_name = $obj->soc_opca_name;
@@ -1686,7 +1683,6 @@ class Agsession extends CommonObject
 			$sql .= " date_res_trainer=" . (dol_strlen($this->date_res_trainer) != 0 ? "'" . $this->db->idate($this->date_res_trainer) . "'" : 'null') . ",";
 			$sql .= " date_ask_OPCA=" . (dol_strlen($this->date_ask_OPCA) != 0 ? "'" . $this->db->idate($this->date_ask_OPCA) . "'" : 'null') . ",";
 			$sql .= " is_OPCA=" . (! empty($this->is_OPCA) ? $this->is_OPCA : "0") . ",";
-			$sql .= " is_date_ask_OPCA=" . (! empty($this->is_date_ask_OPCA) ? $this->is_date_ask_OPCA : "0") . ",";
 			$sql .= " fk_soc_OPCA=" . (isset($this->fk_soc_OPCA) && $this->fk_soc_OPCA != - 1 ? $this->fk_soc_OPCA : "null") . ",";
 			$sql .= " fk_socpeople_OPCA=" . (isset($this->fk_socpeople_OPCA) && $this->fk_socpeople_OPCA != 0 ? $this->fk_socpeople_OPCA : "null") . ",";
 			$sql .= " num_OPCA_soc=" . (isset($this->num_OPCA_soc) ? "'" . $this->db->escape($this->num_OPCA_soc) . "'" : "null") . ",";

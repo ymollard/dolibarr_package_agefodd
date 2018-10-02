@@ -56,7 +56,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   date_res_confirm_site datetime DEFAULT NULL,
   date_res_trainer datetime DEFAULT NULL,
   date_ask_OPCA datetime DEFAULT NULL,
-  is_date_ask_OPCA smallint NOT NULL DEFAULT 0,
   is_OPCA smallint NOT NULL DEFAULT 0,
   fk_soc_OPCA integer DEFAULT NULL,
   fk_socpeople_OPCA integer DEFAULT NULL,
