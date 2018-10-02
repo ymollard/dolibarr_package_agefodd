@@ -828,7 +828,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 			$invoice_trainer_array=array();
 			foreach($soc_trainer_array as $soc_trainer) {
 				// Get all document lines
-				$agf_fin->fetch_by_session_by_thirdparty($id, $soc_trainer, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
+				$agf_fin->fetch_by_session_by_thirdparty($id, $soc_trainer, array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\'','\'order_supplier_trainer\''));
 				$invoice_trainer_array=array_merge($invoice_trainer_array,$agf_fin->lines);
 			}
 			if (count($invoice_trainer_array) > 0) {
@@ -867,6 +867,19 @@ foreach ( $agf_formateurs->lines as $line ) {
 						print '<td align="left" style="padding-left:10px">';
 						print '<input type="submit" class="butAction" name="invoice_supplier_trainer_add" value="' . $langs->trans("AgfFactureAddLineSuplierInvoice") . '">';
 						print '</td></tr></table>';
+					}else if($line_fin->element_type == 'order_supplier_trainer'){
+						$supplier_order = new CommandeFournisseur($db);
+						$supplier_order->fetch($line_fin->fk_element);
+						print '<table class="nobordernopadding">';
+						print '<tr>';
+						// Supplier Invoice inforamtion
+						print '<td nowrap="nowrap">';
+						print $supplier_order->getLibStatut(4) . ' ' . $supplier_order->getNomUrl(1, '', 0) . ' (' . price($supplier_order->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+						print '</td>';
+						print '<td>';
+
+						print '</tr>';
+						print '</table>';
 					} else {
 
 						if($line_fin->element_type == "invoice_supplier_trainer"){
@@ -1010,7 +1023,7 @@ print_fiche_titre($langs->trans('AgfTripAndMissions'));
 
 $agf_fin = new Agefodd_session_element($db);
 // Get all document lines
-$result = $agf_fin->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_missions\'','\'invoice_supplierline_missions\''));
+$result = $agf_fin->fetch_by_session_by_thirdparty($id, 0, array('\'invoice_supplier_missions\'','\'invoice_supplierline_missions\'','\'order_supplier_missions\''));
 
 if ($result < 0) {
 	setEventMessage($agf_fin->error, 'errors');
@@ -1093,8 +1106,21 @@ foreach ( $agf_fin->lines as $line_fin ) {
 					print '</td>';
 					print '</tr>';
 					print '</table>';
-				}else
-					{
+				}else if($line_fin->element_type == 'order_supplier_missions'){
+					$supplier_order = new CommandeFournisseur($db);
+					$supplier_order->fetch($line_fin->fk_element);
+					print '<table class="nobordernopadding">';
+					print '<tr>';
+					// Supplier Invoice inforamtion
+					print '<td nowrap="nowrap">';
+					print $supplier_order->getLibStatut(4) . ' ' . $supplier_order->getNomUrl(1, '', 0) . ' (' . price($supplier_order->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+					print '</td>';
+					print '<td>';
+					
+					print '</tr>';
+					print '</table>';
+				}
+					else {
 						$supplier_invoiceline = new SupplierInvoiceLine($db);
 						$supplier_invoiceline->fetch($line_fin->fk_element);
 						$suplier_invoice = new FactureFournisseur($db);
@@ -1236,7 +1262,7 @@ if (! empty($place->id)) {
 	if ($place->thirdparty->fournisseur == 1) {
 
 		// Get all document lines
-		$agf_fin->fetch_by_session_by_thirdparty($id, $place->thirdparty->id,array( '\'invoice_supplier_room\'','\'invoice_supplierline_room\''));
+		$agf_fin->fetch_by_session_by_thirdparty($id, $place->thirdparty->id,array( '\'invoice_supplier_room\'','\'invoice_supplierline_room\'','\'order_supplier_room\''));
 
 		if (count($agf_fin->lines) > 0) {
 
@@ -1291,6 +1317,20 @@ if (! empty($place->id)) {
 						print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' . $line_fin->id . '&id=' . $id . '&socid=' . $place->thirdparty->id . '" alt="' . $legende . '" title="' . $legende . '">';
 						print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
 						print '</td>';
+						print '</tr>';
+						print '</table>';
+					}
+					else if($line_fin->element_type == 'order_supplier_room'){
+						$supplier_order = new CommandeFournisseur($db);
+						$supplier_order->fetch($line_fin->fk_element);
+						print '<table class="nobordernopadding">';
+						print '<tr>';
+						// Supplier Invoice inforamtion
+						print '<td nowrap="nowrap">';
+						print $supplier_order->getLibStatut(4) . ' ' . $supplier_order->getNomUrl(1, '', 0) . ' (' . price($supplier_order->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+						print '</td>';
+						print '<td>';
+
 						print '</tr>';
 						print '</table>';
 					}
