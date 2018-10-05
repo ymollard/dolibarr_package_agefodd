@@ -2555,19 +2555,30 @@ class modAgefodd extends DolibarrModules
 		dol_include_once('/user/class/user.class.php');
 		dol_include_once('/agefodd/class/agsession.class.php');
 		dol_include_once('/agefodd/core/modules/agefodd/session/mod_agefoddsession_simple.php');
+
+		$db->begin();
 		$sql = "SELECT rowid,datec FROM ".MAIN_DB_PREFIX."agefodd_session WHERE ref = '' ORDER BY rowid";
+
 		$resql = $db->query($sql);
 		while ($obj = $db->fetch_object($resql))
 		{
-
-			$ags = new Agsession($db);
-			$ags->fetch($obj->rowid);
 			$modSession = new mod_agefoddsession_simple();
-			if (empty($ags->ref))
-				$ags->ref = $modSession->getNextValue('', '', $obj->datec);
+			$ref = $modSession->getNextValue('', '', $obj->datec);
 
-			$ags->update($user);
+			if(! empty($ref)) {
+				$update_sql = 'UPDATE '.MAIN_DB_PREFIX.'agefodd_session';
+				$update_sql.= " SET ref='".$ref."'";
+				$update_sql.= ' WHERE rowid='.$obj->rowid;
+
+				$resUpdate = $db->query($update_sql);
+				if(! $resUpdate) {
+					dol_print_error($db);
+					exit;
+				}
+			}
 		}
+
+		$db->commit();
 	}
 
 }
