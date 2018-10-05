@@ -223,7 +223,7 @@ function _deleteCalendrierFormateur($TCalendrierFormateur)
 
 function _updateTimeSlotCalendrier($fk_agefodd_session_calendrier, $date_start, $date_end, $deltaInSecond)
 {
-	global $db,$user,$response;
+	global $db,$user,$response,$conf;
 	
 	$agf_calendrier = new Agefodd_sesscalendar($db);
 	if ($agf_calendrier->fetch($fk_agefodd_session_calendrier) > 0)
@@ -244,8 +244,17 @@ function _updateTimeSlotCalendrier($fk_agefodd_session_calendrier, $date_start, 
 			
 			foreach ($TCalendrierFormateur as &$agf_calendrier_formateur)
 			{
-				$agf_calendrier_formateur->heured = $agf_calendrier->heured;
-				$agf_calendrier_formateur->heuref = $agf_calendrier->heuref;
+				if (!empty($conf->global->AGF_SCHEDULER_FORMATEUR_FORCE_HOURS_WITH_EVENT))
+				{
+					$agf_calendrier_formateur->heured = $agf_calendrier->heured;
+					$agf_calendrier_formateur->heuref = $agf_calendrier->heuref;
+				}
+				else
+				{
+					$agf_calendrier_formateur->heured += $deltaInSecond;
+					$agf_calendrier_formateur->heuref += $deltaInSecond;
+				}
+				
 				$agf_calendrier_formateur->date_session = $date_session;
 				$r = $agf_calendrier_formateur->update($user);
 				if ($r > 0) $response->TSuccess[] = 'Update Agefoddsessionformateurcalendrier id '.$agf_calendrier_formateur->id.' successfully';
