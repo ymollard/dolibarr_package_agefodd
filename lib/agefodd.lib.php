@@ -1975,7 +1975,7 @@ function calcul_margin_percent($cashed_cost,$spend_cost)
 }
 
 
-function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $strict=true)
+function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $strict=true, $return_error=false)
 {
 	global $db;
 	
@@ -2008,6 +2008,8 @@ function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $stri
 	}
 	else
 	{
+		if ($return_error) return $db->lasterror();
+		
 		exit($db->lasterror());
 	}
 	

@@ -1435,3 +1435,5 @@ AgfSessionSummaryTotalPresence=Total heures déclarée
 AgfSessionSummaryTauxAssiduite=Taux d'assiduité
 AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisée effectuées
 AgfSessionSummaryTotalHoursComptabiliseCancel=Total heures comptabilisée annulées
+
+Agf_EA_error_sql=Une erreur est survenue durant la récupération des données, veuillez prévenir l'administrateur du système

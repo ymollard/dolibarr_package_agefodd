@@ -193,20 +193,27 @@ class ActionsAgefodd
 						if ($trainer)
 						{
 							$context->setControllerFound();
-							// TODO 
-							// Faire la suppression du calendrier formateur ainsi que ceux des participants et de leurs saisie de temps
+							
 							$error = 0;
 							$this->db->begin();
 							$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($this->db);
 							if ($agf_calendrier_formateur->fetch(GETPOST('fk_agefodd_session_formateur_calendrier')) > 0)
 							{
-								$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur);
-								$agf_calendrier = $TCalendrier[0];
-								$r=$agf_calendrier->delete($user);
-								if ($r < 0) $error++;
-								
-								$r=$agf_calendrier_formateur->delete($user);
-								if ($r < 0) $error++;
+								$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur, true, true);
+								if (is_string($TCalendrier)) 
+								{
+									$error++;
+									$context->setError($langs->trans('Agf_EA_error_sql'));
+								}
+								else 
+								{
+									$agf_calendrier = $TCalendrier[0];
+									$r=$agf_calendrier->delete($user);
+									if ($r < 0) $error++;
+
+									$r=$agf_calendrier_formateur->delete($user);
+									if ($r < 0) $error++;
+								}
 							}
 							
 							
@@ -250,6 +257,7 @@ class ActionsAgefodd
 							$heured = GETPOST('heured');
 							$heuref = GETPOST('heuref');
 							$status = GETPOST('status');
+							$code_c_session_calendrier_type = GETPOST('code_c_session_calendrier_type');
 							
 							if (!empty($date_session) && !empty($heured) && !empty($heuref))
 							{
@@ -259,8 +267,12 @@ class ActionsAgefodd
 								$error = 0;
 								
 								// Je récupère le/les calendrier participants avant modificatino du calendrier formateur
-								$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur);
-								
+								$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur, true, true);
+								if (is_string($TCalendrier)) 
+								{
+									$context->setError($langs->trans('Agf_EA_error_sql'));
+									$TCalendrier = array();
+								}
 								$this->db->begin();
 								
 								$agf_calendrier_formateur->sessid = $agsession->id;
@@ -288,6 +300,8 @@ class ActionsAgefodd
 									$agf_calendrier->heured = $agf_calendrier_formateur->heured;
 									$agf_calendrier->heuref = $agf_calendrier_formateur->heuref;
 									$agf_calendrier->status = $agf_calendrier_formateur->status;
+									$agf_calendrier->calendrier_type = $code_c_session_calendrier_type;
+									
 									$r=$agf_calendrier->create($user);
 									if ($r <= 0) $error++;
 									$TCalendrier[] = $agf_calendrier;
@@ -302,6 +316,7 @@ class ActionsAgefodd
 										$agf_calendrier->heured = $agf_calendrier_formateur->heured;
 										$agf_calendrier->heuref = $agf_calendrier_formateur->heuref;
 										$agf_calendrier->status = $agf_calendrier_formateur->status;
+										$agf_calendrier->calendrier_type = $code_c_session_calendrier_type;
 										$r=$agf_calendrier->update($user);
 										if ($r <= 0) $error++;
 //									}
@@ -448,8 +463,17 @@ class ActionsAgefodd
 						{
 							dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
 							
+							$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur, true, true);
+							if (is_string($TCalendrier)) 
+							{
+								$context->setError($langs->trans('Agf_EA_error_sql'));
+								$TCalendrier = array();
+							}
+							if (!empty($TCalendrier)) $agf_calendrier = $TCalendrier[0];
+							else $agf_calendrier = null;
+							
 							$context->setControllerFound();
-							print getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $action);
+							print getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action);
 						}
 					} 
 				}

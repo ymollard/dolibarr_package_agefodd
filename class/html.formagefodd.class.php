@@ -2016,11 +2016,11 @@ class FormAgefodd extends Form
 	 * @param type $emptyvalue
 	 * @return string
 	 */
-	public function select_calendrier_type($selected='', $htmlname='code_c_session_calendrier_type', $emptyvalue=true, $moreattr='')
+	public function select_calendrier_type($selected='', $htmlname='code_c_session_calendrier_type', $emptyvalue=true, $moreattr='', $more_class='')
 	{
 		global $conf;
 		
-		$out = '<select class="flat select_calendrier_type" name="'.$htmlname.'" '.$moreattr.'>';
+		$out = '<select class="flat select_calendrier_type '.$more_class.'" name="'.$htmlname.'" '.$moreattr.'>';
 		if ($emptyvalue) $out.= '<option value=""></options>';
 		
 		// TODO optimisation possible en stockant dans un attribut les codes lors d'un premier passage

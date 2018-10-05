@@ -348,6 +348,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$line->fk_user_author = $obj->fk_user_author;
 				$line->status = $obj->status;
 				$line->fk_session = $obj->fk_session;
+				$line->sessid = $obj->fk_session;
 				$line->trainer_status_in_session = $obj->trainer_status_in_session;
 				
 				$this->lines[$i] = $line;
@@ -798,5 +799,6 @@ class AgefoddcalendrierformateurLines {
 	public $fk_actioncomm;
 	public $fk_user_author;
 	public $fk_session;
+	public $sessid; // identique que $fk_session mais le code semble valoriser un $sessid dans les autres fetch
 }
 ?>

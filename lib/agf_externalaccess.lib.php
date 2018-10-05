@@ -194,12 +194,22 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 	$out.= ' <th class="" >'.$langs->trans('AgfPeriodTimeE').'</th>';
 	$out.= ' <th class="text-center" >'.$langs->trans('AgfDuree').'</th>';
 	$out.= ' <th class="text-center" >'.$langs->trans('Status').'</th>';
+	$out.= ' <th class="text-center" >'.$langs->trans('Type').'</th>';
 	$out.= ' <th class="text-center" ></th>';
 	$out.= '</tr>';
 
 	$out.= '<tbody>';
 	foreach ($agf_calendrier_formateur->lines as &$item)
 	{
+		$TCalendrier = _getCalendrierFromCalendrierFormateur($item, true, true);
+		if (is_string($TCalendrier)) 
+		{
+			$context->setError($langs->trans('Agf_EA_error_sql'));
+			$TCalendrier = array();
+		}
+		if (!empty($TCalendrier)) $agf_calendrier = $TCalendrier[0];
+		else $agf_calendrier = null;
+		
 		$url = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$item->id);
 		
 		$out.= '<tr>';
@@ -216,6 +226,9 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 		$out.= ' <td class="text-center" data-order="'.$duree.'" data-search="'.$duree.'" >'.$duree.'</td>';
 		$statut = Agefoddsessionformateurcalendrier::getStaticLibStatut($item->status, 0);
 		$out.= ' <td class="text-center" data-order="'.$statut.'" data-search="'.$statut.'" >'.$statut.'</td>';
+		
+		$calendrier_type_label = !empty($agf_calendrier) ? $agf_calendrier->calendrier_type_label : '';
+		$out.= ' <td class="text-center" data-order="'.$calendrier_type_label.'" data-search="'.$calendrier_type_label.'" >'.$calendrier_type_label.'</td>';
 
 		$edit = '<a href="'.$url.'"><i class="fa fa-edit"></a></i>';
 		$delete = '<i class="fa fa-trash" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)"></i>';
@@ -359,9 +372,12 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 
 
 
-function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $action='')
+function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
 {
 	global $db,$langs;
+	
+	dol_include_once('/agefodd/class/html.formagefodd.class.php');
+	$formAgefodd = new FormAgefodd($db);
 	
 	$context = Context::getInstance();
 	
@@ -386,6 +402,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				<input type="hidden" name="controller" value="'.$context->controller.'" />';
 	}
 	
+	$calendrier_type = !empty($agf_calendrier->calendrier_type) ? $agf_calendrier->calendrier_type : '';
 	$out.= '
 			<h4>Créneau</h4>
 			<div class="form-group">
@@ -406,13 +423,22 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CANCELED, 0).'</option>
 				</select>
 			</div>
+			<div class="form-group">
+				<label for="status">Type</label>
+				'.$formAgefodd->select_calendrier_type($calendrier_type, 'code_c_session_calendrier_type', true, '', 'form-control').'
+			</div>
 			';
 	
 	$stagiaires = new Agefodd_session_stagiaire($db);
 	$stagiaires->fetch_stagiaire_per_session($agsession->id);
 	if (!empty($stagiaires->lines))
 	{
-		$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur);
+		$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur, true, true);
+		if (is_string($TCalendrier)) 
+		{
+			$context->setError($langs->trans('Agf_EA_error_sql'));
+			$TCalendrier = array();
+		}
 		$agfssh = new Agefoddsessionstagiaireheures($db);
 		$result = 0;
 		
