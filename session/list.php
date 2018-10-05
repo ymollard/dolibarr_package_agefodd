@@ -933,6 +933,9 @@ if ($resql != - 1) {
 			if ($line->color && ((($couleur_rgb[0] * 299) + ($couleur_rgb[1] * 587) + ($couleur_rgb[2] * 114)) / 1000) < 125) {
 				$color_a = ' style="color: #FFFFFF;"';
 			}
+            if(! empty($conf->global->AGF_SHOW_COLORED_LINK) && ! empty($line->admin_task_close_session)) { // Ancienne fonctionnalité perdue dans le néant
+                $color_a = ' style="color: green;"';
+            }
 			if (! empty($arrayfields['s.rowid']['checked'])) {
 				print '<td  style="background: #' . $line->color . '">';
 				print $line->getNomUrl(1, '', 0, 'id', 1, $color_a);
