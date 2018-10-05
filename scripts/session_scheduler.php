@@ -132,7 +132,7 @@ function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 	$TFormateur = array();
 	$TNomUrl = array();
 	
-	$sql = 'SELECT af.rowid, agsf.rowid AS opsid FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
+	$sql = 'SELECT af.rowid, agsf.rowid AS opsid, agsfc.heured, agsfc.heuref FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur af ON (af.rowid = agsf.fk_agefodd_formateur)';
 	$sql.= ' WHERE agsf.fk_session = '.$fk_agefodd_session;
@@ -144,12 +144,19 @@ function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 	{
 		while ($obj = $db->fetch_object($resql))
 		{
+			$obj->heured = $db->jdate($obj->heured);
+			$obj->heuref = $db->jdate($obj->heuref);
+			
 			$formateur = new Agefodd_teacher($db);
 			$formateur->fetch($obj->rowid);
 			$formateur->getnomurl = $formateur->getNomUrl();
 			$formateur->opsid = $obj->opsid;
 			$TFormateur[] = $formateur;
-			$TNomUrl[] = $formateur->getnomurl;
+			
+			$nomUrl = $formateur->getnomurl;
+			if ($agf_calendrier->heured != $obj->heured || $agf_calendrier->heuref != $obj->heuref) $nomUrl.= ' ('.dol_print_date($obj->heured, '%H:%M').' - '.dol_print_date($obj->heuref, '%H:%M').')';
+			
+			$TNomUrl[] = $nomUrl;
 		}
 	}
 	else
