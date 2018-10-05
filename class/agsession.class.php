@@ -1554,7 +1554,7 @@ class Agsession extends CommonObject
 		// Clean parameters
 		if (isset($this->fk_soc))
 			$this->fk_soc = trim($this->fk_soc);
-		if ($this->fk_soc == - 1)
+		if ($this->fk_soc == - 1 || empty($this->fk_soc))
 			unset($this->fk_soc);
 
 		if (isset($this->fk_soc_requester))
