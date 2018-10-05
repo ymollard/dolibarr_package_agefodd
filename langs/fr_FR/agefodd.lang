@@ -1430,3 +1430,8 @@ AgfHours=%s heure(s)
 AgfSessionSummaryTotalHours=Total heures de formation
 AgfSessionSummaryTotalScheduled=Total heures programmée
 AgfSessionSummaryTotalLeft=Totale heures restante
+
+AgfSessionSummaryTotalPresence=Total heures déclarée
+AgfSessionSummaryTauxAssiduite=Taux d'assiduité
+AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisée effectuées
+AgfSessionSummaryTotalHoursComptabiliseCancel=Total heures comptabilisée annulées

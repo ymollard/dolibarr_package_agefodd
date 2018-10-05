@@ -147,6 +147,9 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	$out.= getEaNavbar($context->getRootUrl('agefodd_session_list', '&save_lastsearch_values=1'), $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0'));
 	
 	$out.= '
+		<blockquote class="blockquote">
+			<p>'.$agsession->ref.'</p>
+		</blockquote>
 		<ul class="nav nav-tabs mb-3" id="section-session-card-calendrier-formateur-tab" role="tablist">
 			<li class="nav-item">
 				<a class="nav-link active" id="calendrier-info-tab" data-toggle="tab" href="#nav-calendrier-info" role="tab" aria-controls="calendrier-info" aria-selected="true">Créneaux</a>
