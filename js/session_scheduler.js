@@ -352,7 +352,8 @@ $(document).ready(function() {
 						dataObject.fk_agefodd_session_calendrier = (typeof event !== 'undefined') ? event.id : 0;
 						dataObject.dateFrom = view.start.format('YYYY-MM-DD');
 						dataObject.dateStart = view.start.format('YYYY-MM-DD 00:00:00');
-						dataObject.dateEnd = view.end.add(-1, 'days').format('YYYY-MM-DD 23:59:59');
+						var tmp_dateEnd = view.end.clone(); // need to clone to use subtract without affecting the original date
+						dataObject.dateEnd = tmp_dateEnd.subtract(1, 'days').format('YYYY-MM-DD 23:59:59');
 						
 						$.ajax({
 							url: fullcalendarscheduler_interface
@@ -414,7 +415,10 @@ $(document).ready(function() {
 	initEventFormFields = function(start, end, event) {
 		is_past = moment().unix() > end.unix(); // event dans le passé, il faut donc rendre non éditable certains champs
 		
-		fullcalendarscheduler_div.find('input[name^=TFormateurId]').prop('checkef', false);
+		fullcalendarscheduler_div.find('input[name^=TFormateurId]').prop('checked', false);
+		fullcalendarscheduler_div.find('select[name^=TFormateurHeured]').val(start.format('HH:mm'));
+		fullcalendarscheduler_div.find('select[name^=TFormateurHeuref]').val(end.format('HH:mm'));
+			
 		if (typeof event !== 'undefined')
 		{
 			// Init inputs
@@ -425,6 +429,8 @@ $(document).ready(function() {
 				for (let i in event.TFormateur)
 				{
 					fullcalendarscheduler_div.find('input[name^=TFormateurId][value='+(event.TFormateur[i].opsid)+']').prop('checked', true);
+					fullcalendarscheduler_div.find('select[name="TFormateurHeured['+event.TFormateur[i].opsid+']"]').val(event.TFormateur[i].heured_formated);
+					fullcalendarscheduler_div.find('select[name="TFormateurHeuref['+event.TFormateur[i].opsid+']"]').val(event.TFormateur[i].heuref_formated);
 				}
 			}
 			
@@ -439,7 +445,9 @@ $(document).ready(function() {
 		else
 		{
 			// Init des inputs TRealHour
-			var duration = end.diff(start) / 1000 / 60 / 60; //  /1000 pour avoir des secondes; /60 pour avoir des minutes; /60 pour avoir des heures
+			var duration;
+			if (is_past) duration = end.diff(start) / 1000 / 60 / 60; //  /1000 pour avoir des secondes; /60 pour avoir des minutes; /60 pour avoir des heures
+			else duration = '';
 			fullcalendarscheduler_div.find('.type_hour').val(duration);
 		}
 		
@@ -461,10 +469,8 @@ $(document).ready(function() {
 		fullcalendarscheduler_div.find('#date_endhour').val(hour_end);
 		fullcalendarscheduler_div.find('#date_endmin').val(minute_end);
 		
-		if (is_past)
-		{
-			fullcalendarscheduler_div.find('.is_past input:visible, .is_past select:visible').prop('disabled', true);
-		}
+		if (is_past) fullcalendarscheduler_div.find('.is_past input:visible, .is_past select:visible').not('.skip_disabled').prop('disabled', true);
+		else fullcalendarscheduler_div.find('.is_past input:visible, .is_past select:visible').not('.skip_disabled').prop('disabled', false);
 	};
 	
 	

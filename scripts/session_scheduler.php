@@ -80,7 +80,7 @@ switch ($put) {
 	case 'createOrUpdateCalendrier':
 		$time_start = dol_mktime(GETPOST('date_starthour'), GETPOST('date_startmin'), 0, GETPOST('date_startmonth'), GETPOST('date_startday'), GETPOST('date_startyear'));
 		$time_end = dol_mktime(GETPOST('date_endhour'), GETPOST('date_endmin'), 0, GETPOST('date_endmonth'), GETPOST('date_endday'), GETPOST('date_endyear'));
-		_createOrUpdateCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('fk_agefodd_session', 'int'), GETPOST('TFormateurId', 'array'), GETPOST('TRealHour', 'array'), GETPOST('calendrier_type'), $time_start, $time_end);
+		_createOrUpdateCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('fk_agefodd_session', 'int'), GETPOST('TFormateurId', 'array'), GETPOST('TRealHour', 'array'), GETPOST('calendrier_type'), $time_start, $time_end, GETPOST('TFormateurHeured'), GETPOST('TFormateurHeuref'));
 		echo json_encode( $response );
 		break;
 }
@@ -151,6 +151,8 @@ function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 			$formateur->fetch($obj->rowid);
 			$formateur->getnomurl = $formateur->getNomUrl();
 			$formateur->opsid = $obj->opsid;
+			$formateur->heured_formated = dol_print_date($obj->heured, 'hour');
+			$formateur->heuref_formated = dol_print_date($obj->heuref, 'hour');
 			$TFormateur[] = $formateur;
 			
 			$nomUrl = $formateur->getnomurl;
@@ -279,7 +281,7 @@ function _updateTimeSlotCalendrier($fk_agefodd_session_calendrier, $date_start, 
 	}
 }
 
-function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_session, $TFormateurId, $TRealHour, $calendrier_type, $time_start, $time_end)
+function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_session, $TFormateurId, $TRealHour, $calendrier_type, $time_start, $time_end, $TFormateurHeured, $TFormateurHeuref)
 {
 	global $db, $user, $response, $conf;
 	$agf_calendrier = new Agefodd_sesscalendar($db);
@@ -361,45 +363,31 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 		foreach ($TFormateurId as $fk_trainer)
 		{
 			$is_update = 0;
-			$agftrainercalendar = new Agefoddsessionformateurcalendrier($db);
 			if (!empty($calendriers))
 			{
-				/*
-				 *  TODO Gérer la partie fetch et modifier la condition de façon adéquat
-				 */
 				foreach ($calendriers as $calendrier)
 				{
 					if ($calendrier->fk_agefodd_session_formateur == $fk_trainer)
 					{
 						$calendrier->fk_agefodd_session_formateur = $fk_trainer;
 						$calendrier->date_session = strtotime(date('Y-m-d', $time_start));
-						$calendrier->heured = $time_start;
-						$calendrier->heuref = $time_end;
+						$calendrier->heured = !empty($TFormateurHeured[$fk_trainer]) ? strtotime(date('Y-m-d '.$TFormateurHeured[$fk_trainer], $time_start)) : $time_start;
+						$calendrier->heuref = !empty($TFormateurHeuref[$fk_trainer]) ? strtotime(date('Y-m-d '.$TFormateurHeuref[$fk_trainer], $time_start)) : $time_end;
 						$calendrier->trainercost = 0;
 						$calendrier->sessid = $fk_agefodd_session;
 						$is_update = 1;
-						$calendrier->update();
+						$calendrier->update($user);
 					}
 				}
-				if (empty($is_update))
-				{
-					$agftrainercalendar->fk_agefodd_session_formateur = $fk_trainer;
-					$agftrainercalendar->date_session = strtotime(date('Y-m-d', $time_start));
-					$agftrainercalendar->heured = $time_start;
-					$agftrainercalendar->heuref = $time_end;
-					$agftrainercalendar->trainercost = 0;
-					$agftrainercalendar->sessid = $fk_agefodd_session;
-					//$agftrainercalendar->fk_actioncomm = 5;
-					$agftrainercalendar->create($user);
-				}
 			}
-			else
+			
+			if (empty($is_update))
 			{
-
+				$agftrainercalendar = new Agefoddsessionformateurcalendrier($db);
 				$agftrainercalendar->fk_agefodd_session_formateur = $fk_trainer;
 				$agftrainercalendar->date_session = strtotime(date('Y-m-d', $time_start));
-				$agftrainercalendar->heured = $time_start;
-				$agftrainercalendar->heuref = $time_end;
+				$agftrainercalendar->heured = !empty($TFormateurHeured[$fk_trainer]) ? strtotime(date('Y-m-d '.$TFormateurHeured[$fk_trainer], $time_start)) : $time_start;
+				$agftrainercalendar->heuref = !empty($TFormateurHeuref[$fk_trainer]) ? strtotime(date('Y-m-d '.$TFormateurHeuref[$fk_trainer], $time_start)) : $time_end;
 				$agftrainercalendar->trainercost = 0;
 				$agftrainercalendar->sessid = $fk_agefodd_session;
 				//$agftrainercalendar->fk_actioncomm = 5;

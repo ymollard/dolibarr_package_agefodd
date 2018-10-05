@@ -164,8 +164,9 @@ if (!empty($conf->global->AGF_USE_REAL_HOURS))
 $html_formateurs.= '<div class="titre">'.$langs->transnoentitiesnoconv('AgfFormateur').'</div>';
 foreach ($formateurs->lines as &$line)
 {
-	$input = '<input type="checkbox" value="'.$line->opsid.'" name="TFormateurId[]" />';
-	$html_formateurs.= '<p style="margin:0"><label>'.strtoupper($line->lastname) . ' ' . ucfirst($line->firstname).'</label> : '.$input.'</p>';
+	$input = '<input class="skip_disabled" style="vertical-align:middle" type="checkbox" value="'.$line->opsid.'" name="TFormateurId[]" />';
+	$selects = $formagefodd->select_time('', 'TFormateurHeured['.$line->opsid.']', 1, false, 'skip_disabled').' '.$formagefodd->select_time('', 'TFormateurHeuref['.$line->opsid.']', 1, false, 'skip_disabled');
+	$html_formateurs.= '<p style="margin:0 0 2px 0">'.$input.' <label>'.strtoupper($line->lastname) . ' ' . ucfirst($line->firstname).'</label> : '.$selects.'</p>';
 }
 
 /**/
