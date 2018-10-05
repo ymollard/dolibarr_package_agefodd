@@ -123,6 +123,11 @@ class ActionsAgefodd
 					'text' => img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"),
 					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_id=' . urlencode($parameters['search_boxvalue'])
 			);
+			$arrayresult['searchintoagefoddsessionref'] = array(
+					'position' => $modAgefodd->numero,
+					'text' => img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionRef"),
+					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_session_ref=' . urlencode($parameters['search_boxvalue'])
+			);
 			$arrayresult['searchintoagefoddtrainee'] = array(
 					'position' => $modAgefodd->numero,
 					'text' => img_object('', 'contact') . ' ' . $langs->trans("AgfMenuActStagiaire"),

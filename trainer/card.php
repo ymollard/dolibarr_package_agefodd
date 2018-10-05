@@ -431,15 +431,15 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $actio
     $href = '';
     if ($agf->type_trainer == 'socpeople'){
         if(DOL_VERSION > 3.6){
-            $href = dol_buildpath('/contact/card.php?id='.$agf->spid, 2).'&action=edit';
+            $href = dol_buildpath('/contact/card.php?id='.$agf->spid, 1).'&action=edit';
         } else {
-            $href = dol_buildpath('/contact/fiche.php?id='.$agf->spid, 2).'&action=edit';
+            $href = dol_buildpath('/contact/fiche.php?id='.$agf->spid, 1).'&action=edit';
         }
     } else {
         if(DOL_VERSION > 3.6){
-            $href = dol_buildpath('/user/card.php?id='.$agf->fk_user, 2).'&action=edit';
+            $href = dol_buildpath('/user/card.php?id='.$agf->fk_user, 1).'&action=edit';
         } else {
-            $href = dol_buildpath('/user/fiche.php?id='.$agf->fk_user, 2).'&action=edit';
+            $href = dol_buildpath('/user/fiche.php?id='.$agf->fk_user, 1).'&action=edit';
         }
     }
     

@@ -273,8 +273,8 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 
 			$this->posX_trainer = $first_trainer_posx;
 			foreach ( $formateurs->lines as $trainer_line ) {
-				$this->pdf->SetXY($this->posX_trainer, $this->posY);
-				$this->pdf->MultiCell(0, $this->h_ligne, " ", 1, "C", false, 1, $this->posX_trainer, $this->posY);
+				$this->pdf->SetXY($this->marge_gauche, $this->posY);
+				$this->pdf->MultiCell(0, $this->h_ligne, " ", 1, "C", false, 1, $this->marge_gauche, $this->posY);
 
 				// $this->pdf->Rect($first_trainer_posx, $this->posY, $this->posX_trainer, $this->h_ligne);
 				$this->posX_trainer += 30;

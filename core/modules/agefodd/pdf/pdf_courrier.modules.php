@@ -376,7 +376,26 @@ class pdf_courrier extends ModelePDFAgefodd {
 	function _body(&$pdf, $object, $outputlangs, $courrier, $id, $socid) {
 		global $user, $conf, $langs;
 
-		require (dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_courrier_' . $courrier . '.modules.php'));
+		$override = false;
+		if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE))
+		{
+			$modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+			if (is_array($modelarray) && count($modelarray) > 0) {
+					foreach ( $modelarray as $modeloveride ) {
+							$modeloverridearray = explode(':', $modeloveride);
+							if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
+									if ($modeloverridearray[0] == $courrier) {
+											$courrier = $modeloverridearray[1];
+											$override = true;
+											break;
+									}
+							}
+					}
+			}
+		}
+		
+		if ($override) require (dol_buildpath('/agefodd/core/modules/agefodd/pdf/override/pdf_courrier_' . $courrier . '.modules.php'));
+		else require (dol_buildpath('/agefodd/core/modules/agefodd/pdf/pdf_courrier_' . $courrier . '.modules.php'));
 
 		return $posY;
 	}

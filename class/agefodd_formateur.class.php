@@ -32,7 +32,7 @@ class Agefodd_teacher extends CommonObject {
 	public $table_element = 'agefodd_formateur';
 	public $id;
 	public $type_trainer_def = array ();
-	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $entity;
 	public $fk_socpeople;
 	public $fk_user;

@@ -123,10 +123,10 @@ if (! empty($search_session_status) && count($search_session_status)>0) {
  * Actions
  */
 if ($action == 'builddoc') {
-	
+
 	if (count($filter)>0) {
-		
-	
+
+
 	$outputlangs = $langs;
 	$newlang = $lang_id;
 	if ($conf->global->MAIN_MULTILANGS && empty($newlang))
@@ -135,14 +135,14 @@ if ($action == 'builddoc') {
 		$outputlangs = new Translate("", $conf);
 		$outputlangs->setDefaultLang($newlang);
 	}
-	
+
 	$outputlangs->load('agefodd@agefodd');
-	
+
 	$report_by_cust = new ReportByCustomer($db, $outputlangs);
-	
+
 	$file_sub_title=$report_by_cust->getSubTitlFileName($filter);
 	$report_by_cust->file = $upload_dir . 'reportbycust-' . $file_sub_title . '.xlsx';
-	
+
 	$result = $report_by_cust->write_file($filter);
 	if ($result < 0) {
 		setEventMessage($report_by_cust->error, 'errors');
@@ -155,9 +155,9 @@ if ($action == 'builddoc') {
 		setEventMessage($langs->trans("AgfRptSelectAtLeastOneCriteria"), 'errors');
 	}
 } elseif ($action == 'remove_file') {
-	
+
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
-	
+
 	$langs->load("other");
 	$file = $upload_dir . '/' . GETPOST('file');
 	$ret = dol_delete_file($file, 0, 0, 0, '');
@@ -208,7 +208,14 @@ print '</tr>';
 
 print '<tr>';
 print '<td>' . $langs->trans('ParentCompany') . '</td>';
-print '<td>' . $form->select_company($search_parent, 'search_parent', 'extra.ts_maison=1', 1) . '</td>';
+$extrafields = new ExtraFields($db);
+$extrafields->fetch_name_optionals_label('thirdparty');
+if (is_array($extrafields->attributes['societe']) && array_key_exists('ts_maison',$extrafields->attributes['societe']['type'])) {
+	$filter='extra.ts_maison=1';
+} else {
+	$filter='';
+}
+print '<td>' . $form->select_company($search_parent, 'search_parent', $filter, 1) . '</td>';
 print '</tr>';
 
 print '<tr>';
@@ -234,7 +241,7 @@ print '</tr>';
 print '</table>' . "\n";
 
 $liste = array (
-		'excel2007' => 'Excel 2007' 
+		'excel2007' => 'Excel 2007'
 );
 $formfile->show_documents('export', '', $upload_dir, $_SERVER["PHP_SELF"], $liste, 1, (! empty($modelexport) ? $modelexport : 'excel2007'), 1, 0, 0, 150, 1);
 

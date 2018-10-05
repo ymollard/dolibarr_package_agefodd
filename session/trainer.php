@@ -347,7 +347,7 @@ if (! $res)
 						Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit_calendrier&id=" . $id);
 						exit();
 					} else {
-						setEventMessage(null, $error_message, 'errors');
+						setEventMessages(null, $error_message, 'errors');
 					}
 				}
 			}

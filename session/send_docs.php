@@ -124,7 +124,6 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 		$deliveryreceipt = GETPOST('deliveryreceipt');
 
 		// Envoi du mail + trigger pour chaque contact
-		$i = 0;
 		foreach ( $sendto as $send_contact_id => $send_email ) {
 
 			$models = GETPOST('models', 'alpha');
@@ -342,7 +341,6 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					if ($error) {
 						setEventMessage($object->errors, 'errors');
 					} else {
-						$i ++;
 						$action = '';
 					}
 				} else {
@@ -355,6 +353,10 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					}
 				}
 			}
+		}
+		if (empty($error)) {
+			Header("Location: " . dol_buildpath('/agefodd/session/document.php',1) . "?id=" . $id);
+			exit();
 		}
 	} else {
 		$langs->load("other");
@@ -576,6 +578,88 @@ if (! empty($id)) {
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
+					}
+
+					// Add all presence sheet
+					$filename = 'fiche_presence_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+					$filename = 'fiche_presence_direct_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+					$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+					$filename = 'fiche_presence_trainee_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+					$filename = 'fiche_presence_trainee_direct_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+					$filename = 'fiche_presence_landscape_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
+					$filename = 'fiche_evaluation_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
+					// add doc from attached files of training
+					$upload_dir = $conf->agefodd->dir_output . "/training/" . $agf->formid;
+					$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
+					if (is_array($filearray) && count($filearray) > 0) {
+						foreach ( $filearray as $filedetail ) {
+							if (file_exists($filedetail['fullname'])) {
+								$formmail->add_attached_files($filedetail['fullname'], basename($filedetail['fullname']), dol_mimetype($filedetail['fullname']));
+								$file_array[]=$filedetail['fullname'];
+							}
+						}
+					}
+
+					// Attach attestation presence
+					$filename = 'attestationendtraining_empty_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
+					// And add attestation by soc
+					$agf_soc = new Agsession($db);
+					$agf_soc->fetch($agf->id);
+
+					$result_soc = $agf_soc->fetch_societe_per_session($agf->id);
+					if ($result_soc > 0) {
+						foreach ( $agf_soc->lines as $socline ) {
+							// Attach attestation presence
+							$filename = 'attestationendtraining_' . $agf->id . '_' . $socline->socid . '.pdf';
+							$file = $conf->agefodd->dir_output . '/' . $filename;
+							if (file_exists($file)) {
+								$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+								$file_array[]=$file;
+							}
+						}
 					}
 				} elseif ($action == 'presend_trainer_doc') {
 
@@ -2028,8 +2112,8 @@ if (! empty($id)) {
 		}
 
 
-		
-		
+
+
 	} elseif ($result==0) {
 	    print '<div style="text-align:center"><br>'.$langs->trans('AgfThirdparyMandatory').'</div>';
 	} else {
