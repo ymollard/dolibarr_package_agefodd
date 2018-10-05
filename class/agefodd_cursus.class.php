@@ -34,7 +34,7 @@ class Agefodd_cursus extends CommonObject {
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd_cursus'; // !< Id that identify managed objects
 	public $table_element = 'agefodd_cursus'; // !< Name of table without prefix where object is stored
-	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $id;
 	public $ref_interne;
 	public $entity;

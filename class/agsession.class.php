@@ -36,7 +36,7 @@ class Agsession extends CommonObject
 	public $errors = array ();
 	public $element = 'agefodd_agsession';
 	public $table_element = 'agefodd_session';
-	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $id;
 	public $fk_soc;
 	public $client;
@@ -1554,16 +1554,16 @@ class Agsession extends CommonObject
 		// Clean parameters
 		if (isset($this->fk_soc))
 			$this->fk_soc = trim($this->fk_soc);
-		if ($this->fk_soc == - 1)
+		if ($this->fk_soc == - 1 || empty($this->fk_soc))
 			unset($this->fk_soc);
 
 		if (isset($this->fk_soc_requester))
 			$this->fk_soc_requester = trim($this->fk_soc_requester);
-		if ($this->fk_soc_requester == - 1)
+		if ($this->fk_soc_requester == - 1 || empty($this->fk_soc_requester) )
 			unset($this->fk_soc_requester);
 		if (isset($this->fk_soc_employer))
 			$this->fk_soc_employer = trim($this->fk_soc_employer);
-		if ($this->fk_soc_employer == - 1)
+		if ($this->fk_soc_employer == - 1 || empty($this->fk_soc_employer))
 			unset($this->fk_soc_employer);
 		if (isset($this->fk_socpeople_requester))
 			$this->fk_socpeople_requester = trim($this->fk_socpeople_requester);
@@ -2294,7 +2294,7 @@ class Agsession extends CommonObject
 		}
 
 		// Manage filter
-		if (count($filter) > 0) {
+		if (!empty($filter)) {
 			foreach ( $filter as $key => $value ) {
 				if (($key == 'YEAR(s.dated)') || ($key == 'MONTH(s.dated)')) {
 					$sql .= ' AND ' . $key . ' IN (' . $value . ')';
@@ -2375,6 +2375,9 @@ class Agsession extends CommonObject
 			$i = 0;
 
 			if ($num) {
+			    $nbsess = 0;
+			    $Tsessid = array();
+			    
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
 
@@ -2438,13 +2441,18 @@ class Agsession extends CommonObject
 					{
 						$line->array_options['options_'.$key] = $obj->{$key};
 					}
+					
+					if (!in_array($line->rowid, $Tsessid)) {
+					    $Tsessid[] = $line->rowid;
+					    $nbsess++;
+					}
 
 					$this->lines[$i] = $line;
 					$i ++;
 				}
 			}
 			$this->db->free($resql);
-			return $num;
+			return $nbsess;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
