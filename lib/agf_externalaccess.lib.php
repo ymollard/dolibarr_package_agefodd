@@ -282,9 +282,11 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	$date_deb = dol_print_date($agsession->dated, 'daytext');
 	$date_fin = dol_print_date($agsession->datef, 'daytext');
 	$duree_scheduled = 0;
+	$duree_presence_max_comptabilise = 0;
 	$duree_presence_comptabilise = 0;
 	$duree_presence_comptabilise_cancel = 0;
-	
+	$duree_presence_draft = 0;
+
 	foreach ($agf_calendrier_formateur->lines as &$line)
 	{
 		$duree_scheduled += ($line->heuref - $line->heured) / 60 / 60;
@@ -292,14 +294,23 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	
 	foreach ($agefodd_sesscalendar->lines as &$agf_calendrier)
 	{
-		$duree = $agf_calendrier->getSumDureePresence();
-		if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CONFIRMED) $duree_presence_comptabilise += $duree;
-		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CANCELED) $duree_presence_comptabilise_cancel += $duree;
-		else $duree_presence_draft += $duree;
+		/** @var Agefodd_sesscalendar $agf_calendrier */
+		list($duree_declared, $duree_max) = $agf_calendrier->getSumDureePresence();
+		if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CONFIRMED)
+		{
+			$duree_presence_comptabilise += $duree_declared;
+			$duree_presence_max_comptabilise += $duree_max;
+		}
+		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CANCELED)
+		{
+			$duree_presence_comptabilise_cancel += $duree_declared;
+			$duree_presence_max_comptabilise += $duree_max;
+		}
+		else $duree_presence_draft += $duree_declared;
 	}
 
 	$total_duree_comptabilise = $duree_presence_comptabilise+$duree_presence_comptabilise_cancel;
-	if ($total_duree_comptabilise > 0) $tx_assi = $duree_presence_comptabilise * 100 / ($duree_presence_comptabilise+$duree_presence_comptabilise_cancel);
+	if ($total_duree_comptabilise > 0) $tx_assi = $duree_presence_comptabilise * 100 / $duree_presence_max_comptabilise;
 	else $tx_assi = 0;
 	
 	$out = '';
@@ -331,16 +342,20 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfHours', price($duree_presence_draft+$duree_presence_comptabilise+$duree_presence_comptabilise_cancel, 0, '', 1, -1, 2)).'</span>
 							</div>
 							<div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTauxAssiduite">'.$langs->trans('AgfSessionSummaryTauxAssiduite').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTauxAssiduite">'.number_format($tx_assi, 2).' %</span>
-							</div>
-							<div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursComptabilise">'.$langs->trans('AgfSessionSummaryTotalHoursComptabilise').'</label>
 								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabilise">'.$langs->trans('AgfHours', price($duree_presence_comptabilise, 0, '', 1, -1, 2)).'</span>
 							</div>
 							<div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfSessionSummaryTotalHoursComptabiliseCancel').'</label>
 								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfHours', price($duree_presence_comptabilise_cancel, 0, '', 1, -1, 2)).'</span>
+							</div>
+							<div class="form-group">
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursMaxComptabilise">'.$langs->trans('AgfSessionSummaryTotalHoursMaxComptabilise').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursMaxComptabilise">'.$langs->trans('AgfHours', price($duree_presence_max_comptabilise, 0, '', 1, -1, 2)).'</span>
+							</div>
+							<div class="form-group">
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTauxAssiduite">'.$langs->trans('AgfSessionSummaryTauxAssiduite').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTauxAssiduite">'.number_format($tx_assi, 2).' %</span>
 							</div>
 						</div>
 					</div>
@@ -404,7 +419,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	
 	$calendrier_type = !empty($agf_calendrier->calendrier_type) ? $agf_calendrier->calendrier_type : '';
 	$out.= '
-			<h4>Créneau</h4>
+			<h4>'.$langs->trans('AgfExternalAccessSessionCardCreneau').'</h4>
 			<div class="form-group">
 				<label for="heured">Date</label>
 				<input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="date_session" required name="date_session" value="'.(($action == 'update' || $action == 'view') ? date('Y-m-d', $agf_calendrier_formateur->date_session) : date('Y-m-d')).'">
@@ -441,8 +456,16 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		}
 		$agfssh = new Agefoddsessionstagiaireheures($db);
 		$result = 0;
-		
-		$out.= '<h4>Déclarer des heures de présence par participant</h4>';
+
+
+
+		$out.= '<h4>'.$langs->trans('AgfExternalAccessSessionCardDeclareHours').'</h4>';
+
+		$out.= '
+			<div class="alert alert-secondary" role="alert">
+				'.$langs->trans('AgfExternalAccessSessionCardDeclareHoursInfo').'
+			</div>';
+
 		foreach ($stagiaires->lines as &$stagiaire)
 		{
 			if ($stagiaire->id <= 0)	continue;

@@ -376,9 +376,16 @@ class Agefodd_sesscalendar {
 		}
 	}
 
+	/**
+	 * Renvoie un tableau contenant $duree_declared => Somme des heures déclarées sur les participant
+	 * puis $duree_max => qui est le temps du créneau multiplié par le nombre de participant
+	 *
+	 * @param null $fk_stagiaire
+	 * @return array
+	 */
 	public function getSumDureePresence($fk_stagiaire=null)
 	{
-		$duree = 0;
+		$duree_declared = $duree_max = 0;
 
 		$agfssh = new Agefoddsessionstagiaireheures($this->db);
 		$agfssh->fetchAllBy($this->id, 'fk_calendrier');
@@ -387,11 +394,13 @@ class Agefodd_sesscalendar {
 			foreach ($agfssh->lines as &$line)
 			{
 				if (!empty($fk_stagiaire) && $line->fk_stagiaire != $fk_stagiaire) continue;
-				$duree += $line->heures;
+				$duree_declared += $line->heures;
 			}
+
+			$duree_max = (($this->heuref - $this->heured) / 60 / 60) * count($agfssh->lines);
 		}
 
-		return $duree;
+		return array($duree_declared, $duree_max);
 	}
 
 	public function delete($user)

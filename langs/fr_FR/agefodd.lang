@@ -1431,9 +1431,14 @@ AgfSessionSummaryTotalHours=Total heures de formation
 AgfSessionSummaryTotalScheduled=Total heures programmée
 AgfSessionSummaryTotalLeft=Totale heures restante
 
-AgfSessionSummaryTotalPresence=Total heures déclarée
+AgfSessionSummaryTotalPresence=Total heures déclarée (participants - tout statut)
 AgfSessionSummaryTauxAssiduite=Taux d'assiduité
+AgfSessionSummaryTotalHoursMaxComptabilise=Total heures déclaration maximal
 AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisée effectuées
 AgfSessionSummaryTotalHoursComptabiliseCancel=Total heures comptabilisée annulées
 
 Agf_EA_error_sql=Une erreur est survenue durant la récupération des données, veuillez prévenir l'administrateur du système
+
+AgfExternalAccessSessionCardCreneau=Créneau
+AgfExternalAccessSessionCardDeclareHours=Déclarer des heures de présence par participant
+AgfExternalAccessSessionCardDeclareHoursInfo=Règles de saisies :<br /> - si vous déclarez la session annulée, les heures seront automatiquement calculées et enregistrées pour appliquer la durée de la session<br /> - Si vous déclarez des heures de présence avec un statut brouillon ou confirmée, assurez vous que la date et l'heure de la session soient antérieur à l'heure du jour
