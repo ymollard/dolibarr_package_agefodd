@@ -30,10 +30,11 @@ dol_include_once('/agefodd/class/agefodd_convention.class.php');
 dol_include_once('/agefodd/class/agefodd_place.class.php');
 dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
+dol_include_once('/core/lib/pdf.lib.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
+dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+
 class pdf_fiche_presence extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 
@@ -87,6 +88,23 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 		$this->emetteur = $mysoc;
 		if (! $this->emetteur->country_code)
 			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
+
+		$this->header_vertical_margin = 20;
+
+		$this->formation_widthcol1 = 20;
+		$this->formation_widthcol2 = 80;
+		$this->formation_widthcol3 = 27;
+		$this->formation_widthcol4 = 82;
+
+		$this->trainer_widthcol1 = 44;
+		$this->trainer_widthcol2 = 140;
+		$this->trainer_widthtimeslot = 24;
+
+		$this->trainee_widthcol1 = 40;
+		$this->trainee_widthcol2 = 40;
+		$this->trainee_widthtimeslot = 18;
+
+		$this->nbtimeslots = 6;
 	}
 
 	/**
@@ -208,10 +226,10 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 		$tmp_array=array();
 		$agf_date = new Agefodd_sesscalendar($this->db);
 		$resql = $agf_date->fetch_all($agf->id);
-		if (is_array($agf_date->lines) && count($agf_date->lines)>6) {
+		if (is_array($agf_date->lines) && count($agf_date->lines)>$this->nbtimeslots) {
 			for($i = 0; $i < count($agf_date->lines); $i ++) {
 				$tmp_array[]=$agf_date->lines[$i];
-				if(count($tmp_array)>=6 || $i==count($agf_date->lines)-1) {
+				if(count($tmp_array)>=$this->nbtimeslots || $i==count($agf_date->lines)-1) {
 					$session_hours[]=$tmp_array;
 					$tmp_array=array();
 				}
@@ -350,7 +368,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			 * Corps de page
 			 */
 			$posX = $this->marge_gauche;
-			$posY = $posY + 20;
+			$posY = $posY + $this->header_vertical_margin;
 
 			// Titre
 			$pdf->SetXY($posX, $posY);
@@ -392,10 +410,10 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$posY += 2;
 			$posYintitule = $posY;
 
-			$larg_col1 = 20;
-			$larg_col2 = 80;
-			$larg_col3 = 27;
-			$larg_col4 = 82;
+			$larg_col1 = $this->formation_widthcol1;
+			$larg_col2 = $this->formation_widthcol2;
+			$larg_col3 = $this->formation_widthcol3;
+			$larg_col4 = $this->formation_widthcol4;
 			$haut_col2 = 0;
 			$haut_col4 = 0;
 
@@ -468,12 +486,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			);
 			$h_ligne = 6;
 
-			$larg_col1 = 44;
-			$larg_col2 = 140;
+			$larg_col1 = $this->trainer_widthcol1;
+			$larg_col2 = $this->trainer_widthcol2;
 			$haut_col2 = 0;
-			$haut_col3 = 0;
+			$haut_col4 = 0;
 			$h_ligne = 7;
-			$haut_cadre = 0;
 
 			// Entête
 			// Cadre
@@ -482,24 +499,24 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres16');
-			$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str), R, 2, "C", 0);
+			$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str), 'R', 2, "C", 0);
 			// Signature
 			$pdf->SetXY($posX + $larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres18');
-			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), LR, 2, "C", 0);
+			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
 
 			$pdf->SetXY($posX + $larg_col1, $posY + 3);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres13');
-			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), LR, 2, "C", 0);
+			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
 			$posY += $h_ligne;
 
 			// Date
 
-			$largeur_date = 24;
+			$largeur_date = $this->trainer_widthtimeslot;
 			$last_day='';
-			for($y = 0; $y < 6; $y ++) {
+			for($y = 0; $y < $this->nbtimeslots; $y ++) {
 				// Jour
 				$pdf->SetXY($posX + $larg_col1 + (20 * $y), $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
@@ -545,7 +562,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				$this->str = strtoupper($trainerlines->lastname) . ' ' . ucfirst($trainerlines->firstname);
 				$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 1, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
 
-				for($i = 0; $i < 5; $i ++) {
+				for($i = 0; $i < $this->nbtimeslots - 1; $i ++) {
+					//$pdf = new TCPDF;
+					//ob_start();
+					//var_dump($posX + $larg_col1 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
+					//$pdf->MultiCell(100, 100, ob_get_clean());
 					$pdf->Rect($posX + $larg_col1 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
 				}
 
@@ -578,14 +599,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 					$posY
 			);
 
-			$larg_col1 = 40;
-			$larg_col2 = 40;
-			$larg_col3 = 50;
-			$larg_col4 = 112;
+			$larg_col1 = $this->trainee_widthcol1;
+			$larg_col2 = $this->trainee_widthcol2;
 			$haut_col2 = 0;
 			$haut_col4 = 0;
 			$h_ligne = 7;
-			$haut_cadre = 0;
 
 			// Entête
 			// Cadre
@@ -594,7 +612,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres16');
-			$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str), R, 2, "C", 0);
+			$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($this->str), 'R', 2, "C", 0);
 			// Société
 			$pdf->SetXY($posX + $larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
@@ -604,20 +622,20 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres18');
-			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), LR, 2, "C", 0);
+			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
 
 			$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY + 3);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
 			$this->str = $outputlangs->transnoentities('AgfPDFFichePres19');
-			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), LR, 2, "C", 0);
+			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
 			$posY += $h_ligne;
 
 			// Date
 			$agf_date = new Agefodd_sesscalendar($this->db);
 			$resql = $agf_date->fetch_all($agf->id);
-			$largeur_date = 18;
+			$largeur_date = $this->trainee_widthtimeslot;
 			$last_day='';
-			for($y = 0; $y < 6; $y ++) {
+			for($y = 0; $y < $this->nbtimeslots; $y ++) {
 				// Jour
 				$pdf->SetXY($posX + $larg_col1 + $larg_col2 + (20 * $y), $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
@@ -718,7 +736,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				$this->str = dol_trunc($line->socname, 27);
 				$pdf->MultiCell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 1, "C", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
 
-				for($i = 0; $i < 5; $i ++) {
+				for($i = 0; $i < $this->nbtimeslots - 1; $i ++) {
 					$pdf->Rect($posX + $larg_col1 + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
 				}
 
