@@ -329,12 +329,14 @@ class Agsession extends CommonObject
 		}
 	}
 
-	public function getSumDureePresence($fk_stagiaire=null)
+	public static function getStaticSumDureePresence($fk_agsession, $fk_stagiaire=null)
 	{
+		global $db;
+
 		$duree = 0;
-		
-		$agfssh = new Agefoddsessionstagiaireheures($this->db);
-		$agfssh->fetchAllBy($this->id, 'fk_session');
+
+		$agfssh = new Agefoddsessionstagiaireheures($db);
+		$agfssh->fetchAllBy($fk_agsession, 'fk_session');
 		if (!empty($agfssh->lines))
 		{
 			foreach ($agfssh->lines as &$line)
@@ -343,8 +345,13 @@ class Agsession extends CommonObject
 				$duree += $line->heures;
 			}
 		}
-		
+
 		return $duree;
+	}
+
+	public function getSumDureePresence($fk_stagiaire=null)
+	{
+		return self::getStaticSumDureePresence($this->id, $fk_stagiaire);
 	}
 	
 	/**

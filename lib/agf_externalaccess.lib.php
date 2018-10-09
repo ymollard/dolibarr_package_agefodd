@@ -72,9 +72,12 @@ function getPageViewSessionListExternalAccess()
 		$out.= '<tr>';
 		$out.= ' <th class="" >'.$langs->trans('Ref').'</th>';
 		$out.= ' <th class="" >'.$langs->trans('AgfFormIntitule').'</th>';
+		$out.= ' <th class="" >'.$langs->trans('AgfParticipant').'</th>';
 		$out.= ' <th class="" >'.$langs->trans('DateStart').'</th>';
 		$out.= ' <th class="" >'.$langs->trans('DateEnd').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDuree').'</th>';
+		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeDeclared').'</th>';
+		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeSolde').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('Status').'</th>';
 		$out.= ' <th class="text-center" ></th>';
 		$out.= '</tr>';
@@ -82,14 +85,35 @@ function getPageViewSessionListExternalAccess()
 		$out.= '</thead>';
 
 		$out.= '<tbody>';
+
+		/** @var AgfSessionLine $item */
 		foreach ($agsession->lines as &$item)
 		{
+			$stagiaires = new Agefodd_session_stagiaire($db);
+			$stagiaires->fetch_stagiaire_per_session($item->rowid);
+
+			$stagiaires_str = '';
+			if (!empty($stagiaires->lines))
+			{
+				foreach ($stagiaires->lines as &$stagiaire)
+				{
+					if (empty($stagiaire->nom) && empty($stagiaire->prenom)) continue;
+					$stagiaires_str.= implode(' ', array( $stagiaire->civilite, strtoupper($stagiaire->nom), ucfirst($stagiaire->prenom) ))."<br />";
+				}
+
+			}
+
 			$out.= '<tr>';
 			$out.= ' <td data-order="'.$item->sessionref.'" data-search="'.$item->sessionref.'"  ><a href="'.$context->getRootUrl('agefodd_session_card', '&sessid='.$item->rowid).'">'.$item->sessionref.'</a></td>';
 			$out.= ' <td data-order="'.$item->intitule.'" data-search="'.$item->intitule.'"  >'.$item->intitule.'</td>';
+			$out.= ' <td data-search="'.$stagiaires_str.'"  >'.$stagiaires_str.'</td>';
 			$out.= ' <td data-order="'.$item->dated.'" data-search="'.dol_print_date($item->dated, '%d/%m/%Y').'" >'.dol_print_date($item->dated, '%d/%m/%Y').'</td>';
 			$out.= ' <td data-order="'.$item->datef.'" data-search="'.dol_print_date($item->datef, '%d/%m/%Y').'" >'.dol_print_date($item->datef, '%d/%m/%Y').'</td>';
 			$out.= ' <td class="text-center" data-order="'.$item->duree_session.'" data-session="'.$item->duree_session.'"  >'.$item->duree_session.'</td>';
+			$duree_declared = Agsession::getStaticSumDureePresence($item->rowid);
+			$out.= ' <td class="text-center" data-order="'.$duree_declared.'">'.$duree_declared.'</td>';
+			$solde = $item->duree_session - $duree_declared;
+			$out.= ' <td class="text-center" data-order="'.$solde.'">'.$solde.'</td>';
 			$statut = Agsession::getStaticLibStatut($item->status, 0);
 			$out.= ' <td class="text-center" data-search="'.$statut.'" data-order="'.$statut.'" >'.$statut.'</td>';
 
@@ -109,10 +133,10 @@ function getPageViewSessionListExternalAccess()
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 							},
 							responsive: true,
-							order: [[ 2, "desc" ]],
+							order: [[ 3, "desc" ]],
 							columnDefs: [{
 								orderable: false,
-								"aTargets": [-1]
+								"aTargets": [-1, 2]
 							}, {
 								"bSearchable": false,
 								"aTargets": [-1]
