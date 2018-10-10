@@ -213,7 +213,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$tplidx = $pdf->importPage(1);
 		}
 
-		$height_for_footer = 20;
+		$height_for_footer = 35;
 		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER)) $height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
 
 		if (!empty($conf->multicompany->enabled)) {
