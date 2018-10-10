@@ -2377,7 +2377,7 @@ class Agsession extends CommonObject
 			if ($num) {
 			    $nbsess = 0;
 			    $Tsessid = array();
-			    
+
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
 
@@ -2441,7 +2441,7 @@ class Agsession extends CommonObject
 					{
 						$line->array_options['options_'.$key] = $obj->{$key};
 					}
-					
+
 					if (!in_array($line->rowid, $Tsessid)) {
 					    $Tsessid[] = $line->rowid;
 					    $nbsess++;
@@ -5000,6 +5000,16 @@ class Agsession extends CommonObject
 			$stagiaires = new Agefodd_session_stagiaire($db);
 			$stagiaires->fetch_stagiaire_per_session($this->id);
 			$this->TStagiairesSession = $stagiaires->lines;
+		}
+		if(empty($this->TStagiairesSessionPresent)) {
+			$this->TStagiairesSessionPresent = array();
+			if (is_array($this->TStagiairesSession) && count($this->TStagiairesSession)>0) {
+				foreach($stagiaires->lines as $linesta) {
+					if (($linesta->status_in_session == 3 || $linesta->status_in_session == 4)) {
+						$this->TStagiairesSessionPresent[]=$linesta;
+					}
+				}
+			}
 		}
 			// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
