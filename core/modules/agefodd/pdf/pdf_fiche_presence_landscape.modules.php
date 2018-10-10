@@ -66,6 +66,7 @@ class pdf_fiche_presence_landscape extends pdf_fiche_presence {
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
+		$this->default_font_size=12;
 
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
