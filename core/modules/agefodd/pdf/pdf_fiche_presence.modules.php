@@ -237,7 +237,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 		} else {
 			$session_hours[]=$agf_date->lines;
 		}
-		//var_dump($session_hours);
+
 		foreach($session_hours as $key=>$lines_array) {
 			// New page
 			$pdf->AddPage();
@@ -563,10 +563,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 1, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
 
 				for($i = 0; $i < $this->nbtimeslots - 1; $i ++) {
-					//$pdf = new TCPDF;
-					//ob_start();
-					//var_dump($posX + $larg_col1 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
-					//$pdf->MultiCell(100, 100, ob_get_clean());
 					$pdf->Rect($posX + $larg_col1 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
 				}
 
