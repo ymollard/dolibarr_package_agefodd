@@ -4832,6 +4832,7 @@ class Agsession extends CommonObject
 		$this->lines_place = array ();
 
 		$place_to_test = array ();
+		$date_to_test_array=array();
 
 		if (empty($this->id)) {
 			return 1;
