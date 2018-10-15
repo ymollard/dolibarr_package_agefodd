@@ -340,8 +340,13 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			$agf->fk_soc_requester = $fk_soc_requester;
 		if (! empty($fk_soc_employer))
 			$agf->fk_soc_employer = $fk_soc_employer;
+
 		if (! empty($fk_socpeople_requester))
 			$agf->fk_socpeople_requester = $fk_socpeople_requester;
+        else {  // If empty, maybe we don't need a socpeople requester
+            unset($agf->fk_socpeople_requester);
+        }
+
 		if (! empty($fk_socpeople_presta))
 			$agf->fk_socpeople_presta = $fk_socpeople_presta;
 		if (! empty($color))
@@ -1309,12 +1314,8 @@ printSessionFieldsWithCustomOrder();
 						print '</td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-						if ($agf->is_date_ask_OPCA == 1) {
-							$chckisDtOPCA = 'checked="checked"';
-						} else {
-							$chckisDtOPCA = '';
-						}
-						print '<td><input type="checkbox" class="flat" disabled="disabled" readonly="readonly" name="isdateaskOPCA" value="1" ' . $chckisDtOPCA . ' />';
+					
+						print '<td>';
 						print dol_print_date($agf->date_ask_OPCA, 'daytext');
 						print '</td></tr>';
 
@@ -1589,13 +1590,8 @@ printSessionFieldsWithCustomOrder();
 									print '<td>' . $opca->num_OPCA_soc . '</td></tr>';
 
 									print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-									if ($opca->is_date_ask_OPCA == 1) {
-										$chckisDtOPCA = 'checked="checked"';
-									} else {
-										$chckisDtOPCA = '';
-									}
-									print '<td><table class="nobordernopadding"><tr><td>';
-									print '<input type="checkbox" class="flat" name="isdateaskOPCA" disabled="disabled" readonly="readonly" value="1" ' . $chckisDtOPCA . ' /></td>';
+								
+									print '<td><table class="nobordernopadding"><tr>';
 									print '<td>';
 									print dol_print_date($opca->date_ask_OPCA, 'daytext');
 									print '</td><td>';

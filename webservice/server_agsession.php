@@ -673,7 +673,6 @@ function getAgsession($authentication, $id, $ref = '', $ref_ext = '') {
 								'date_res_confirm_site' => $agsession->date_res_confirm_site,
 								'date_res_trainer' => $agsession->date_res_trainer,
 								'date_ask_OPCA' => $agsession->date_ask_OPCA,
-								'is_date_ask_OPCA' => $agsession->is_date_ask_OPCA,
 								'is_OPCA' => $agsession->is_OPCA,
 								'fk_soc_OPCA' => $agsession->fk_soc_OPCA,
 								'soc_OPCA_name' => $agsession->soc_OPCA_name,
@@ -847,7 +846,6 @@ function createAgsession($authentication, $agsession) {
 		$newobject->date_res_confirm_site = $agsession->date_res_confirm_site;
 		$newobject->date_res_trainer = $agsession->date_res_trainer;
 		$newobject->date_ask_OPCA = $agsession->date_ask_OPCA;
-		$newobject->is_date_ask_OPCA = $agsession->is_date_ask_OPCA;
 		$newobject->is_OPCA = $agsession->is_OPCA;
 		$newobject->fk_soc_OPCA = $agsession->fk_soc_OPCA;
 		$newobject->soc_OPCA_name = $agsession->soc_OPCA_name;

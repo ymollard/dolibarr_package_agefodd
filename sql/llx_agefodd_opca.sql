@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_opca
 	fk_soc_trainee	integer	NOT NULL,
 	fk_session_agefodd integer NOT NULL,
 	date_ask_OPCA datetime DEFAULT NULL,
-	is_date_ask_OPCA smallint NOT NULL DEFAULT 0,
 	is_OPCA smallint NOT NULL DEFAULT 0,
 	fk_soc_OPCA integer DEFAULT NULL,
 	fk_socpeople_OPCA integer DEFAULT NULL,
