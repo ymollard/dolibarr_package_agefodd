@@ -340,8 +340,13 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			$agf->fk_soc_requester = $fk_soc_requester;
 		if (! empty($fk_soc_employer))
 			$agf->fk_soc_employer = $fk_soc_employer;
+
 		if (! empty($fk_socpeople_requester))
 			$agf->fk_socpeople_requester = $fk_socpeople_requester;
+        else {  // If empty, maybe we don't need a socpeople requester
+            unset($agf->fk_socpeople_requester);
+        }
+
 		if (! empty($fk_socpeople_presta))
 			$agf->fk_socpeople_presta = $fk_socpeople_presta;
 		if (! empty($color))
