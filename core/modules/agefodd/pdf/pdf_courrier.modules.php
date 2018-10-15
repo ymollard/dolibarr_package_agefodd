@@ -282,7 +282,7 @@ class pdf_courrier extends ModelePDFAgefodd {
 				$pdf->SetXY($posX + 20, $posY + 3);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 12);
 				$this->str = $agf_soc->nom;
-				$pdf->MultiCell(86, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 				// Show recipient information
 
