@@ -184,7 +184,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 	if (! $_POST["cancel"]) {
 		$agf = new Formation($db);
 
-		$agf->intitule = GETPOST('intitule', 'alpha');
+		$intitule = GETPOST('intitule', 'san_alpha');
+		$agf->intitule = html_entity_decode($intitule);
 		if (empty($agf->intitule)) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("AgfIntitule")), 'errors');
 			$action = 'create';
