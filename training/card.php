@@ -100,7 +100,8 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 		$result = $agf->fetch($id);
 
-		$agf->intitule = GETPOST('intitule', 'alpha');
+		$intitule = GETPOST('intitule', 'san_alpha');
+		$agf->intitule = html_entity_decode($intitule);
 		if (empty($agf->intitule)) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("AgfIntitule")), 'errors');
 			$action = 'edit';
