@@ -553,6 +553,7 @@ if (! empty($id)) {
 				} elseif ($action == 'presend_presence_direct') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 					// Ajout fiche péda
+					$file_array[]=$file;
 					$filename = 'fiche_evaluation_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
