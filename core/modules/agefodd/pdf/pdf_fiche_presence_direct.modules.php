@@ -253,7 +253,8 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 
                                 if(!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
                                         $TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
-                                        if(in_array($line->status_in_session, $TStagiaireStatusToExclude)) continue;
+					$status_stagiaire = (int)$line->status_in_session;
+                                        if(in_array($status_stagiaire, $TStagiaireStatusToExclude)) continue;
                                 }
 
 				// Nom
