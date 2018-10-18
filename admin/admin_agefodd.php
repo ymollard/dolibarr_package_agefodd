@@ -140,6 +140,8 @@ if ($action == 'updateMaskSession') {
 	}
 }
 
+
+
 if ($action == 'setvar') {
 	require_once (DOL_DOCUMENT_ROOT . "/core/lib/files.lib.php");
 
@@ -263,6 +265,13 @@ if ($action == 'setvar') {
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT_BPF', $default_training_cat_bpf, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
+
+	$TStagiaireStatusToExclude = GETPOST('TStagiaire_session_status');
+	if(is_array($TStagiaireStatusToExclude)) {
+		$TStagiaireStatusToExclude = implode(',', $TStagiaireStatusToExclude);
+		$TStagiaireStatusToExclude = strtr($TStagiaireStatusToExclude, array('prosp'=>'0'));
+	}
+	$res = dolibarr_set_const($db, 'AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES', $TStagiaireStatusToExclude, 'chaine', 0, '', $conf->entity);
 
 	if ($_FILES["imagesup"]["tmp_name"]) {
 		if (preg_match('/([^\\/:]+)$/i', $_FILES["imagesup"]["name"], $reg)) {
@@ -952,6 +961,21 @@ print '</tr>';
 print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainingCatBPF") . '</td>';
 print '<td align="left">';
 print $formAgefodd->select_training_categ_bpf($conf->global->AGF_DEFAULT_TRAINNING_CAT_BPF, 'AGF_DEFAULT_TRAINNING_CAT_BPF', 't.active=1', 1);
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Trainee status to hide on emargement
+$sess_sta = new Agefodd_session_stagiaire($db);
+print '<tr class="pair"><td>' . $langs->trans("AgfTraineeStatusToExcludeToFichePres") . '</td>';
+print '<td align="left">';
+$TStagiaireStatusToExclude = $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES;
+if(strpos($TStagiaireStatusToExclude, '0') !== false) {
+	$TStagiaireStatusToExclude = strtr($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES, array('0'=>'prosp'));
+	$sess_sta->labelstatut['prosp'] = $sess_sta->labelstatut[0];
+	unset($sess_sta->labelstatut[0]);
+}
+print $formAgefodd->multiselectarray('TStagiaire_session_status', $sess_sta->labelstatut, explode(',', $TStagiaireStatusToExclude));
 print '<td align="center">';
 print '</td>';
 print '</tr>';
