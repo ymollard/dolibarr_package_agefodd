@@ -2280,13 +2280,20 @@ class Agsession extends CommonObject
 
 		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
-		if (is_object($user) && ! empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
-			// Saleman of session is current user
-			$sql .= 'AND (s.rowid IN (SELECT rightsession.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as rightsession, ';
-			$sql .= MAIN_DB_PREFIX . 'agefodd_session_commercial as rightsalesman WHERE rightsession.rowid=rightsalesman.fk_session_agefodd AND rightsalesman.fk_user_com=' . $user->id . ')';
-			$sql .= " OR ";
-			// current user is saleman of customersession
-			$sql .= ' (s.fk_soc IN (SELECT ' . MAIN_DB_PREFIX . 'societe_commerciaux.fk_soc FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux WHERE fk_user=' . $user->id . ')))';
+		if (is_object($user) && ! empty($user->id) && empty($user->admin)) {
+			if (empty($user->rights->agefodd->session->all)) {
+				// Saleman of session is current user
+				$sql .= 'AND (s.rowid IN (SELECT rightsession.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as rightsession, ';
+				$sql .= MAIN_DB_PREFIX . 'agefodd_session_commercial as rightsalesman WHERE rightsession.rowid=rightsalesman.fk_session_agefodd AND rightsalesman.fk_user_com=' . $user->id . ')';
+				$sql .= " OR ";
+				// current user is saleman of customersession
+				$sql .= ' (s.fk_soc IN (SELECT ' . MAIN_DB_PREFIX . 'societe_commerciaux.fk_soc FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux WHERE fk_user=' . $user->id . ')))';
+			}
+			if (!empty($user->rights->agefodd->session->trainer)) {
+				// Session only with the user as trainer
+				$sql .= 'AND f.rowid IN (SELECT af.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur as af WHERE af.type_trainer=\'user\' AND af.fk_user='.$user->id.')';
+
+			}
 		}
 
 		// Manage filter
@@ -2419,6 +2426,11 @@ class Agsession extends CommonObject
 					$line->cost_buy_charges = $obj->cost_buy_charges;
 					$line->cost_sell_charges = $obj->cost_sell_charges;
 					$line->cost_other = $obj->cost_trip + $obj->cost_site;
+					$line->cost_trainer_planned=$obj->cost_trainer_planned;
+					$line->cost_site_planned=$obj->cost_site_planned;
+					$line->cost_trip_planned=$obj->cost_trip_planned;
+					$line->sell_price_planned=$obj->sell_price_planned;
+					$line->cost_other_planned = $obj->cost_site_planned + $obj->cost_trip_planned;
 					$line->admin_task_close_session = $obj->closesessionstatus;
 					$line->trainingcolor = $obj->trainingcolor;
 					$line->fk_product = $obj->fk_product;
@@ -5548,6 +5560,11 @@ class AgfSessionLine
 	public $admin_task_close_session;
 	public $trainingcolor;
 	public $fk_soc_employer;
+	public $cost_trainer_planned;
+	public $cost_site_planned;
+	public $cost_trip_planned;
+	public $sell_price_planned;
+	public $cost_other_planned;
 	public function __construct() {
 		return 1;
 	}

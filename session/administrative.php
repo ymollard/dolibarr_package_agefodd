@@ -212,7 +212,7 @@ llxHeader('', $langs->trans("AgfSessionDetail"));
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-if ($user->rights->agefodd->creer) {
+if ($user->rights->agefodd->lire) {
 	// Display administrative task
 	if ($id) {
 		// View mode
@@ -421,7 +421,11 @@ if ($user->rights->agefodd->creer) {
 							$src_state = dol_buildpath('/agefodd/img/next.png', 1);
 						}
 
-						print '<td align="center" valign="top"><a href="' . $_SERVER ['PHP_SELF'] . '?action=update_archive&id=' . $id . '&actid=' . $line->id . '"><img alt="' . $txtalt . '" src="' . $src_state . '"/></a></td>';
+						print '<td align="center" valign="top">';
+						if ($user->rights->agefodd->modifier) {
+							print '<a href="' . $_SERVER ['PHP_SELF'] . '?action=update_archive&id=' . $id . '&actid=' . $line->id . '"><img alt="' . $txtalt . '" src="' . $src_state . '"/></a>';
+						}
+						print '</td>';
 					} else {
 						print '<td colspan="4"></td>';
 					}
