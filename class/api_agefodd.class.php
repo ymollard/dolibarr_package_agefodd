@@ -1007,6 +1007,24 @@ class Agefodd extends DolibarrApi
         );
     }
     
+    /**
+     * Return the list of documents attached to a session
+     * 
+     * @param	int		$id				ID of element
+     * @param	string	$sortfield		Sort criteria ('','fullname','relativename','name','date','size')
+     * @param	string	$sortorder		Sort order ('asc' or 'desc')
+     * @return	array					Array of documents with path
+     * 
+     * @url GET /sessions/attachment
+     */
+    function getSessionAttachments($id, $sortfield = '', $sortorder = '')
+    {
+        return $this->_getDocumentsListByElement("agefodd", $id, '', 'session', $sortfield, $sortorder);
+    }
+    
+    
+    
+    
     /***************************************************************** SessionCalendar Part ******************************************************************/
     
     /**
@@ -3759,6 +3777,20 @@ class Agefodd extends DolibarrApi
         );
     }
     
+     /**
+     * Return the list of documents attached to a trainee
+     * 
+     * @param	int		$id				ID of trainee
+     * @param	string	$sortfield		Sort criteria ('','fullname','relativename','name','date','size')
+     * @param	string	$sortorder		Sort order ('asc' or 'desc')
+     * @return	array					Array of documents with path
+     * 
+     * @url GET /trainee/attachment
+     */
+    function getTraineeAttachment($id, $sortfield = "", $sortorder = "")
+    {
+        return $this->_getDocumentsListByElement("agefodd", $id, '', 'trainee', $sortfield, $sortorder);
+    }
     /***************************************************************** Trainer Part *****************************************************************/
     
     /**
@@ -4171,6 +4203,20 @@ class Agefodd extends DolibarrApi
         );
     }
     
+    /**
+     * Return the list of documents attached to a trainer
+     *
+     * @param	int		$id				ID of trainer (not the trainerinsession id)
+     * @param	string	$sortfield		Sort criteria ('','fullname','relativename','name','date','size')
+     * @param	string	$sortorder		Sort order ('asc' or 'desc')
+     * @return	array					Array of documents with path
+     *
+     * @url GET /sessions/attachment
+     */
+    function getTrainerAttachments($id, $sortfield = '', $sortorder = '')
+    {
+        return $this->_getDocumentsListByElement("agefodd", $id, '', 'trainer', $sortfield, $sortorder);
+    }
     
     /***************************************************************** Formation Part *****************************************************************/
     
@@ -8068,6 +8114,184 @@ class Agefodd extends DolibarrApi
     }
     
     /***************************************************************** Common Part *****************************************************************/
+    
+    /**
+     * Return the list of documents of a dedicated element (from its ID or Ref)
+     *
+     * @param   string 	$modulepart		Name of module or area concerned ('thirdparty', 'member', 'proposal', 'order', 'invoice', 'shipment', 'project',  ...)
+     * @param	int		$id				ID of element
+     * @param	string	$ref			Ref of element
+     * @param   string  $object_type    Type of object if modulepart is "agefodd"
+     * @param	string	$sortfield		Sort criteria ('','fullname','relativename','name','date','size')
+     * @param	string	$sortorder		Sort order ('asc' or 'desc')
+     * @return	array					Array of documents with path
+     *
+     * @throws 200
+     * @throws 400
+     * @throws 401
+     * @throws 404
+     * @throws 500
+     *
+     */
+    function _getDocumentsListByElement($modulepart, $id=0, $ref='', $object_type = '', $sortfield='', $sortorder='')
+    {
+        global $conf;
+        
+        if (empty($modulepart)) {
+            throw new RestException(400, 'bad value for parameter modulepart');
+        }
+        
+        if ($modulepart == "agefodd" && empty($object_type)) {
+            throw new RestException(400, "No object_type provided for modulepart agefodd");
+        }
+        
+        if ($modulepart == "agefodd" && !in_array($object_type, array("session", "trainer", "trainee"))) {
+            throw new RestException(400, 'Invalid object_type');
+        }
+        
+        if (empty($id) && empty($ref)) {
+            throw new RestException(400, 'bad value for parameter id or ref');
+        }
+        
+        $id = (empty($id)?0:$id);
+        
+        if ($modulepart == 'societe' || $modulepart == 'thirdparty')
+        {
+            require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
+            
+            if (!DolibarrApiAccess::$user->rights->societe->lire) {
+                throw new RestException(401);
+            }
+            
+            $object = new Societe($this->db);
+            $result=$object->fetch($id, $ref);
+            if ( ! $result ) {
+                throw new RestException(404, 'Thirdparty not found');
+            }
+            
+            $upload_dir = $conf->societe->multidir_output[$object->entity] . "/" . $object->id;
+        }
+        else if ($modulepart == 'adherent' || $modulepart == 'member')
+        {
+            require_once DOL_DOCUMENT_ROOT.'/adherents/class/adherent.class.php';
+            
+            if (!DolibarrApiAccess::$user->rights->adherent->lire) {
+                throw new RestException(401);
+            }
+            
+            $object = new Adherent($this->db);
+            $result=$object->fetch($id, $ref);
+            if ( ! $result ) {
+                throw new RestException(404, 'Member not found');
+            }
+            
+            $upload_dir = $conf->adherent->dir_output . "/" . get_exdir(0, 0, 0, 1, $object, 'member');
+        }
+        else if ($modulepart == 'propal' || $modulepart == 'proposal')
+        {
+            require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+            
+            if (!DolibarrApiAccess::$user->rights->propal->lire) {
+                throw new RestException(401);
+            }
+            
+            $object = new Propal($this->db);
+            $result=$object->fetch($id, $ref);
+            if ( ! $result ) {
+                throw new RestException(404, 'Proposal not found');
+            }
+            
+            $upload_dir = $conf->propal->dir_output . "/" . get_exdir(0, 0, 0, 1, $object, 'propal');
+        }
+        else if ($modulepart == 'commande' || $modulepart == 'order')
+        {
+            require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
+            
+            if (!DolibarrApiAccess::$user->rights->commande->lire) {
+                throw new RestException(401);
+            }
+            
+            $object = new Commande($this->db);
+            $result=$object->fetch($id, $ref);
+            if ( ! $result ) {
+                throw new RestException(404, 'Order not found');
+            }
+            
+            $upload_dir = $conf->commande->dir_output . "/" . get_exdir(0, 0, 0, 1, $object, 'commande');
+        }
+        else if ($modulepart == 'shipment' || $modulepart == 'expedition')
+        {
+            require_once DOL_DOCUMENT_ROOT.'/expedition/class/expedition.class.php';
+            
+            if (!DolibarrApiAccess::$user->rights->expedition->lire) {
+                throw new RestException(401);
+            }
+            
+            $object = new Expedition($this->db);
+            $result=$object->fetch($id, $ref);
+            if ( ! $result ) {
+                throw new RestException(404, 'Shipment not found');
+            }
+            
+            $upload_dir = $conf->expedition->dir_output . "/sending/" . get_exdir(0, 0, 0, 1, $object, 'shipment');
+        }
+        else if ($modulepart == 'facture' || $modulepart == 'invoice')
+        {
+            require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
+            
+            if (!DolibarrApiAccess::$user->rights->facture->lire) {
+                throw new RestException(401);
+            }
+            
+            $object = new Facture($this->db);
+            $result=$object->fetch($id, $ref);
+            if ( ! $result ) {
+                throw new RestException(404, 'Invoice not found');
+            }
+            
+            $upload_dir = $conf->facture->dir_output . "/" . get_exdir(0, 0, 0, 1, $object, 'invoice');
+        }
+        else if ($modulepart == 'agefodd')
+        {
+            if (!DolibarrApiAccess::$user->rights->agefodd->lire) {
+                throw new RestException(401);
+            }
+            
+            switch ($object_type)
+            {
+                case "session" :
+                    $upload_dir = $conf->agefodd->dir_output . "/" .$id;
+                    break;
+                    
+                case "trainee" :
+                    $upload_dir = $conf->agefodd->dir_output . "/trainee/" .$id;
+                    break;
+                    
+                case "trainer" :
+                    $upload_dir = $conf->agefodd->dir_output . "/trainer/" .$id;
+                    break;
+                    
+            }
+            
+        }
+        else
+        {
+            throw new RestException(500, 'Modulepart '.$modulepart.' not implemented yet.');
+        }
+        
+        $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
+        if (empty($filearray)) {
+            throw new RestException(404, 'Search for modulepart '.$modulepart.' with Id '.$object->id.(! empty($object->Ref)?' or Ref '.$object->ref:'').' does not return any document.');
+        }
+        
+        foreach ($filearray as &$file)
+        {
+            $file['pathtodownload'] = substr($file['fullname'], strrpos($file['fullname'], 'agefodd/') + 8);
+        }
+        
+        return $filearray;
+    }
+    
     /**
      * Clean sensible object datas
      *
