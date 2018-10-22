@@ -853,7 +853,7 @@ class FormAgefodd extends Form
 			$filter=str_replace('FROM', 'TOREPLACE', $filter);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
 
-			print ajax_autocompleter($selectid, $htmlname, '../ajax/formateur.php', $urloption, $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT, 0, '');
+			print ajax_autocompleter($selectid, $htmlname, dol_buildpath('/agefodd/ajax/formateur.php', 1), $urloption, $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT, 0, '');
 
 
 
