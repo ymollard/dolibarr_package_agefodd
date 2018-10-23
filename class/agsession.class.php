@@ -2814,7 +2814,7 @@ class Agsession extends CommonObject
 		$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.date_res_trainer, s.color, ";
 		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
-		$sql .= " c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
+		$sql .= " c.rowid as forma_id, c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
 		$sql .= " p.ref_interne";
 		$sql .= " ,so.nom as socname";
 		$sql .= " ,f.rowid as trainerrowid";
@@ -3083,6 +3083,7 @@ class Agsession extends CommonObject
 					$line->datef = $this->db->jdate($obj->datef);
 					$line->intitule = $obj->intitule;
 					$line->ref = $obj->ref;
+					$line->training_id = $obj->forma_id;
 					$line->training_ref_interne = $obj->trainingrefinterne;
 					$line->ref_interne = $obj->ref_interne;
 					$line->color = $obj->color;
