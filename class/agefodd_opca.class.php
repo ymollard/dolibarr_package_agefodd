@@ -41,7 +41,6 @@ class Agefodd_opca extends CommonObject {
 	public $fk_soc_trainee;
 	public $fk_session_agefodd;
 	public $date_ask_OPCA = '';
-	public $is_date_ask_OPCA;
 	public $is_OPCA;
 	public $fk_soc_OPCA;
 	public $fk_socpeople_OPCA;
@@ -81,8 +80,6 @@ class Agefodd_opca extends CommonObject {
 			$this->fk_soc_trainee = trim($this->fk_soc_trainee);
 		if (isset($this->fk_session_agefodd))
 			$this->fk_session_agefodd = trim($this->fk_session_agefodd);
-		if (isset($this->is_date_ask_OPCA))
-			$this->is_date_ask_OPCA = trim($this->is_date_ask_OPCA);
 		if (isset($this->is_OPCA))
 			$this->is_OPCA = trim($this->is_OPCA);
 		if (isset($this->fk_soc_OPCA))
@@ -108,7 +105,6 @@ class Agefodd_opca extends CommonObject {
 		$sql .= "fk_soc_trainee,";
 		$sql .= "fk_session_agefodd,";
 		$sql .= "date_ask_OPCA,";
-		$sql .= "is_date_ask_OPCA,";
 		$sql .= "is_OPCA,";
 		$sql .= "fk_soc_OPCA,";
 		$sql .= "fk_socpeople_OPCA,";
@@ -124,7 +120,6 @@ class Agefodd_opca extends CommonObject {
 		$sql .= " " . (empty($this->fk_soc_trainee) ? 'NULL' : $this->fk_soc_trainee) . ",";
 		$sql .= " " . (empty($this->fk_session_agefodd) ? 'NULL' : $this->fk_session_agefodd) . ",";
 		$sql .= " " . (empty($this->date_ask_OPCA) || dol_strlen($this->date_ask_OPCA) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_ask_OPCA) . "'") . ",";
-		$sql .= " " . (empty($this->is_date_ask_OPCA) ? '0' : $this->is_date_ask_OPCA) . ",";
 		$sql .= " " . (empty($this->is_OPCA) ? '0' : $this->is_OPCA) . ",";
 		$sql .= " " . (empty($this->fk_soc_OPCA) ? 'NULL' : $this->fk_soc_OPCA) . ",";
 		$sql .= " " . (empty($this->fk_socpeople_OPCA) ? 'NULL' : $this->fk_socpeople_OPCA) . ",";
@@ -189,7 +184,6 @@ class Agefodd_opca extends CommonObject {
 		$sql .= " t.fk_soc_trainee,";
 		$sql .= " t.fk_session_agefodd,";
 		$sql .= " t.date_ask_OPCA,";
-		$sql .= " t.is_date_ask_OPCA,";
 		$sql .= " t.is_OPCA,";
 		$sql .= " t.fk_soc_OPCA,";
 		$sql .= " t.fk_socpeople_OPCA,";
@@ -214,7 +208,6 @@ class Agefodd_opca extends CommonObject {
 				$this->fk_soc_trainee = $obj->fk_soc_trainee;
 				$this->fk_session_agefodd = $obj->fk_session_agefodd;
 				$this->date_ask_OPCA = $this->db->jdate($obj->date_ask_OPCA);
-				$this->is_date_ask_OPCA = $obj->is_date_ask_OPCA;
 				$this->is_OPCA = $obj->is_OPCA;
 				$this->fk_soc_OPCA = $obj->fk_soc_OPCA;
 				$this->fk_socpeople_OPCA = $obj->fk_socpeople_OPCA;
@@ -254,8 +247,6 @@ class Agefodd_opca extends CommonObject {
 			$this->fk_soc_trainee = trim($this->fk_soc_trainee);
 		if (isset($this->fk_session_agefodd))
 			$this->fk_session_agefodd = trim($this->fk_session_agefodd);
-		if (isset($this->is_date_ask_OPCA))
-			$this->is_date_ask_OPCA = trim($this->is_date_ask_OPCA);
 		if (isset($this->is_OPCA))
 			$this->is_OPCA = trim($this->is_OPCA);
 		if (isset($this->fk_soc_OPCA))
@@ -281,7 +272,6 @@ class Agefodd_opca extends CommonObject {
 		$sql .= " fk_soc_trainee=" . (isset($this->fk_soc_trainee) ? $this->fk_soc_trainee : "null") . ",";
 		$sql .= " fk_session_agefodd=" . (isset($this->fk_session_agefodd) ? $this->fk_session_agefodd : "null") . ",";
 		$sql .= " date_ask_OPCA=" . (dol_strlen($this->date_ask_OPCA) != 0 ? "'" . $this->db->idate($this->date_ask_OPCA) . "'" : 'null') . ",";
-		$sql .= " is_date_ask_OPCA=" . (! empty($this->is_date_ask_OPCA) ? $this->is_date_ask_OPCA : "0") . ",";
 		$sql .= " is_OPCA=" . (! empty($this->is_OPCA) ? $this->is_OPCA : "0") . ",";
 		$sql .= " fk_soc_OPCA=" . (! empty($this->fk_soc_OPCA) ? $this->fk_soc_OPCA : "null") . ",";
 		$sql .= " fk_socpeople_OPCA=" . (! empty($this->fk_socpeople_OPCA) ? $this->fk_socpeople_OPCA : "null") . ",";
@@ -441,7 +431,6 @@ class Agefodd_opca extends CommonObject {
 		$this->fk_soc_trainee = '';
 		$this->fk_session_agefodd = '';
 		$this->date_ask_OPCA = '';
-		$this->is_date_ask_OPCA = '';
 		$this->is_OPCA = '';
 		$this->fk_soc_OPCA = '';
 		$this->fk_socpeople_OPCA = '';
@@ -470,7 +459,6 @@ class Agefodd_opca extends CommonObject {
 		$sql .= " t.fk_soc_trainee,";
 		$sql .= " t.fk_session_agefodd,";
 		$sql .= " t.date_ask_OPCA as date_ask_opca,";
-		$sql .= " t.is_date_ask_OPCA as is_date_ask_opca,";
 		$sql .= " t.is_OPCA as is_opca,";
 		$sql .= " t.fk_soc_OPCA as fk_soc_opca,";
 		$sql .= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
@@ -504,7 +492,6 @@ class Agefodd_opca extends CommonObject {
 				$this->fk_soc_trainee = $obj->fk_soc_trainee;
 				$this->fk_session_agefodd = $obj->fk_session_agefodd;
 				$this->date_ask_OPCA = $this->db->jdate($obj->date_ask_opca);
-				$this->is_date_ask_OPCA = $obj->is_date_ask_opca;
 				$this->is_OPCA = $obj->is_opca;
 				$this->fk_soc_OPCA = $obj->fk_soc_opca;
 				$this->fk_socpeople_OPCA = $obj->fk_socpeople_opca;
@@ -522,7 +509,6 @@ class Agefodd_opca extends CommonObject {
 				$this->fk_soc_trainee = '';
 				$this->fk_session_agefodd = '';
 				$this->date_ask_OPCA = '';
-				$this->is_date_ask_OPCA = 0;
 				$this->is_OPCA = 0;
 				$this->fk_soc_OPCA = '';
 				$this->fk_socpeople_OPCA = '';
@@ -562,7 +548,6 @@ class Agefodd_opca extends CommonObject {
 		$sql .= " t.fk_soc_trainee,";
 		$sql .= " t.fk_session_agefodd,";
 		$sql .= " t.date_ask_OPCA as date_ask_opca,";
-		$sql .= " t.is_date_ask_OPCA as is_date_ask_opca,";
 		$sql .= " t.is_OPCA as is_opca,";
 		$sql .= " t.fk_soc_OPCA as fk_soc_opca,";
 		$sql .= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
@@ -592,7 +577,6 @@ class Agefodd_opca extends CommonObject {
 					$line->fk_soc_trainee = $obj->fk_soc_trainee;
 					$line->fk_session_agefodd = $obj->fk_session_agefodd;
 					$line->date_ask_OPCA = $this->db->jdate($obj->date_ask_opca);
-					$line->is_date_ask_OPCA = $obj->is_date_ask_opca;
 					$line->is_OPCA = $obj->is_opca;
 					$line->fk_soc_OPCA = $obj->fk_soc_opca;
 					$line->fk_socpeople_OPCA = $obj->fk_socpeople_opca;
@@ -624,7 +608,6 @@ class AgefoddOpcaLine {
 	public $fk_soc_trainee;
 	public $fk_session_agefodd;
 	public $date_ask_OPCA = '';
-	public $is_date_ask_OPCA;
 	public $is_OPCA;
 	public $fk_soc_OPCA;
 	public $fk_socpeople_OPCA;

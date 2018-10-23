@@ -66,7 +66,6 @@ class Agsession extends CommonObject
 	public $date_res_confirm_site = '';
 	public $date_res_trainer = '';
 	public $date_ask_OPCA = '';
-	public $is_date_ask_OPCA;
 	public $is_OPCA;
 	public $fk_soc_OPCA;
 	public $soc_OPCA_name;
@@ -513,7 +512,6 @@ class Agsession extends CommonObject
 		$sql .= " t.date_res_confirm_site,";
 		$sql .= " t.date_res_trainer,";
 		$sql .= " t.date_ask_OPCA as date_ask_opca,";
-		$sql .= " t.is_date_ask_OPCA as is_date_ask_opca,";
 		$sql .= " t.is_OPCA as is_opca,";
 		$sql .= " t.fk_soc_OPCA as fk_soc_opca,";
 		$sql .= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
@@ -618,7 +616,6 @@ class Agsession extends CommonObject
 				$this->date_res_confirm_site = $this->db->jdate($obj->date_res_confirm_site);
 				$this->date_res_trainer = $this->db->jdate($obj->date_res_trainer);
 				$this->date_ask_OPCA = $this->db->jdate($obj->date_ask_opca);
-				$this->is_date_ask_OPCA = $obj->is_date_ask_opca;
 				$this->is_OPCA = $obj->is_opca;
 				$this->fk_soc_OPCA = $obj->fk_soc_opca;
 				$this->soc_OPCA_name = $obj->soc_opca_name;
@@ -1784,7 +1781,6 @@ class Agsession extends CommonObject
 			$sql .= " date_res_trainer=" . (dol_strlen($this->date_res_trainer) != 0 ? "'" . $this->db->idate($this->date_res_trainer) . "'" : 'null') . ",";
 			$sql .= " date_ask_OPCA=" . (dol_strlen($this->date_ask_OPCA) != 0 ? "'" . $this->db->idate($this->date_ask_OPCA) . "'" : 'null') . ",";
 			$sql .= " is_OPCA=" . (! empty($this->is_OPCA) ? $this->is_OPCA : "0") . ",";
-			$sql .= " is_date_ask_OPCA=" . (! empty($this->is_date_ask_OPCA) ? $this->is_date_ask_OPCA : "0") . ",";
 			$sql .= " fk_soc_OPCA=" . (isset($this->fk_soc_OPCA) && $this->fk_soc_OPCA != - 1 ? $this->fk_soc_OPCA : "null") . ",";
 			$sql .= " fk_socpeople_OPCA=" . (isset($this->fk_socpeople_OPCA) && $this->fk_socpeople_OPCA != 0 ? $this->fk_socpeople_OPCA : "null") . ",";
 			$sql .= " num_OPCA_soc=" . (isset($this->num_OPCA_soc) ? "'" . $this->db->escape($this->num_OPCA_soc) . "'" : "null") . ",";
@@ -2382,13 +2378,20 @@ class Agsession extends CommonObject
 
 		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 
-		if (is_object($user) && ! empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
-			// Saleman of session is current user
-			$sql .= 'AND (s.rowid IN (SELECT rightsession.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as rightsession, ';
-			$sql .= MAIN_DB_PREFIX . 'agefodd_session_commercial as rightsalesman WHERE rightsession.rowid=rightsalesman.fk_session_agefodd AND rightsalesman.fk_user_com=' . $user->id . ')';
-			$sql .= " OR ";
-			// current user is saleman of customersession
-			$sql .= ' (s.fk_soc IN (SELECT ' . MAIN_DB_PREFIX . 'societe_commerciaux.fk_soc FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux WHERE fk_user=' . $user->id . ')))';
+		if (is_object($user) && ! empty($user->id) && empty($user->admin)) {
+			if (empty($user->rights->agefodd->session->all)) {
+				// Saleman of session is current user
+				$sql .= 'AND (s.rowid IN (SELECT rightsession.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as rightsession, ';
+				$sql .= MAIN_DB_PREFIX . 'agefodd_session_commercial as rightsalesman WHERE rightsession.rowid=rightsalesman.fk_session_agefodd AND rightsalesman.fk_user_com=' . $user->id . ')';
+				$sql .= " OR ";
+				// current user is saleman of customersession
+				$sql .= ' (s.fk_soc IN (SELECT ' . MAIN_DB_PREFIX . 'societe_commerciaux.fk_soc FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux WHERE fk_user=' . $user->id . ')))';
+			}
+			if (!empty($user->rights->agefodd->session->trainer)) {
+				// Session only with the user as trainer
+				$sql .= 'AND f.rowid IN (SELECT af.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur as af WHERE af.type_trainer=\'user\' AND af.fk_user='.$user->id.')';
+
+			}
 		}
 
 		// Manage filter
@@ -2475,7 +2478,7 @@ class Agsession extends CommonObject
 			if ($num) {
 			    $nbsess = 0;
 			    $Tsessid = array();
-			    
+
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
 
@@ -2521,6 +2524,11 @@ class Agsession extends CommonObject
 					$line->cost_buy_charges = $obj->cost_buy_charges;
 					$line->cost_sell_charges = $obj->cost_sell_charges;
 					$line->cost_other = $obj->cost_trip + $obj->cost_site;
+					$line->cost_trainer_planned=$obj->cost_trainer_planned;
+					$line->cost_site_planned=$obj->cost_site_planned;
+					$line->cost_trip_planned=$obj->cost_trip_planned;
+					$line->sell_price_planned=$obj->sell_price_planned;
+					$line->cost_other_planned = $obj->cost_site_planned + $obj->cost_trip_planned;
 					$line->admin_task_close_session = $obj->closesessionstatus;
 					$line->trainingcolor = $obj->trainingcolor;
 					$line->fk_product = $obj->fk_product;
@@ -2539,7 +2547,7 @@ class Agsession extends CommonObject
 					{
 						$line->array_options['options_'.$key] = $obj->{$key};
 					}
-					
+
 					if (!in_array($line->rowid, $Tsessid)) {
 					    $Tsessid[] = $line->rowid;
 					    $nbsess++;
@@ -2904,7 +2912,7 @@ class Agsession extends CommonObject
 		$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.date_res_trainer, s.color, ";
 		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
-		$sql .= " c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
+		$sql .= " c.rowid as forma_id, c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
 		$sql .= " p.ref_interne";
 		$sql .= " ,so.nom as socname";
 		$sql .= " ,f.rowid as trainerrowid";
@@ -3173,6 +3181,7 @@ class Agsession extends CommonObject
 					$line->datef = $this->db->jdate($obj->datef);
 					$line->intitule = $obj->intitule;
 					$line->ref = $obj->ref;
+					$line->training_id = $obj->forma_id;
 					$line->training_ref_interne = $obj->trainingrefinterne;
 					$line->ref_interne = $obj->ref_interne;
 					$line->color = $obj->color;
@@ -4934,6 +4943,7 @@ class Agsession extends CommonObject
 		$this->lines_place = array ();
 
 		$place_to_test = array ();
+		$date_to_test_array=array();
 
 		if (empty($this->id)) {
 			return 1;
@@ -5104,6 +5114,16 @@ class Agsession extends CommonObject
 			$stagiaires = new Agefodd_session_stagiaire($db);
 			$stagiaires->fetch_stagiaire_per_session($this->id);
 			$this->TStagiairesSession = $stagiaires->lines;
+		}
+		if(empty($this->TStagiairesSessionPresent)) {
+			$this->TStagiairesSessionPresent = array();
+			if (is_array($this->TStagiairesSession) && count($this->TStagiairesSession)>0) {
+				foreach($stagiaires->lines as $linesta) {
+					if (($linesta->status_in_session == 3 || $linesta->status_in_session == 4)) {
+						$this->TStagiairesSessionPresent[]=$linesta;
+					}
+				}
+			}
 		}
 			// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
@@ -5645,6 +5665,11 @@ class AgfSessionLine
 	public $admin_task_close_session;
 	public $trainingcolor;
 	public $fk_soc_employer;
+	public $cost_trainer_planned;
+	public $cost_site_planned;
+	public $cost_trip_planned;
+	public $sell_price_planned;
+	public $cost_other_planned;
 	public function __construct() {
 		return 1;
 	}

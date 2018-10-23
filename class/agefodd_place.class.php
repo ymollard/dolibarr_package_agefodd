@@ -153,7 +153,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= " " . (empty($this->nb_place) ? 'NULL' : "'" . $this->nb_place . "'") . ",";
 		$sql .= " " . (! isset($this->tel) ? 'NULL' : "'" . $this->db->escape($this->tel) . "'") . ",";
 		$sql .= " " . (! isset($this->fk_societe) ? 'NULL' : "'" . $this->fk_societe . "'") . ",";
-		$sql .= " " . (empty($this->fk_socpeople) ? 'NULL' : "'" . $this->fk_socpeople . "'") . ",";
+		$sql .= " " . (empty($this->fk_socpeople) ? '0' : "'" . $this->fk_socpeople . "'") . ",";
 		$sql .= " " . (empty($this->timeschedule) ? 'NULL' : "'" . $this->timeschedule . "'") . ",";
 		$sql .= " " . (! isset($this->notes) ? 'NULL' : "'" . $this->db->escape($this->notes) . "'") . ",";
 		$sql .= " " . (! isset($this->acces_site) ? 'NULL' : "'" . $this->db->escape($this->acces_site) . "'") . ",";

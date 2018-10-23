@@ -123,16 +123,21 @@ class ActionsAgefodd
 					'text' => img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"),
 					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_id=' . urlencode($parameters['search_boxvalue'])
 			);
+			if (!empty($conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_SESSION)) $arrayresult['searchintoagefoddsession']['position'] = $conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_SESSION;
+			
 			$arrayresult['searchintoagefoddsessionref'] = array(
 					'position' => $modAgefodd->numero,
 					'text' => img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionRef"),
 					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_session_ref=' . urlencode($parameters['search_boxvalue'])
 			);
+			if (!empty($conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_SESSION_REF)) $arrayresult['searchintoagefoddsessionref']['position'] = $conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_SESSION_REF;
+			
 			$arrayresult['searchintoagefoddtrainee'] = array(
 					'position' => $modAgefodd->numero,
 					'text' => img_object('', 'contact') . ' ' . $langs->trans("AgfMenuActStagiaire"),
 					'url' => dol_buildpath('/agefodd/trainee/list.php', 1) . '?search_namefirstname=' . urlencode($parameters['search_boxvalue'])
 			);
+			if (!empty($conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_TRAINEE)) $arrayresult['searchintoagefoddtrainee']['position'] = $conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_TRAINEE;
 		}
 		$this->results = $arrayresult;
 

@@ -814,8 +814,9 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 						if ($elem_line->element_type == 'invoice') {
 							$facture = new Facture($this->db);
 							$result = $facture->fetch($elem_line->fk_element);
-							if ($result < 0) {
+							if ($result <= 0) {
 								$this->error = $facture->error;
+								setEventMessage('Erreur fetch facture rowid : '.$elem_line->fk_element.', ligne à supprimer dans la table llx_agefodd_session_element', 'errors');
 								return $result;
 							}
 

@@ -5859,7 +5859,6 @@ class Agefodd extends DolibarrApi
      * @param int       $sessid                 ID of the session
      * @param int       $traineeId              ID of the trainee
      * @param int       $traineeSoc             ID of the society of the trainee
-     * @param int       $is_date_ask_OPCA       0 if no demand sent or 1
      * @param string    $date_ask_OPCA          date of the demand if asked (Must be with the format yyyy-mm-dd)
      * @param int       $is_OPCA                1 if there is an founder thirdparty
      * @param int       $fk_soc_OPCA            ID of the thirdparty founder
@@ -5871,7 +5870,7 @@ class Agefodd extends DolibarrApi
      * 
      * @url POST /opca/
      */
-    function postOpca($sessid, $traineeId, $traineeSoc,$is_date_ask_OPCA = 0, $date_ask_OPCA='', $is_OPCA = 0, $fk_soc_OPCA = 0, $fk_socpeople_OPCA = 0, $num_OPCA_soc = '', $num_OPCA_file = '')
+    function postOpca($sessid, $traineeId, $traineeSoc, $date_ask_OPCA='', $is_OPCA = 0, $fk_soc_OPCA = 0, $fk_socpeople_OPCA = 0, $num_OPCA_soc = '', $num_OPCA_file = '')
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'Creation not allowed for login '.DolibarrApiAccess::$user->login);
@@ -5896,11 +5895,9 @@ class Agefodd extends DolibarrApi
         $this->opca->fk_session_trainee = $this->traineeinsession->id;
         $this->opca->fk_soc_trainee = $traineeSoc;
         $this->opca->fk_session_agefodd = $sessid;
-        $this->opca->is_date_ask_OPCA = (empty($is_date_ask_OPCA)) ? 0 : 1;
         
         if(!empty($date_ask_OPCA)) {
             if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_ask_OPCA)) throw new RestException(503, "Bad date format. date_ask_OPCA must be in format yyyy-mm-dd");
-            $this->opca->is_date_ask_OPCA = 1;
             $this->opca->date_ask_OPCA = dol_mktime(0, 0, 0, substr($date_ask_OPCA, 5, 2), substr($date_ask_OPCA, 8, 2), substr($date_ask_OPCA, 0, 4));
         }
         $this->opca->is_OPCA = (empty($is_OPCA)) ? 0 : 1;
@@ -5947,7 +5944,6 @@ class Agefodd extends DolibarrApi
      * Update an OPCA
      * 
      * @param int       $id                     ID of the OPCA to update
-     * @param int       $is_date_ask_OPCA       0 if no demand sent or 1 (-1 = unchanged)
      * @param string    $date_ask_OPCA          date of the demand if asked (Must be with the format yyyy-mm-dd)
      * @param int       $is_OPCA                1 if there is a founder thirdparty (-1 = unchanged)
      * @param int       $fk_soc_OPCA            ID of the thirdparty founder (-1 = unchanged)
@@ -5959,7 +5955,7 @@ class Agefodd extends DolibarrApi
      * 
      * @url PUT /opca/
      */
-    function putOpca($id, $is_date_ask_OPCA = -1, $date_ask_OPCA='', $is_OPCA = -1, $fk_soc_OPCA = -1, $fk_socpeople_OPCA = -1, $num_OPCA_soc = '', $num_OPCA_file = '')
+    function putOpca($id,  $date_ask_OPCA='', $is_OPCA = -1, $fk_soc_OPCA = -1, $fk_socpeople_OPCA = -1, $num_OPCA_soc = '', $num_OPCA_file = '')
     {
         if(! DolibarrApiAccess::$user->rights->agefodd->creer) {
             throw new RestException(401, 'Modification not allowed for login '.DolibarrApiAccess::$user->login);
@@ -5970,11 +5966,9 @@ class Agefodd extends DolibarrApi
         if($result < 0) throw new RestException(500, "Error getting the OPCA", array($this->db->lasterror, $this->db->lastqueryerror));
         elseif(empty($this->opca->id)) throw new RestException(404, "OPCA not found");
         
-        if($is_date_ask_OPCA > -1) $this->opca->is_date_ask_OPCA = (empty($is_date_ask_OPCA)) ? 0 : 1;
         
         if(!empty($date_ask_OPCA)) {
             if(!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date_ask_OPCA)) throw new RestException(503, "Bad date format. date_ask_OPCA must be in format yyyy-mm-dd");
-            $this->opca->is_date_ask_OPCA = 1;
             $this->opca->date_ask_OPCA = dol_mktime(0, 0, 0, substr($date_ask_OPCA, 5, 2), substr($date_ask_OPCA, 8, 2), substr($date_ask_OPCA, 0, 4));
         }
         if($is_OPCA > -1) $this->opca->is_OPCA = (empty($is_OPCA)) ? 0 : 1;
