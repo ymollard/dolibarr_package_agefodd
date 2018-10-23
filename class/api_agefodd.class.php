@@ -1022,7 +1022,30 @@ class Agefodd extends DolibarrApi
         return $this->_getDocumentsListByElement("agefodd", $id, '', 'session', $sortfield, $sortorder);
     }
     
-    
+    /**
+     * Attach a file to a session.
+     *
+     * Test sample 1: { "filename": "mynewfile.txt", "id": "1462", "filecontent": "content text", "fileencoding": "", "overwriteifexists": "0" }.
+     * Test sample 2: { "filename": "mynewfile.txt", "id": "1462", "filecontent": "Y29udGVudCB0ZXh0Cg==", "fileencoding": "base64", "overwriteifexists": "0" }.
+     *
+     * @param   string  $filename           Name of file to create ('mynewfile.txt')
+     * @param   string  $id                 ID of element
+     * @param   string  $filecontent        File content (string with file content. An empty file will be created if this parameter is not provided)
+     * @param   string  $fileencoding       File encoding (''=no encoding, 'base64'=Base 64) {@example '' or 'base64'}
+     * @param   int 	$overwriteifexists  Overwrite file if exists (0 by default)
+     *
+     * @throws 200
+     * @throws 400
+     * @throws 401
+     * @throws 404
+     * @throws 500
+     * 
+     * @url POST /sessions/attach
+     */
+    function attachToSession($filename, $id, $filecontent='', $fileencoding='', $overwriteifexists=0)
+    {
+        return $this->_upload_file($filename, "session", $id, $filecontent, $fileencoding, $overwriteifexists);
+    }
     
     
     /***************************************************************** SessionCalendar Part ******************************************************************/
@@ -3785,12 +3808,38 @@ class Agefodd extends DolibarrApi
      * @param	string	$sortorder		Sort order ('asc' or 'desc')
      * @return	array					Array of documents with path
      * 
-     * @url GET /trainee/attachment
+     * @url GET /trainees/attachment
      */
     function getTraineeAttachment($id, $sortfield = "", $sortorder = "")
     {
         return $this->_getDocumentsListByElement("agefodd", $id, '', 'trainee', $sortfield, $sortorder);
     }
+    
+    /**
+     * Attach a file to a trainee.
+     *
+     * Test sample 1: { "filename": "mynewfile.txt", "id": "3061", "filecontent": "content text", "fileencoding": "", "overwriteifexists": "0" }.
+     * Test sample 2: { "filename": "mynewfile.txt", "id": "3061", "filecontent": "Y29udGVudCB0ZXh0Cg==", "fileencoding": "base64", "overwriteifexists": "0" }.
+     *
+     * @param   string  $filename           Name of file to create ('test.txt')
+     * @param   string  $id                 ID of element
+     * @param   string  $filecontent        File content (string with file content. An empty file will be created if this parameter is not provided)
+     * @param   string  $fileencoding       File encoding (''=no encoding, 'base64'=Base 64) {@example '' or 'base64'}
+     * @param   int 	$overwriteifexists  Overwrite file if exists (0 by default)
+     *
+     * @throws 200
+     * @throws 400
+     * @throws 401
+     * @throws 404
+     * @throws 500
+     *
+     * @url POST /trainees/attach
+     */
+    function attachToTrainee($filename, $id, $filecontent='', $fileencoding='', $overwriteifexists=0)
+    {
+        return $this->_upload_file($filename, "trainee", $id, $filecontent, $fileencoding, $overwriteifexists);
+    }
+    
     /***************************************************************** Trainer Part *****************************************************************/
     
     /**
@@ -4211,11 +4260,36 @@ class Agefodd extends DolibarrApi
      * @param	string	$sortorder		Sort order ('asc' or 'desc')
      * @return	array					Array of documents with path
      *
-     * @url GET /sessions/attachment
+     * @url GET /trainer/attachment
      */
     function getTrainerAttachments($id, $sortfield = '', $sortorder = '')
     {
         return $this->_getDocumentsListByElement("agefodd", $id, '', 'trainer', $sortfield, $sortorder);
+    }
+    
+    /**
+     * Attach a file to a trainer.
+     *
+     * Test sample 1: { "filename": "mynewfile.txt", "id": "1", "filecontent": "content text", "fileencoding": "", "overwriteifexists": "0" }.
+     * Test sample 2: { "filename": "mynewfile.txt", "id": "1", "filecontent": "Y29udGVudCB0ZXh0Cg==", "fileencoding": "base64", "overwriteifexists": "0" }.
+     *
+     * @param   string  $filename           Name of file to create ('test.txt')
+     * @param   string  $id                 ID of element
+     * @param   string  $filecontent        File content (string with file content. An empty file will be created if this parameter is not provided)
+     * @param   string  $fileencoding       File encoding (''=no encoding, 'base64'=Base 64) {@example '' or 'base64'}
+     * @param   int 	$overwriteifexists  Overwrite file if exists (0 by default)
+     *
+     * @throws 200
+     * @throws 400
+     * @throws 401
+     * @throws 404
+     * @throws 500
+     *
+     * @url POST /trainer/attach
+     */
+    function attachToTrainer($filename, $id, $filecontent='', $fileencoding='', $overwriteifexists=0)
+    {
+        return $this->_upload_file($filename, "trainer", $id, $filecontent, $fileencoding, $overwriteifexists);
     }
     
     /***************************************************************** Formation Part *****************************************************************/
@@ -8121,7 +8195,7 @@ class Agefodd extends DolibarrApi
      * @param   string 	$modulepart		Name of module or area concerned ('thirdparty', 'member', 'proposal', 'order', 'invoice', 'shipment', 'project',  ...)
      * @param	int		$id				ID of element
      * @param	string	$ref			Ref of element
-     * @param   string  $object_type    Type of object if modulepart is "agefodd"
+     * @param   string  $object_type    Type of object if modulepart is "agefodd" (can be "session", "trainee" or "trainer")
      * @param	string	$sortfield		Sort criteria ('','fullname','relativename','name','date','size')
      * @param	string	$sortorder		Sort order ('asc' or 'desc')
      * @return	array					Array of documents with path
@@ -8281,7 +8355,7 @@ class Agefodd extends DolibarrApi
         
         $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
         if (empty($filearray)) {
-            throw new RestException(404, 'Search for modulepart '.$modulepart.' with Id '.$object->id.(! empty($object->Ref)?' or Ref '.$object->ref:'').' does not return any document.');
+            throw new RestException(404, 'Search for '.$object_type.' with Id '.$id.' does not return any document.');
         }
         
         foreach ($filearray as &$file)
@@ -8290,6 +8364,124 @@ class Agefodd extends DolibarrApi
         }
         
         return $filearray;
+    }
+  
+    /**
+     * Upload a file.
+     *
+     * Test sample 1: { "filename": "mynewfile.txt", "modulepart": "facture", "ref": "FA1701-001", "subdir": "", "filecontent": "content text", "fileencoding": "", "overwriteifexists": "0" }.
+     * Test sample 2: { "filename": "mynewfile.txt", "modulepart": "medias", "ref": "", "subdir": "image/mywebsite", "filecontent": "Y29udGVudCB0ZXh0Cg==", "fileencoding": "base64", "overwriteifexists": "0" }.
+     *
+     * @param   string  $filename           Name of file to create ('FA1705-0123.txt')
+     * @param   string  $object_type        Type of object (can be "session", "trainee" or "trainer")
+     * @param   string  $id                 ID of element
+     * @param   string  $filecontent        File content (string with file content. An empty file will be created if this parameter is not provided)
+     * @param   string  $fileencoding       File encoding (''=no encoding, 'base64'=Base 64) {@example '' or 'base64'}
+     * @param   int 	$overwriteifexists  Overwrite file if exists (1 by default)
+     *
+     * @throws 200
+     * @throws 400
+     * @throws 401
+     * @throws 404
+     * @throws 500
+     *
+     */
+    public function _upload_file($filename, $object_type, $id = 0, $filecontent='', $fileencoding='', $overwriteifexists=0)
+    {
+        global $db, $conf;
+        
+        /*var_dump($modulepart);
+         var_dump($filename);
+         var_dump($filecontent);
+         exit;*/
+        
+        if(empty($filename))
+        {
+            throw new RestException(400, 'filename not provided.');
+        }
+        
+        if(empty($object_type))
+        {
+            throw new RestException(400, 'object_type not provided.');
+        }
+        
+        if(empty($id))
+        {
+            throw new RestException(400, 'id not provided.');
+        }
+        
+        if (!DolibarrApiAccess::$user->rights->ecm->upload) {
+            throw new RestException(401);
+        }
+        
+        $newfilecontent = '';
+        if (empty($fileencoding)) $newfilecontent = $filecontent;
+        if ($fileencoding == 'base64') $newfilecontent = base64_decode($filecontent);
+        
+        $original_file = dol_sanitizeFileName($filename);
+        
+        // Define $uploadir
+        $object = null;
+        $entity = DolibarrApiAccess::$user->entity;
+        
+        switch ($object_type)
+        {
+            case "session" :
+                $upload_dir = $conf->agefodd->dir_output . "/" .$id;
+                break;
+                
+            case "trainee" :
+                $upload_dir = $conf->agefodd->dir_output . "/trainee/" .$id;
+                break;
+                
+            case "trainer" :
+                $upload_dir = $conf->agefodd->dir_output . "/trainer/" .$id;
+                break;
+        }
+        
+        if (empty($upload_dir) || $upload_dir == '/')
+        {
+            throw new RestException(500, 'This value of modulepart does not support yet usage of ref. Check modulepart parameter or try to use subdir parameter instead of ref.');
+        }
+        
+        // $original_file here is still value of filename without any dir.
+        
+        $upload_dir = dol_sanitizePathName($upload_dir);
+        
+        $destfile = $upload_dir . '/' . $original_file;
+        $destfiletmp = DOL_DATA_ROOT.'/agefodd/temp/' . $original_file;
+        dol_delete_file($destfiletmp);
+        //var_dump($original_file);exit;
+        
+        if (!dol_is_dir(dirname($destfile))) {
+            dol_mkdir(dirname($destfile));
+            //throw new RestException(401, 'Directory not exists : '.dirname($destfile));
+        }
+        
+        if (! $overwriteifexists && dol_is_file($destfile))
+        {
+            throw new RestException(500, "File with name '".$original_file."' already exists.");
+        }
+        
+        $fhandle = @fopen($destfiletmp, 'w');
+        if ($fhandle)
+        {
+            $nbofbyteswrote = fwrite($fhandle, $newfilecontent);
+            fclose($fhandle);
+            @chmod($destfiletmp, octdec($conf->global->MAIN_UMASK));
+        }
+        else
+        {
+            throw new RestException(500, "Failed to open file '".$destfiletmp."' for write");
+        }
+        
+        $result = dol_move($destfiletmp, $destfile, 0, $overwriteifexists, 1);
+        if (! $result)
+        {
+            throw new RestException(500, "Failed to move file into '".$destfile."'");
+        }
+        
+        return "The file " . dol_basename($destfile) . " has been successfully attached to " . $object_type . " " . $id;
     }
     
     /**
