@@ -484,7 +484,7 @@ if (! $res)
 					{
 						for($i = 0; $i < $nbform; $i ++)
 						{
-							if ($formateurs->lines[$i]->opsid == GETPOST('opsid') && ! empty($form_remove_var)) print '<tr class="oddeven" bgcolor="#d5baa8">';
+							if ($formateurs->lines[$i]->opsid == GETPOST('opsid') && ! empty($form_remove_var)) print '<tr class="oddeven" style="background:#d5baa8">';
 							else print '<tr class="oddeven">';
 
 							print '<td width="20px" align="center">' . ($i + 1);
@@ -666,10 +666,10 @@ if (! $res)
 
 					// New trainers
 					if (! empty($newform_var) && ! empty($user->rights->agefodd->modifier)) {
-						print '<tr>';
+						print '<tr class="oddeven newline">';
 
 						print '<td width="20px" align="center"><a id="anchornewform" name="anchornewform"/>' . ($i + 1) . '</td>';
-						print '<td nowrap="nowrap">';
+						print '<td class="name nowrap">';
 
 						$filterSQL = 's.rowid NOT IN (SELECT fk_agefodd_formateur FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur WHERE fk_session=' . $id . ')';
 						if ($conf->global->AGF_FILTER_TRAINER_TRAINING) {
@@ -680,10 +680,25 @@ if (! $res)
 							print '&nbsp;';
 							print $formAgefodd->select_type_formateur($conf->global->AGF_DEFAULT_FORMATEUR_TYPE, "trainertype", ' active=1 ');
 						}
-						print '&nbsp;';
+						
+						// TODO print <br> puis afficher la liste des une liste des créneaux dispo ( ceux de l'onglet Calendrier )
+						
+						print '</td>';
+						
+						print '<td class="status">';
 						print $formAgefodd->select_trainer_session_status('trainerstatus', $formateurs->lines[$i]->trainer_status);
-						if ($user->rights->agefodd->modifier) {
-							print '</td><td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="form_add" alt="' . $langs->trans("Save") . '">';
+						print '</td>';
+						
+						if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA))
+						{
+							print '<td class="temps_total_prog">&nbsp;</td>';
+							print '<td class="temps_prog">&nbsp;</td>';
+						}
+						
+						print '<td class="actions" align="right">';
+						if ($user->rights->agefodd->modifier)
+						{
+							print '<input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="form_add" alt="' . $langs->trans("Save") . '">';
 						}
 						print '</td>';
 
