@@ -3414,34 +3414,36 @@ class Agsession extends CommonObject
 		print '<td colspan="'.$colspan.'">' . $this->formref . '</td></tr>';
 
 		// Type de la session
-		print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
-		print '<td colspan="'.$colspan.'">' . ($this->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td></tr>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
+			print '<td colspan="'.$colspan.'">' . ($this->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td></tr>';
+		}
 
-		print '<tr class="order_sessionCommercial"><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
-		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/user/card.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_sessionCommercial"><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
+			print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/user/card.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
+		}
 
-		print '<tr class="order_duration"><td>' . $langs->trans("AgfDuree") . '</td>';
-		print '<td colspan="'.$colspan.'">' . $this->duree_session . ' ' . $langs->trans('Hour') . '(s)</td></tr>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_duration"><td>' . $langs->trans("AgfDuree") . '</td>';
+			print '<td colspan="'.$colspan.'">' . $this->duree_session . ' ' . $langs->trans('Hour') . '(s)</td></tr>';
+		}
 
-		print '<tr class="order_product"><td>' . $langs->trans("AgfProductServiceLinked") . '</td>';
-		print '<td colspan="'.$colspan.'">';
-		if (! empty($this->fk_product)) {
-			$product = new Product($this->db);
-			$result = $product->fetch($this->fk_product);
-			if ($result < 0) {
-				setEventMessage($product->error, 'errors');
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_product"><td>' . $langs->trans("AgfProductServiceLinked") . '</td>';
+			print '<td colspan="'.$colspan.'">';
+			if (! empty($this->fk_product)) {
+				$product = new Product($this->db);
+				$result = $product->fetch($this->fk_product);
+				if ($result < 0) {
+					setEventMessage($product->error, 'errors');
+				}
+				print $product->getNomUrl(1) . ' - ' . $product->label;
 			}
-			print $product->getNomUrl(1) . ' - ' . $product->label;
 		}
 
 		print "</td></tr>";
-/*
-		print '<tr class="order_dated"><td>' . $langs->trans("AgfDateDebut") . '</td>';
-		print '<td colspan="'.$colspan.'">' . dol_print_date($this->dated, 'daytext') . '</td></tr>';
 
-		print '<tr class="order_datef"><td>' . $langs->trans("AgfDateFin") . '</td>';
-		print '<td colspan="'.$colspan.'">' . dol_print_date($this->datef, 'daytext') . '</td></tr>';
-*/
 		print '<tr class="order_customer"><td width="20%">' . $langs->trans("Customer") . '</td>';
 		print '	<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_soc)) && ($this->fk_soc > 0)) {
@@ -3460,7 +3462,7 @@ class Agsession extends CommonObject
 		} else {
 			print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/contact/card.php', 1) . '?id=' . $this->contactid . '">' . $this->contactname . '</a></td></tr>';
 		}
-
+		if (! $user->rights->agefodd->session->trainer){
 		print '<tr class="order_typeRequester"><td width="20%">' . $langs->trans("AgfTypeRequester") . '</td>';
 		print '	<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_soc_requester)) && ($this->fk_soc_requester > 0)) {
@@ -3471,39 +3473,45 @@ class Agsession extends CommonObject
 			print $socstatic->getNomUrl(1);
 		}
 		print '</td></tr>';
-
-		print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
-		print '<td colspan="'.$colspan.'">';
-		if ((! empty($this->fk_socpeople_requester)) && ($this->fk_socpeople_requester > 0)) {
-			$result = $contactstatic->fetch($this->fk_socpeople_requester);
-			if ($result < 0) {
-				setEventMessage($contactstatic->error, 'errors');
-			}
-			print $contactstatic->getNomUrl(1);
 		}
-		print '</td></tr>';
 
-		print '<tr class="order_typePresta"><td>' . $langs->trans("AgfTypePresta") . '</td>';
-		print '<td colspan="'.$colspan.'">';
-		if ((! empty($this->fk_socpeople_presta)) && ($this->fk_socpeople_presta > 0)) {
-			$result = $contactstatic->fetch($this->fk_socpeople_presta);
-			if ($result < 0) {
-				setEventMessage($contactstatic->error, 'errors');
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
+			print '<td colspan="'.$colspan.'">';
+			if ((! empty($this->fk_socpeople_requester)) && ($this->fk_socpeople_requester > 0)) {
+				$result = $contactstatic->fetch($this->fk_socpeople_requester);
+				if ($result < 0) {
+					setEventMessage($contactstatic->error, 'errors');
+				}
+				print $contactstatic->getNomUrl(1);
 			}
-			print $contactstatic->getNomUrl(1);
-		}
-		print '</td></tr>';
+			print '</td></tr>';
 
-		print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
-		print '<td colspan="'.$colspan.'">';
-		if ((! empty($this->fk_soc_employer)) && ($this->fk_soc_employer > 0)) {
-			$result = $socstatic->fetch($this->fk_soc_employer);
-			if ($result < 0) {
-				setEventMessage($socstatic->error, 'errors');
+
+			print '<tr class="order_typePresta"><td>' . $langs->trans("AgfTypePresta") . '</td>';
+			print '<td colspan="'.$colspan.'">';
+			if ((! empty($this->fk_socpeople_presta)) && ($this->fk_socpeople_presta > 0)) {
+				$result = $contactstatic->fetch($this->fk_socpeople_presta);
+				if ($result < 0) {
+					setEventMessage($contactstatic->error, 'errors');
+				}
+				print $contactstatic->getNomUrl(1);
 			}
-			print $socstatic->getNomUrl(1);
+			print '</td></tr>';
 		}
-		print '</td></tr>';
+
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
+			print '<td colspan="'.$colspan.'">';
+			if ((! empty($this->fk_soc_employer)) && ($this->fk_soc_employer > 0)) {
+				$result = $socstatic->fetch($this->fk_soc_employer);
+				if ($result < 0) {
+					setEventMessage($socstatic->error, 'errors');
+				}
+				print $socstatic->getNomUrl(1);
+			}
+			print '</td></tr>';
+		}
 
 		print '<tr class="order_place"><td>' . $langs->trans("AgfLieu") . '</td>';
 		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $this->placeid . '">' . $this->placecode . '</a></td></tr>';
@@ -3515,27 +3523,39 @@ class Agsession extends CommonObject
 			$notes = $langs->trans("AgfUndefinedNote");
 		print '<td colspan="'.$colspan.'">' . stripslashes($notes) . '</td></tr>';
 
-		print '<tr class="order_dateResTrainer"><td>' . $langs->trans("AgfDateResTrainer") . '</td>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_dateResTrainer"><td>' . $langs->trans("AgfDateResTrainer") . '</td>';
+		}
 
-		print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_trainer, 'daytext') . '</td></tr>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_trainer, 'daytext') . '</td></tr>';
+		}
 
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_dateResSite"><td>' . $langs->trans("AgfDateResSite") . '</td>';
+		}
 
-		print '<tr class="order_dateResSite"><td>' . $langs->trans("AgfDateResSite") . '</td>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_site, 'daytext') . '</td></tr>';
+		}
 
-		print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_site, 'daytext') . '</td></tr>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_dateResConfirmSite"><td>' . $langs->trans("AgfDateResConfirmSite") . '</td>';
+		}
 
+		if (! $user->rights->agefodd->session->trainer){
+			print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_confirm_site, 'daytext') . '</td></tr>';
+		}
 
-		print '<tr class="order_dateResConfirmSite"><td>' . $langs->trans("AgfDateResConfirmSite") . '</td>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_nbMintarget"><td>' . $langs->trans("AgfNbMintarget") . '</td><td colspan="'.$colspan.'">';
+			print $this->nb_subscribe_min . '</td></tr>';
+		}
 
-		print '<td colspan="'.$colspan.'">' . dol_print_date($this->date_res_confirm_site, 'daytext') . '</td></tr>';
-
-
-		print '<tr class="order_nbMintarget"><td>' . $langs->trans("AgfNbMintarget") . '</td><td colspan="'.$colspan.'">';
-		print $this->nb_subscribe_min . '</td></tr>';
-
-		print '<tr class="order_nbplaceavailable"><td width="20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
-		print '<td colspan="'.$colspan.'">' . ((($this->nb_place - $this->nb_stagiaire) > 0) ? ($this->nb_place - $this->nb_stagiaire) : 0) . '/' . $this->nb_place . '</td></tr>';
-
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_nbplaceavailable"><td width="20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
+			print '<td colspan="'.$colspan.'">' . ((($this->nb_place - $this->nb_stagiaire) > 0) ? ($this->nb_place - $this->nb_stagiaire) : 0) . '/' . $this->nb_place . '</td></tr>';
+		}
 
 		print '<tr class="order_status">';
 		print '<td>';
