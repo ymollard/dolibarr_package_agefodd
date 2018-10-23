@@ -8269,7 +8269,7 @@ class Agefodd extends DolibarrApi
      * @param   string 	$modulepart		Name of module or area concerned ('thirdparty', 'member', 'proposal', 'order', 'invoice', 'shipment', 'project',  ...)
      * @param	int		$id				ID of element
      * @param	string	$ref			Ref of element
-     * @param   string  $object_type    Type of object if modulepart is "agefodd" (can be "session", "trainee" or "trainer")
+     * @param   string  $object_type    Type of object if modulepart is "agefodd" (can be "session", "trainee", "trainer", "training" or "place")
      * @param	string	$sortfield		Sort criteria ('','fullname','relativename','name','date','size')
      * @param	string	$sortorder		Sort order ('asc' or 'desc')
      * @return	array					Array of documents with path
