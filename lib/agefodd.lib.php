@@ -565,37 +565,47 @@ function agf_calendars_prepare_head($param) {
 	$h = 0;
 	$head = array ();
 
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_month'.($param?'&'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgenda");
-	$head[$h][2] = 'cardmonth';
-	$h++;
+	if ($user->rights->agefodd->agenda) {
+		$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_month'.($param?'&'.$param:'');
+		$head[$h][1] = $langs->trans("AgfMenuAgenda");
+		$head[$h][2] = 'cardmonth';
+		$h++;
+	}
 
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_week'.($param?'&'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgendaViewWeek");
-	$head[$h][2] = 'cardweek';
-	$h++;
+	if ($user->rights->agefodd->agenda) {
+		$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_week'.($param?'&'.$param:'');
+		$head[$h][1] = $langs->trans("AgfMenuAgendaViewWeek");
+		$head[$h][2] = 'cardweek';
+		$h++;
+	}
 
-	//$paramday=$param;
-	//if (preg_match('/&month=\d+/',$paramday) && ! preg_match('/&day=\d+/',$paramday)) $paramday.='&day=1';
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_day'.($param?'&'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgendaViewDay");
-	$head[$h][2] = 'cardday';
-	$h++;
+	if ($user->rights->agefodd->agenda) {
+		$head[$h][0] = dol_buildpath("/agefodd/agenda/index.php", 1).'?action=show_day'.($param?'&'.$param:'');
+		$head[$h][1] = $langs->trans("AgfMenuAgendaViewDay");
+		$head[$h][2] = 'cardday';
+		$h++;
+	}
 
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/pertrainer.php", 1).($param?'?'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgendaViewPerUser");
-	$head[$h][2] = 'cardperuser';
-	$h++;
+	if ($user->rights->agefodd->agendatrainer) {
+		$head[$h][0] = dol_buildpath("/agefodd/agenda/pertrainer.php", 1).($param?'?'.$param:'');
+		$head[$h][1] = $langs->trans("AgfMenuAgendaViewPerUser");
+		$head[$h][2] = 'cardperuser';
+		$h++;
+	}
 
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/listactions.php", 1).($param?'?'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgendaViewList");
-	$head[$h][2] = 'cardlist';
-	$h++;
+	if ($user->rights->agefodd->agenda) {
+		$head[$h][0] = dol_buildpath("/agefodd/agenda/listactions.php", 1).($param?'?'.$param:'');
+		$head[$h][1] = $langs->trans("AgfMenuAgendaViewList");
+		$head[$h][2] = 'cardlist';
+		$h++;
+	}
 
-	$head[$h][0] = dol_buildpath("/agefodd/agenda/perlocation.php", 1).($param?'?'.$param:'');
-	$head[$h][1] = $langs->trans("AgfMenuAgendaPerLocation");
-	$head[$h][2] = 'cardperlocation';
-	$h++;
+	if ($user->rights->agefodd->agendalocation) {
+		$head[$h][0] = dol_buildpath("/agefodd/agenda/perlocation.php", 1).($param?'?'.$param:'');
+		$head[$h][1] = $langs->trans("AgfMenuAgendaPerLocation");
+		$head[$h][2] = 'cardperlocation';
+		$h++;
+	}
 
 	$object=new stdClass();
 
@@ -652,30 +662,30 @@ function agf_revenue_report_prepare_head() {
  */
 function agf_report_by_customer_prepare_head() {
     global $langs, $conf, $user;
-    
+
     $h = 0;
     $head = array ();
-    
+
     $head[$h][0] = dol_buildpath("/agefodd/report/report_by_customer.php", 1);
     $head[$h][1] = $langs->trans("AgfMenuReportByCustomer");
     $head[$h][2] = 'AgfMenuReportByCustomer';
     $h++;
-    
+
     $head[$h][0] = dol_buildpath("/agefodd/report/report_by_customer_help.php", 1);
     $head[$h][1] = $langs->trans("Help");
     $head[$h][2] = 'help';
     $h++;
-    
+
     $object=new stdClass();
-    
+
     // Show more tabs from modules
     // Entries must be declared in modules descriptor with line
     // $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
     // $this->tabs = array('entity:-tabname);   												to remove a tab
     complete_head_from_modules($conf,$langs,$object,$head,$h,'AgfMenuReportByCustomer');
-    
+
     complete_head_from_modules($conf,$langs,$object,$head,$h,'AgfMenuReportByCustomer','remove');
-    
+
     return $head;
 }
 

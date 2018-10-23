@@ -2192,7 +2192,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/agenda/pertrainer.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 700 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->agenda',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->agenda && ! $user->rights->agefodd->session->trainer',
 				'perms' => '$user->rights->agefodd->agenda',
 				'target' => '',
 				'user' => 0

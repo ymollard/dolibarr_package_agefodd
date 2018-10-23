@@ -1646,7 +1646,7 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 	$parameters = array();
 	$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $agf, $action); // Note that $action and $object may have been modified by hook
 	if (empty($reshook)) {
-		if ($user->rights->agefodd->modifier) {
+		if ($user->rights->agefodd->modifier && ! $user->rights->agefodd->session->trainer) {
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
 		} else {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
@@ -1668,25 +1668,30 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifyTrainer') . '</a>';
 		}
 
-		if ($user->rights->agefodd->creer) {
+		if ($user->rights->agefodd->creer && ! $user->rights->agefodd->session->trainer) {
 			print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 		} else {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
 		}
-		if ($agf->status != 4) {
-			$button = $langs->trans('AgfArchiver');
-			$arch = 1;
-		} else {
-			$button = $langs->trans('AgfActiver');
-			$arch = 0;
+		if (! $user->rights->agefodd->session->trainer) {
+			if ($agf->status != 4) {
+				$button = $langs->trans('AgfArchiver');
+				$arch = 1;
+			} else {
+				$button = $langs->trans('AgfActiver');
+				$arch = 0;
+			}
+			if ($user->rights->agefodd->modifier) {
+				print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?arch=' . $arch . '&id=' . $id . '">' . $button . '</a>';
+			} else {
+				print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $button . '</a>';
+			}
 		}
-		if ($user->rights->agefodd->modifier) {
-			print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
+		if ($user->rights->agefodd->creer) {
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=clone&id=' . $id . '">' . $langs->trans('ToClone') . '</a>';
-			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?arch=' . $arch . '&id=' . $id . '">' . $button . '</a>';
-		} else {
-			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $button . '</a>';
 		}
+		print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
+
 	}
 }
 
