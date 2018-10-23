@@ -377,7 +377,9 @@ class Agsession extends CommonObject
 	 * Create admin level for a session
 	 */
 	public function createAdmLevelForSession($user) {
-		$error = '';
+		$error = 0;
+
+		$this->db->begin();
 
 		require_once ('agefodd_sessadm.class.php');
 		require_once (DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
@@ -418,7 +420,7 @@ class Agsession extends CommonObject
 
 				if ($result3 < 0) {
 					dol_syslog(get_class($this) . "::createAdmLevelForSession error=" . $actions->error, LOG_ERR);
-					$this->error = $actions->error;
+					$this->errors[] = $actions->error;
 					$error ++;
 				}
 			}
@@ -427,16 +429,21 @@ class Agsession extends CommonObject
 			$result4 = $action_static->setParentActionId($user, $this->id);
 			if ($result4 < 0) {
 				dol_syslog(get_class($this) . "::createAdmLevelForSession error=" . $action_static->error, LOG_ERR);
-				$this->error = $action_static->error;
+				$this->errors[] = $action_static->error;
 				$error ++;
 			}
 		} elseif ($result2 < 0) {
 			dol_syslog(get_class($this) . "::createAdmLevelForSession error=" . $admlevel->error, LOG_ERR);
-			$this->error = $admlevel->error;
+			$this->errors[] = $admlevel->error;
 			$error ++;
 		}
 
-		return $error;
+		if (empty($error)) {
+			$this->db->commit();
+		} else {
+			$this->db->rollback();
+			return $error * - 1;
+		}
 	}
 
 	/**

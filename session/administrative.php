@@ -102,7 +102,7 @@ if ($action == 'confirm_replicateconftraining' && $confirm == 'yes') {
 	$res = $agf_session->fetch($id);
 	$result = $agf_session->createAdmLevelForSession($user);
 	if ($result < 0) {
-		setEventMessage($agf_session->error, 'errors');
+		setEventMessages(null,$agf_session->errors, 'errors');
 	}
 }
 
@@ -433,6 +433,7 @@ if ($user->rights->agefodd->creer) {
 			    print '<tr><td style="text-align:center">'.$langs->trans('AgfErrNoAdminTasksFound').'</td></tr>';
 			} else {
 			    print '<tr><td style="text-align:center">'.$langs->trans('AgfErrFetchAdminTasks').'</td></tr>';
+			    setEventMessage($sess_adm->error,'errors');
 			}
 
 			print '</table>';
