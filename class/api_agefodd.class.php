@@ -1017,7 +1017,7 @@ class Agefodd extends DolibarrApi
      * 
      * @url GET /sessions/attachment
      */
-    function getSessionAttachments($id, $sortfield = '', $sortorder = '')
+    function getSessionAttachments($id, $sortfield='name', $sortorder='asc')
     {
         return $this->_getDocumentsListByElement("agefodd", $id, '', 'session', $sortfield, $sortorder);
     }
@@ -3810,7 +3810,7 @@ class Agefodd extends DolibarrApi
      * 
      * @url GET /trainees/attachment
      */
-    function getTraineeAttachment($id, $sortfield = "", $sortorder = "")
+    function getTraineeAttachment($id, $sortfield='name', $sortorder='asc')
     {
         return $this->_getDocumentsListByElement("agefodd", $id, '', 'trainee', $sortfield, $sortorder);
     }
@@ -4262,7 +4262,7 @@ class Agefodd extends DolibarrApi
      *
      * @url GET /trainer/attachment
      */
-    function getTrainerAttachments($id, $sortfield = '', $sortorder = '')
+    function getTrainerAttachments($id, $sortfield='name', $sortorder='asc')
     {
         return $this->_getDocumentsListByElement("agefodd", $id, '', 'trainer', $sortfield, $sortorder);
     }
@@ -5238,6 +5238,46 @@ class Agefodd extends DolibarrApi
         );
     }
     
+    /**
+     * Return the list of documents attached to a training
+     *
+     * @param	int		$id				ID of trainer (not the trainerinsession id)
+     * @param	string	$sortfield		Sort criteria ('','fullname','relativename','name','date','size')
+     * @param	string	$sortorder		Sort order ('asc' or 'desc')
+     * @return	array					Array of documents with path
+     *
+     * @url GET /trainings/attachment
+     */
+    function getTrainingAttachments($id, $sortfield='name', $sortorder='asc')
+    {
+        return $this->_getDocumentsListByElement("agefodd", $id, '', 'training', $sortfield, $sortorder);
+    }
+    
+    /**
+     * Attach a file to a training.
+     *
+     * Test sample 1: { "filename": "mynewfile.txt", "id": "4848", "filecontent": "content text", "fileencoding": "", "overwriteifexists": "0" }.
+     * Test sample 2: { "filename": "mynewfile.txt", "id": "4848", "filecontent": "Y29udGVudCB0ZXh0Cg==", "fileencoding": "base64", "overwriteifexists": "0" }.
+     *
+     * @param   string  $filename           Name of file to create ('test.txt')
+     * @param   string  $id                 ID of element
+     * @param   string  $filecontent        File content (string with file content. An empty file will be created if this parameter is not provided)
+     * @param   string  $fileencoding       File encoding (''=no encoding, 'base64'=Base 64) {@example '' or 'base64'}
+     * @param   int 	$overwriteifexists  Overwrite file if exists (0 by default)
+     *
+     * @throws 200
+     * @throws 400
+     * @throws 401
+     * @throws 404
+     * @throws 500
+     *
+     * @url POST /trainings/attach
+     */
+    function attachToTraining($filename, $id, $filecontent='', $fileencoding='', $overwriteifexists=0)
+    {
+        return $this->_upload_file($filename, "training", $id, $filecontent, $fileencoding, $overwriteifexists);
+    }
+    
     /***************************************************************** Formation Module Part *****************************************************************/
     
     /**
@@ -5881,6 +5921,46 @@ class Agefodd extends DolibarrApi
                 'message' => 'place deleted'
             )
         );
+    }
+    
+    /**
+     * Return the list of documents attached to a place
+     *
+     * @param	int		$id				ID of trainer (not the trainerinsession id)
+     * @param	string	$sortfield		Sort criteria ('','fullname','relativename','name','date','size')
+     * @param	string	$sortorder		Sort order ('asc' or 'desc')
+     * @return	array					Array of documents with path
+     *
+     * @url GET /places/attachment
+     */
+    function getPlaceAttachments($id, $sortfield='name', $sortorder='asc')
+    {
+        return $this->_getDocumentsListByElement("agefodd", $id, '', 'place', $sortfield, $sortorder);
+    }
+    
+    /**
+     * Attach a file to a place.
+     *
+     * Test sample 1: { "filename": "mynewfile.txt", "id": "70", "filecontent": "content text", "fileencoding": "", "overwriteifexists": "0" }.
+     * Test sample 2: { "filename": "mynewfile.txt", "id": "70", "filecontent": "Y29udGVudCB0ZXh0Cg==", "fileencoding": "base64", "overwriteifexists": "0" }.
+     *
+     * @param   string  $filename           Name of file to create ('test.txt')
+     * @param   string  $id                 ID of element
+     * @param   string  $filecontent        File content (string with file content. An empty file will be created if this parameter is not provided)
+     * @param   string  $fileencoding       File encoding (''=no encoding, 'base64'=Base 64) {@example '' or 'base64'}
+     * @param   int 	$overwriteifexists  Overwrite file if exists (0 by default)
+     *
+     * @throws 200
+     * @throws 400
+     * @throws 401
+     * @throws 404
+     * @throws 500
+     *
+     * @url POST /places/attach
+     */
+    function attachToPlace($filename, $id, $filecontent='', $fileencoding='', $overwriteifexists=0)
+    {
+        return $this->_upload_file($filename, "place", $id, $filecontent, $fileencoding, $overwriteifexists);
     }
     
     /***************************************************************** OPCA Part *****************************************************************/
@@ -8207,7 +8287,7 @@ class Agefodd extends DolibarrApi
      * @throws 500
      *
      */
-    function _getDocumentsListByElement($modulepart, $id=0, $ref='', $object_type = '', $sortfield='', $sortorder='')
+    function _getDocumentsListByElement($modulepart, $id=0, $ref='', $object_type = '', $sortfield='name', $sortorder='asc')
     {
         global $conf;
         
@@ -8219,7 +8299,7 @@ class Agefodd extends DolibarrApi
             throw new RestException(400, "No object_type provided for modulepart agefodd");
         }
         
-        if ($modulepart == "agefodd" && !in_array($object_type, array("session", "trainer", "trainee"))) {
+        if ($modulepart == "agefodd" && !in_array($object_type, array("session", "trainer", "trainee", "training", "place"))) {
             throw new RestException(400, 'Invalid object_type');
         }
         
@@ -8345,6 +8425,13 @@ class Agefodd extends DolibarrApi
                     $upload_dir = $conf->agefodd->dir_output . "/trainer/" .$id;
                     break;
                     
+                case "training" :
+                    $upload_dir = $conf->agefodd->dir_output . "/training/" .$id;
+                    break;
+                    
+                case "place" :
+                    $upload_dir = $conf->agefodd->dir_output . "/place/" .$id;
+                    break;
             }
             
         }
@@ -8353,7 +8440,7 @@ class Agefodd extends DolibarrApi
             throw new RestException(500, 'Modulepart '.$modulepart.' not implemented yet.');
         }
         
-        $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
+        $filearray=dol_dir_list($upload_dir,"files",0,'','',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
         if (empty($filearray)) {
             throw new RestException(404, 'Search for '.$object_type.' with Id '.$id.' does not return any document.');
         }
@@ -8405,6 +8492,10 @@ class Agefodd extends DolibarrApi
             throw new RestException(400, 'object_type not provided.');
         }
         
+        if (!in_array($object_type, array("session", "trainer", "trainee", "training", "place"))) {
+            throw new RestException(400, 'Invalid object_type');
+        }
+        
         if(empty($id))
         {
             throw new RestException(400, 'id not provided.');
@@ -8436,6 +8527,14 @@ class Agefodd extends DolibarrApi
                 
             case "trainer" :
                 $upload_dir = $conf->agefodd->dir_output . "/trainer/" .$id;
+                break;
+                
+            case "training" :
+                $upload_dir = $conf->agefodd->dir_output . "/training/" .$id;
+                break;
+                
+            case "place" :
+                $upload_dir = $conf->agefodd->dir_output . "/place/" .$id;
                 break;
         }
         
