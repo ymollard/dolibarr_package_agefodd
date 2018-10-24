@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_adminsitu (
   fk_agefodd_session integer NOT NULL,
   intitule varchar(500) default NULL,
   delais_alerte integer NOT NULL,
+  delais_alerte_end integer NOT NULL,
   indice integer NOT NULL,
   level_rank integer NOT NULL default '0',
   fk_parent_level integer default '0',

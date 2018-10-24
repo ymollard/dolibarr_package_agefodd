@@ -71,7 +71,7 @@ if (! $res)
 			 * Actions delete formateur
 			 */
 
-			if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agefodd->creer) {
+			if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agefodd->modifier) {
 				$obsid = GETPOST('opsid', 'int');
 
 				$agf = new Agefodd_session_formateur($db);
@@ -85,7 +85,7 @@ if (! $res)
 				}
 			}
 
-			if ($action == 'edit' && $user->rights->agefodd->creer) {
+			if ($action == 'edit' && $user->rights->agefodd->modifier) {
 
 				if (empty($formid) && ($form_update_x > 0 || $form_add_x > 0)) {
 					setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('AgfFormateur')), 'errors');
@@ -162,7 +162,7 @@ if (! $res)
 				}
 			}
 
-			if ($action == 'edit_calendrier' && $user->rights->agefodd->creer) {
+			if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 
 				if (! empty($period_add)) {
 					$error = 0;
@@ -395,7 +395,7 @@ if (! $res)
 			 * Actions delete period
 			 */
 
-			if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->agefodd->creer) {
+			if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->agefodd->modifier) {
 				$modperiod = GETPOST('modperiod', 'int');
 
 				$agf = new Agefoddsessionformateurcalendrier($db);
@@ -722,7 +722,6 @@ if (! $res)
 
 						print '</tr>' . "\n";
 						
-						// TODO print <br> puis afficher la liste des une liste des créneaux dispo ( ceux de l'onglet Calendrier )
 						print '<tr class="">';
 						$colspan = 3; //  name / status / actions
 						if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) $colspan+= 2; // temps_total_prog / temps_prog
@@ -1016,26 +1015,26 @@ if (! $res)
 			print '<div class="tabsAction">';
             
 			if ($action != 'create' && $action != 'edit' && (! empty($agf->id)) && $nbform >= 1) {
-				if ($user->rights->agefodd->creer) {
+				if ($user->rights->agefodd->modifier) {
 					print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '">' . $langs->trans('Cancel') . '</a>';
 				} else {
 					print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
 				}
 
-				if ($user->rights->agefodd->creer) {
+				if ($user->rights->agefodd->modifier) {
 					print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&action=presend_trainer_doc&mode=init">' . $langs->trans('AgfSendDocuments') . '</a>';
 				} else {
 					print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfSendDocuments') . '</a>';
 				}
 			}
 			if ($action == 'edit' && $newform_var < 1){
-                if ($user->rights->agefodd->creer) {
+				if ($user->rights->agefodd->modifier) {
                     print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '&newform=1">' . $langs->trans("AgfFormateurAdd") . '</a>';
                 } else {
                     print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
                 }
-                
-                if ($user->rights->agefodd->creer) {
+
+                if ($user->rights->agefodd->modifier) {
                     print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&action=presend_trainer_doc&mode=init">' . $langs->trans('AgfSendDocuments') . '</a>';
                 } else {
                     print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfSendDocuments') . '</a>';
