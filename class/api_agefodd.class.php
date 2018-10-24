@@ -8281,7 +8281,7 @@ class Agefodd extends DolibarrApi
      * @throws 500
      *
      */
-    function _getDocumentsListByElement($modulepart, $id=0, $ref='', $object_type = '', $sortfield='name', $sortorder='asc')
+    private function _getDocumentsListByElement($modulepart, $id=0, $ref='', $object_type = '', $sortfield='name', $sortorder='asc')
     {
         global $conf;
         
@@ -8467,7 +8467,7 @@ class Agefodd extends DolibarrApi
      * @throws 500
      *
      */
-    public function _upload_file($filename, $object_type, $id = 0, $filecontent='', $fileencoding='', $overwriteifexists=0)
+    private function _upload_file($filename, $object_type, $id = 0, $filecontent='', $fileencoding='', $overwriteifexists=0)
     {
         global $db, $conf;
         
