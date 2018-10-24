@@ -386,6 +386,58 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			return - 1;
 		}
 	}
+	
+	/**
+	 * Fait les verifications pour savoir si le formateur est déjà inscrit sur une plage horaire similaire
+	 * @param type $fk_trainer
+	 * @return int	0 = Ok, > 0 si erreur
+	 */
+	public function checkTrainerBook($fk_trainer)
+	{
+		global $conf, $langs;
+		
+		$error = 0;
+		$error_message = $warning_message = array();
+		
+		$result = $this->fetch_all_by_trainer($fk_trainer);
+		if ($result < 0)
+		{
+			$error++;
+			$error_message[] = $this->error;
+		}
+		else
+		{
+			foreach ($this->lines as $line)
+			{
+				// TODO expliciter la valeur 6 du statut
+				if (!empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6)
+				{
+					if (
+						($this->heured <= $line->heured && $this->heuref >= $line->heuref) 
+						|| ($this->heured >= $line->heured && $this->heuref <= $line->heuref) 
+						|| ($this->heured <= $line->heured && $this->heuref <= $line->heuref && $this->heuref > $line->heured) 
+						|| ($this->heured >= $line->heured && $this->heuref >= $line->heuref && $this->heured < $line->heuref)
+					)
+					{
+						if (!empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY))
+						{
+							$warning_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blank">'.$line->fk_session.'</a>)<br />';
+						}
+						else
+						{
+							$error++;
+							$error_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blank">'.$line->fk_session.'</a>)<br />';
+						}
+					}
+				}
+			}
+		}
+
+		if (!empty($error_message)) $this->errors = $error_message;
+		if (!empty($warning_message)) $this->warnings = $warning_message;
+		
+		return $error;
+	}
 
 	/**
 	 * Update object into database
