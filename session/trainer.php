@@ -58,6 +58,9 @@ if (! $res)
 			if ($formid == - 1) {
 				$formid = 0;
 			}
+			
+			$calendrier = new Agefodd_sesscalendar($db);
+			if (!empty($id)) $calendrier->fetch($id);
 
 			$delete_calsel = GETPOST('deletecalsel_x', 'alpha');
 			if (! empty($delete_calsel)) {
@@ -75,7 +78,7 @@ if (! $res)
 				$result = $agf->remove($obsid);
 
 				if ($result > 0) {
-					Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
+					Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id.'&action=edit');
 					exit();
 				} else {
 					setEventMessage($agf->error, 'errors');
@@ -110,15 +113,48 @@ if (! $res)
 
 				if ($form_add_x > 0) {
 					$agf = new Agefodd_session_formateur($db);
-
+					
 					$agf->sessid = GETPOST('sessid', 'int');
 					$agf->formid = $formid;
 					$agf->trainer_status = GETPOST('trainerstatus', 'int');
 					$agf->trainer_type = GETPOST('trainertype', 'int');
 					$result = $agf->create($user);
 
-					if ($result > 0) {
-						Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+					if ($result > 0)
+					{
+						$TSessCalendarId = GETPOST('TSessCalendarId', 'array');
+						if (!empty($TSessCalendarId))
+						{
+							foreach ($TSessCalendarId as $fk_agefodd_session_calendrier)
+							{
+								$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
+								$agefodd_sesscalendar->fetch($fk_agefodd_session_calendrier);
+								
+								$agf_cal = new Agefoddsessionformateurcalendrier($db);
+								$agf_cal->sessid = $calendrier->id;
+								$agf_cal->fk_agefodd_session_formateur = $agf->id;
+								$agf_cal->trainer_cost = 0; // price2num(GETPOST('trainer_cost', 'alpha'), 'MU');
+								$agf_cal->date_session = $agefodd_sesscalendar->date_session;
+
+								$agf_cal->heured = $agefodd_sesscalendar->heured;
+								$agf_cal->heuref = $agefodd_sesscalendar->heuref;
+
+								// Test if trainer is already book for another training
+								if ($agf_cal->checkTrainerBook($agf->formid) == 0)
+								{
+									$result = $agf_cal->create($user);
+									if ($result < 0)
+									{
+										setEventMessage($agf_cal->error, 'errors');
+									}
+								}
+
+								if (!empty($agf_cal->errors)) setEventMessage($agf_cal->errors, 'errors');
+								if (!empty($agf_cal->warnings)) setEventMessage($agf_cal->warnings, 'warnings');
+							}
+						}
+						
+						header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 						exit();
 					} else {
 						setEventMessage($agf->error, 'errors');
@@ -156,44 +192,29 @@ if (! $res)
 					}
 
 					// Test if trainer is already book for another training
-
-					$result = $agf_cal->fetch_all_by_trainer(GETPOST('trainerid', 'int'));
-					if ($result < 0) {
-						$error ++;
-						$error_message[] = $agf_cal->error;
-					}
-
-					foreach ( $agf_cal->lines as $line ) {
-						if (! empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6) {
-							if (($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) {
-								if (! empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY)) {
-									$warning_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
-								} else {
-									$error ++;
-									$error_message[] = $langs->trans('AgfTrainerlAreadybookAtThisTime') . '(<a href=' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?id=' . $line->fk_session . ' target="_blanck">' . $line->fk_session . '</a>)<br>';
-								}
-							}
-						}
-					}
-					if (! $error) {
-
+					if ($agf_cal->checkTrainerBook(GETPOST('trainerid', 'int')) == 0)
+					{
 						$result = $agf_cal->create($user);
-						if ($result < 0) {
+						if ($result < 0)
+						{
 							$error ++;
-							$error_message[] = $agf_cal->error;
+							setEventMessage($agf_cal->error, 'errors');
 						}
 					}
-
-					if (count($warning_message) > 0) {
-						setEventMessages(null, $warning_message, 'warnings');
+					else
+					{
+						$error++;
 					}
-
-					if (! $error) {
-						Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit_calendrier&id=" . $id);
-						exit();
-					} else {
-						setEventMessages(null, $error_message, 'errors');
+					
+					if (!empty($agf_cal->errors)) setEventMessage($agf_cal->errors, 'errors');
+					if (!empty($agf_cal->warnings)) setEventMessage($agf_cal->warnings, 'warnings');
+					
+					if (! $error)
+					{
+						header('Location: '. $_SERVER['PHP_SELF'] . '?action=edit_calendrier&id=' . $id);
+						exit;
 					}
+					
 				}
 
 				if (! empty($period_update)) {
@@ -404,12 +425,14 @@ if (! $res)
 				$head = session_prepare_head($agf);
 
 				dol_fiche_head($head, 'trainers', $langs->trans("AgfSessionDetail"), 0, 'group');
-
+				
+				
 				dol_agefodd_banner_tab($agf, 'action=edit&id');
-				print '<div class="underbanner clearboth"></div>';
-
-				print_barre_liste($langs->trans("AgfFormateur"), "", "", "", "", "", '', 0);
-
+				dol_fiche_end();
+				
+				print load_fiche_titre($langs->trans("AgfFormateur"), '','');
+				
+				
 				/*
 				 * Confirm delete calendar
 				 */
@@ -456,31 +479,44 @@ if (! $res)
 						print $form->formconfirm($_SERVER['PHP_SELF'] . "?opsid=" . GETPOST('opsid') . '&id=' . $id, $langs->trans("AgfDeleteForm"), $langs->trans("AgfConfirmDeleteForm"), "confirm_delete_form", '', '', 1);
 					}
 
-					print '<div class="tabBar">';
 					print '<form name="form_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '"  method="POST">' . "\n";
 					print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 					print '<input type="hidden" name="action" value="edit">' . "\n";
 					print '<input type="hidden" name="sessid" value="' . $id . '">' . "\n";
-					print '<table class="border" width="100%">';
+					
+					print '<table class="noborder" width="100%">';
 
+					print '<tr class="liste_titre">';
+					print '<th class="liste_titre">&nbsp;</th>';
+					print '<th class="liste_titre name">Nom</th>';
+					print '<th class="liste_titre status">Statut</th>';
+					if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA))
+					{
+						print '<th class="liste_titre temps_total_prog">Temps total programme</th>';
+						print '<th class="liste_titre temps_prog">Temps programme</th>';
+					}
+					print '<th class="liste_titre actions">&nbsp;</th>';
+					print '</tr>';
+					
 					// Display edit and update trainer
 					$formateurs = new Agefodd_session_formateur($db);
 					$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-					if ($nbform > 0) {
-						for($i = 0; $i < $nbform; $i ++) {
-							if ($formateurs->lines[$i]->opsid == GETPOST('opsid') && ! empty($form_remove_var))
-								print '<tr bgcolor="#d5baa8">';
-								else
-									print '<tr>';
+					if ($nbform > 0)
+					{
+						for($i = 0; $i < $nbform; $i ++)
+						{
+							if ($formateurs->lines[$i]->opsid == GETPOST('opsid') && ! empty($form_remove_var)) print '<tr class="oddeven" style="background:#d5baa8">';
+							else print '<tr class="oddeven">';
 
-									print '<td width="20px" align="center">' . ($i + 1);
-									print '<a id="anchoropsid' . $formateurs->lines[$i]->opsid . '" name="anchoropsid' . $formateurs->lines[$i]->opsid . '" href="#anchoropsid' . $formateurs->lines[$i]->opsid . '"></a>';
-									print '</td>';
+							print '<td width="20px" align="center">' . ($i + 1);
+							print '<a id="anchoropsid' . $formateurs->lines[$i]->opsid . '" name="anchoropsid' . $formateurs->lines[$i]->opsid . '" href="#anchoropsid' . $formateurs->lines[$i]->opsid . '"></a>';
+							print '</td>';
 
 									// Edit line
 
-									if ($formateurs->lines[$i]->opsid == GETPOST('opsid') && empty($form_remove_var)) {
-										print '<td width="600px" style="border-right: 0px">';
+									if ($formateurs->lines[$i]->opsid == GETPOST('opsid') && empty($form_remove_var))
+									{
+										print '<td class="name">';
 										print '<input type="hidden" name="opsid" value="' . $formateurs->lines[$i]->opsid . '">' . "\n";
 
 										$filterSQL = ' ((s.rowid NOT IN (SELECT fk_agefodd_formateur FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur WHERE fk_session=' . $id . '))';
@@ -494,33 +530,49 @@ if (! $res)
 											print '&nbsp;';
 											print $formAgefodd->select_type_formateur($formateurs->lines[$i]->trainer_type, "trainertype", ' active=1 ');
 										}
-										print '&nbsp;';
+										print '</td>';
+										
+										print '<td class="status">';
 										print $formAgefodd->select_trainer_session_status('trainerstatus', $formateurs->lines[$i]->trainer_status);
 
+										
+										print '</td>';
+										
+										if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA))
+										{
+											print '<td class="temps_total_prog">&nbsp;</td>';
+											print '<td class="temps_prog">&nbsp;</td>';
+										}
+										
+										print '<td class="actions" align="right">';
 										if ($user->rights->agefodd->modifier) {
-											print '</td><td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="form_update" alt="' . $langs->trans("Save") . '">';
+											print '<input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="form_update" alt="' . $langs->trans("Save") . '">';
 										}
 										print '</td>';
-									} else {
-										print '<td width="600px" style="border-right: 0px;">'."\n";
+									}
+									else
+									{
 										// trainer info
 										if (strtolower($formateurs->lines[$i]->lastname) == "undefined") {
-											print $langs->trans("AgfUndefinedTrainer");
+											print '<td class="name">'.$langs->trans("AgfUndefinedTrainer").'</td>';
+											print '<td class="status">&nbsp;</td>';
+											print '<td class="temps_total_prog">&nbsp;</td>';
+											print '<td class="temps_prog">&nbsp;</td>';
 										} else {
-											print '<table width="100%" class="nobordernopadding">'."\n";
-											print '<tr><td width="40%">'."\n";
-
+											print '<td class="name">'."\n";
 											print '<a href="' . dol_buildpath('/agefodd/trainer/card.php', 1) . '?id=' . $formateurs->lines[$i]->formid . '">';
 											print img_object($langs->trans("ShowContact"), "contact") . ' ';
 											print strtoupper($formateurs->lines[$i]->lastname) . ' ' . ucfirst($formateurs->lines[$i]->firstname) . '</a>'."\n";
+											
 											if (! empty($conf->global->AGF_USE_FORMATEUR_TYPE)) {
 												print '<BR>';
 												print $formateurs->lines[$i]->trainer_type_label;
 											}
-											print '<BR>'."\n";
-											print $formateurs->lines[$i]->getLibStatut(2);
-											print '</td>'."\n";
-
+											
+											print '</td>';
+											
+											print '<td class="status">'.$formateurs->lines[$i]->getLibStatut(2).'</td>';
+											
 											$totaltimetrainer = '';
 											$hourhtml = '';
 											if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
@@ -533,7 +585,6 @@ if (! $res)
 
 												if(!empty($trainer_calendar->lines)) {
 
-													$hourhtml .= '<td>'."\n";
 													$hourhtml .= '<table class="nobordernopadding">'."\n";
 													$hourhtml .= '<tr><td><table><tr>'."\n";
 													$blocNumber = count($trainer_calendar->lines);
@@ -602,20 +653,19 @@ if (! $res)
 													$rmin = sprintf("%02d", $min % 60);
 													$hour = floor($min / 60);
 
-													$totaltimetrainer = '<td>(' . $hour . ':' . $rmin . ')</td>';
+													$totaltimetrainer = '(' . $hour . ':' . $rmin . ')';
 
-													//$hourhtml .= '</td>';
-
-													print $totaltimetrainer;
-													print $hourhtml;
+//													print $totaltimetrainer;
+//													print $hourhtml;
 
 												}
-
-												print '<tr></table>';
+//
+												print '<td class="temps_total_prog">'.$totaltimetrainer.'</td>';
+												print '<td class="temps_prog">'.$hourhtml.'</td>';
 											}
 										}
-										print '</td>';
-										print '<td>';
+										
+										print '<td class="actions" align="right">';
 
 										if ($user->rights->agefodd->modifier) {
 											print '<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&amp;sessid=' . $formateurs->lines[$i]->sessid . '&amp;opsid=' . $formateurs->lines[$i]->opsid . '&amp;id=' . $id . '&amp;form_edit=1">' . img_picto($langs->trans("Edit"), 'edit') . '</a>';
@@ -626,7 +676,7 @@ if (! $res)
 										}
 										if ($user->rights->agefodd->modifier && ! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
 											print '&nbsp;';
-											print '<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit_calendrier&amp;id=' . $id . '&amp;rowf=' . $formateurs->lines[$i]->formid . '">' . img_picto($langs->trans('Time'), 'calendar') . '</a>';
+											print '<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit_calendrier&amp;id=' . $id . '&amp;rowf=' . $formateurs->lines[$i]->formid . '">' . img_picto($langs->trans('Time'), 'calendar', '', false, 0, 0, '', 'valignmiddle') . '</a>';
 										}
 										print '</td>' . "\n";
 									}
@@ -637,10 +687,10 @@ if (! $res)
 
 					// New trainers
 					if (! empty($newform_var) && ! empty($user->rights->agefodd->modifier)) {
-						print '<tr>';
+						print '<tr class="oddeven newline">';
 
 						print '<td width="20px" align="center"><a id="anchornewform" name="anchornewform"/>' . ($i + 1) . '</td>';
-						print '<td nowrap="nowrap">';
+						print '<td class="name nowrap">';
 
 						$filterSQL = 's.rowid NOT IN (SELECT fk_agefodd_formateur FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur WHERE fk_session=' . $id . ')';
 						if ($conf->global->AGF_FILTER_TRAINER_TRAINING) {
@@ -651,14 +701,48 @@ if (! $res)
 							print '&nbsp;';
 							print $formAgefodd->select_type_formateur($conf->global->AGF_DEFAULT_FORMATEUR_TYPE, "trainertype", ' active=1 ');
 						}
-						print '&nbsp;';
+						print '</td>';
+						
+						print '<td class="status">';
 						print $formAgefodd->select_trainer_session_status('trainerstatus', $formateurs->lines[$i]->trainer_status);
-						if ($user->rights->agefodd->modifier) {
-							print '</td><td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="form_add" alt="' . $langs->trans("Save") . '">';
+						print '</td>';
+						
+						if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA))
+						{
+							print '<td class="temps_total_prog">&nbsp;</td>';
+							print '<td class="temps_prog">&nbsp;</td>';
+						}
+						
+						print '<td class="actions" align="right">';
+						if ($user->rights->agefodd->modifier)
+						{
+							print '<input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="form_add" alt="' . $langs->trans("Save") . '">';
 						}
 						print '</td>';
 
 						print '</tr>' . "\n";
+						
+						print '<tr class="">';
+						$colspan = 3; //  name / status / actions
+						if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) $colspan+= 2; // temps_total_prog / temps_prog
+						
+						print '<td>&nbsp;</td>';
+						print '<td colspan="'.$colspan.'">';
+						
+						if ($calendrier->fetch_all($calendrier->id) > 0)
+						{
+							print '<ul class="nocellnopadd">'; //tmenu / nocellnopadd
+							foreach ($calendrier->lines as &$agefodd_sesscalendar)
+							{
+								print '<li><input type="checkbox" name="TSessCalendarId[]" value="'.$agefodd_sesscalendar->id.'"> '.dol_print_date($agefodd_sesscalendar->date_session, 'daytext').' ['.dol_print_date($agefodd_sesscalendar->heured, 'hour') . ' - ' . dol_print_date($agefodd_sesscalendar->heuref, 'hour').']</li>';
+							}
+							print '</ul>';
+						}
+						
+						print '</td>';
+						
+						print '</tr>';
+						
 					}
 
 					print '</table>';
@@ -680,17 +764,24 @@ if (! $res)
 						print '</td></tr>';
 						print '</table>';
 					}*/
-					print '</div>';
+					
 				} else {
 					// Display view mode
-					print '&nbsp;';
+					print '<table class="noborder" width="100%">';
+
+					print '<tr class="liste_titre">';
+					print '<th class="liste_titre name">Nom</th>';
+					print '<th class="liste_titre status">Statut</th>';
+					if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA))
+					{
+						print '<th class="liste_titre temps_total_prog">&nbsp;</th>';
+						print '<th class="liste_titre temps_total">&nbsp;</th>';
+					}
+					print '</tr>';
 
 					$formateurs = new Agefodd_session_formateur($db);
 					$nbform = $formateurs->fetch_formateur_per_session($agf->id);
-					print $langs->trans("AgfFormateur");
-					if ($nbform > 0)
-						print ' (' . $nbform . ')';
-
+					
 						if ($nbform < 1) {
 							print '<td style="text-decoration: blink;"><BR><BR>' . $langs->trans("AgfNobody") . '</td></tr>';
 							print '<table style="border:0;" width="100%">';
@@ -703,21 +794,26 @@ if (! $res)
 							print '</form></td></tr>';
 							print '</table>';
 						} else {
-							print '<table class="border" width="100%">';
+//							print '<table class="border" width="100%">';
 
-							for($i = 0; $i < $nbform; $i ++) {
-								print '<tr><td width="20%" valign="top">';
-								// Trainers info
+							for($i = 0; $i < $nbform; $i ++)
+							{
+								print '<tr class="oddeven">';
+								
+								// Trainer name
+								print '<td class="name">';
 								print '<a id="anchoropsid' . $formateurs->lines[$i]->opsid . '" name="anchoropsid' . $formateurs->lines[$i]->opsid . '" href="#anchoropsid' . $formateurs->lines[$i]->opsid . '"></a>';
 								print '<a id="anchorrowf' . $formateurs->lines[$i]->formid . '" name="anchorrowf' . $formateurs->lines[$i]->formid . '" href="#anchorrowf' . $formateurs->lines[$i]->formid . '"></a>';
 								print '<a href="' . dol_buildpath('/agefodd/trainer/card.php', 1) . '?id=' . $formateurs->lines[$i]->formid . '">';
 								print img_object($langs->trans("ShowContact"), "contact") . ' ';
 								print strtoupper($formateurs->lines[$i]->lastname) . ' ' . ucfirst($formateurs->lines[$i]->firstname) . '</a>';
-								print '&nbsp;';
-								print $formateurs->lines[$i]->getLibStatut(2);
-
+								print '</td>';
+								
+								// Trainer status
+								print '<td class="status">'.$formateurs->lines[$i]->getLibStatut(2).'</td>';
+								
 								if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
-									print '&nbsp;';
+									print '<td class="temps_total_prog">';
 									// Calculate time past in session
 									$trainer_calendar = new Agefoddsessionformateurcalendrier($db);
 									$result = $trainer_calendar->fetch_all($formateurs->lines[$i]->opsid);
@@ -733,21 +829,24 @@ if (! $res)
 									$hour = floor($min / 60);
 
 									print '(' . $hour . ':' . $rmin . ')';
+									print '</td>';
 								}
-								print '</td>';
-
-								if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
+								
+								print '<td class="edit_agenda">';
+								if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA))
+								{
 									/* Time management */
 									$calendrier = new Agefoddsessionformateurcalendrier($db);
 									$calendrier->fetch_all($formateurs->lines[$i]->opsid);
 									$blocNumber = count($calendrier->lines);
 
-									if ($blocNumber < 1 && ! (empty($newperiod))) {
-
+									if ($blocNumber < 1 && ! (empty($newperiod)))
+									{
 										print '<span style="color:red;">' . $langs->trans("AgfNoCalendar") . '</span>';
-									} else {
-										print '<td>';
-
+									}
+									else
+									{
+//										print '<td>';
 										print '<form name="trainer_calendrier_update" action="' . $_SERVER['PHP_SELF'] . '?id=' . $id . '"  method="POST">' . "\n";
 										print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 										print '<input type="hidden" name="sessid" value="' . $id . '">' . "\n";
@@ -772,75 +871,74 @@ if (! $res)
 
 										$old_date = 0;
 										$duree = 0;
-										for($j = 0; $j < $blocNumber; $j ++) {
-											if ($calendrier->lines[$j]->id == GETPOST('modperiod') && ! empty($period_remove))
-												print '<tr bgcolor="#d5baa8">' . "\n";
-												else
-													print '<tr>' . "\n";
+										for($j = 0; $j < $blocNumber; $j ++)
+										{
+											if ($calendrier->lines[$j]->id == GETPOST('modperiod') && ! empty($period_remove)) print '<tr bgcolor="#d5baa8">' . "\n";
+											else print '<tr>' . "\n";
 
-													if ($calendrier->lines[$j]->id == GETPOST('modperiod') && empty($period_remove)) {
-														// Delete select case not display here
-														print '<td></td>' . "\n";
+											if ($calendrier->lines[$j]->id == GETPOST('modperiod') && empty($period_remove)) {
+												// Delete select case not display here
+												print '<td></td>' . "\n";
 
-														print '<td  width="20%">' . $langs->trans("AgfPeriodDate") . ' ' . "\n";
-														$form->select_date($calendrier->lines[$j]->date_session, 'date', '', '', '', 'obj_update_' . $j);
+												print '<td  width="20%">' . $langs->trans("AgfPeriodDate") . ' ' . "\n";
+												$form->select_date($calendrier->lines[$j]->date_session, 'date', '', '', '', 'obj_update_' . $j);
 
-														print '<input type="hidden" name="action" value="edit_calendrier">' . "\n";
-														print '<input type="hidden" name="fk_agefodd_session_formateur" value="' . $formateurs->lines[$i]->opsid . '">' . "\n";
-														print '<input type="hidden" name="periodid" value="' . $calendrier->lines[$j]->stagerowid . '">' . "\n";
-														print '<input type="hidden" name="trainerid" value="' . $formateurs->lines[$i]->formid . '">' . "\n";
-														print '<input type="hidden" name="modperiod" value="' . $calendrier->lines[$j]->id . '">' . "\n";
+												print '<input type="hidden" name="action" value="edit_calendrier">' . "\n";
+												print '<input type="hidden" name="fk_agefodd_session_formateur" value="' . $formateurs->lines[$i]->opsid . '">' . "\n";
+												print '<input type="hidden" name="periodid" value="' . $calendrier->lines[$j]->stagerowid . '">' . "\n";
+												print '<input type="hidden" name="trainerid" value="' . $formateurs->lines[$i]->formid . '">' . "\n";
+												print '<input type="hidden" name="modperiod" value="' . $calendrier->lines[$j]->id . '">' . "\n";
 
-														print '</td>' . "\n";
-														print '<td width="40%;" >' . $langs->trans("AgfPeriodTimeB") . ' ' . "\n";
-														print $formAgefodd->select_time(dol_print_date($calendrier->lines[$j]->heured, 'hour'), 'dated');
-														print ' - ' . $langs->trans("AgfPeriodTimeE") . ' ';
-														print $formAgefodd->select_time(dol_print_date($calendrier->lines[$j]->heuref, 'hour'), 'datef');
-														print '</td>' . "\n";
+												print '</td>' . "\n";
+												print '<td width="40%;" >' . $langs->trans("AgfPeriodTimeB") . ' ' . "\n";
+												print $formAgefodd->select_time(dol_print_date($calendrier->lines[$j]->heured, 'hour'), 'dated');
+												print ' - ' . $langs->trans("AgfPeriodTimeE") . ' ';
+												print $formAgefodd->select_time(dol_print_date($calendrier->lines[$j]->heuref, 'hour'), 'datef');
+												print '</td>' . "\n";
 
-														// Trainer cost is fully managed into cost management not here
-														if (empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
-															// Coût horaire
-															print '<td width="20%"> <input type="text" size="10" name="trainer_cost" value="' . price($calendrier->lines[$i]->trainer_cost) . '"/>' . $langs->getCurrencySymbol($conf->currency) . '</td>' . "\n";
-														}
-														if ($user->rights->agefodd->modifier) {
-															print '<td width="30%;"><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="period_update" alt="' . $langs->trans("Save") . '"></td>' . "\n";
-														}
-													} else {
-														print '<td width="1%;">';
-														if ($user->rights->agefodd->modifier) {
-															print '<input type="checkbox" name="deleteselcal[]" value="' . $calendrier->lines[$j]->id . '"/>';
-														}
-														print '</td>' . "\n";
-														print '<td width="20%">' . dol_print_date($calendrier->lines[$j]->date_session, 'daytext') . '</td>' . "\n";
-														print '<td  width="40%">' . dol_print_date($calendrier->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$j]->heuref, 'hour');
-														print '</td>';
+												// Trainer cost is fully managed into cost management not here
+												if (empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
+													// Coût horaire
+													print '<td width="20%"> <input type="text" size="10" name="trainer_cost" value="' . price($calendrier->lines[$i]->trainer_cost) . '"/>' . $langs->getCurrencySymbol($conf->currency) . '</td>' . "\n";
+												}
+												if ($user->rights->agefodd->modifier) {
+													print '<td width="30%;"><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="period_update" alt="' . $langs->trans("Save") . '"></td>' . "\n";
+												}
+											} else {
+												print '<td width="1%;">';
+												if ($user->rights->agefodd->modifier) {
+													print '<input type="checkbox" name="deleteselcal[]" value="' . $calendrier->lines[$j]->id . '"/>';
+												}
+												print '</td>' . "\n";
+												print '<td width="20%">' . dol_print_date($calendrier->lines[$j]->date_session, 'daytext') . '</td>' . "\n";
+												print '<td  width="40%">' . dol_print_date($calendrier->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$j]->heuref, 'hour');
+												print '</td>';
 
-														// Trainer cost is fully managed into cost management not here
-														if (empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
-															// Coût horaire
-															print '<td>' . price($calendrier->lines[$j]->trainer_cost, 0, $langs) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>' . "\n";
-														}
+												// Trainer cost is fully managed into cost management not here
+												if (empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
+													// Coût horaire
+													print '<td>' . price($calendrier->lines[$j]->trainer_cost, 0, $langs) . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td>' . "\n";
+												}
 
-														print '<td width="30%;">';
-														if ($user->rights->agefodd->modifier) {
-															print
-															'<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit_calendrier&amp;sessid=' . $id . '&amp;modperiod=' . $calendrier->lines[$j]->id . '&amp;trainerid=' . $formateurs->lines[$i]->formid . '&amp;id=' . $id . '&amp;period_edit=1">' . img_picto(
-																	$langs->trans("Edit"), 'edit') . '</a>' . "\n";
-														}
-														print '&nbsp;';
-														if ($user->rights->agefodd->modifier) {
-															print
-															'<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit_calendrier&amp;sessid=' . $id . '&amp;modperiod=' . $calendrier->lines[$j]->id . '&amp;trainerid=' . $formateurs->lines[$i]->formid . '&amp;id=' . $id . '&amp;period_remove=1">' . img_picto(
-																	$langs->trans("Delete"), 'delete') . '</a>' . "\n";
-														}
-														print '</td>' . "\n";
-													}
+												print '<td width="30%;">';
+												if ($user->rights->agefodd->modifier) {
+													print
+													'<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit_calendrier&amp;sessid=' . $id . '&amp;modperiod=' . $calendrier->lines[$j]->id . '&amp;trainerid=' . $formateurs->lines[$i]->formid . '&amp;id=' . $id . '&amp;period_edit=1">' . img_picto(
+															$langs->trans("Edit"), 'edit') . '</a>' . "\n";
+												}
+												print '&nbsp;';
+												if ($user->rights->agefodd->creer) {
+													print
+													'<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit_calendrier&amp;sessid=' . $id . '&amp;modperiod=' . $calendrier->lines[$j]->id . '&amp;trainerid=' . $formateurs->lines[$i]->formid . '&amp;id=' . $id . '&amp;period_remove=1">' . img_picto(
+															$langs->trans("Delete"), 'delete') . '</a>' . "\n";
+												}
+												print '</td>' . "\n";
+											}
 
-													// We calculated the total session duration time
-													$duree += ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured);
+											// We calculated the total session duration time
+											$duree += ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured);
 
-													print '</tr>' . "\n";
+											print '</tr>' . "\n";
 										}
 
 										// Fiels for new periodes
@@ -885,8 +983,8 @@ if (! $res)
 												}
 
 												print '</tr>' . "\n";
-
-												print '<tr><td colspan="4"><a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '">' . $langs->trans('Cancel') . '</a></td></tr>';
+												// TODO remove cancel link => useless
+												//print '<tr><td colspan="4"><a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '">' . $langs->trans('Cancel') . '</a></td></tr>';
 												print '<tr><td colspan="4"><input class="button" type="submit" value="' . $langs->trans('AgfEraseWithSessionCalendar') . '" name="copysessioncalendar"></td></tr>' . "\n";
 											} else {
 												print '<tr><td colspan="4"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit_calendrier&amp;id=' . $agf->id . '&amp;rowf=' . $formateurs->lines[$i]->formid . '">' . "\n";
@@ -896,9 +994,11 @@ if (! $res)
 										}
 										print '</table>' . "\n";
 										print '</form>' . "\n";
-										print '</td>' . "\n";
+//										print '</td>' . "\n";
 									}
 								}
+								print '</td>';
+								
 								print "</tr>\n";
 							}
 						}
@@ -913,10 +1013,10 @@ if (! $res)
 			 */
 
 			print '<div class="tabsAction">';
-
+            
 			if ($action != 'create' && $action != 'edit' && (! empty($agf->id)) && $nbform >= 1) {
 				if ($user->rights->agefodd->modifier) {
-					print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '">' . $langs->trans('Modify') . '</a>';
+					print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '">' . $langs->trans('Cancel') . '</a>';
 				} else {
 					print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
 				}
