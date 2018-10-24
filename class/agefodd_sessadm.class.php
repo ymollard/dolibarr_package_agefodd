@@ -81,17 +81,19 @@ class Agefodd_sessadm extends CommonObject {
 
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_adminsitu (";
-		$sql .= "fk_agefodd_session_admlevel, fk_agefodd_session, intitule, delais_alerte, ";
-		$sql .= "indice, level_rank, fk_parent_level, dated, datef, datea, notes,archive,fk_user_author,fk_user_mod, datec";
+		$sql .= "fk_agefodd_session_admlevel, fk_agefodd_session, intitule, delais_alerte";
+		$sql .= ", delais_alerte_end";
+		$sql .= ",indice, level_rank, fk_parent_level, dated, datef, datea, notes,archive,fk_user_author,fk_user_mod, datec";
 		$sql .= ",trigger_name";
 		$sql .= ") VALUES (";
-		$sql .= "'" . $this->fk_agefodd_session_admlevel . "', ";
-		$sql .= "'" . $this->fk_agefodd_session . "', ";
+		$sql .= $this->fk_agefodd_session_admlevel . ", ";
+		$sql .= $this->fk_agefodd_session . ", ";
 		$sql .= "'" . $this->intitule . "', ";
-		$sql .= "'" . $this->delais_alerte . "', ";
-		$sql .= "'" . $this->indice . "', ";
-		$sql .= "'" . $this->level_rank . "', ";
-		$sql .= "'" . $this->fk_parent_level . "', ";
+		$sql .= $this->delais_alerte . ", ";
+		$sql .= $this->delais_alerte_end . ", ";
+		$sql .= $this->indice . ", ";
+		$sql .= $this->level_rank . ", ";
+		$sql .= $this->fk_parent_level . ", ";
 		$sql .= " " . (! isset($this->dated) || dol_strlen($this->dated) == 0 ? 'NULL' : "'" . $this->db->idate($this->dated) . "'") . ",";
 		$sql .= " " . (! isset($this->datef) || dol_strlen($this->datef) == 0 ? 'NULL' : "'" . $this->db->idate($this->datef) . "'") . ",";
 		$sql .= " " . (! isset($this->datea) || dol_strlen($this->datea) == 0 ? 'NULL' : "'" . $this->db->idate($this->datea) . "'") . ",";
@@ -165,7 +167,8 @@ class Agefodd_sessadm extends CommonObject {
 		if (! isset($this->archive))
 			$this->archive = 0;
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_adminsitu SET";
-		$sql .= " delais_alerte='" . $this->delais_alerte . "',";
+		$sql .= " delais_alerte=" . $this->delais_alerte . ",";
+		$sql .= " delais_alerte_end=" . $this->delais_alerte_end . ",";
 		$sql .= " dated=" . (! isset($this->dated) || dol_strlen($this->dated) == 0 ? 'NULL' : "'" . $this->db->idate($this->dated) . "'") . ",";
 		$sql .= " datef=" . (! isset($this->datef) || dol_strlen($this->datef) == 0 ? 'NULL' : "'" . $this->db->idate($this->datef) . "'") . ",";
 		$sql .= " datea=" . (! isset($this->datea) || dol_strlen($this->datea) == 0 ? 'NULL' : "'" . $this->db->idate($this->datea) . "'") . ",";
@@ -228,6 +231,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
 		$sql .= ',s.fk_user_mod,s.trigger_name';
+		$sql .= ',s.delais_alerte_end';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
 		$sql .= " WHERE s.rowid = '" . $id . "'";
 
@@ -244,6 +248,7 @@ class Agefodd_sessadm extends CommonObject {
 				$this->level_rank = $obj->level_rank;
 				$this->fk_parent_level = $obj->fk_parent_level;
 				$this->delais_alerte = $obj->delais_alerte;
+				$this->delais_alerte_end = $obj->delais_alerte_end;
 				$this->dated = $this->db->jdate($obj->dated);
 				$this->datef = $this->db->jdate($obj->datef);
 				$this->datea = $this->db->jdate($obj->datea);
@@ -271,12 +276,11 @@ class Agefodd_sessadm extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule, l.delais_alerte_end,";
+		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule, s.delais_alerte_end,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
 		$sql .= ',s.fk_user_mod,s.trigger_name';
+		$sql .= ', s.delais_alerte_end';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_training_admlevel as t ON s.fk_agefodd_session_admlevel=t.rowid";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_admlevel as l ON t.fk_agefodd_training_admlevel=l.rowid";
 		$sql .= " WHERE s.fk_agefodd_session = " . $sess_id;
 		$sql .= " ORDER BY s.indice";
 
@@ -616,6 +620,7 @@ class AgfSessAdm {
 	public $level_rank;
 	public $fk_parent_level;
 	public $delais_alerte;
+	public $delais_alerte_end;
 	public $dated;
 	public $datef;
 	public $datea;

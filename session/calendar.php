@@ -81,7 +81,7 @@ if (! empty($delete_calsel)) {
  * Actions delete period
  */
 
-if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->agefodd->creer) {
+if ($action == 'confirm_delete_period' && $confirm == "yes" && !empty($user->rights->agefodd->modifier)) {
 
 	$agf = new Agefodd_sesscalendar($db);
 	$result = $agf->remove($modperiod);
@@ -102,7 +102,7 @@ if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->ag
 	}
 }
 
-if ($action == 'confirm_delete_period_all' && $confirm == "yes" && $user->rights->agefodd->creer) {
+if ($action == 'confirm_delete_period_all' && $confirm == "yes" && !empty($user->rights->agefodd->modifier)) {
 
 	$agf = new Agefodd_sesscalendar($db);
 	$result = $agf->fetch_all($id);
@@ -138,7 +138,7 @@ if ($action == 'confirm_delete_period_all' && $confirm == "yes" && $user->rights
  * - Calendar update
  * - trainer update
  */
-if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
+if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 
 	if (! empty($period_update)) {
 
@@ -329,7 +329,7 @@ if ($action == 'edit' && ($user->rights->agefodd->creer || $user->rights->agefod
 	}
 }
 
-if ($action == 'delete_calsel' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
+if ($action == 'delete_calsel' && !empty($user->rights->agefodd->modifier)) {
 	$deleteselcal = GETPOST('deleteselcal', 'array');
 	if (count($deleteselcal) > 0) {
 		foreach ( $deleteselcal as $lineid ) {
@@ -347,7 +347,7 @@ if ($action == 'delete_calsel' && ($user->rights->agefodd->creer || $user->right
 	}
 }
 
-if ($action=='setdates' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && !empty($id)) {
+if ($action=='setdates' && !empty($user->rights->agefodd->modifier) && !empty($id)) {
 
 	$agf = new Agsession($db);
 	$result = $agf->fetch($id);
@@ -404,8 +404,9 @@ if ($id) {
 			dol_fiche_head($head, 'calendar', $langs->trans("AgfSessionDetail"), 0, 'calendarday');
 
 			dol_agefodd_banner_tab($agf, 'id');
-			print '<div class="underbanner clearboth"></div>';
+//			print '<div class="underbanner clearboth"></div>';
 
+			dol_fiche_end();
 			/*
 			 * Calendar management
 			 */
@@ -428,7 +429,8 @@ if ($id) {
 			print '</td></tr>';
 			print '</table>';
 			print '</form>';
-
+			print '<br /><br />';
+			
 			/*
 			 * Confirm delete calendar
 			 */
@@ -440,7 +442,7 @@ if ($id) {
 				// Param url = id de la periode à supprimer - id session
 				print $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("AgfAllDeletePeriod"), $langs->trans("AgfConfirmAllDeletePeriod"), "confirm_delete_period_all", '', '', 1);
 			}
-			print '<div class="tabBar">';
+			print '<div class="">';
 			print '<form name="obj_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
 			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 			print '<input type="hidden" name="action" value="edit">' . "\n";
@@ -470,7 +472,7 @@ if ($id) {
 
 			for($i = 0; $i < $blocNumber; $i ++) {
 				if ($calendrier->lines[$i]->id == $modperiod && ! empty($period_remove))
-					print '<tr bgcolor="#d5baa8">' . "\n";
+					print '<tr style="background:#d5baa8">' . "\n";
 				else
 					print '<tr>' . "\n";
 
@@ -489,7 +491,7 @@ if ($id) {
 
 					print '<td>'.$formAgefodd->select_calendrier_type($calendrier->lines[$i]->calendrier_type).'</td>';
 
-					if ($user->rights->agefodd->modifier)
+					if (!empty($user->rights->agefodd->modifier))
 					{
 						print '<td class="linecoledit center">';
 						print '<input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" align="absmiddle" name="period_update" alt="' . $langs->trans("AgfModSave") . '">';
@@ -504,7 +506,7 @@ if ($id) {
 					print '<td width="20%">' . dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td>';
 					print '<td  width="150px">' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour').'</td>';						
 					print '<td>'.$calendrier->lines[$i]->calendrier_type_label.'</td>';
-					if ($user->rights->agefodd->modifier)
+					if (!empty($user->rights->agefodd->modifier))
 					{
 						print '<td class="linecoledit center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modperiod=' . $calendrier->lines[$i]->id . '&anchor=period">' . img_picto($langs->trans("Save"), 'edit') . '</a></td>';
 						print '<td class="linecoldelete center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&period_remove=1&modperiod=' . $calendrier->lines[$i]->id . '">' . img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
@@ -728,7 +730,7 @@ if ($id) {
 
 			print '</table>';
 
-			if ($user->rights->agefodd->creer)
+			if (!empty($user->rights->agefodd->creer))
 			{
 				print '<div class="tabsAction">';
 				print '<div class="inline-block divButAction">';

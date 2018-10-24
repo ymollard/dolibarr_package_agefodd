@@ -68,7 +68,7 @@ if (! $res)
 			 * Actions delete formateur
 			 */
 
-			if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agefodd->creer) {
+			if ($action == 'confirm_delete_form' && $confirm == "yes" && $user->rights->agefodd->modifier) {
 				$obsid = GETPOST('opsid', 'int');
 
 				$agf = new Agefodd_session_formateur($db);
@@ -82,7 +82,7 @@ if (! $res)
 				}
 			}
 
-			if ($action == 'edit' && $user->rights->agefodd->creer) {
+			if ($action == 'edit' && $user->rights->agefodd->modifier) {
 
 				if (empty($formid) && ($form_update_x > 0 || $form_add_x > 0)) {
 					setEventMessage($langs->trans('ErrorFieldRequired', $langs->trans('AgfFormateur')), 'errors');
@@ -126,7 +126,7 @@ if (! $res)
 				}
 			}
 
-			if ($action == 'edit_calendrier' && $user->rights->agefodd->creer) {
+			if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 
 				if (! empty($period_add)) {
 					$error = 0;
@@ -374,7 +374,7 @@ if (! $res)
 			 * Actions delete period
 			 */
 
-			if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->agefodd->creer) {
+			if ($action == 'confirm_delete_period' && $confirm == "yes" && $user->rights->agefodd->modifier) {
 				$modperiod = GETPOST('modperiod', 'int');
 
 				$agf = new Agefoddsessionformateurcalendrier($db);
@@ -407,7 +407,7 @@ if (! $res)
 
 				dol_agefodd_banner_tab($agf, 'action=edit&id');
 				print '<div class="underbanner clearboth"></div>';
-				
+
 				print_barre_liste($langs->trans("AgfFormateur"), "", "", "", "", "", '', 0);
 
 				/*
@@ -829,7 +829,7 @@ if (! $res)
 																	$langs->trans("Edit"), 'edit') . '</a>' . "\n";
 														}
 														print '&nbsp;';
-														if ($user->rights->agefodd->creer) {
+														if ($user->rights->agefodd->modifier) {
 															print
 															'<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit_calendrier&amp;sessid=' . $id . '&amp;modperiod=' . $calendrier->lines[$j]->id . '&amp;trainerid=' . $formateurs->lines[$i]->formid . '&amp;id=' . $id . '&amp;period_remove=1">' . img_picto(
 																	$langs->trans("Delete"), 'delete') . '</a>' . "\n";
@@ -913,28 +913,28 @@ if (! $res)
 			 */
 
 			print '<div class="tabsAction">';
-            
+
 			if ($action != 'create' && $action != 'edit' && (! empty($agf->id)) && $nbform >= 1) {
-				if ($user->rights->agefodd->creer) {
+				if ($user->rights->agefodd->modifier) {
 					print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '">' . $langs->trans('Modify') . '</a>';
 				} else {
 					print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
 				}
 
-				if ($user->rights->agefodd->creer) {
+				if ($user->rights->agefodd->modifier) {
 					print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&action=presend_trainer_doc&mode=init">' . $langs->trans('AgfSendDocuments') . '</a>';
 				} else {
 					print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfSendDocuments') . '</a>';
 				}
 			}
 			if ($action == 'edit' && $newform_var < 1){
-                if ($user->rights->agefodd->creer) {
+				if ($user->rights->agefodd->modifier) {
                     print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '&newform=1">' . $langs->trans("AgfFormateurAdd") . '</a>';
                 } else {
                     print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
                 }
-                
-                if ($user->rights->agefodd->creer) {
+
+                if ($user->rights->agefodd->modifier) {
                     print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&action=presend_trainer_doc&mode=init">' . $langs->trans('AgfSendDocuments') . '</a>';
                 } else {
                     print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfSendDocuments') . '</a>';
