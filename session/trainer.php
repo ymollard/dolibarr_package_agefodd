@@ -726,7 +726,7 @@ if (! $res)
 						$colspan = 3; //  name / status / actions
 						if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) $colspan+= 2; // temps_total_prog / temps_prog
 						
-						print '<td>&nbsp;</td>';
+						print '<td><input type="checkbox" onclick="$(\'input[name^=TSessCalendarId\').prop(\'checked\', this.checked)" /></td>';
 						print '<td colspan="'.$colspan.'">';
 						
 						if ($calendrier->fetch_all($calendrier->id) > 0)
