@@ -148,6 +148,46 @@ class Agefodd_teacher extends CommonObject {
 	}
 
 	/**
+	 * Load object in memory from user object
+	 *
+	 * @param object $user user object
+	 * @return int <0 if KO, >0 if OK
+	 */
+	public function fetchByUser($user) {
+		global $conf;
+		
+		$error = 0;
+		
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formateur';
+		if (!empty($user->contactid)) $sql.= ' WHERE fk_socpeople = '.$user->contactid.' AND type_trainer = \'socpeople\'';
+		else $sql.= ' WHERE fk_user = '.$user->id.' AND type_trainer = \'user\'';
+		$sql.= ' AND entity = '.$conf->entity;
+		
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if ($this->db->num_rows($resql)) {
+				$obj = $this->db->fetch_object($resql);
+				$res = $this->fetch($obj->rowid);
+				if ($res < 0) return $res;
+			} else return 0;
+			$this->db->free($resql);
+		} else {
+			$this->errors[] = "Error " . $this->db->lasterror();
+			$error++;
+		}
+		
+		if (empty($error)) {
+			return 1;
+		} else {
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog(get_class($this) . "::" . __METHOD__ . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			return - 1 * $error;
+		}
+	}
+	
+	/**
 	 * Load object in memory from database
 	 *
 	 * @param int $id object

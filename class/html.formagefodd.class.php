@@ -1332,11 +1332,11 @@ class FormAgefodd extends Form
 	 * @param string $htmlname nom du control HTML
 	 * @return string The HTML control
 	 */
-	public function select_time($selectval = '', $htmlname = 'period', $enabled = 1) {
+	public function select_time($selectval = '', $htmlname = 'period', $enabled = 1, $with_empty=true, $more_class='') {
 		$time = 5;
 		$heuref = 23;
 		$min = 0;
-		$options = '<option value=""></option>' . "\n";
+		if ($with_empty) $options = '<option value=""></option>' . "\n";
 		while ( $time < $heuref ) {
 			if ($min == 60) {
 				$min = 0;
@@ -1358,7 +1358,7 @@ class FormAgefodd extends Form
 			$disabled = '';
 		}
 
-		return '<select class="flat" ' . $disabled . ' name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
+		return '<select class="flat '.$more_class.'" ' . $disabled . ' name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
 	}
 
 	/**
@@ -2005,6 +2005,42 @@ class FormAgefodd extends Form
 		}
 
 		return $this->selectMassAction('', $TStatut);
+	}
+
+	/**
+	 * Permet de retourner un select html du dictionnaire llx_c_session_calendrier_type
+	 * 
+	 * @global type $conf
+	 * @param type $selected
+	 * @param type $htmlname
+	 * @param type $emptyvalue
+	 * @return string
+	 */
+	public function select_calendrier_type($selected='', $htmlname='code_c_session_calendrier_type', $emptyvalue=true, $moreattr='', $more_class='')
+	{
+		global $conf;
+		
+		$out = '<select class="flat select_calendrier_type '.$more_class.'" name="'.$htmlname.'" '.$moreattr.'>';
+		if ($emptyvalue) $out.= '<option value=""></options>';
+		
+		// TODO optimisation possible en stockant dans un attribut les codes lors d'un premier passage
+		$sql = 'SELECT code, label FROM '.MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type WHERE active = 1 AND entity = '.$conf->entity;
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			while ($obj = $this->db->fetch_object($resql))
+			{
+				$out.= '<option value="'.$obj->code.'" '.($selected == $obj->code ? 'selected' : '').'>'.$obj->label.'</options>';
+			}
+		}
+		else
+		{
+			dol_print_error($this->db);
+		}
+		
+		$out.= '</select>';
+		
+		return $out;
 	}
 
 	/**

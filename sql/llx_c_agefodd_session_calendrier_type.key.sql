@@ -1,7 +1,5 @@
 -- ============================================================================
--- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
--- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
--- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+-- Copyright (C) 2018	Pierre-Henry Favre	<phf@atm-consulting.fr>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,21 +16,7 @@
 -- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --
 -- ============================================================================
---
--- Structure de la table llx_agefodd_session_calendrier
---
-CREATE TABLE IF NOT EXISTS llx_agefodd_session_calendrier (
-  rowid integer NOT NULL auto_increment PRIMARY KEY,
-  fk_agefodd_session integer NOT NULL,
-  date_session date NOT NULL,
-  heured datetime NOT NULL,
-  heuref datetime NOT NULL,
-  fk_actioncomm int DEFAULT NULL,
-  fk_user_author integer NOT NULL,
-  datec datetime NOT NULL,
-  fk_user_mod integer NOT NULL,
-  tms timestamp NOT NULL
-) ENGINE=InnoDB;
 
-ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN calendrier_type varchar(15);
-ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN status integer DEFAULT 0;
+ALTER TABLE llx_c_agefodd_session_calendrier_type ADD INDEX ik_c_agefodd_session_calendrier_type(code);
+ALTER TABLE llx_c_agefodd_session_calendrier_type ADD UNIQUE uk_c_agefodd_session_calendrier_type(code, entity);
+

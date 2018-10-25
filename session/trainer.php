@@ -315,7 +315,7 @@ if (! $res)
 					// Create as many as session caldendar
 					$agf_session_cal = new Agefodd_sesscalendar($db);
 					$agf_session_cal->fetch_all($id);
-					if (is_array($agf_session_cal->lines) && count($agf_session_cal) > 0) {
+					if (is_array($agf_session_cal->lines) && count($agf_session_cal->lines) > 0) {
 						foreach ( $agf_session_cal->lines as $line ) {
 
 							$agf_cal = new Agefoddsessionformateurcalendrier($db);
@@ -360,7 +360,7 @@ if (! $res)
 						}
 					}
 
-					if (count($warning_message) > 0) {
+					if (!empty($warning_message)) {
 						setEventMessages(null, $warning_message, 'warnings');
 					}
 

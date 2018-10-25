@@ -109,7 +109,9 @@ class modAgefodd extends DolibarrModules
 						'invoicesuppliercard',
 						'admin',
 						'emailtemplates',
-						'upgrade'
+						'upgrade',
+						'externalaccesspage',
+						'externalaccessinterface'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
 				'models' => 1
@@ -689,7 +691,8 @@ class modAgefodd extends DolibarrModules
 						MAIN_DB_PREFIX . "agefodd_certificate_type",
 						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type",
 						MAIN_DB_PREFIX . "agefodd_formateur_category_dict",
-						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf"
+						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf",
+						MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type'
 				),
 				'tablib' => array(
 						"AgfTraineeType",
@@ -697,7 +700,8 @@ class modAgefodd extends DolibarrModules
 						"AgfCertificateType",
 						"AgfTrainingCategTbl",
 						"AgfTrainerCategoryDict",
-						"AgfTrainingCategTblBPF"
+						"AgfTrainingCategTblBPF",
+						"AgfSessionCreneauType"
 				),
 				'tabsql' => array(
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as f',
@@ -705,7 +709,8 @@ class modAgefodd extends DolibarrModules
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_certificate_type as f',
 						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f',
 						'SELECT f.rowid as rowid, f.code, f.label, f.description, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_category_dict as f',
-						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f'
+						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f',
+						'SELECT f.rowid as rowid, f.code, f.label, f.entity, f.active FROM ' . MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type as f WHERE entity = '.$conf->entity
 				),
 				'tabsqlsort' => array(
 						'sort ASC',
@@ -713,7 +718,8 @@ class modAgefodd extends DolibarrModules
 						'sort ASC',
 						'sort ASC',
 						'code ASC',
-						'sort ASC'
+						'sort ASC',
+						'label, code ASC'
 				),
 				'tabfield' => array(
 						"intitule,sort",
@@ -721,7 +727,8 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label"
 				),
 				'tabfieldvalue' => array(
 						"intitule,sort",
@@ -729,7 +736,8 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label"
 				),
 				'tabfieldinsert' => array(
 						"intitule,sort",
@@ -737,9 +745,11 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label,entity"
 				),
 				'tabrowid' => array(
+						"rowid",
 						"rowid",
 						"rowid",
 						"rowid",
@@ -748,6 +758,7 @@ class modAgefodd extends DolibarrModules
 						"rowid"
 				),
 				'tabcond' => array(
+						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
@@ -2299,7 +2310,7 @@ class modAgefodd extends DolibarrModules
 		);
 
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array(
 		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
 		    'type' => 'left',
 		    'titre' => 'AgfMenuReportCA',
@@ -2545,7 +2556,7 @@ class modAgefodd extends DolibarrModules
 					}
 					closedir($handle);
 				}
-
+				
 				if (!empty($filetorun) && is_array($filetorun) && count($filetorun)>0) {
 
 					//Sort file array to be sure data is upgrade script are executed in correct order

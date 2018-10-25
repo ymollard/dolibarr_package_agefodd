@@ -153,6 +153,14 @@ function session_prepare_head($object, $showconv = 0) {
 	$head [$h] [1] = $langs->trans("AgfCalendrier");
 	$head [$h] [2] = 'calendar';
 	$h ++;
+	
+	if (!empty($conf->fullcalendarscheduler->enabled))
+	{
+		$head [$h] [0] = dol_buildpath('/agefodd/session/scheduler.php', 1) . '?id=' . $id;
+		$head [$h] [1] = $langs->trans("AgfScheduler");
+		$head [$h] [2] = 'scheduler';
+		$h ++;
+	}
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");
@@ -1974,4 +1982,46 @@ function calcul_margin_percent($cashed_cost,$spend_cost)
 	{
 		return "n/a";
 	}
+}
+
+
+function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $strict=true, $return_error=false)
+{
+	global $db;
+	
+	$TRes = array();
+	if (empty($agf_calendrier_formateur->id)) return $TRes;
+	
+	$sql = 'SELECT c.rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier c';
+//	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
+	$sql.= ' WHERE c.fk_agefodd_session = '.$agf_calendrier_formateur->sessid;
+	if ($strict)
+	{
+		$sql.= ' AND c.heured = \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heured).'\'';
+		$sql.= ' AND c.heuref = \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heuref).'\'';
+	}
+	else
+	{
+		$sql.= ' AND c.heured <= \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heuref).'\'';
+		$sql.= ' AND c.heuref >= \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heured).'\'';
+	}
+	
+	$resql = $db->query($sql);
+	if ($resql)
+	{
+		while ($obj = $db->fetch_object($resql))
+		{
+			$agf_calendrier = new Agefodd_sesscalendar($db);
+			$agf_calendrier->fetch($obj->rowid);
+			$TRes[] = $agf_calendrier;
+		}
+	}
+	else
+	{
+		if ($return_error) return $db->lasterror();
+		
+		exit($db->lasterror());
+	}
+	
+	return $TRes;
 }

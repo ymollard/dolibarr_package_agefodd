@@ -1,7 +1,5 @@
 -- ============================================================================
--- Copyright (C) 2009-2010	Erick Bullier	<eb.dev@ebiconsulting.fr>
--- Copyright (C) 2010-2011	Regis Houssin	<regis@dolibarr.fr>
--- Copyright (C) 2012		Florian Henry	<florian.henry@open-concept.pro>
+-- Copyright (C) 2018	Pierre-Henry Favre	<phf@atm-consulting.fr>
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,20 +17,13 @@
 --
 -- ============================================================================
 --
--- Structure de la table llx_agefodd_session_calendrier
+-- Structure de la table llx_c_agefodd_session_calendrier_type
 --
-CREATE TABLE IF NOT EXISTS llx_agefodd_session_calendrier (
-  rowid integer NOT NULL auto_increment PRIMARY KEY,
-  fk_agefodd_session integer NOT NULL,
-  date_session date NOT NULL,
-  heured datetime NOT NULL,
-  heuref datetime NOT NULL,
-  fk_actioncomm int DEFAULT NULL,
-  fk_user_author integer NOT NULL,
-  datec datetime NOT NULL,
-  fk_user_mod integer NOT NULL,
-  tms timestamp NOT NULL
-) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS llx_c_agefodd_session_calendrier_type(
+	rowid integer NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	code varchar(15),
+	label varchar(100),
+	entity integer DEFAULT 1,
+	active tinyint DEFAULT 1 NOT NULL
+)ENGINE=innodb;
 
-ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN calendrier_type varchar(15);
-ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN status integer DEFAULT 0;

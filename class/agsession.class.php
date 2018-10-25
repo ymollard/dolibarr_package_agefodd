@@ -328,6 +328,31 @@ class Agsession extends CommonObject
 		}
 	}
 
+	public static function getStaticSumDureePresence($fk_agsession, $fk_stagiaire=null)
+	{
+		global $db;
+
+		$duree = 0;
+
+		$agfssh = new Agefoddsessionstagiaireheures($db);
+		$agfssh->fetchAllBy($fk_agsession, 'fk_session');
+		if (!empty($agfssh->lines))
+		{
+			foreach ($agfssh->lines as &$line)
+			{
+				if (!empty($fk_stagiaire) && $line->fk_stagiaire != $fk_stagiaire) continue;
+				$duree += $line->heures;
+			}
+		}
+
+		return $duree;
+	}
+
+	public function getSumDureePresence($fk_stagiaire=null)
+	{
+		return self::getStaticSumDureePresence($this->id, $fk_stagiaire);
+	}
+	
 	/**
 	 * Load an object from its id and create a new one in database
 	 *
@@ -755,6 +780,7 @@ class Agsession extends CommonObject
 		$sql .= " c.ref,";
 		$sql .= " c.ref_interne,";
 		$sql .= " s.color,";
+		$sql .= " s.duree_session,";
 		$sql .= " s.status,";
 		$sql .= " sf.trainer_status,";
 		$sql .= " sf.rowid as trainersessionid";
@@ -833,6 +859,7 @@ class Agsession extends CommonObject
 				$line->ref = $obj->ref;
 				$line->ref_interne = $obj->ref_interne;
 				$line->color = $obj->color;
+				$line->duree_session = $obj->duree_session;
 				$line->trainer_status = $obj->trainer_status;
 				$line->trainersessionid = $obj->trainersessionid;
 
@@ -849,6 +876,35 @@ class Agsession extends CommonObject
 		}
 	}
 
+	
+	/**
+	 * Renvoi l'objet Trainer si le user fait bien partie des formateurs de la session
+	 * 
+	 * @param User $user
+	 * @return boolean | Agefodd_teacher
+	 */
+	public function getTrainerFromUser(&$user)
+	{
+		if (empty($this->TTrainer)) $this->fetchTrainers();
+
+		if (!empty($this->TTrainer)) // Maintenant je vais vérifier que l'utilisateur est bien associé en tant que formateur ;)
+		{
+			foreach ($this->TTrainer as &$trainer)
+			{
+				if ($trainer->type_trainer == $trainer->type_trainer_def[0]) // user
+				{
+					if ($user->id == $trainer->fk_user) return $trainer;
+				}
+				else if ($trainer->type_trainer == $trainer->type_trainer_def[1]) // socpeople
+				{
+					if ($user->contactid == $trainer->fk_socpeople) return $trainer;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Load object (company per session) in memory from database
 	 *
@@ -1474,6 +1530,48 @@ class Agsession extends CommonObject
 		}
 	}
 
+	/**
+	 * Fetch trainers objects
+	 */
+	public function fetchTrainers($sessid=0)
+	{
+		global $conf;
+		
+		if (empty($sessid)) $sessid = $this->id;
+		$this->TTrainer = array();
+		
+		$error = 0;
+		
+		$sql = 'SELECT sf.fk_agefodd_formateur, sf.rowid as fk_agefodd_session_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur sf';
+		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session s ON (s.rowid = sf.fk_session)';
+		$sql.= ' WHERE sf.fk_session = '.$sessid;
+		$sql.= ' AND s.entity = '.$conf->entity;
+		
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			if (!class_exists('Agefodd_teacher')) dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+			
+			while ($obj = $this->db->fetch_object($resql))
+			{
+				$trainer = new Agefodd_teacher($this->db);
+				$trainer->fetch($obj->fk_agefodd_formateur);
+				$trainer->agefodd_session_formateur = new Agefodd_session_formateur($this->db);
+				$trainer->agefodd_session_formateur->fetch($obj->fk_agefodd_session_formateur);
+				$this->TTrainer[] = $trainer;
+			}
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetchTrainers " . $this->error, LOG_ERR);
+			$error ++;
+		}
+		
+		if (! $error) {
+			return count($this->TTrainer);
+		} else {
+			return - 1;
+		}
+	}
+	
 	/**
 	 * Load object (information) in memory from database
 	 *
@@ -4974,28 +5072,30 @@ class Agsession extends CommonObject
 		}
 	}
 
-	function getLibStatut($mode = 0){
-	    global $langs, $db;
+	public static function getStaticLibStatut($status, $mode=0)
+	{
+		global $langs, $db, $TAgSessionStatut;
 
-	    $sql = "SELECT rowid, code FROM ".MAIN_DB_PREFIX."agefodd_session_status_type WHERE active = 1";
+		if (empty($TAgSessionStatut))
+		{
+			$sql = "SELECT rowid, code FROM ".MAIN_DB_PREFIX."agefodd_session_status_type WHERE active = 1";
 
-	    $res = $db->query($sql);
-	    $TStatut = array();
+			$res = $db->query($sql);
+			$TAgSessionStatut = array();
 
-	    if($res){
-	        while($obj = $db->fetch_object($res)){
-	            $TStatut[$obj->rowid] = $obj->code;
-	        }
-	    }
-
-
+			if($res){
+				while($obj = $db->fetch_object($res)){
+					$TAgSessionStatut[$obj->rowid] = $obj->code;
+				}
+			}
+		}
 
 	    switch ($mode){
 	        case 0 :
-	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]);
+	            return $langs->trans('AgfStatusSession_' . $TAgSessionStatut[$status]);
 	            break;
 	        case 1 :
-	        	switch ($this->status){
+	        	switch ($status){
 	        		case 1 :
 	        			$img_picto=img_picto('', 'statut1');
 	        			break;
@@ -5016,11 +5116,15 @@ class Agsession extends CommonObject
 	        			break;
 	        	}
 
-	        	return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]) . "&nbsp;" . $img_picto;
+	        	return $langs->trans('AgfStatusSession_' . $TAgSessionStatut[$status]) . "&nbsp;" . $img_picto;
 	            break;
 	        default:
-	            return $langs->trans('AgfStatusSession_' . $TStatut[$this->status]);
+	            return $langs->trans('AgfStatusSession_' . $TAgSessionStatut[$status]);
 	    }
+	}
+	
+	function getLibStatut($mode = 0){
+	    return self::getStaticLibStatut($this->status, $mode);
 	}
 
 	function load_all_data_agefodd_session(&$object_refletter, $socid='', $obj_agefodd_convention='', $print_r=false) {

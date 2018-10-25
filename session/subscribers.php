@@ -600,13 +600,16 @@ if (! empty($id)) {
 				if ($blocNumber > 0){
 				    for($j = 0; $j < $blocNumber; $j ++) {
 				        $defaultvalue = ($calendrier->lines[$j]->heuref - $calendrier->lines[$j]->heured) / 3600;
-				        if (in_array($stagiaires->lines[$i]->status_in_session, array(3, 4))){
+						$warning=false;
+						// WTF pourquoi afficher 0 si le statut n'est pas 3 ou 4 alors que nous avons potentiellement une donnée en bdd ? J'en ai profité pour ajouter des constantes, histoire que ce soit déjà un poil plus clair mais wtf quand même... :'(
+				        if (in_array($stagiaires->lines[$i]->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT))){
         					$result = $agfssh->fetch_by_session($id, $stagiaires->lines[$i]->id, $calendrier->lines[$j]->id);
         					if($calendrier->lines[$j]->date_session < dol_now()){
             					if ($result > 0) {
             						$val = $agfssh->heures;
             					} else {
             					    $val = $defaultvalue;
+									$warning=true;
             					}
         					} else {
         					    $val = 0;
@@ -615,7 +618,7 @@ if (! empty($id)) {
     					    $val = 0;
     					}
 
-    					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value="' . $val . '" data-default="'.(($calendrier->lines[$j]->date_session < dol_now()) ? $defaultvalue : 0).'" '.(($calendrier->lines[$j]->date_session < dol_now()) ? '' : 'disabled').'></td>';
+    					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value="' . $val . '" data-default="'.(($calendrier->lines[$j]->date_session < dol_now()) ? $defaultvalue : 0).'" '.(($calendrier->lines[$j]->date_session < dol_now()) ? '' : 'disabled').'>'.($warning ? img_warning($langs->trans('AgfWarningTheoreticalValue')) : '').'</td>';
     				}
 				} else {
 				    print '<td align="center">'. (($i == 0) ? $langs->trans("AgfNoCalendar") : '') .'</td>';

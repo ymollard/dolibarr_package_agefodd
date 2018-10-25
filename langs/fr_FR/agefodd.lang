@@ -20,6 +20,7 @@ AgfCatActive=Active
 AgfCatArchivee=Archivée
 AgfCatActif=Actif
 AgfCatArchive=Archivé
+AgfScheduler=Vue planning
 AgfMenuCatNew=Nouvelle formation
 AgfMenuSess=Sessions de formation
 AgfMenuSessAct=Sessions de formation en cours
@@ -1091,6 +1092,8 @@ AgfCategCostCateg=Produit de Frais (calcul marge)
 AgfCategOverheadCost=Catégorie de services/produits comptabilisés comme Frais
 AgfCategOverheadCostHelp=Les services/produits classés dans ces catégories seront exclus lors du calcul du prix de "vente" et d'achat de la session, donc ils ne seront pas pris en compte dans le calcul des marges
 AgfNewPeriodFromScratch=Créer les horaires par créneaux
+AgfNewPeriod=Créer les horaires
+AgfCalendarType=Type
 AgfNewPeriodDayToDate=Créer les horaires de date à date
 AgfAdminCalendarDayToDate=Valeur par defaut des créneaux date à date
 AgfDayWeek=Jour de la semaine coché par defaut
@@ -1275,6 +1278,7 @@ AgfBPFExplanationChaperF2=Le temps comptabilisé est issu des sessions au statut
 AgfBPFF2a=Indicateur F - 2 : a<br> - il <strong>n'y a pas</strong> de sous traitant défini sur la session<br> - il <strong>n'y a pas</strong> de "Pour le compte de" de définie sur les sessions
 AgfBPFF2b=Indicateur F - 2 : b<br> - il <strong>n'y a pas</strong> un sous traitant défini sur la session<br> - il <strong>y a</strong> "Pour le compte de" de définie sur les sessions 
 AgfTrainingCategTblBPF=Agefodd - Catégorie de formation prestation
+AgfSessionCreneauType=Agefodd - Type de créneau horaire
 AgfTrainingCategBPF=Catégorie de formation prestation (BPF)
 AgfReportBPFChaperF3=F - 3. OBJECTIF GÉNÉRAL DES PRESTATIONS DISPENSÉES
 AgfBPFExplanationChaperF3=Le temps comptabilisé est issu des sessions au statut <strong> "réalisées" </strong> ou <strong> "en cours" </strong><br> - le calendrier de la session sert de base de calcul<br> - le statut des participants dans les sessions doit être <strong> %s </strong> ou <strong> %s </strong><br> - Le temps comptabilisé est issu du dictionnaire <strong>%s</strong> sur les formations
@@ -1404,8 +1408,47 @@ invoice_supplier_room=Lieu
 invoice_supplier_missions=Déplacement et mission
 AgfSessionRef=Ref. Session
 Permission103020=Voir agenda par lieu
-Permission103021=Mode formateur (si un utilisateur est formateur, cela limite dans l'application la visilité des sessions à ses formations uniquement et masque certains champs)
+Permission103021=Mode formateur (si un utilisateur est formateur, cela limte dans l'application la visilité des sessions à ces formation uniquement et masque certain champs)
 AgfCoutFormationPlanned=Prix de vente planifié
 AgfCostOtherPlanned=Coût(s) autre(s) planifiés
 AgfCostTrainerPlanned=Coût formateur(s)/trice(s) planifié
 AgfMarginPlanned=Marge planifiée
+
+Agf_fullcalendarscheduler_title_dialog_create_event=Création du créneau horaire
+Agf_fullcalendarscheduler_title_dialog_update_event=Modification du crénau horaire
+Agf_fullcalendarscheduler_title_dialog_delete_event=Suppression du créneau horaire
+Agf_fullcalendarscheduler_content_dialog_delete_for_calendrier_formateur=Supprimer aussi le/les créneau(x) du/des formateur(s) associé(s) : 
+AgfWarning_wrong_def_participant=Attention : %d autre(s) participant(s) mal définie(s)
+
+AgfDateSession=Date session
+AgfStatusCalendar_draft=Brouillon
+AgfStatusCalendar_confirmed=Confirmé
+AgfStatusCalendar_canceled=Annulé
+
+Agf_EA_DeleteClandrierFormateurTitle=Suppression d'un créneau horaire
+Agf_EA_DeleteClandrierFormateurBody=Êtes-vous sûr de vouloir supprimer ce créneau horaire ?<br /> <small>Ceci supprimera aussi les saisies de temps des participants</small>
+AgfExternalAccessErrorCreateOrUpdateCreneau=Impossible de traiter votre demande, une erreur a été rencontrée
+AgfExternalAccessErrorDeleteCreneau=Impossible de supprimer l'élément, une erreur est survenue
+
+AgfWarningTheoreticalValue=Attention : valeur théorique non sauvegardée et ni pris en compte dans le total
+AgfSessionSummary=Formation prévue du <b>%s</b> au <b>%s</b>
+AgfHours=%s heure(s)
+
+AgfSessionSummaryTotalHours=Total heures de formation
+AgfSessionSummaryTotalScheduled=Total heures programmée
+AgfSessionSummaryTotalLeft=Totale heures restante
+
+AgfSessionSummaryTotalPresence=Total heures déclarée (participants - tout statut)
+AgfSessionSummaryTauxAssiduite=Taux d'assiduité
+AgfSessionSummaryTotalHoursMaxComptabilise=Total heures déclaration maximal
+AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisée effectuées
+AgfSessionSummaryTotalHoursComptabiliseCancel=Total heures comptabilisée annulées
+
+Agf_EA_error_sql=Une erreur est survenue durant la récupération des données, veuillez prévenir l'administrateur du système
+
+AgfExternalAccessSessionCardCreneau=Créneau
+AgfExternalAccessSessionCardDeclareHours=Déclarer des heures de présence par participant
+AgfExternalAccessSessionCardDeclareHoursInfo=Règles de saisies :<br /> - si vous déclarez la session annulée, les heures seront automatiquement calculées et enregistrées pour appliquer la durée de la session<br /> - Si vous déclarez des heures de présence avec un statut brouillon ou confirmée, assurez vous que la date et l'heure de la session soient antérieur à l'heure du jour
+
+AgfDureeDeclared=Heures déclarées
+AgfDureeSolde=Solde
