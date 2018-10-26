@@ -2408,6 +2408,18 @@ class modAgefodd extends DolibarrModules
 		$return_init = $this->_init($sql);
 		$result = $result_table && $result_pgsql && $return_init;
 
+		//Remove trainer mod permission for user admin
+		foreach ( $conf->file->dol_document_root as $dirroot ) {
+			$dir = $dirroot . '/agefodd/sql/';
+
+			$handle = @opendir($dir);
+			// Dir may not exists
+			if (is_resource($handle)) {
+				$result_cleanright = run_sql($dir . 'clean_admin_right.sql', 1, '', 1);
+			}
+		}
+		$reult = $result && $result_cleanright;
+
 		if (! $result) {
 			setEventMessage('Problem during Migration, please contact your administrator', 'errors');
 		}
