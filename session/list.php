@@ -284,7 +284,8 @@ $arrayfields = array(
 		),
 		's.nb_stagiaire' => array(
 				'label' => "AgfNbreParticipants",
-				'checked' => 1
+				'checked' => 1,
+				'enabled' => (! $user->rights->agefodd->session->trainer)
 		),
 		's.duree_session' => array(
 				'label' => "AgfDuree",
@@ -292,7 +293,8 @@ $arrayfields = array(
 		),
 		's.notes' => array(
 				'label' => "AgfNote",
-				'checked' => 1
+				'checked' => 1,
+				'enabled' => (! $user->rights->agefodd->session->trainer)
 		),
 		's.fk_socpeople_presta' => array(
 				'label' => 'AgfTypePresta',
