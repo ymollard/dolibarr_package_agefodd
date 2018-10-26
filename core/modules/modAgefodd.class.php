@@ -2278,7 +2278,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 900 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report && $conf->global->AGF_MANAGE_BPF',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report',
 				'perms' => '$user->rights->agefodd->report',
 				'target' => '',
 				'user' => 0
@@ -2294,6 +2294,20 @@ class modAgefodd extends DolibarrModules
 				'position' => 900 + $r,
 				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report->bpf && $conf->global->AGF_MANAGE_BPF',
 				'perms' => '$user->rights->agefodd->report->bpf',
+				'target' => '',
+				'user' => 0
+		);
+
+		$r ++;
+		$this->menu [$r] = array (
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+				'type' => 'left',
+				'titre' => 'AgfMenuReportByCustomer',
+				'url' => '/agefodd/report/report_by_customer.php',
+				'langs' => 'agefodd@agefodd',
+				'position' => 900 + $r,
+				'enabled' => '$user->rights->agefodd->report',
+				'perms' => '$user->rights->agefodd->report',
 				'target' => '',
 				'user' => 0
 		);
@@ -2340,37 +2354,6 @@ class modAgefodd extends DolibarrModules
 				'target' => '',
 				'user' => 0
 		);
-
-
-		$r ++;
-		$this->menu [$r] = array (
-		    'fk_menu' => 'fk_mainmenu=agefodd',
-		    'type' => 'left',
-		    'titre' => 'AgfMenuReport',
-		    'leftmenu' => 'AgfMenuReport',
-		    'url' => '/agefodd/report/report_by_customer.php',
-		    'langs' => 'agefodd@agefodd',
-		    'position' => 801,
-		    'enabled' => '$user->rights->agefodd->report',
-		    'perms' => '$user->rights->agefodd->report',
-		    'target' => '',
-		    'user' => 0
-		);
-
-		$r ++;
-		$this->menu [$r] = array (
-		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
-		    'type' => 'left',
-		    'titre' => 'AgfMenuReportByCustomer',
-		    'url' => '/agefodd/report/report_by_customer.php',
-		    'langs' => 'agefodd@agefodd',
-		    'position' => 802,
-		    'enabled' => '$user->rights->agefodd->report',
-		    'perms' => '$user->rights->agefodd->report',
-		    'target' => '',
-		    'user' => 0
-		);
-
 
 	}
 
