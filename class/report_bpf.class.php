@@ -1798,6 +1798,29 @@ function fetch_financial_d($filter = array()) {
 					$error ++;
 				}
 			}
+
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - Entreprise etrangere\',2,\'\',NULL,1,\'agefodd\')';
+			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if (! $resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			} else {
+				$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
+				$selected_categ = array();
+				if (! empty($conf->global->AGF_CAT_BPF_FOREIGNCOMP)) {
+					$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_FOREIGNCOMP);
+				}
+				if (! in_array($idcateg, $selected_categ)) {
+					$selected_categ[] = $idcateg;
+				}
+
+				$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_FOREIGNCOMP', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
+
+				if (! $res > 0) {
+					$error ++;
+				}
+			}
 		}
 
 		$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF\',1,\'\',NULL,1,\'agefodd\')';
@@ -1829,29 +1852,6 @@ function fetch_financial_d($filter = array()) {
 				}
 
 				$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_PRESTA', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
-
-				if (! $res > 0) {
-					$error ++;
-				}
-			}
-
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - Entreprise etrangere\',2,\'\',NULL,1,\'agefodd\')';
-			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
-			$resql = $this->db->query($sql);
-			if (! $resql) {
-				$error ++;
-				$this->errors[] = "Error " . $this->db->lasterror();
-			} else {
-				$idcateg = $this->db->last_insert_id(MAIN_DB_PREFIX . "categorie");
-				$selected_categ = array();
-				if (! empty($conf->global->AGF_CAT_BPF_FOREIGNCOMP)) {
-					$selected_categ = explode(',', $conf->global->AGF_CAT_BPF_FOREIGNCOMP);
-				}
-				if (! in_array($idcateg, $selected_categ)) {
-					$selected_categ[] = $idcateg;
-				}
-
-				$res = dolibarr_set_const($this->db, 'AGF_CAT_BPF_FOREIGNCOMP', implode(',', $selected_categ), 'chaine', 0, '', $conf->entity);
 
 				if (! $res > 0) {
 					$error ++;
