@@ -94,6 +94,7 @@ $morecss = array(
 	'/fullcalendarscheduler/css/fullcalendarscheduler.css'
 	,'/fullcalendarscheduler/css/fullcalendar.min.css'
 	,'/fullcalendarscheduler/css/scheduler.min.css'
+	,'/agefodd/css/session_scheduler.css'
 );
 
 
@@ -139,7 +140,7 @@ $html_participants = '';
 if (!empty($conf->global->AGF_USE_REAL_HOURS))
 {
 	
-	$content_participants = '';
+	$content_participants = '<div class="liste_participants">';
 	$nb_wrong_def = 0;
 	foreach ($stagiaires->lines as &$line)
 	{
@@ -149,10 +150,15 @@ if (!empty($conf->global->AGF_USE_REAL_HOURS))
 		}
 		else
 		{
-			$input = '<input class="type_hour" type="text" name="TRealHour[' . $line->id . ']" size="5" value="" /> '.$langs->transnoentitiesnoconv('Hours');
-			$content_participants.= '<p style="margin:0"><label>'.strtoupper($line->nom) . ' ' . ucfirst($line->prenom).'</label> : '.$input.'</p>';
+			$input = '<input class="type_hour" type="text" name="TRealHour[' . $line->id . ']" size="3" value="" /> '.$langs->transnoentitiesnoconv('Hours');
+			$content_participants.= '<div class="item_participant">';
+			$content_participants.= '<label class="item_participant_label">'.strtoupper($line->nom) . ' ' . ucfirst($line->prenom).'</label>';
+			$content_participants.= '<span class="item_participant_hours">'.$input.'</span>';
+			$content_participants.= '</div>';
 		}
 	}
+
+	$content_participants.= '<div class="clearboth"></div></div>';
 	
 	$html_participants.= '<div class="titre">'.$langs->transnoentitiesnoconv('AgfMenuActStagiaire');
 	if ($nb_wrong_def > 0) $html_participants.= ' <small class="error">('.$langs->transnoentitiesnoconv('AgfWarning_wrong_def_participant', $nb_wrong_def).')</small>';
