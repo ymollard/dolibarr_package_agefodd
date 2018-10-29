@@ -142,6 +142,9 @@ if (!empty($conf->global->AGF_USE_REAL_HOURS))
 	
 	$content_participants = '<div class="liste_participants">';
 	$nb_wrong_def = 0;
+	if (count($stagiaires->lines) > 8) $float_class = 'fleft';
+	else $float_class = '';
+
 	foreach ($stagiaires->lines as &$line)
 	{
 		if ($line->id < 0)
@@ -151,7 +154,7 @@ if (!empty($conf->global->AGF_USE_REAL_HOURS))
 		else
 		{
 			$input = '<input class="type_hour" type="text" name="TRealHour[' . $line->id . ']" size="3" value="" /> '.$langs->transnoentitiesnoconv('Hours');
-			$content_participants.= '<div class="item_participant">';
+			$content_participants.= '<div class="item_participant '.$float_class.'">';
 			$content_participants.= '<label class="item_participant_label">'.strtoupper($line->nom) . ' ' . ucfirst($line->prenom).'</label>';
 			$content_participants.= '<span class="item_participant_hours">'.$input.'</span>';
 			$content_participants.= '</div>';

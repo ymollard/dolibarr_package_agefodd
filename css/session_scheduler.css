@@ -3,21 +3,26 @@
 }
 
 .item_participant {
-	max-width:286px;
+	width:286px;
 	padding: 0 15px 0 0;
-	float:left;
+	margin:0;
+}
+
+.fleft {
+	float: left;
 }
 
 .item_participant_label {
 	display:inline-block;
 	padding: 0;
 	margin: 0;
-	max-width: 185px;
+	width: 185px;
+	text-overflow: ellipsis;
 }
 
 .item_participant_hours {
 	display:inline-block;
 	padding: 0;
 	margin: 0;
-	max-width: 101px;
+	width: 101px;
 }
