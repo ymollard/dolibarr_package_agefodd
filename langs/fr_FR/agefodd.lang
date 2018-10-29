@@ -1422,6 +1422,7 @@ AgfWarning_wrong_def_participant=Attention : %d autre(s) participant(s) mal déf
 
 AgfDateSession=Date session
 AgfStatusCalendar_draft=Brouillon
+AgfStatusCalendar_previsionnel=Prévisionnel
 AgfStatusCalendar_confirmed=Confirmé
 AgfStatusCalendar_canceled=Annulé
 
