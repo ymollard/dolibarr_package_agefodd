@@ -5240,6 +5240,7 @@ class Agsession extends CommonObject
 						$this->conv_qty += $line->qty;
 						$this->conv_products .= $line->description.'<br />';
 						$line->form_label = $langs->trans('AgfTraining')."  ".(!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
+						$line->form_label_short = (!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
 						$this->TConventionFinancialLine[]= $line;
 					} elseif (empty($obj_agefodd_convention->only_product_session)) {
 						$this->conv_amount_ht += $line->total_ht;
@@ -5249,8 +5250,10 @@ class Agsession extends CommonObject
 						$this->conv_products .= $line->description.'<br />';
 						if ($line->fk_product==$this->fk_product) {
 							$line->form_label = $langs->trans('AgfTraining')."  ".(!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
+							$line->form_label_short = (!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
 						} else {
 							$line->form_label = $line->description;
+							$line->form_label_short = $line->description;
 						}
 						$this->TConventionFinancialLine[]= $line;
 					}
