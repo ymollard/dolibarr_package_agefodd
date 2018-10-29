@@ -331,6 +331,7 @@ class ActionsAgefodd
 								$THour = GETPOST('hours', 'array');
 								$stagiaires = new Agefodd_session_stagiaire($this->db);
 								$stagiaires->fetch_stagiaire_per_session($agsession->id);
+								$duree_session = ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
 								foreach ($stagiaires->lines as &$stagiaire)
 								{
 									if ($stagiaire->id <= 0) continue;
@@ -344,7 +345,7 @@ class ActionsAgefodd
 										// Si le statut passe à "annulé", alors je force la saisie du compteur d'heure car c'est du consommé
 										if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED)
 										{
-											$duree = ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
+											$duree = $duree_session;
 										}
 										else if ($agf_calendrier->date_session < $now && !empty($THour[$stagiaire->id]))
 										{
@@ -363,6 +364,14 @@ class ActionsAgefodd
 										}
 
 										if ($r < 0) $error++;
+										else
+										{
+											// TODO à faire évoluer, mais en l'état cela semble bien compliqué d'automatisé le satut du participant
+											if ($duree > 0 && !in_array($stagiaire->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT) ))
+											{
+												$stagiaires->setValueFrom('status_in_session', Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT, '', $stagiaire->stagerowid, 'int', '', 'none');
+											}
+										}
 									}
 								}
 								
