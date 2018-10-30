@@ -2827,6 +2827,7 @@ class Agsession extends CommonObject
 		$sql .= " ,f.rowid as trainerrowid";
 		$sql .= " ,s.intitule_custo";
 		$sql .= " ,s.duree_session";
+		$sql .= " ,s.ref as sessionref";
 		if ($filter['type_affect'] == 'thirdparty') {
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
@@ -3101,6 +3102,7 @@ class Agsession extends CommonObject
 					$line->type_affect = $type_affect;
 					$line->duree_session = $obj->duree_session;
 					$line->intitule_custo = $obj->intitule_custo;
+					$line->sessionref = $obj->sessionref;
 
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
 						$label = stripslashes($obj->statuslib);
@@ -5692,6 +5694,7 @@ class AgfSessionLineSoc
 	public $active;
 	public $duree_session;
 	public $intitule_custom;
+	public $sessionref;
 	public function __construct() {
 		return 1;
 	}
