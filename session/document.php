@@ -152,16 +152,30 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 	// Define output language
 	$outputlangs = $langs;
 	$newlang = GETPOST('lang_id', 'alpha');
-	if ($conf->global->MAIN_MULTILANGS && empty($newlang))
+	if ($conf->global->MAIN_MULTILANGS && empty($newlang)) {
 		$newlang = $object->thirdparty->default_lang;
+	}
 	if (! empty($newlang)) {
 		$outputlangs = new Translate("", $conf);
 		$outputlangs->setDefaultLang($newlang);
 	}
+
 	$id_tmp = $id;
-	if (! empty($cour))
+	if (! empty($cour)) {
 		$file = $model . '-' . $cour . '_' . $id . '_' . $socid . '.pdf';
-	elseif ($model == 'convention') {
+	} elseif ($model == 'convention') {
+
+		$soc_lang=new Societe($db);
+		$soc_lang->fetch($socid);
+
+		$newlang = GETPOST('lang_id', 'alpha');
+		if ($conf->global->MAIN_MULTILANGS && empty($newlang)) {
+			$newlang = $soc_lang->default_lang;
+		}
+		if (! empty($newlang)) {
+			$outputlangs = new Translate("", $conf);
+			$outputlangs->setDefaultLang($newlang);
+		}
 
 		$convention = new Agefodd_convention($db);
 		$convention->fetch(0, 0, GETPOST('convid', 'int'));

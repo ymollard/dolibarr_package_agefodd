@@ -116,13 +116,17 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 	$result = $agf->fetch(0, 0, $id);
 
 	// Define output language
-	$outputlangs = $langs;
 	$newlang = GETPOST('lang_id', 'alpha');
-	if ($conf->global->MAIN_MULTILANGS && empty($newlang))
-		$newlang = $object->thirdparty->default_lang;
+	if ($conf->global->MAIN_MULTILANGS && empty($newlang)) {
+		$soc_lang=new Societe($db);
+		$soc_lang->fetch($agf->socid);
+		$newlang = $soc_lang->default_lang;
+	}
 	if (! empty($newlang)) {
 		$outputlangs = new Translate("", $conf);
 		$outputlangs->setDefaultLang($newlang);
+	} else {
+		$outputlangs=$langs;
 	}
 	$model = $agf->model_doc;
 	$model = str_replace('pdf_', '', $model);
