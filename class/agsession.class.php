@@ -352,7 +352,7 @@ class Agsession extends CommonObject
 	{
 		return self::getStaticSumDureePresence($this->id, $fk_stagiaire);
 	}
-	
+
 	/**
 	 * Load an object from its id and create a new one in database
 	 *
@@ -876,10 +876,10 @@ class Agsession extends CommonObject
 		}
 	}
 
-	
+
 	/**
 	 * Renvoi l'objet Trainer si le user fait bien partie des formateurs de la session
-	 * 
+	 *
 	 * @param User $user
 	 * @return boolean | Agefodd_teacher
 	 */
@@ -901,10 +901,10 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Load object (company per session) in memory from database
 	 *
@@ -1536,21 +1536,21 @@ class Agsession extends CommonObject
 	public function fetchTrainers($sessid=0)
 	{
 		global $conf;
-		
+
 		if (empty($sessid)) $sessid = $this->id;
 		$this->TTrainer = array();
-		
+
 		$error = 0;
-		
+
 		$sql = 'SELECT sf.fk_agefodd_formateur, sf.rowid as fk_agefodd_session_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur sf';
 		$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session s ON (s.rowid = sf.fk_session)';
 		$sql.= ' WHERE sf.fk_session = '.$sessid;
 		$sql.= ' AND s.entity = '.$conf->entity;
-		
+
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if (!class_exists('Agefodd_teacher')) dol_include_once('/agefodd/class/agefodd_formateur.class.php');
-			
+
 			while ($obj = $this->db->fetch_object($resql))
 			{
 				$trainer = new Agefodd_teacher($this->db);
@@ -1564,14 +1564,14 @@ class Agsession extends CommonObject
 			dol_syslog(get_class($this) . "::fetchTrainers " . $this->error, LOG_ERR);
 			$error ++;
 		}
-		
+
 		if (! $error) {
 			return count($this->TTrainer);
 		} else {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Load object (information) in memory from database
 	 *
@@ -3526,10 +3526,8 @@ class Agsession extends CommonObject
 			print '<td colspan="'.$colspan.'">' . ($this->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td></tr>';
 		}
 
-		if (! $user->rights->agefodd->session->trainer){
-			print '<tr class="order_sessionCommercial"><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
-			print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/user/card.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
-		}
+		print '<tr class="order_sessionCommercial"><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
+		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/user/card.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
 
 		if (! $user->rights->agefodd->session->trainer){
 			print '<tr class="order_duration"><td>' . $langs->trans("AgfDuree") . '</td>';
@@ -3560,26 +3558,32 @@ class Agsession extends CommonObject
 				setEventMessage($socstatic->error, 'errors');
 			}
 			print $socstatic->getNomUrl(1);
+			if ($user->rights->agefodd->session->trainer){
+				print (! empty($socstatic->phone) ? '- (' . dol_print_phone($socstatic->phone) . ')' : '');
+			}
 		}
 		print '</td></tr>';
 
-		print '<tr class="order_sessionContact"><td>' . $langs->trans("AgfSessionContact") . '</td>';
-		if (! empty($this->sourcecontactid) && ! empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
-			print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $this->sourcecontactid . '">' . $this->contactname . '</a></td></tr>';
-		} else {
-			print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/contact/card.php', 1) . '?id=' . $this->contactid . '">' . $this->contactname . '</a></td></tr>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_sessionContact"><td>' . $langs->trans("AgfSessionContact") . '</td>';
+			if (! empty($this->sourcecontactid) && ! empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
+				print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $this->sourcecontactid . '">' . $this->contactname . '</a></td>';
+			} else {
+				print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/contact/card.php', 1) . '?id=' . $this->contactid . '">' . $this->contactname . '</a></td>';
+			}
+			print '</tr>';
 		}
 		if (! $user->rights->agefodd->session->trainer){
-		print '<tr class="order_typeRequester"><td width="20%">' . $langs->trans("AgfTypeRequester") . '</td>';
-		print '	<td colspan="'.$colspan.'">';
-		if ((! empty($this->fk_soc_requester)) && ($this->fk_soc_requester > 0)) {
-			$result = $socstatic->fetch($this->fk_soc_requester);
-			if ($result < 0) {
-				setEventMessage($socstatic->error, 'errors');
+			print '<tr class="order_typeRequester"><td width="20%">' . $langs->trans("AgfTypeRequester") . '</td>';
+			print '	<td colspan="'.$colspan.'">';
+			if ((! empty($this->fk_soc_requester)) && ($this->fk_soc_requester > 0)) {
+				$result = $socstatic->fetch($this->fk_soc_requester);
+				if ($result < 0) {
+					setEventMessage($socstatic->error, 'errors');
+				}
+				print $socstatic->getNomUrl(1);
 			}
-			print $socstatic->getNomUrl(1);
-		}
-		print '</td></tr>';
+			print '</td></tr>';
 		}
 
 		if (! $user->rights->agefodd->session->trainer){
@@ -3620,8 +3624,10 @@ class Agsession extends CommonObject
 			print '</td></tr>';
 		}
 
-		print '<tr class="order_place"><td>' . $langs->trans("AgfLieu") . '</td>';
-		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $this->placeid . '">' . $this->placecode . '</a></td></tr>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_place"><td>' . $langs->trans("AgfLieu") . '</td>';
+			print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $this->placeid . '">' . $this->placecode . '</a></td></tr>';
+		}
 
 		print '<tr class="order_note"><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 		if (! empty($this->notes))
@@ -3664,32 +3670,34 @@ class Agsession extends CommonObject
 			print '<td colspan="'.$colspan.'">' . ((($this->nb_place - $this->nb_stagiaire) > 0) ? ($this->nb_place - $this->nb_stagiaire) : 0) . '/' . $this->nb_place . '</td></tr>';
 		}
 
-		print '<tr class="order_status">';
-		print '<td>';
-		print $form->editfieldkey("AgfStatusSession",'session_status',$this->status,$this,$user->rights->agefodd->modifier);
-		print '</td>';
-		print '<td colspan="'.$colspan.'">';
-		if ($action=='editsession_status') {
-			print '<script type="text/javascript">
-						jQuery(document).ready(function () {
-							jQuery(function() {' . "\n";
-			print '				 $(\'html, body\').animate({scrollTop: $("#session_status").offset().top-20}, 500,\'easeInOutCubic\');';
-			print '			});
-					});
-					</script> ';
-			require_once ('../class/html.formagefodd.class.php');
-			$formAgefodd = new FormAgefodd($this->db);
-			print '<form method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$this->id.'">';
-			print '<input type="hidden" name="action" value="setsession_status">';
-			print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-			print $formAgefodd->select_session_status($this->status, "session_status", 't.active=1');
-			print '<input type="submit" class="button valignmiddle" value="'.$langs->trans("Modify").'">';
-			print '</form>';
-		} else {
-			print $this->statuslib;
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_status">';
+			print '<td>';
+			print $form->editfieldkey("AgfStatusSession",'session_status',$this->status,$this,$user->rights->agefodd->modifier);
+			print '</td>';
+			print '<td colspan="'.$colspan.'">';
+			if ($action=='editsession_status') {
+				print '<script type="text/javascript">
+							jQuery(document).ready(function () {
+								jQuery(function() {' . "\n";
+				print '				 $(\'html, body\').animate({scrollTop: $("#session_status").offset().top-20}, 500,\'easeInOutCubic\');';
+				print '			});
+						});
+						</script> ';
+				require_once ('../class/html.formagefodd.class.php');
+				$formAgefodd = new FormAgefodd($this->db);
+				print '<form method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$this->id.'">';
+				print '<input type="hidden" name="action" value="setsession_status">';
+				print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+				print $formAgefodd->select_session_status($this->status, "session_status", 't.active=1');
+				print '<input type="submit" class="button valignmiddle" value="'.$langs->trans("Modify").'">';
+				print '</form>';
+			} else {
+				print $this->statuslib;
+			}
+			print '</td>';
+			print '</tr>';
 		}
-		print '</td>';
-		print '</tr>';
 
 		/*print '<tr class="order_status"><td>' . $langs->trans("AgfStatusSession") . '</td><td>';
 		print $this->statuslib . '</td></tr>';*/
@@ -5124,7 +5132,7 @@ class Agsession extends CommonObject
 	            return $langs->trans('AgfStatusSession_' . $TAgSessionStatut[$status]);
 	    }
 	}
-	
+
 	function getLibStatut($mode = 0){
 	    return self::getStaticLibStatut($this->status, $mode);
 	}
