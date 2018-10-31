@@ -1023,17 +1023,17 @@ if ($resql != - 1) {
 			if (! empty($conf->global->AGF_SHOW_COLORED_LINK) && ! empty($line->admin_task_close_session)) { // Ancienne fonctionnalité perdue dans le néant
 				$color_a = ' style="color: green;"';
 			}
-			if (! empty(array_key_exists('s.rowid', $arrayfields) && $arrayfields['s.rowid']['checked'])) {
+			if (array_key_exists('s.rowid', $arrayfields) && ! empty($arrayfields['s.rowid']['checked'])) {
 				print '<td  style="background: #' . $line->color . '">';
 				print $line->getNomUrl(1, '', 0, 'id', 1, $color_a);
 				print '</td>';
 			}
-			if (! empty(array_key_exists('s.ref', $arrayfields) && $arrayfields['s.ref']['checked'])) {
+			if (array_key_exists('s.ref', $arrayfields) && ! empty($arrayfields['s.ref']['checked'])) {
 				print '<td  style="background: #' . $line->color . '">';
 				print $line->getNomUrl(1, '', 0, 'sessionref', 1, $color_a);
 				print '</td>';
 			}
-			if (! empty(array_key_exists('so.nom', $arrayfields) && $arrayfields['so.nom']['checked'])) {
+			if (array_key_exists('so.nom', $arrayfields) && ! empty($arrayfields['so.nom']['checked'])) {
 				print '<td>';
 				if (! empty($line->socid) && $line->socid != - 1) {
 					$soc = new Societe($db);
@@ -1044,7 +1044,7 @@ if ($resql != - 1) {
 				}
 				print '</td>';
 			}
-			if (! empty(array_key_exists('f.rowid', $arrayfields) && $arrayfields['f.rowid']['checked'])) {
+			if (array_key_exists('f.rowid', $arrayfields) && ! empty($arrayfields['f.rowid']['checked'])) {
 				print '<td>';
 				$trainer = new Agefodd_teacher($db);
 				if (! empty($line->trainerrowid)) {
@@ -1057,7 +1057,7 @@ if ($resql != - 1) {
 				}
 				print '</td>';
 			}
-			if (! empty(array_key_exists('c.intitule', $arrayfields) && $arrayfields['c.intitule']['checked'])) {
+			if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
 				$couleur_rgb_training = agf_hex2rgb($line->trainingcolor);
 				$color_training = '';
 				if ($line->trainingcolor && ((($couleur_rgb_training[0] * 299) + ($couleur_rgb_training[1] * 587) + ($couleur_rgb_training[2] * 114)) / 1000) < 125) {
@@ -1068,7 +1068,7 @@ if ($resql != - 1) {
 
 				print '<td ' . $color_training . '>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 			}
-			if (! empty(array_key_exists('c.ref', $arrayfields) && $arrayfields['c.ref']['checked'])) {
+			if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
 				print '<td>' . $line->ref . '</td>';
 			}
 			if (array_key_exists('c.ref_interne', $arrayfields) && ! empty($arrayfields['c.ref_interne']['checked'])) {

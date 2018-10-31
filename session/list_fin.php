@@ -419,7 +419,7 @@ if (GETPOST('link_formateur')){
         $session_invoice = new Agefodd_session_element($db);
         $session_invoice->fk_soc = $object_socid;
         $session_invoice->fk_session_agefodd = $id;
-		
+
 		if(!empty($fournorder)){
 			 $session_invoice->fk_element = $fournorder->id;
 		     $session_invoice->element_type = 'order_supplier_trainer';
@@ -701,7 +701,7 @@ if ($resql != - 1) {
 			print '<td>' . $line->fourninvoiceref . '</td><td>' . $langs->trans($line->element_type) . '</td>';
 		}
 		if (! (empty($search_fournorderref))) {
-			
+
 		    print '<td>' . $line->fournorderref . '</td><td>' . $langs->trans($line->element_type) . '</td>';
 		}
 		if (! (empty($search_propalref))) {
@@ -751,7 +751,7 @@ if ($resql != - 1) {
 		    }
 		}
 		if(!empty($line->id_element))$id_element=$line->id_element;
-		
+
 		print '<td align="right">';
 		$legende = (empty($search_fourninvoiceref)) ? $langs->trans("AgfFactureUnselectFac") : $langs->trans("AgfFactureUnselectSuplierInvoice");
 		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' .$id_element . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
@@ -768,7 +768,7 @@ if ($resql != - 1) {
 }
 if (!empty($search_fournorderid)) {
 
-	$sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated
+	$sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated, s.ref as sessionref
             FROM ".MAIN_DB_PREFIX."agefodd_session as s
             INNER JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             INNER JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
@@ -786,7 +786,7 @@ if (!empty($search_fournorderid)) {
 	if($resql){
 		while ($obj = $db->fetch_object($resql)){
 			!empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
-			$sessions [$obj->rowid] = ' - '.$obj->rowid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+			$sessions [$obj->rowid] = ' - '.$obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
 		}
 	}
 
@@ -795,7 +795,7 @@ if (!empty($search_fournorderid)) {
 		foreach ($agf->lines as $line) $excludeSessions[] = (int)$line->rowid;
 		$excludeSessions = array_merge($excludeSessions, array_keys($sessions));
 
-		$sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated
+		$sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated, s.ref as sessionref
             FROM ".MAIN_DB_PREFIX."agefodd_session as s
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
@@ -810,27 +810,27 @@ if (!empty($search_fournorderid)) {
 		if($resql){
 			while ($obj = $db->fetch_object($resql)){
 				!empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
-				$sessions [$obj->rowid] = ' - '.$obj->rowid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+				$sessions [$obj->rowid] = ' - '.$obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
 			}
 		}
 	}
-	
-	
-	$sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne
+
+
+	$sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne, sess.ref as sessionref
         FROM ".MAIN_DB_PREFIX."agefodd_session as sess
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = sess.fk_formation_catalogue
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = sess.fk_session_place
         LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid
         LEFT JOIN ".MAIN_DB_PREFIX."socpeople as socp ON p.fk_socpeople = socp.rowid
-        WHERE p.entity IN (0,". getEntity('agefodd') .") 
+        WHERE p.entity IN (0,". getEntity('agefodd') .")
         AND p.fk_societe = ".$object_socid;
-	
+
     if (is_array($session_array_id) && count($session_array_id)>0) {
     	$sql2 .= " AND sess.rowid NOT IN (".implode(",", $session_array_id).")";
     }
-	
+
     $sql2 .= " ORDER BY sess.rowid ASC";
-	
+
     $resql2 = $db->query($sql2);
     if($resql2){
         while ($obj = $db->fetch_object($resql2)){
@@ -922,7 +922,7 @@ elseif (empty($search_fourninvoiceref)) {
 
 		foreach ( $agf_session->lines as $line_session ) {
 			!empty($line_session->training_ref_interne)?$training_ref_interne= ' - (' .$line_session->training_ref_interne.')': $training_ref_interne='';
-			$sessions [$line_session->rowid] = $line_session->rowid.' '. $line_session->ref_interne.$training_ref_interne. ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session	->dated, 'daytext');
+			$sessions [$line_session->rowid] = $line_session->rowid.'('.$line_session->sessionref.')'.' '. $line_session->ref_interne.$training_ref_interne. ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session	->dated, 'daytext');
 		}
 	}
 
@@ -931,7 +931,7 @@ elseif (empty($search_fourninvoiceref)) {
 	    foreach ($agf->lines as $line) $excludeSessions[] = (int)$line->rowid;
 	    $excludeSessions = array_merge($excludeSessions, array_keys($sessions));
 
-	    $sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated
+	    $sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated, s.ref as sessionref
             FROM ".MAIN_DB_PREFIX."agefodd_session as s
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
@@ -946,7 +946,7 @@ elseif (empty($search_fourninvoiceref)) {
 	    if($resql){
 	        while ($obj = $db->fetch_object($resql)){
 	            !empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
-	            $sessions [$obj->rowid] = ' - '.$obj->rowid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+	            $sessions [$obj->rowid] = ' - '.$obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
 	        }
 	    }
 	}
@@ -965,7 +965,7 @@ elseif (empty($search_fourninvoiceref)) {
     $sessids = array();
 
     // session  dans lequel un formateur est un contact du tiers $session_array_id
-    $sql = "SELECT s.rowid as sessid, sf.rowid as opsid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated, sp.lastname as name_socp, sp.firstname as firstname_socp
+    $sql = "SELECT s.rowid as sessid, sf.rowid as opsid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated, sp.lastname as name_socp, sp.firstname as firstname_socp, s.ref as sessionref
         FROM ".MAIN_DB_PREFIX."agefodd_session as s
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
@@ -985,20 +985,20 @@ elseif (empty($search_fourninvoiceref)) {
     if($resql){
         while ($obj = $db->fetch_object($resql)){
             !empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
-            $sessionsForm[$obj->sessid] = $obj->sessid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+            $sessionsForm[$obj->sessid] = $obj->sessid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
             $sessids[$obj->sessid] = $obj->opsid;
         }
     }
 
     // session dont le lieu appartient au tiers
-	
-    $sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne
+
+    $sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne, s.ref as sessionref
         FROM ".MAIN_DB_PREFIX."agefodd_session as sess
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = sess.fk_formation_catalogue
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = sess.fk_session_place
         LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON p.fk_societe = s.rowid
         LEFT JOIN ".MAIN_DB_PREFIX."socpeople as socp ON p.fk_socpeople = socp.rowid
-        WHERE p.entity IN (0,". getEntity('agefodd') .") 
+        WHERE p.entity IN (0,". getEntity('agefodd') .")
         AND p.fk_societe = ".$object_socid;
     if (is_array($session_array_id) && count($session_array_id)>0) {
     	$sql2 .= " AND sess.rowid NOT IN (".implode(",", $session_array_id).")";
@@ -1008,10 +1008,10 @@ elseif (empty($search_fourninvoiceref)) {
     if($resql2){
         while ($obj = $db->fetch_object($resql2)){
             !empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
-            $sessionsSite[$obj->sessid] = $obj->sessid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+            $sessionsSite[$obj->sessid] = $obj->sessid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
         }
     }
-	
+
     print '<table class="noborder" width="100%">';
     print '<tr>';
     print '<th>Type</th>';

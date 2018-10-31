@@ -649,6 +649,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$fk_soc_crea = GETPOST('fk_soc', 'int');
 	$fk_propal = GETPOST('fk_propal', 'int');
 	$fk_order = GETPOST('fk_order', 'int');
+	$urlreturnsite='';
 
 	print_fiche_titre($langs->trans("AgfMenuSessNew"));
 
@@ -657,9 +658,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<input type="hidden" name="action" value="add_confirm">';
 	if (! empty($fk_propal)) {
 		print '<input type="hidden" name="fk_propal" value="' . $fk_propal . '">';
+		$urlreturnsite='&fk_propal='.$fk_propal;
 	}
 	if (! empty($fk_order)) {
 		print '<input type="hidden" name="fk_order" value="' . $fk_order . '">';
+		$urlreturnsite='&fk_order='.$fk_order;
 	}
 
 	print '<table id="session_card" class="border tableforfield" width="100%">';
@@ -668,7 +671,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td><table class="nobordernopadding"><tr><td>';
 	print $formAgefodd->select_site_forma(GETPOST('place', 'int'), 'place', 1);
 	print '</td>';
-	print '<td> <a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?action=create&url_return=' . urlencode($_SERVER['PHP_SELF'] . '?action=create') . '" title="' . $langs->trans('AgfCreateNewSite') . '">' . $langs->trans('AgfCreateNewSite') . '</a>';
+	print '<td> <a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?action=create&url_return=' . urlencode($_SERVER['PHP_SELF'] . '?action=create'.$urlreturnsite) . '" title="' . $langs->trans('AgfCreateNewSite') . '">' . $langs->trans('AgfCreateNewSite') . '</a>';
 	print '</td><td>' . $form->textwithpicto('', $langs->trans("AgfCreateNewSiteHelp"), 1, 'help') . '</td></tr></table>';
 	print '</td></tr>';
 

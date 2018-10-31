@@ -251,6 +251,12 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 
 			foreach ( $agfsta->lines as $line ) {
 
+                                if(!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
+                                        $TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+					$status_stagiaire = (int)$line->status_in_session;
+                                        if(in_array($status_stagiaire, $TStagiaireStatusToExclude)) continue;
+                                }
+
 				// Nom
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-5);
