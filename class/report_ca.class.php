@@ -659,7 +659,8 @@ class ReportCA extends AgefoddExportExcel {
 			for($month_todo = 1; $month_todo <= 12; $month_todo ++) {
 
 				// For Total HT/TTC
-				$sql = "SELECT sum(facdet.total_ttc) as amount_ttc, sum(facdet.total_ht) as amount_ht";
+				$sql = "SELECT sum(facdet.total_ttc / (SELECT COUNT(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ttc";
+				$sql.= ", SUM(facdet.total_ht / (SELECT COUNT(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ht";
 				if(array_key_exists('group_by_session', $filter)) $sql.= ", s.rowid";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
@@ -774,7 +775,8 @@ class ReportCA extends AgefoddExportExcel {
 				$this->db->free($resql);
 
 				// For TotalHF/HT
-				$sql = "SELECT sum(facdet.total_ttc) as amount_ttc, sum(facdet.total_ht) as amount_ht";
+				$sql = "SELECT SUM(facdet.total_ttc / (SELECT COUNT(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ttc";
+				$sql.= ", SUM(facdet.total_ht / (SELECT COUNT(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ht";
 				if(array_key_exists('group_by_session', $filter)) $sql.= ", s.rowid";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
