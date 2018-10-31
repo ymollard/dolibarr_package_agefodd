@@ -52,6 +52,10 @@ if (! $user->rights->agefodd->lire) {
 	accessforbidden();
 }
 
+$hookmanager->initHooks(array(
+		'agefoddsessioncard'
+));
+
 $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
