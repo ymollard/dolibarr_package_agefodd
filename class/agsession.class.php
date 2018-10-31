@@ -3721,7 +3721,7 @@ class Agsession extends CommonObject
 		$alertday = false;
 		if ($blocNumber < 1) {
 			print '<td  width="20%" valign="top" >' . $langs->trans("AgfCalendrier") . '</td>';
-			print '<td colspan="'.$colspan.'" style="color:red; text-decoration: blink;">' . $langs->trans("AgfNoCalendar") . '</td></tr>';
+			print '<td colspan="'.$colspan.'" style="color:red;">' . $langs->trans("AgfNoCalendar") . '</td></tr>';
 		} else {
 			print '<td  width="20%" valign="top" style="border-bottom:0px;">' . $langs->trans("AgfCalendrier") . '</td>';
 			$old_date = 0;
