@@ -266,6 +266,13 @@ if ($action == 'setvar') {
 	if (! $res > 0)
 		$error ++;
 
+	$TStagiaireStatusToExclude = GETPOST('TStagiaire_session_status');
+	if(is_array($TStagiaireStatusToExclude)) {
+		$TStagiaireStatusToExclude = implode(',', $TStagiaireStatusToExclude);
+		$TStagiaireStatusToExclude = strtr($TStagiaireStatusToExclude, array('prosp'=>'0'));
+	}
+	$res = dolibarr_set_const($db, 'AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES', $TStagiaireStatusToExclude, 'chaine', 0, '', $conf->entity);
+
 	if ($_FILES["imagesup"]["tmp_name"]) {
 		if (preg_match('/([^\\/:]+)$/i', $_FILES["imagesup"]["name"], $reg)) {
 			$original_file = $reg[1];
@@ -958,7 +965,20 @@ print '<td align="center">';
 print '</td>';
 print '</tr>';
 
-
+// Trainee status to hide on emargement
+$sess_sta = new Agefodd_session_stagiaire($db);
+print '<tr class="pair"><td>' . $langs->trans("AgfTraineeStatusToExcludeToFichePres") . '</td>';
+print '<td align="left">';
+$TStagiaireStatusToExclude = $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES;
+if(strpos($TStagiaireStatusToExclude, '0') !== false) {
+	$TStagiaireStatusToExclude = strtr($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES, array('0'=>'prosp'));
+	$sess_sta->labelstatut['prosp'] = $sess_sta->labelstatut[0];
+	unset($sess_sta->labelstatut[0]);
+}
+print $formAgefodd->multiselectarray('TStagiaire_session_status', $sess_sta->labelstatut, explode(',', $TStagiaireStatusToExclude));
+print '<td align="center">';
+print '</td>';
+print '</tr>';
 
 print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
 print '</tr>';
