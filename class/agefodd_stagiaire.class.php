@@ -93,12 +93,17 @@ class Agefodd_stagiaire extends CommonObject {
 			// Check parameters
 			// Put here code to add control on parameters value
 		$this->nom = mb_strtoupper($this->nom, 'UTF-8');
-		if ((strpos($this->prenom, "-") !== false) || (strpos($this->prenom, " ") !== false)) {
-			$this->prenom = ucwords(strtolower($this->prenom));
-			$this->prenom = preg_replace_callback('#-(\w)#', "'-'.strtoupper('$1')", $this->prenom);
-		} else {
-			$this->prenom = ucfirst(mb_strtolower($this->prenom, 'UTF-8'));
-		}
+		$this->prenom = mb_strtolower($this->prenom, 'UTF-8');
+
+        /*
+         * Format firstname
+         *
+         * jean paul => Jean-Paul
+         * jean-paul => Jean-Paul
+         */
+        $Tab = preg_split('/[\-| ]+/', $this->prenom);
+        $this->prenom = implode('-', $Tab);
+        $this->prenom = ucwords($this->prenom, '-');
 
 		if (empty($this->civilite)) {
 			$error ++;
