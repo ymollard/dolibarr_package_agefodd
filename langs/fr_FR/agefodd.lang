@@ -1454,3 +1454,4 @@ AgfExternalAccessSessionCardDeclareHoursInfo=Règles de saisies :<br /> - si vou
 
 AgfDureeDeclared=Heures déclarées
 AgfDureeSolde=Solde
+AgfErrNoAdminTasksFound=Aucune tâche administrative trouvée
