@@ -1967,7 +1967,12 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
     print '<div class="'.($onlybanner?'arearefnobottom ':'arearef ').'heightref valignmiddle" width="100%">';
     $object->id_contact_ref=$object->id . ' # ' . $object->ref;
+    if ($object->table_element == 'agefodd_session'){ // to fix navigation that doesn't work
+        $tmpref = $object->ref;
+        $object->ref = $object->id;
+    }
     print $form->showrefnav($object, $paramid, $morehtml, $shownav, $fieldid, 'id_contact_ref', $morehtmlref, $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
+    if ($object->table_element == 'agefodd_session') $object->ref = $tmpref;
     print '</div><br>';
     print '<div class="underrefbanner clearboth"></div>';
     //print '<div class="underbanner clearboth"></div>';
