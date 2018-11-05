@@ -26,8 +26,8 @@
 function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$object,$parameters) {
 	$outputlangs->trans('agefood@agefodd');
 	$substitutionarray=array_merge($substitutionarray, array(
-			'__FORMINTITULE__' => $outputlangs->trans('AgfFormIntitule'),
-			'__FORMDATESESSION__' => $outputlangs->trans('AgfPDFFichePres7bis'),
+			'__FORMINTITULE__' => $outputlangs->trans('AgfFormIntitule').' '.$outputlangs->trans('OnlyOnTrainingMail'),
+			'__FORMDATESESSION__' => $outputlangs->trans('AgfPDFFichePres7bis').' '.$outputlangs->trans('OnlyOnTrainingMail'),
 	));
 	return $substitutionarray;
 }
