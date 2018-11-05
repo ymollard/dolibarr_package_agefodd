@@ -1410,4 +1410,5 @@ AgfCoutFormationPlanned=Prix de vente planifié
 AgfCostOtherPlanned=Coût(s) autre(s) planifiés
 AgfCostTrainerPlanned=Coût formateur(s)/trice(s) planifié
 AgfMarginPlanned=Marge planifiée
+AgfErrNoAdminTasksFound=Aucune tâche administrative trouvée
 OnlyOnTrainingMail= (Uniquement disponible pour les emails de formation)
