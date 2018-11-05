@@ -1455,3 +1455,4 @@ AgfExternalAccessSessionCardDeclareHoursInfo=Règles de saisies :<br /> - si vou
 AgfDureeDeclared=Heures déclarées
 AgfDureeSolde=Solde
 AgfErrNoAdminTasksFound=Aucune tâche administrative trouvée
+OnlyOnTrainingMail= (Uniquement disponible pour les emails de formation)
