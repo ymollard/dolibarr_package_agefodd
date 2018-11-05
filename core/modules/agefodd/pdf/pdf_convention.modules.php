@@ -455,6 +455,9 @@ class pdf_convention extends ModelePDFAgefodd
 						$nbstag = count($agf_conv->line_trainee);
 						$nbstag .= ' ' . $langs->trans('AgfConvArt1_15');
 						$this->str = str_replace('Nb_participants', $nbstag, $this->str);
+					} else {
+						$nbstag = $langs->transnoentities('AgfConvArt3_5');
+						$this->str = str_replace('Nb_participants', $nbstag, $this->str);
 					}
 				}
 				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -508,7 +511,7 @@ class pdf_convention extends ModelePDFAgefodd
 							$trainee_list_str = ' ' . $langs->trans('AgfConvArt3_3') . ' ' . implode(', ', $traine_list);
 						}
 					} else if (count($traine_list) == 0) {
-						$trainee_list_str = $langs->trans('AgfConvArt3_5');
+						$trainee_list_str = $langs->transnoentities('AgfConvArt3_5');
 					}
 
 					$art3 = str_replace('List_Participants', $trainee_list_str, $agf_conv->art3);
