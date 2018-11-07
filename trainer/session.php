@@ -82,6 +82,8 @@ $formAgefodd = new FormAgefodd($db);
 $form = new Form($db);
 $formother = new FormOther($db);
 
+$hookmanager->initHooks(array('sessiontrainerlist'));
+
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_id = '';
@@ -166,7 +168,7 @@ if ($id) {
 		dol_agefodd_banner_tab($agf, 'id');
 		print '<div class="underbanner clearboth"></div>';
 
-		print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&optioncss=' . GETPOST('optioncss') . '" name="search_form">' . "\n";
+		print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&optioncss=' . GETPOST('optioncss') . '" name="searchFormList" id="searchFormList">' . "\n";
 		print '<input type="hidden" name="optioncss" value="' . $optioncss . '">' . "\n";
 
 		print_barre_liste($langs->trans("AgfSessionDetail"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, "", $result, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
@@ -189,8 +191,7 @@ if ($id) {
 			print '</div>';
 		}
 
-		print '<div class="div-table-responsive">';
-		print '<table class="noborder listwithfilterbefore"  width="100%">';
+		print '<table class="noborder tagtable liste listwithfilterbefore"  width="100%">';
 
 		// Filter
 		print '<tr class="liste_titre_filter">';
@@ -419,7 +420,6 @@ if ($id) {
 		print '<td></td>';
 		print '</tr>';
 		print '</table>';
-		print '</div>';
 		print '</form>';
 	} else {
 		$langs->trans('AgfNoSession');
