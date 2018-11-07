@@ -689,7 +689,7 @@ if (! $res)
 										if ($user->rights->agefodd->modifier) {
 											print '<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&amp;sessid=' . $formateurs->lines[$i]->sessid . '&amp;opsid=' . $formateurs->lines[$i]->opsid . '&amp;id=' . $id . '&amp;form_remove=1">' . img_picto($langs->trans("Delete"), 'delete') . '</a>';
 										}
-										if ($user->rights->agefodd->modifier && ! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
+										if ($user->rights->agefodd->modifier && ! empty($conf->global->AGF_DOL_TRAINER_AGENDA) && ! $user->rights->agefodd->session->trainer) {
 											print '&nbsp;';
 											print '<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit_calendrier&amp;id=' . $id . '&amp;rowf=' . $formateurs->lines[$i]->formid . '">' . img_picto($langs->trans('Time'), 'calendar', '', false, 0, 0, '', 'valignmiddle') . '</a>';
 										}
