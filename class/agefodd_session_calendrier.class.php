@@ -29,8 +29,7 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 /**
  * Session calendar class
  */
-class Agefodd_sesscalendar {
-	protected $db;
+class Agefodd_sesscalendar extends CommonObject{
 	public $error;
 	public $errors = array ();
 	public $element = 'agefodd';
