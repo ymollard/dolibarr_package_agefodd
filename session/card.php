@@ -1456,7 +1456,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 										} else {
 											print ', ';
 										}
-										print dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
+										if (! $user->rights->agefodd->session->trainer){
+											print dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
+										}
 
 										if ($j == $blocNumber - 1) {
 											print '</td></tr>';

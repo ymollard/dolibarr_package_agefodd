@@ -3741,7 +3741,9 @@ class Agsession extends CommonObject
 				} else {
 					print ', ';
 				}
-				print dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour');
+				if (! $user->rights->agefodd->session->trainer){
+					print dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour');
+				}
 
 				if (($calendrier->lines[$i]->date_session < $this->dated) || ($calendrier->lines[$i]->date_session > $this->datef))
 					$alertday = true;

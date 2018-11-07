@@ -622,7 +622,9 @@ if (! $res)
 														} else {
 															$hourhtml .= ', ';
 														}
-														$hourhtml .= dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
+														if (! $user->rights->agefodd->session->trainer){
+															$hourhtml .= dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
+														}
 
 														if ($j == $blocNumber - 1) {
 															$hourhtml .= '</td></tr></table>'."\n";
