@@ -1058,7 +1058,7 @@ if (! $res)
                 }
 
                 if (! $user->rights->agefodd->session->trainer) {
-	                if ($user->rights->agefodd->modifier &&) {
+	                if ($user->rights->agefodd->modifier) {
 	                    print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&action=presend_trainer_doc&mode=init">' . $langs->trans('AgfSendDocuments') . '</a>';
 	                } else {
 	                    print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfSendDocuments') . '</a>';
