@@ -153,7 +153,7 @@ function session_prepare_head($object, $showconv = 0) {
 	$head [$h] [1] = $langs->trans("AgfCalendrier");
 	$head [$h] [2] = 'calendar';
 	$h ++;
-	
+
 	if (!empty($conf->fullcalendarscheduler->enabled))
 	{
 		$head [$h] [0] = dol_buildpath('/agefodd/session/scheduler.php', 1) . '?id=' . $id;
@@ -238,7 +238,7 @@ function session_prepare_head($object, $showconv = 0) {
 		$h ++;
 	}
 
-	if (! empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
+	if (! empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT) && (! $user->rights->agefodd->session->trainer)) {
 
 		$head [$h] [0] = dol_buildpath('/agefodd/session/cost.php', 1) . '?id=' . $id;
 		$head [$h] [1] = $langs->trans("AgfCostManagement");
@@ -1852,8 +1852,10 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         $sess_adm = new Agefodd_sessadm($db);
         $result = $sess_adm->fetch_all($object->id);
 
-        if ($result > 0) $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"));
-        $morehtmlstatus.= $langs->trans("AgfFormTypeSession") . ' : ' . ($object->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')).'</div>';
+        if ($result > 0) $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"))."<br>";
+        if (! $user->rights->agefodd->session->trainer) {
+        	$morehtmlstatus.= $langs->trans("AgfFormTypeSession") . ' : ' . ($object->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra'))."<br>";
+        }
         if (!empty($object->fk_product)) {
         	dol_include_once('/product/class/product.class.php');
         	$prod=new Product($db);
@@ -1861,8 +1863,8 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         	if ($result>0) {
         		$morehtmlstatus.=$langs->trans('AgfProductServiceLinked').' : '.$prod->getNomUrl(1);
         	}
-
         }
+        $morehtmlstatus.='</div>';
 
     } elseif ($object->table_element == 'agefodd_place'){
 
@@ -1897,7 +1899,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
             $morehtmlref .= '<br>' . $langs->trans("Customer") . ' : ' .$soc->getNomUrl(1);
         }
 
-        if (!empty($object->placeid)){
+        if (!empty($object->placeid) && (! $user->rights->agefodd->session->trainer)){
             $morehtmlref .= '<br>'. $langs->trans("AgfLieu") . ' : ';
             $morehtmlref .= '<a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $object->placeid . '">' . $object->placecode . '</a>';
         }
@@ -1965,7 +1967,12 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
     print '<div class="'.($onlybanner?'arearefnobottom ':'arearef ').'heightref valignmiddle" width="100%">';
     $object->id_contact_ref=$object->id . ' # ' . $object->ref;
+    if ($object->table_element == 'agefodd_session'){ // to fix navigation that doesn't work
+        $tmpref = $object->ref;
+        $object->ref = $object->id;
+    }
     print $form->showrefnav($object, $paramid, $morehtml, $shownav, $fieldid, 'id_contact_ref', $morehtmlref, $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
+    if ($object->table_element == 'agefodd_session') $object->ref = $tmpref;
     print '</div><br>';
     print '<div class="underrefbanner clearboth"></div>';
     //print '<div class="underbanner clearboth"></div>';
@@ -1988,10 +1995,10 @@ function calcul_margin_percent($cashed_cost,$spend_cost)
 function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $strict=true, $return_error=false)
 {
 	global $db;
-	
+
 	$TRes = array();
 	if (empty($agf_calendrier_formateur->id)) return $TRes;
-	
+
 	$sql = 'SELECT c.rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier c';
 //	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
 	$sql.= ' WHERE c.fk_agefodd_session = '.$agf_calendrier_formateur->sessid;
@@ -2005,7 +2012,7 @@ function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $stri
 		$sql.= ' AND c.heured <= \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heuref).'\'';
 		$sql.= ' AND c.heuref >= \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heured).'\'';
 	}
-	
+
 	$resql = $db->query($sql);
 	if ($resql)
 	{
@@ -2019,9 +2026,9 @@ function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $stri
 	else
 	{
 		if ($return_error) return $db->lasterror();
-		
+
 		exit($db->lasterror());
 	}
-	
+
 	return $TRes;
 }

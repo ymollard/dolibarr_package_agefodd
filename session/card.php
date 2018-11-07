@@ -52,6 +52,10 @@ if (! $user->rights->agefodd->lire) {
 	accessforbidden();
 }
 
+$hookmanager->initHooks(array(
+		'agefoddsessioncard'
+));
+
 $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
@@ -1521,7 +1525,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '<tr><td  width="20%" valign="top" ';
 					if ($nbstag < 1) {
 						print '>' . $langs->trans("AgfParticipants") . '</td>';
-						print '<td style="text-decoration: blink;">' . $langs->trans("AgfNobody") . '</td></tr>';
+						print '<td style="color:red;">' . $langs->trans("AgfNobody") . '</td></tr>';
 					} else {
 						print ' rowspan=' . ($nbstag) . '>' . $langs->trans("AgfParticipants");
 						if ($nbstag > 1)

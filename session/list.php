@@ -130,7 +130,7 @@ if (! empty($idforma)) {
 // prefilter the list if defined
 if (! empty($conf->global->AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH)) {
 	$button_removefilter_x = GETPOST("button_removefilter_x");
-	$button_search = GETPOST("button_search");
+	$button_search = GETPOST("button_search_x");
 	if (empty($button_removefilter_x) && empty($button_search)) {
 		$search_month = date("m");
 		$search_year = date("Y");
