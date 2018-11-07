@@ -116,12 +116,7 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 	$result = $agf->fetch(0, 0, $id);
 
 	// Define output language
-	$newlang = GETPOST('lang_id', 'alpha');
-	if ($conf->global->MAIN_MULTILANGS && empty($newlang)) {
-		$soc_lang=new Societe($db);
-		$soc_lang->fetch($agf->socid);
-		$newlang = $soc_lang->default_lang;
-	}
+	$newlang = (!empty($conf->global->MAIN_MULTILANGS)?$agf->doc_lang:'');
 	if (! empty($newlang)) {
 		$outputlangs = new Translate("", $conf);
 		$outputlangs->setDefaultLang($newlang);
@@ -175,6 +170,7 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 		$sig = GETPOST('sig');
 		$notes = GETPOST('notes');
 		$model_doc = GETPOST('model_doc', 'alpha');
+		$doc_lang = GETPOST('doc_lang', 'alpha');
 		$only_product_session = GETPOST('only_product_session', 'int');
 		$traine_list = GETPOST('trainee_id', 'array');
 
@@ -215,6 +211,8 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 			$agf->element_type = $element_type;
 		if (! empty($model_doc))
 			$agf->model_doc = $model_doc;
+		if (! empty($doc_lang))
+			$agf->doc_lang = $doc_lang;
 
 		$agf->only_product_session = $only_product_session;
 		$agf->notes = $notes;
@@ -258,6 +256,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 		$sig = GETPOST('sig');
 		$notes = GETPOST('notes');
 		$model_doc = GETPOST('model_doc', 'alpha');
+		$doc_lang = GETPOST('doc_lang', 'alpha');
 		$traine_list = GETPOST('trainee_id', 'array');
 		$only_product_session = GETPOST('only_product_session', 'int');
 
@@ -305,6 +304,8 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 				$agf->element_type = $element_type;
 			if (! empty($model_doc))
 				$agf->model_doc = $model_doc;
+			if (! empty($doc_lang))
+				$agf->doc_lang = $doc_lang;
 
 			$agf->only_product_session = $only_product_session;
 			$agf->socid = $socid;
@@ -665,6 +666,25 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print $formAgefodd->select_conv_model('', 'model_doc');
 	print '</td></tr>';
 
+	if (!empty($conf->global->MAIN_MULTILANGS)) {
+		include_once DOL_DOCUMENT_ROOT.'/core/class/html.formadmin.class.php';
+		$formadmin=new FormAdmin($db);
+		$langs->load('admin');
+		if (empty($agf->doc_lang)) {
+			if (!empty($agf_soc->default_lang)) {
+				$defaultlang = $agf_soc->default_lang;
+			} else {
+				$defaultlang = $langs->getDefaultLang();
+			}
+		}
+		$morecss='maxwidth150';
+		if (! empty($conf->browser->phone)) $morecss='maxwidth100';
+		print '<tr><td valign="top" width="200px">' . $langs->trans("DefaultLanguage") . '</td>';
+		print '<td>';
+		print $formadmin->select_language($defaultlang, 'doc_lang', 0, 0, 0, 0, 0, $morecss);
+		print '</td></tr>';
+	}
+
 	print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvTrainees") . '</td>';
 	print '<td>';
 
@@ -772,6 +792,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 		$head = session_prepare_head($agf, 1);
 
+		$agf_soc = new Societe($db);
+		$result = $agf_soc->fetch($agf->socid);
+
 		$hselected = 'convention';
 
 		dol_fiche_head($head, $hselected, $langs->trans("AgfSessionDetail"), 0, 'bill');
@@ -839,6 +862,25 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			print '<td>';
 			print $formAgefodd->select_conv_model($agf->model_doc, 'model_doc');
 			print '</td></tr>';
+
+			if (!empty($conf->global->MAIN_MULTILANGS)) {
+				include_once DOL_DOCUMENT_ROOT.'/core/class/html.formadmin.class.php';
+				$formadmin=new FormAdmin($db);
+				$langs->load('admin');
+				if (empty($agf->doc_lang)) {
+					if (!empty($agf_soc->default_lang)) {
+						$agf->doc_lang = $agf_soc->default_lang;
+					} else {
+						$agf->doc_lang = $langs->getDefaultLang();
+					}
+				}
+				$morecss='maxwidth150';
+				if (! empty($conf->browser->phone)) $morecss='maxwidth100';
+				print '<tr><td valign="top" width="200px">' . $langs->trans("DefaultLanguage") . '</td>';
+				print '<td>';
+				print $formadmin->select_language($agf->doc_lang, 'doc_lang', 0, 0, 0, 0, 0, $morecss);
+				print '</td></tr>';
+			}
 
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvTrainees") . '</td>';
 			print '<td>';
@@ -1004,6 +1046,16 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 				}
 			}
 			print print '</td></tr>';
+
+			if (!empty($conf->global->MAIN_MULTILANGS)) {
+				$langs->load('admin');
+				$defaultlang=$agf->doc_lang?$agf->doc_lang:$langs->getDefaultLang();
+				print '<tr><td valign="top" width="200px">' . $langs->trans("DefaultLanguage") . '</td>';
+				print '<td>';
+				$langs_available=$langs->get_available_languages(DOL_DOCUMENT_ROOT,12);
+				print $langs_available[$defaultlang];
+				print '</td></tr>';
+			}
 
 			print '<tr><td valign="top" width="200px">' . $langs->trans("AgfConvTrainees") . '</td>';
 			print '<td>';

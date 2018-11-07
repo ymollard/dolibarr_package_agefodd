@@ -168,17 +168,17 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 		$soc_lang=new Societe($db);
 		$soc_lang->fetch($socid);
 
-		$newlang = GETPOST('lang_id', 'alpha');
-		if ($conf->global->MAIN_MULTILANGS && empty($newlang)) {
-			$newlang = $soc_lang->default_lang;
-		}
+		$convention = new Agefodd_convention($db);
+		$convention->fetch(0, 0, GETPOST('convid', 'int'));
+
+		$newlang = (!empty($conf->global->MAIN_MULTILANGS)?$convention->doc_lang:'');
 		if (! empty($newlang)) {
 			$outputlangs = new Translate("", $conf);
 			$outputlangs->setDefaultLang($newlang);
+		} else {
+			$outputlangs=$langs;
 		}
 
-		$convention = new Agefodd_convention($db);
-		$convention->fetch(0, 0, GETPOST('convid', 'int'));
 		$id_tmp = $convention->id;
 		$model = $convention->model_doc;
 		// Si on est sur un modèle externe module courrier, on charge toujours l'objet session dans lequel se trouvent toutes les données

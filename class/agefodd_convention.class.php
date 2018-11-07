@@ -51,6 +51,7 @@ class Agefodd_convention {
 	public $art9;
 	public $sig;
 	public $only_product_session;
+	public $doc_lang;
 	public $notes;
 	public $contatcdoc;
 	public $lines = array ();
@@ -106,11 +107,13 @@ class Agefodd_convention {
 			$this->notes = $this->db->escape(trim($this->notes));
 		if (empty($this->fk_element))
 			$this->fk_element = 0;
-		if (isset($this->element_type))
+		if (!empty($this->element_type))
 			$this->element_type = $this->db->escape(trim($this->element_type));
-		if (isset($this->model_doc))
+		if (!empty($this->model_doc))
 			$this->model_doc = $this->db->escape(trim($this->model_doc));
-		if (isset($this->only_product_session))
+		if (!empty($this->doc_lang))
+			$this->doc_lang = $this->db->escape(trim($this->doc_lang));
+		if (!empty($this->only_product_session))
 			$this->only_product_session = $this->db->escape(trim($this->only_product_session));
 
 			// Check parameters
@@ -123,6 +126,7 @@ class Agefodd_convention {
 		$sql .= ",element_type";
 		$sql .= ",fk_element";
 		$sql .= ",model_doc";
+		$sql .= ",doc_lang";
 		$sql .= ",only_product_session";
 		$sql .= ") VALUES (";
 		$sql .= "'" . $this->sessid . "', ";
@@ -143,10 +147,11 @@ class Agefodd_convention {
 		$sql .= $user->id . ', ';
 		$sql .= $user->id . ', ';
 		$sql .= "'" . $this->db->idate(dol_now()) . "'";
-		$sql .= ",'" . $this->element_type . "'";
+		$sql .= "," . (empty($this->element_type) ? 'NULL' : "'" . $this->element_type . "'");
 		$sql .= "," . $this->fk_element;
-		$sql .= "," . (! isset($this->model_doc) ? 'NULL' : "'" . $this->db->escape($this->model_doc) . "'");
-		$sql .= "," . (empty($this->only_product_session) ? '0' : "'" . $this->db->escape($this->only_product_session) . "'");
+		$sql .= "," . (empty($this->model_doc) ? 'NULL' : "'" . $this->model_doc . "'");
+		$sql .= "," . (empty($this->doc_lang) ? 'NULL' : "'" . $this->doc_lang . "'");
+		$sql .= "," . (empty($this->only_product_session) ? '0' : $this->only_product_session);
 		$sql .= ")";
 
 		$this->db->begin();
@@ -225,6 +230,7 @@ class Agefodd_convention {
 		$sql .= ",element_type";
 		$sql .= ",fk_element";
 		$sql .= ",model_doc";
+		$sql .= ",doc_lang";
 		$sql .= ",only_product_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "societe as s ON s.rowid=c.fk_societe";
@@ -261,6 +267,7 @@ class Agefodd_convention {
 				$this->element_type = $obj->element_type;
 				$this->fk_element = $obj->fk_element;
 				$this->model_doc = $obj->model_doc;
+				$this->doc_lang = $obj->doc_lang;
 				$this->only_product_session = $obj->only_product_session;
 			}
 			$this->db->free($resql);
@@ -310,6 +317,7 @@ class Agefodd_convention {
 		$sql .= ",element_type";
 		$sql .= ",fk_element";
 		$sql .= ",model_doc";
+		$sql .= ",doc_lang";
 		$sql .= ",only_product_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "societe as s ON s.rowid=c.fk_societe";
@@ -349,6 +357,7 @@ class Agefodd_convention {
 					$line->element_type = $obj->element_type;
 					$line->fk_element = $obj->fk_element;
 					$line->model_doc = $obj->model_doc;
+					$line->doc_lang = $obj->doc_lang;
 					$line->only_product_session = $obj->only_product_session;
 
 					$line->line_trainee = array ();
@@ -703,11 +712,13 @@ class Agefodd_convention {
 			$this->notes = $this->db->escape(trim($this->notes));
 		if (empty($this->fk_element))
 			$this->fk_element = 0;
-		if (isset($this->element_type))
+		if (!empty($this->element_type))
 			$this->element_type = $this->db->escape(trim($this->element_type));
 		if (isset($this->model_doc))
 			$this->model_doc = $this->db->escape(trim($this->model_doc));
-		if (isset($this->only_product_session))
+		if (!empty($this->doc_lang))
+			$this->doc_lang = $this->db->escape(trim($this->doc_lang));
+		if (!empty($this->only_product_session))
 			$this->only_product_session = $this->db->escape(trim($this->only_product_session));
 
 			// Update request
@@ -728,12 +739,13 @@ class Agefodd_convention {
 		$sql .= " sig='" . $this->sig . "',";
 		$sql .= " notes='" . $this->notes . "',";
 		$sql .= " fk_element=" . $this->fk_element . ",";
-		$sql .= " element_type='" . $this->element_type . "',";
+		$sql .= " element_type=" . (!empty($this->element_type) ? "'" . $this->element_type . "'" : "null") . ", ";
 		$sql .= " fk_societe=" . $this->socid . ",";
 		$sql .= " fk_agefodd_session=" . $this->sessid . ",";
 		$sql .= " fk_user_mod=" . $user->id . ", ";
-		$sql .= " model_doc=" . (isset($this->model_doc) ? "'" . $this->db->escape($this->model_doc) . "'" : "null") . ", ";
-		$sql .= " only_product_session=" . (!empty($this->only_product_session) ? "'" . $this->db->escape($this->only_product_session) . "'" : "null");
+		$sql .= " doc_lang=" . (!empty($this->doc_lang) ? "'" . $this->doc_lang . "'" : "null") . ", ";
+		$sql .= " model_doc=" . (isset($this->model_doc) ? "'" . $this->model_doc . "'" : "null") . ", ";
+		$sql .= " only_product_session=" . (!empty($this->only_product_session) ? $this->only_product_session  : "0");
 		$sql .= " WHERE rowid = " . $this->id;
 
 		$this->db->begin();
