@@ -199,30 +199,36 @@ function session_prepare_head($object, $showconv = 0) {
 	$h++;*/
 	// TODO fiche de presence
 
-	$head [$h] [0] = dol_buildpath('/agefodd/session/administrative.php', 1) . '?id=' . $id;
-	$head [$h] [1] = $langs->trans("AgfAdmSuivi");
-	$head [$h] [2] = 'administrative';
-	$h ++;
+	if (! $user->rights->agefodd->session->trainer){
+		$head [$h] [0] = dol_buildpath('/agefodd/session/administrative.php', 1) . '?id=' . $id;
+		$head [$h] [1] = $langs->trans("AgfAdmSuivi");
+		$head [$h] [2] = 'administrative';
+		$h ++;
+	}
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/document.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfLinkedDocuments");
 	$head [$h] [2] = 'document';
 	$h ++;
 
-	$head [$h] [0] = dol_buildpath('/agefodd/session/document_trainee.php', 1) . '?id=' . $id;
-	$head [$h] [1] = $langs->trans("AgfLinkedDocumentsByTrainee");
-	$head [$h] [2] = 'document_trainee';
-	$h ++;
+	if (! $user->rights->agefodd->session->trainer){
+		$head [$h] [0] = dol_buildpath('/agefodd/session/document_trainee.php', 1) . '?id=' . $id;
+		$head [$h] [1] = $langs->trans("AgfLinkedDocumentsByTrainee");
+		$head [$h] [2] = 'document_trainee';
+		$h ++;
+	}
 
-	$head [$h] [0] = dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id;
-	$head[$h][1].= $langs->trans("Events");
-    if (! empty($conf->agenda->enabled) && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read) ))
-    {
-        $head[$h][1].= '/';
-        $head[$h][1].= $langs->trans("Agenda");
-    }
-	$head [$h] [2] = 'agenda';
-	$h ++;
+	if (! $user->rights->agefodd->session->trainer){
+		$head [$h] [0] = dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id;
+		$head[$h][1].= $langs->trans("Events");
+	    if (! empty($conf->agenda->enabled) && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read) ))
+	    {
+	        $head[$h][1].= '/';
+	        $head[$h][1].= $langs->trans("Agenda");
+	    }
+		$head [$h] [2] = 'agenda';
+		$h ++;
+	}
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/document_files.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("Documents");
