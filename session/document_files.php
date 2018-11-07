@@ -50,6 +50,11 @@ $ref = GETPOST('ref', 'alpha');
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
+
+$hookmanager->initHooks(array(
+		'agefoddsessionlinkedfiles'
+));
+
 	// Get parameters
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
@@ -74,9 +79,10 @@ if ($result < 0) {
 	$upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
 }
 
-/*
- * Actions
-*/
+$parameters = array('id'=>$id);
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0)
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 /*
  * Actions
@@ -132,7 +138,7 @@ if ($object->id) {
 
 	dol_agefodd_banner_tab($object, 'id');
 	print '<div class="underbanner clearboth"></div>';
-	
+
 	// Construit liste des fichiers
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
 	$totalsize = 0;
