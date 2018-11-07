@@ -45,6 +45,11 @@ $langs->load("companies");
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
+
+$hookmanager->initHooks(array(
+		'agefoddsessiontrainee'
+));
+
 $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
@@ -56,6 +61,12 @@ $importfrom = GETPOST('importfrom', 'alpha');
 $agf = new Agefodd_stagiaire($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
+
+$parameters = array('id'=>$id);
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $agf, $action); // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0)
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
 
 /*
  * Actions delete
@@ -416,9 +427,11 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 	print '<select name="importfrom" id="importfrom" class="flat">';
 	$selected = '';
-	if ($importfrom == 'contact')
-		$selected = ' selected="selected" ';
-	print '<option value="contact" ' . $selected . '>' . $langs->trans("AgfMenuActStagiaireNewFromContact") . '</option>';
+	if (! $user->rights->agefodd->session->trainer) {
+		if ($importfrom == 'contact')
+			$selected = ' selected="selected" ';
+		print '<option value="contact" ' . $selected . '>' . $langs->trans("AgfMenuActStagiaireNewFromContact") . '</option>';
+	}
 	$selected = '';
 	if ($importfrom == 'create' || empty($importfrom))
 		$selected = ' selected="selected" ';
@@ -430,21 +443,23 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 	print '<table class="border" width="100%">';
 
-	print '<tr><td width="20%">' . $langs->trans("AgfContactImportAsStagiaire") . '</td>';
-	print '<td>';
+	if (! $user->rights->agefodd->session->trainer) {
+		print '<tr><td width="20%">' . $langs->trans("AgfContactImportAsStagiaire") . '</td>';
+		print '<td>';
 
-	$agf_static = new Agefodd_stagiaire($db);
-	$agf_static->fetch_all('DESC', 's.rowid', '', 0);
-	$exclude_array = array ();
-	if (is_array($agf_static->lines) && count($agf_static->lines) > 0) {
-		foreach ( $agf_static->lines as $line ) {
-			if (! empty($line->fk_socpeople)) {
-				$exclude_array[] = $line->fk_socpeople;
+		$agf_static = new Agefodd_stagiaire($db);
+		$agf_static->fetch_all('DESC', 's.rowid', '', 0);
+		$exclude_array = array ();
+		if (is_array($agf_static->lines) && count($agf_static->lines) > 0) {
+			foreach ( $agf_static->lines as $line ) {
+				if (! empty($line->fk_socpeople)) {
+					$exclude_array[] = $line->fk_socpeople;
+				}
 			}
 		}
+		$formAgefodd->select_contacts_custom(0, '', 'contact', 1, $exclude_array, '', 1, '', 1);
+		print '</td></tr>';
 	}
-	$formAgefodd->select_contacts_custom(0, '', 'contact', 1, $exclude_array, '', 1, '', 1);
-	print '</td></tr>';
 
 	print '</table>';
 	print '</div>';
@@ -464,7 +479,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		$checkedNo = 'checked="checked"';
 	}
 
-	print '<tr><td>' . $langs->trans('CreateANewThirPartyFromTraineeForm');
+	print '<tr id="tr_create_thirdparty"><td>' . $langs->trans('CreateANewThirPartyFromTraineeForm');
 	print img_picto($langs->trans("CreateANewThirPartyFromTraineeFormInfo"), 'help');
 	print '</td>';
 	print '<td colspan="3">';
@@ -473,7 +488,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</td>';
 	print '	</tr>';
 	print '<tr class="select_thirdparty_block"><td class="fieldrequired">' . $langs->trans("Company") . '</td><td colspan="3">';
-	print $form->select_thirdparty_list(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
+	print $form->select_company(GETPOST('societe', 'int'), 'societe', '(s.client = 1 OR s.client = 2 OR s.client = 3) AND status=1', 'SelectThirdParty', 0, 0, null, 0, 'minwidth300');
 	print '</td></tr>';
 
 	print '<tr class="create_thirdparty_block"><td class="fieldrequired">' . $langs->trans("ThirdPartyName") . '</td>';
@@ -512,7 +527,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("Lastname") . '</span></td>';
 	print '<td colspan="3"><input name="nom" class="flat" size="50" value="' . GETPOST('nom', 'alpha') . '"></td></tr>';
 
-	print '<tr><td>' . $langs->trans('CreateANewContactFromTraineeForm');
+	print '<tr id="tr_create_contact"><td>' . $langs->trans('CreateANewContactFromTraineeForm');
 	print img_picto($langs->trans("CreateANewContactFromTraineeFormInfo"), 'help');
 	print '</td>';
 	print '<td colspan="3">';
@@ -528,27 +543,27 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</td>';
 	print '	</tr>';
 
-	print '<tr><td>' . $langs->trans("AgfFonction") . '</td>';
+	print '<tr id="tr_fonction"><td>' . $langs->trans("AgfFonction") . '</td>';
 	print '<td colspan="3"><input name="fonction" class="flat" size="50" value="' . GETPOST('fonction', 'alpha') . '"></td></tr>';
 
 	print '<tr><td>' . $langs->trans("Phone") . '</td>';
 	print '<td colspan="3"><input name="tel1" class="flat" size="50" value="' . GETPOST('tel1', 'alpha') . '"></td></tr>';
 
-	print '<tr><td>' . $langs->trans("Mobile") . '</td>';
+	print '<tr id="tr_tel2"><td>' . $langs->trans("Mobile") . '</td>';
 	print '<td colspan="3"><input name="tel2" class="flat" size="50" value="' . GETPOST('tel2', 'alpha') . '"></td></tr>';
 
 	print '<tr><td>' . $langs->trans("Mail") . '</td>';
 	print '<td colspan="3"><input name="mail" class="flat" size="50" value="' . GETPOST('mail', 'alpha') . '"></td></tr>';
 
-	print '<tr><td>' . $langs->trans("DateToBirth") . '</td>';
+	print '<tr id="tr_datebirth"><td>' . $langs->trans("DateToBirth") . '</td>';
 	print '<td>';
 	print $form->select_date('', 'datebirth', '', '', 1);
 	print '</td></tr>';
 
-	print '<tr><td>' . $langs->trans("AgfPlaceBirth") . '</td>';
+	print '<tr id="tr_place_birth"><td>' . $langs->trans("AgfPlaceBirth") . '</td>';
 	print '<td colspan="3"><input name="place_birth" class="flat" size="50" value=""></td></tr>';
 
-	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
+	print '<tr id="tr_note"><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td colspan="3"><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 
 
@@ -860,7 +875,9 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	}
 }
 
-
+$parameters = array();
+$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $agf, $action); // Note that $action and $object may have been modified by hook
+print $hookmanager->resPrint;
 
 print '</div>';
 
