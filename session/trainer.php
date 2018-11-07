@@ -494,7 +494,9 @@ if (! $res)
 					print '<tr class="liste_titre">';
 					print '<th class="liste_titre">&nbsp;</th>';
 					print '<th class="liste_titre name">Nom</th>';
-					print '<th class="liste_titre status">Statut</th>';
+					if (! $user->rights->agefodd->session->trainer) {
+						print '<th class="liste_titre status">Statut</th>';
+					}
 					if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA))
 					{
 						print '<th class="liste_titre temps_total_prog">Temps total programme</th>';
@@ -537,8 +539,10 @@ if (! $res)
 										}
 										print '</td>';
 
-										print '<td class="status">';
-										print $formAgefodd->select_trainer_session_status('trainerstatus', $formateurs->lines[$i]->trainer_status);
+										if (! $user->rights->agefodd->session->trainer) {
+											print '<td class="status">';
+											print $formAgefodd->select_trainer_session_status('trainerstatus', $formateurs->lines[$i]->trainer_status);
+										}
 
 
 										print '</td>';
@@ -560,7 +564,9 @@ if (! $res)
 										// trainer info
 										if (strtolower($formateurs->lines[$i]->lastname) == "undefined") {
 											print '<td class="name">'.$langs->trans("AgfUndefinedTrainer").'</td>';
-											print '<td class="status">&nbsp;</td>';
+											if (! $user->rights->agefodd->session->trainer) {
+												print '<td class="status">&nbsp;</td>';
+											}
 											print '<td class="temps_total_prog">&nbsp;</td>';
 											print '<td class="temps_prog">&nbsp;</td>';
 										} else {
@@ -576,7 +582,9 @@ if (! $res)
 
 											print '</td>';
 
-											print '<td class="status">'.$formateurs->lines[$i]->getLibStatut(2).'</td>';
+											if (! $user->rights->agefodd->session->trainer) {
+												print '<td class="status">'.$formateurs->lines[$i]->getLibStatut(2).'</td>';
+											}
 
 											$totaltimetrainer = '';
 											$hourhtml = '';
@@ -708,9 +716,11 @@ if (! $res)
 						}
 						print '</td>';
 
-						print '<td class="status">';
-						print $formAgefodd->select_trainer_session_status('trainerstatus', $formateurs->lines[$i]->trainer_status);
-						print '</td>';
+						if (! $user->rights->agefodd->session->trainer) {
+							print '<td class="status">';
+							print $formAgefodd->select_trainer_session_status('trainerstatus', $formateurs->lines[$i]->trainer_status);
+							print '</td>';
+						}
 
 						if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA))
 						{
@@ -727,26 +737,30 @@ if (! $res)
 
 						print '</tr>' . "\n";
 
-						print '<tr class="">';
-						$colspan = 3; //  name / status / actions
-						if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) $colspan+= 2; // temps_total_prog / temps_prog
-
-						print '<td><input type="checkbox" onclick="$(\'input[name^=TSessCalendarId\').prop(\'checked\', this.checked)" /></td>';
-						print '<td colspan="'.$colspan.'">';
-
 						if ($calendrier->fetch_all($calendrier->id) > 0)
 						{
-							print '<ul class="nocellnopadd">'; //tmenu / nocellnopadd
-							foreach ($calendrier->lines as &$agefodd_sesscalendar)
-							{
-								print '<li><input type="checkbox" name="TSessCalendarId[]" value="'.$agefodd_sesscalendar->id.'"> '.dol_print_date($agefodd_sesscalendar->date_session, 'daytext').' ['.dol_print_date($agefodd_sesscalendar->heured, 'hour') . ' - ' . dol_print_date($agefodd_sesscalendar->heuref, 'hour').']</li>';
+							print '<tr class="">';
+							$colspan = 3; //  name / status / actions
+							if (!empty($conf->global->AGF_DOL_TRAINER_AGENDA)) $colspan+= 2; // temps_total_prog / temps_prog
+							if (! $user->rights->agefodd->session->trainer) {
+								$colspan--;
 							}
-							print '</ul>';
+							print '<td><input type="checkbox" onclick="$(\'input[name^=TSessCalendarId\').prop(\'checked\', this.checked)" /></td>';
+							print '<td colspan="'.$colspan.'">';
+
+
+								print '<ul class="nocellnopadd">'; //tmenu / nocellnopadd
+								foreach ($calendrier->lines as &$agefodd_sesscalendar)
+								{
+									print '<li><input type="checkbox" name="TSessCalendarId[]" value="'.$agefodd_sesscalendar->id.'"> '.dol_print_date($agefodd_sesscalendar->date_session, 'daytext').' ['.dol_print_date($agefodd_sesscalendar->heured, 'hour') . ' - ' . dol_print_date($agefodd_sesscalendar->heuref, 'hour').']</li>';
+								}
+								print '</ul>';
+
+
+							print '</td>';
+
+							print '</tr>';
 						}
-
-						print '</td>';
-
-						print '</tr>';
 
 					}
 
