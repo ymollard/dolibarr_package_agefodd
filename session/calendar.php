@@ -517,7 +517,7 @@ if ($id) {
 					print '<td>'.$calendrier->lines[$i]->calendrier_type_label.'</td>';
 					if (!empty($user->rights->agefodd->modifier))
 					{
-						print '<td class="linecoledit center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modperiod=' . $calendrier->lines[$i]->id . '&anchor=period">' . img_picto($langs->trans("Save"), 'edit') . '</a></td>';
+						print '<td class="linecoledit center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modperiod=' . $calendrier->lines[$i]->id . '&anchor=period">' . img_picto($langs->trans("Edit"), 'edit') . '</a></td>';
 						print '<td class="linecoldelete center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&period_remove=1&modperiod=' . $calendrier->lines[$i]->id . '">' . img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
 						print '<td class="center" width="1%"><input type="checkbox" name="deleteselcal[]" value="' . $calendrier->lines[$i]->id . '"/></td>';
 					}

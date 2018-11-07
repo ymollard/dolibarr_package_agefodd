@@ -855,7 +855,7 @@ if (!empty($search_fournorderid)) {
     print $form->selectarray('session_id_form', $sessions, '', 1,0,0,'',0,0,0,'','',1);
     print '</td>';
     print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_formateur"/>';
+    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_formateur"/>';
     print '</td>';
     print '</tr>';
     print '<tr>';
@@ -864,7 +864,7 @@ if (!empty($search_fournorderid)) {
     print $form->selectarray('session_id_missions', $sessions, '', 1,0,0,'',0,0,0,'','',1);
     print '</td>';
     print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_mission"/>';
+    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_mission"/>';
     print '</td>';
     print '</tr>';
     print '<tr>';
@@ -873,7 +873,7 @@ if (!empty($search_fournorderid)) {
     print $form->selectarray('session_id_site', $sessionsSite, '', 1,0,0,'',0,0,0,'','',1);
     print '</td>';
     print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_site"/>';
+    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_site"/>';
     print '</td>';
     print '</tr>';
     print "</table>";
@@ -957,7 +957,7 @@ elseif (empty($search_fourninvoiceref)) {
 	print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1,0,0,'',0,0,0,'','',1);
 	print '</td>';
 	print '<td align="left">';
-	print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_element"/>';
+	print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_element"/>';
 	print '</td>';
 	print '</tr>';
 	print "</table>";
@@ -1028,7 +1028,7 @@ elseif (empty($search_fourninvoiceref)) {
     print $form->selectarray('session_id_form', $sessionsForm, '', 1,0,0,'',0,0,0,'','',1);
     print '</td>';
     print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_formateur"/>';
+    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_formateur"/>';
     print '</td>';
     print '</tr>';
     print '<tr>';
@@ -1037,7 +1037,7 @@ elseif (empty($search_fourninvoiceref)) {
     print $form->selectarray('session_id_missions', $sessionsForm, '', 1,0,0,'',0,0,0,'','',1);
     print '</td>';
     print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_mission"/>';
+    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_mission"/>';
     print '</td>';
     print '</tr>';
     print '<tr>';
@@ -1046,7 +1046,7 @@ elseif (empty($search_fourninvoiceref)) {
     print $form->selectarray('session_id_site', $sessionsSite, '', 1,0,0,'',0,0,0,'','',1);
     print '</td>';
     print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" name="link_site"/>';
+    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_site"/>';
     print '</td>';
     print '</tr>';
     print "</table>";

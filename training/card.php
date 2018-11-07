@@ -254,19 +254,21 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 			if ($newid > 0) {
 				$result = $agf->createAdmLevelForTraining($user);
 				if ($result > 0) {
+					$action = 'create';
 					setEventMessage($agf->error, 'errors');
 					$error ++;
 				}
 			} else {
+				$action = 'create';
 				setEventMessage($agf->error, 'errors');
 				$error ++;
 			}
 
 			if (! $error) {
-
 				Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $newid);
 				exit();
 			} else {
+				$action = 'create';
 				setEventMessage($agf->error, 'errors');
 			}
 		}
