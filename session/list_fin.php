@@ -73,6 +73,7 @@ if (! empty($link_element)) {
 }
 
 $langs->load('bills');
+$langs->load('orders');
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter")) {

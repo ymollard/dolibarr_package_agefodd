@@ -326,7 +326,7 @@ class Agefodd_session_element extends CommonObject {
 
 		if (! empty($id)) {
 			$sql = "SELECT";
-			$sql .= " rowid, fk_session_agefodd, fk_soc ";
+			$sql .= " rowid, fk_session_agefodd, fk_soc, element_type ";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element";
 			$sql .= " WHERE fk_element = " . $id;
 			if ($type == 'bc' || $type == 'order') {
@@ -345,6 +345,16 @@ class Agefodd_session_element extends CommonObject {
 				$sql .= " AND element_type LIKE 'invoice_supplier%' AND element_type NOT LIKE 'invoice_supplierline%'";
 			}elseif ($type == 'invoice_supplierline') {
 				$sql .= " AND element_type LIKE 'invoice_supplierline%'";
+			} elseif ($type == 'order_supplier_trainer') {
+				$sql .= " AND element_type='order_supplier_trainer'";
+			} elseif ($type == 'invoice_supplier_room') {
+				$sql .= " AND element_type='order_supplier_room'";
+			} elseif ($type == 'order_supplier_missions') {
+				$sql .= " AND element_type='order_supplier_missions'";
+			} elseif ($type == 'order_supplier') {
+				$sql .= " AND element_type LIKE 'order_supplier%' AND element_type NOT LIKE 'order_supplierline%'";
+			}elseif ($type == 'order_supplierline') {
+				$sql .= " AND element_type LIKE 'order_supplierline%'";
 			}
 			if (!empty($id_session)) {
 				$sql .= " AND fk_session_agefodd = " . $id_session;
@@ -361,6 +371,7 @@ class Agefodd_session_element extends CommonObject {
 					$line->id = $obj->rowid;
 					$line->socid = $obj->fk_soc;
 					$line->fk_session_agefodd = $obj->fk_session_agefodd;
+					$line->element_type = $obj->element_type;
 
 					$this->lines[] = $line;
 				}
@@ -940,7 +951,7 @@ class Agefodd_session_element extends CommonObject {
 
 						$commandefourn->fetch($obj->fk_element);
 						$sessions = $this->get_linked_sessions($obj->fk_element, $obj->element_type);
-					
+
 						if (is_array($commandefourn->lines) && count($commandefourn->lines) > 0)
 						{ // facture fournisseur
 							if($commandefourn->statut==0)continue;
@@ -1304,6 +1315,7 @@ class AgefoddElementLine {
 	public $date;
 	public $amount;
 	public $status;
+	public $element_type;
 }
 class AgefoddElementInvoiceLine {
 	public $id;
