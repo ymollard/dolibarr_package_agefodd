@@ -545,7 +545,7 @@ if (! empty($id)) {
 			print '</td></tr>';
 
 			print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-			
+
 			print '<td>';
 			print dol_print_date($agf->date_ask_OPCA, 'daytext');
 			print '</td></tr>';
@@ -765,7 +765,7 @@ if (! empty($id)) {
 						print '<td><input size="30" type="text" class="flat" name="numOPCAsoc" value="' . $agf_opca->num_OPCA_soc . '" /></td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-						
+
 						print '<td><table class="nobordernopadding"><tr>';
 						print '<td>';
 						print $form->select_date($agf_opca->date_ask_OPCA, 'ask_OPCA', '', '', 1, 'update', 1, 1);
@@ -832,7 +832,7 @@ if (! empty($id)) {
 							print '<td>' . $agf_opca->num_OPCA_soc . '</td></tr>';
 
 							print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-							
+
 							print '<td><table class="nobordernopadding"><tr>';
 							print '<td>';
 							print dol_print_date($agf_opca->date_ask_OPCA, 'daytext');
@@ -1081,7 +1081,7 @@ if (! empty($id)) {
 				print '<td><input size="30" type="text" class="flat" name="numOPCAsoc" value="' . $agf->num_OPCA_soc . '" /></td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-				
+
 				print '<td><table class="nobordernopadding"><tr>';
 				print '<td>';
 				print $form->select_date($agf->date_ask_OPCA, 'ask_OPCA', '', '', 1, 'update', 1, 1);
@@ -1139,7 +1139,7 @@ if (! empty($id)) {
 				print '</td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-				
+
 				print '<td>';
 				print dol_print_date($agf->date_ask_OPCA, 'daytext');
 				print '</td></tr>';
@@ -1227,9 +1227,9 @@ if (! empty($id)) {
 						print '<td>' . $agf_opca->num_OPCA_soc . '</td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
-						
+
 						print '<td><table class="nobordernopadding"><tr>';
-						
+
 						print '<td>';
 						print dol_print_date($agf_opca->date_ask_OPCA, 'daytext');
 						print '</td><td>';
@@ -1296,7 +1296,7 @@ if (! empty($id)) {
 				if (! empty($stagiaires->lines[$i]->fk_socpeople_sign)) {
 					$contactstatic = new Contact($db);
 					$contactstatic->fetch($stagiaires->lines[$i]->fk_socpeople_sign);
-					if (! empty($socstatic->id)) {
+					if (! empty($contactstatic->id)) {
 						print '<br>' . $langs->trans('AgfContactSign') . ':' . $contactstatic->getNomUrl(1);
 					}
 				} else {
