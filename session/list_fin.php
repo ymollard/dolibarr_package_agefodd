@@ -195,7 +195,7 @@ if (! empty($search_propalid)) {
 	$urlcomplete = '&search_propalid='.$search_propalid;
 }
 
-if ($action == 'unlink_confirm' && $confirm == 'yes' && $user->rights->agefodd->creer)
+if ($action == 'unlink_confirm' && $confirm == 'yes' && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer))
 {
     $agf_fin = new Agefodd_session_element($db);
     $result = $agf_fin->fetch($idelement);
@@ -335,7 +335,7 @@ if (! empty($search_propalref) || ! empty($search_propalid)) {
 	}
 }
 
-if ($action == 'link_element') {
+if ($action == 'link_element' && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)) {
 	$agf_fin = new Agefodd_session_element($db);
 	$sessionid = GETPOST('session_id', 'int');
 	if (! empty($sessionid)) {
@@ -350,7 +350,7 @@ if ($action == 'link_element') {
 	}
 }
 
-if (GETPOST('link_site')){
+if (GETPOST('link_site') && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)){
     $id = GETPOST('session_id_site', 'int');
     if ($id > 0){
         $sess = new Agsession($db);
@@ -362,7 +362,7 @@ if (GETPOST('link_site')){
         $session_invoice = new Agefodd_session_element($db);
         $session_invoice->fk_soc = $object_socid;
         $session_invoice->fk_session_agefodd = $id;
-      if(!empty($fournorder)){
+       if(!empty($fournorder)){
 			 $session_invoice->fk_element = $fournorder->id;
 		     $session_invoice->element_type = 'order_supplier_room';
 		}else {
@@ -407,7 +407,7 @@ if (GETPOST('link_site')){
 
 }
 
-if (GETPOST('link_formateur')){
+if (GETPOST('link_formateur') && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)){
 
     $id = GETPOST('session_id_form');
     if ($id > 0){
@@ -419,7 +419,6 @@ if (GETPOST('link_formateur')){
         $session_invoice = new Agefodd_session_element($db);
         $session_invoice->fk_soc = $object_socid;
         $session_invoice->fk_session_agefodd = $id;
-
 		if(!empty($fournorder)){
 			 $session_invoice->fk_element = $fournorder->id;
 		     $session_invoice->element_type = 'order_supplier_trainer';
@@ -471,7 +470,7 @@ if (GETPOST('link_formateur')){
 
 }
 
-if (GETPOST('link_mission')){
+if (GETPOST('link_mission') && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)){
 
     $id = GETPOST('session_id_missions');
     if ($id > 0){
@@ -534,7 +533,7 @@ if (GETPOST('link_mission')){
 
 }
 
-if ($action == 'unlink') {
+if ($action == 'unlink' && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)) {
 
     $agf_liste = new Agefodd_session_element($db);
     $result = $agf_liste->fetch($idelement);
@@ -583,7 +582,6 @@ if ($resql != - 1) {
 	if (! (empty($search_fourninvoiceref))) {
 		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
 		print_liste_field_titre($langs->trans("Type"), $_SERVEUR['PHP_SELF'], "ord_inv.element_type", '', $arg_url, '', $sortfield, $sortorder);
-
 	}
 	if (! (empty($search_fournorderref))) {
 	    print_liste_field_titre($langs->trans("Order"), $_SERVEUR['PHP_SELF'], "fournorder.ref", '', $arg_url, '', $sortfield, $sortorder);
@@ -647,7 +645,7 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="search_fourninvoiceid" value="' . $search_fourninvoiceid . '">';
 		print '<input type="text" class="flat" name="search_fourninvoiceref" value="' . $search_fourninvoiceref . '" size="20">';
 		print '</td>';
-			print '<td></td>';
+		print '<td></td>';
 	}
 	if (! (empty($search_fournorderref))) {
 	    print '<td class="liste_titre">';
@@ -753,9 +751,11 @@ if ($resql != - 1) {
 		if(!empty($line->id_element))$id_element=$line->id_element;
 
 		print '<td align="right">';
-		$legende = (empty($search_fourninvoiceref)) ? $langs->trans("AgfFactureUnselectFac") : $langs->trans("AgfFactureUnselectSuplierInvoice");
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' .$id_element . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
-		print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
+		if ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer) {
+			$legende = (empty($search_fourninvoiceref)) ? $langs->trans("AgfFactureUnselectFac") : $langs->trans("AgfFactureUnselectSuplierInvoice");
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=unlink&idelement=' .$id_element . '&idsess=' . $line->rowid . '&socid=' . $object_socid . $urlcomplete . '" alt="' . $legende . '" title="' . $legende . '">';
+			print '<img src="' . dol_buildpath('/agefodd/img/unlink.png', 1) . '" border="0" align="absmiddle" hspace="2px" ></a>';
+		}
 		print '</td>';
 		print "</tr>\n";
 
@@ -839,44 +839,46 @@ if (!empty($search_fournorderid)) {
         }
     }
 
-	print '<table class="noborder" width="100%">';
-    print '<tr>';
-    print '<th>Type</th>';
-    print '<th>Session</th>';
-    print '<th>'.$langs->trans('Link').'</th>';
-    print '</tr>';
-    print '<tr>';
-    print '<td align="center">'.$langs->trans('AgfFormateur').'</td>';
-    print '<td align="center">';
-    print '<input type="hidden" id="opsid" name="opsid">';
-    print '<select id="ids" style="display:none">';
-    foreach ($sessions as $k => $v) print '<option value='.$k.'>'.$v.'</option>';
-    print '</select>';
-    print $form->selectarray('session_id_form', $sessions, '', 1,0,0,'',0,0,0,'','',1);
-    print '</td>';
-    print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_formateur"/>';
-    print '</td>';
-    print '</tr>';
-    print '<tr>';
-    print '<td align="center">'.$langs->trans('AgfTripAndMissions').'</td>';
-    print '<td align="center">';
-    print $form->selectarray('session_id_missions', $sessions, '', 1,0,0,'',0,0,0,'','',1);
-    print '</td>';
-    print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_mission"/>';
-    print '</td>';
-    print '</tr>';
-    print '<tr>';
-    print '<td align="center">'.$langs->trans('AgfLieu').'</td>';
-    print '<td align="center">';
-    print $form->selectarray('session_id_site', $sessionsSite, '', 1,0,0,'',0,0,0,'','',1);
-    print '</td>';
-    print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_site"/>';
-    print '</td>';
-    print '</tr>';
-    print "</table>";
+	if ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer) {
+		print '<table class="noborder" width="100%">';
+	    print '<tr>';
+	    print '<th>Type</th>';
+	    print '<th>Session</th>';
+	    print '<th>'.$langs->trans('Link').'</th>';
+	    print '</tr>';
+	    print '<tr>';
+	    print '<td align="center">'.$langs->trans('AgfFormateur').'</td>';
+	    print '<td align="center">';
+	    print '<input type="hidden" id="opsid" name="opsid">';
+	    print '<select id="ids" style="display:none">';
+	    foreach ($sessions as $k => $v) print '<option value='.$k.'>'.$v.'</option>';
+	    print '</select>';
+	    print $form->selectarray('session_id_form', $sessions, '', 1,0,0,'',0,0,0,'','',1);
+	    print '</td>';
+	    print '<td align="center">';
+	    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_formateur"/>';
+	    print '</td>';
+	    print '</tr>';
+	    print '<tr>';
+	    print '<td align="center">'.$langs->trans('AgfTripAndMissions').'</td>';
+	    print '<td align="center">';
+	    print $form->selectarray('session_id_missions', $sessions, '', 1,0,0,'',0,0,0,'','',1);
+	    print '</td>';
+	    print '<td align="center">';
+	    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_mission"/>';
+	    print '</td>';
+	    print '</tr>';
+	    print '<tr>';
+	    print '<td align="center">'.$langs->trans('AgfLieu').'</td>';
+	    print '<td align="center">';
+	    print $form->selectarray('session_id_site', $sessionsSite, '', 1,0,0,'',0,0,0,'','',1);
+	    print '</td>';
+	    print '<td align="center">';
+	    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_site"/>';
+	    print '</td>';
+	    print '</tr>';
+	    print "</table>";
+	}
 
     ?>
 
@@ -951,16 +953,18 @@ elseif (empty($search_fourninvoiceref)) {
 	    }
 	}
 
-	print '<table class="noborder" width="100%">';
-	print '<tr>';
-	print '<td align="right">';
-	print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1,0,0,'',0,0,0,'','',1);
-	print '</td>';
-	print '<td align="left">';
-	print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_element"/>';
-	print '</td>';
-	print '</tr>';
-	print "</table>";
+	if ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer) {
+		print '<table class="noborder" width="100%">';
+		print '<tr>';
+		print '<td align="right">';
+		print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1,0,0,'',0,0,0,'','',1);
+		print '</td>';
+		print '<td align="left">';
+		print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_element"/>';
+		print '</td>';
+		print '</tr>';
+		print "</table>";
+	}
 } else {
     $sessids = array();
 
@@ -1012,44 +1016,46 @@ elseif (empty($search_fourninvoiceref)) {
         }
     }
 
-    print '<table class="noborder" width="100%">';
-    print '<tr>';
-    print '<th>Type</th>';
-    print '<th>Session</th>';
-    print '<th>'.$langs->trans('Link').'</th>';
-    print '</tr>';
-    print '<tr>';
-    print '<td align="center">'.$langs->trans('AgfFormateur').'</td>';
-    print '<td align="center">';
-    print '<input type="hidden" id="opsid" name="opsid">';
-    print '<select id="ids" style="display:none">';
-    foreach ($sessids as $k => $v) print '<option value='.$k.'>'.$v.'</option>';
-    print '</select>';
-    print $form->selectarray('session_id_form', $sessionsForm, '', 1,0,0,'',0,0,0,'','',1);
-    print '</td>';
-    print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_formateur"/>';
-    print '</td>';
-    print '</tr>';
-    print '<tr>';
-    print '<td align="center">'.$langs->trans('AgfTripAndMissions').'</td>';
-    print '<td align="center">';
-    print $form->selectarray('session_id_missions', $sessionsForm, '', 1,0,0,'',0,0,0,'','',1);
-    print '</td>';
-    print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_mission"/>';
-    print '</td>';
-    print '</tr>';
-    print '<tr>';
-    print '<td align="center">'.$langs->trans('AgfLieu').'</td>';
-    print '<td align="center">';
-    print $form->selectarray('session_id_site', $sessionsSite, '', 1,0,0,'',0,0,0,'','',1);
-    print '</td>';
-    print '<td align="center">';
-    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_site"/>';
-    print '</td>';
-    print '</tr>';
-    print "</table>";
+	if ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer) {
+	    print '<table class="noborder" width="100%">';
+	    print '<tr>';
+	    print '<th>Type</th>';
+	    print '<th>Session</th>';
+	    print '<th>'.$langs->trans('Link').'</th>';
+	    print '</tr>';
+	    print '<tr>';
+	    print '<td align="center">'.$langs->trans('AgfFormateur').'</td>';
+	    print '<td align="center">';
+	    print '<input type="hidden" id="opsid" name="opsid">';
+	    print '<select id="ids" style="display:none">';
+	    foreach ($sessids as $k => $v) print '<option value='.$k.'>'.$v.'</option>';
+	    print '</select>';
+	    print $form->selectarray('session_id_form', $sessionsForm, '', 1,0,0,'',0,0,0,'','',1);
+	    print '</td>';
+	    print '<td align="center">';
+	    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_formateur"/>';
+	    print '</td>';
+	    print '</tr>';
+	    print '<tr>';
+	    print '<td align="center">'.$langs->trans('AgfTripAndMissions').'</td>';
+	    print '<td align="center">';
+	    print $form->selectarray('session_id_missions', $sessionsForm, '', 1,0,0,'',0,0,0,'','',1);
+	    print '</td>';
+	    print '<td align="center">';
+	    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_mission"/>';
+	    print '</td>';
+	    print '</tr>';
+	    print '<tr>';
+	    print '<td align="center">'.$langs->trans('AgfLieu').'</td>';
+	    print '<td align="center">';
+	    print $form->selectarray('session_id_site', $sessionsSite, '', 1,0,0,'',0,0,0,'','',1);
+	    print '</td>';
+	    print '<td align="center">';
+	    print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_site"/>';
+	    print '</td>';
+	    print '</tr>';
+	    print "</table>";
+	}
 
     ?>
 
