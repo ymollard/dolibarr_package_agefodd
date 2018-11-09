@@ -419,18 +419,18 @@ class ReportCA extends AgefoddExportExcel {
 				if ($result < 0) {
 					return $result;
 				}
-				
+
 				sort($sessions);
 
 				foreach($sessions as $sessionId) {
-					
+
 					$line_to_output = array();
 					$line_to_output[0] = $sessionId;
-					
+
 					$i = 1;
 
 					$toPrint = false;
-					
+
 					foreach ( $this->year_to_report_array as $year_todo ) {
 						$totalHTHF = $this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$sessionId];
 						$totalHT = $this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$sessionId];
@@ -439,7 +439,7 @@ class ReportCA extends AgefoddExportExcel {
 						$line_to_output[$i] = $totalHTHF;
 						$line_to_output[$i+1] = $totalHT;
 						$line_to_output[$i+2] = '';
-						
+
 						$i += 3;
 					}
 
@@ -659,8 +659,20 @@ class ReportCA extends AgefoddExportExcel {
 			for($month_todo = 1; $month_todo <= 12; $month_todo ++) {
 
 				// For Total HT/TTC
-				$sql = "SELECT sum(facdet.total_ttc / (SELECT COUNT(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ttc";
-				$sql.= ", SUM(facdet.total_ht / (SELECT COUNT(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ht";
+				$sql = 'SELECT ';
+				if (array_key_exists('sale.fk_user', $filter) || array_key_exists('group_by_session', $filter)
+						|| array_key_exists('s.type_session', $filter)
+						|| array_key_exists('socrequester.nom', $filter)
+						|| array_key_exists('so.parent|sorequester.parent', $filter)
+						|| preg_match('/^s\./',	$accounting_date)) {
+
+					$sql .= 'sum(facdet.total_ttc / (SELECT COUNT(DISTINCT rowid) FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ttc';
+					$sql .= ', SUM(facdet.total_ht / (SELECT COUNT(DISTINCT rowid) FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ht';
+				} else {
+					$sql .= 'sum(facdet.total_ttc) as amount_ttc';
+					$sql .= ', SUM(facdet.total_ht ) as amount_ht';
+				}
+
 				if(array_key_exists('group_by_session', $filter)) $sql.= ", s.rowid";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
@@ -760,7 +772,7 @@ class ReportCA extends AgefoddExportExcel {
 								if (! empty($obj->amount_ht)) {
 									$this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$obj->rowid] = $obj->amount_ht;
 								}
-								
+
 								if (! empty($obj->amount_ttc)) {
 									$this->value_ca_total_ttc[$year_todo][$month_todo]['detail'][$obj->rowid] = $obj->amount_ttc;
 								}
@@ -775,8 +787,19 @@ class ReportCA extends AgefoddExportExcel {
 				$this->db->free($resql);
 
 				// For TotalHF/HT
-				$sql = "SELECT SUM(facdet.total_ttc / (SELECT COUNT(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ttc";
-				$sql.= ", SUM(facdet.total_ht / (SELECT COUNT(*) FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ht";
+				$sql = 'SELECT ';
+				if (array_key_exists('sale.fk_user', $filter) || array_key_exists('group_by_session', $filter)
+						|| array_key_exists('s.type_session', $filter)
+						|| array_key_exists('socrequester.nom', $filter)
+						|| array_key_exists('so.parent|sorequester.parent', $filter)
+						|| preg_match('/^s\./',	$accounting_date)) {
+
+							$sql .= 'sum(facdet.total_ttc / (SELECT COUNT(DISTINCT rowid) FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ttc';
+							$sql .= ', SUM(facdet.total_ht / (SELECT COUNT(DISTINCT rowid) FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ht';
+						} else {
+							$sql .= 'sum(facdet.total_ttc) as amount_ttc';
+							$sql .= ', SUM(facdet.total_ht ) as amount_ht';
+						}
 				if(array_key_exists('group_by_session', $filter)) $sql.= ", s.rowid";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
