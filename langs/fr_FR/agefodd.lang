@@ -1413,3 +1413,5 @@ AgfMarginPlanned=Marge planifiée
 AgfErrNoAdminTasksFound=Aucune tâche administrative trouvée
 OnlyOnTrainingMail= (Uniquement disponible pour les emails de formation)
 AgfModSave = Enregistrer
+AgfHideCalendarEventsType=Cacher les evelements de type calendrier de sessions
+AgfDisplayCalendarEventsType=Afficher les evelements de type calendrier de sessions
