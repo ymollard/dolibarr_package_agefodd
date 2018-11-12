@@ -1500,7 +1500,7 @@ class FormAgefodd extends Form
 		print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
 		print '<input type="hidden" name="action" value="view_actioncomm"/>';
 		print '<input type="hidden" name="id" value="'.$object->id.'"/>';
-		print '<input type="hidden" name="$with_calendar" value="'.$with_calendar.'"/>';
+		print '<input type="hidden" name="with_calendar" value="'.$with_calendar.'"/>';
 
 		print_barre_liste($title, 0, $_SERVER['PHP_SELF'], '', '', '', "", $num, $num, 'title_generic.png', 0, '', '', -1,1,1);
 		if ($with_calendar=='withcalendar') {
