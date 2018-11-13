@@ -833,7 +833,6 @@ if ($resql != - 1) {
 	if (file_exists(DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php')) {
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php';
 	} else {
-
 		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
 			foreach ( $extrafields->attribute_label as $key => $val ) {
 				if (! empty($arrayfields["ef." . $key]['checked'])) {
