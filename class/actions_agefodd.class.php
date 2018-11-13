@@ -764,7 +764,7 @@ class ActionsAgefodd
 
 			$agfsess = new Agefodd_session_element($object->db);
 			$result = $agfsess->fetch_element_by_id($object->id, $element_type);
-			if ($result > 0) {
+			if ($result >= 0) {
 
 				foreach ( $agfsess->lines as $key => $session ) {
 					$sessiondetail = new Agsession($object->db);
