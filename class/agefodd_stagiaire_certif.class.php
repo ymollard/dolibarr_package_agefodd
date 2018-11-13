@@ -280,6 +280,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= "sta.nom as trainee_name,";
 		$sql .= "sta.prenom as trainee_firstname,";
 		$sql .= "sta.civilite,";
+		$sql .= "sta.mail as trainee_mail,";
 		$sql .= "soc.nom as customer_name,";
 		$sql .= "soc.rowid as customer_id,";
 		$sql .= "s.dated,";
@@ -315,8 +316,8 @@ class Agefodd_stagiaire_certif extends CommonObject {
                         if(!empty($filter['certif.certif_dt_end2'])) $sql .= ' AND ' . $key .' BETWEEN \'' . $value . '\' AND \'' . $filter['certif.certif_dt_end2'] . '\'';
                         else $sql .= ' AND ' . $key . ' = \'' . $value . '\'';
                     }
-                    
-					
+
+
 				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
@@ -351,6 +352,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$line->trainee_id = $obj->fk_stagiaire;
 				$line->trainee_name = $obj->trainee_name;
 				$line->trainee_firstname = $obj->trainee_firstname;
+				$line->trainee_mail = $obj->trainee_mail;
 				$line->certif_code = $obj->certif_code;
 				$line->certif_label = $obj->certif_label;
 				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
@@ -652,25 +654,25 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as t";
 
 		$sql .= " WHERE t.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
-		
+
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
 		    foreach ($filter as $key => $value) {
-		        if (strpos('t.fk', $key) == 0) { 
+		        if (strpos('t.fk', $key) == 0) {
 		            $sqlwhere [] = $key . ' =' . $this->db->escape($value);
 		        } else {
 		            $sqlwhere [] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 		        }
-		        
+
 		    }
 		}
 		if (count($sqlwhere) > 0) {
 		    $sql .= ' AND ' . implode(' AND ', $sqlwhere);
 		}
-		
+
         if (!empty($sortfield)) $sql .= ' ORDER BY ' . $sortfield . ' ' . $sortorder . ' ';
-        
+
 		if (!empty($limit)) {
 		    $sql .= $this->db->plimit($limit + 1, $offset);
 		}
