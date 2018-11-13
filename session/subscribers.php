@@ -1326,7 +1326,7 @@ if (! empty($id)) {
 				if (! empty($stagiaires->lines[$i]->fk_socpeople_sign)) {
 					$contactstatic = new Contact($db);
 					$contactstatic->fetch($stagiaires->lines[$i]->fk_socpeople_sign);
-					if (! empty($socstatic->id)) {
+					if (! empty($contactstatic->id)) {
 						print '<br>' . $langs->trans('AgfContactSign') . ':' . $contactstatic->getNomUrl(1);
 					}
 				} else {
