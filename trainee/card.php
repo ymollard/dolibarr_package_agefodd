@@ -168,7 +168,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 			}
 
 			// Test trainee already exists or not
-			if (empty($error)) {
+			if (empty($error) && empty($create_thirdparty)) {
 				$result = $agf->searchByLastNameFirstNameSoc($name, $firstname, GETPOST('societe', 'int'));
 				if ($result > 0) {
 					setEventMessage($langs->trans('AgfTraineeAlreadyExists'), 'errors');
