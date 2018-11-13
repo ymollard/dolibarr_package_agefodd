@@ -1504,15 +1504,19 @@ class modAgefodd extends DolibarrModules
 		);
 
 		// Boxes
-		$this->boxes = array();
+		$this->boxes = array (); // Boxes list
 		$r = 0;
-
-		// Add here list of php file(s) stored in core/boxes that contains class to show a box.
-		// Example:
-		// $this->boxes[$r][1] = "myboxa.php";
-		// $r++;
-		// $this->boxes[$r][1] = "myboxb.php";
-		// $r++;
+		$this->boxes[$r][1] = "box_agefodd_stats@agefodd";
+		$r ++;
+		$this->boxes[$r][1] = "box_agefodd_board@agefodd";
+		$r ++;
+		$this->boxes[$r][1] = "box_agefodd_lastsession@agefodd";
+		$r ++;
+		$this->boxes[$r][1] = "box_agefodd_preferedtraining@agefodd";
+		$r ++;
+		/*$this->boxes[$r][1] = "box_referenceletter_elements@referenceletters";
+		$r ++;
+		$this->boxes[$r][1] = "box_referenceletter_models_archive@referenceletters";*/
 
 		// Permissions
 		$this->rights = array();
