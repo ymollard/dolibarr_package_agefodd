@@ -434,7 +434,7 @@ $(document).ready(function() {
 				}
 			}
 
-			fullcalendarscheduler_div.find('input[name^="TRealHour"').val(0);
+			fullcalendarscheduler_div.find('input[name^="TRealHour"]').val(0);
 			if (typeof event.TRealHour !== 'undefined')
 			{
 				for (let fk_stagiaire in event.TRealHour)
