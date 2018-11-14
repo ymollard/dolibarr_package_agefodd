@@ -433,7 +433,8 @@ $(document).ready(function() {
 					fullcalendarscheduler_div.find('select[name="TFormateurHeuref['+event.TFormateur[i].opsid+']"]').val(event.TFormateur[i].heuref_formated);
 				}
 			}
-			
+
+			fullcalendarscheduler_div.find('input[name^="TRealHour"').val(0);
 			if (typeof event.TRealHour !== 'undefined')
 			{
 				for (let fk_stagiaire in event.TRealHour)
