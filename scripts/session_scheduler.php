@@ -312,13 +312,13 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 	//	exit;
 	if (!empty($TRealHour))
 	{
-		$dureeCalendrier += ((float) $agf_calendrier->heuref - (float) $agf_calendrier->heured) / 3600;
+		$dureeCalendrier = ((float) $agf_calendrier->heuref - (float) $agf_calendrier->heured) / 3600;
 
 		dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
 		foreach ($TRealHour as $fk_stagiaire => $heures)
 		{
 			$agfstagiaireheure = new Agefoddsessionstagiaireheures($db);
-			if ($agfstagiaireheure->fetch_by_session($fk_agefodd_session, $fk_stagiaire, $fk_agefodd_session_calendrier) > 0)
+			if ($agfstagiaireheure->fetch_by_session($fk_agefodd_session, $fk_stagiaire, $agf_calendrier->id) > 0)
 			{
 				$agfstagiaireheure->heures = $heures;
 				$agfstagiaireheure->update();
@@ -327,7 +327,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 			{
 				$agfstagiaireheure->fk_stagiaire = $fk_stagiaire;
 				$agfstagiaireheure->fk_session = $fk_agefodd_session;
-				$agfstagiaireheure->fk_calendrier = $fk_agefodd_session_calendrier;
+				$agfstagiaireheure->fk_calendrier = $agf_calendrier->id;
 				$agfstagiaireheure->heures = $heures;
 				$agfstagiaireheure->create($user);
 			}
