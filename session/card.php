@@ -240,7 +240,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$error = 0;
 
 		$agf = new Agsession($db);
-		$agf->id = $id;
+		$result = $agf->fetch($id);
 
 		$fk_session_place = GETPOST('place', 'int');
 		if (($fk_session_place == - 1) || (empty($fk_session_place))) {
@@ -272,8 +272,6 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 				setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("AgfSessionContact")), 'errors');
 			}
 		}
-
-		$result = $agf->fetch($id);
 
 		if ($agf->fk_formation_catalogue != GETPOST('formation', 'int')) {
 			$training_session = new Formation($db);
