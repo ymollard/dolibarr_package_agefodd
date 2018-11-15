@@ -2613,8 +2613,9 @@ class Agsession extends CommonObject
 		$sql .= " ,s.fk_soc_employer";
 		$sql .= " ,sorequester.nom as socrequestername,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (datea - INTERVAL " . $interval0day . ") <= NOW() AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu) AND archive <> 1) as task0,";
-		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval3day . ") AND (datea) ) AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task1,";
+		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval3day . ") AND datea ) AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task1,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval8day . ") AND (datea - INTERVAL " . $interval3day . ") ) AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task2,";
+		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE datea > (NOW() +  INTERVAL " . $interval8day . ") AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as morethanzday,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task3";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
@@ -2673,11 +2674,13 @@ class Agsession extends CommonObject
 				} elseif ($key == 'alert' && $value=='alert0') {
 					$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (datea - INTERVAL " . $interval0day . ") <= NOW() AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu) AND archive <> 1) <> 0";
 				} elseif ($key == 'alert' && $value=='alert1') {
-					$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval3day . ") AND (datea) ) AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) <> 0";
+					$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval3day . ") AND datea ) AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) <> 0";
 				} elseif ($key == 'alert' && $value=='alert2') {
 					$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval8day . ") AND (datea - INTERVAL " . $interval3day . ") ) AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) <> 0";
 				} elseif ($key == 'alert' && $value=='alert3') {
 					$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) <> 0";
+				} elseif ($key == 'alert' && $value=='morethanzdays') {
+					$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE datea > (NOW() +  INTERVAL " . $interval8day . ") AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) <> 0";
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
@@ -2729,6 +2732,7 @@ class Agsession extends CommonObject
 					$line->task0 = $obj->task0;
 					$line->task1 = $obj->task1;
 					$line->task2 = $obj->task2;
+					$line->morethanzday = $obj->morethanzday;
 					$line->task3 = $obj->task3;
 					$line->duree_session = $obj->duree_session;
 					$line->intitule_custo = $obj->intitule_custo;
@@ -5778,6 +5782,7 @@ class AgfSessionLineTask
 	public $task0;
 	public $task1;
 	public $task2;
+	public $morethanzday;
 	public $task3;
 	public $statuslib;
 	public $statuscode;

@@ -244,6 +244,7 @@ if ($resql != - 1) {
 	print_liste_field_titre($langs->trans("AgfAlertDay"), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfYDaysBeforeAlert"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfXDaysBeforeAlert"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfZDaysBeforeAlert"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfAlertLevel3Short"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
@@ -283,6 +284,8 @@ if ($resql != - 1) {
 	print '</td>';
 
 	// task
+	print '<td class="liste_titre">';
+	print '</td>';
 	print '<td class="liste_titre">';
 	print '</td>';
 	print '<td class="liste_titre">';
@@ -366,6 +369,7 @@ if ($resql != - 1) {
 			print '<td>' . $line->task0 . '</td>';
 			print '<td>' . $line->task1 . '</td>';
 			print '<td>' . $line->task2 . '</td>';
+			print '<td>' . $line->morethanzday . '</td>';
 			print '<td>' . $line->task3 . '</td>';
 
 			print '<td>' . $line->nb_stagiaire . '</td>';

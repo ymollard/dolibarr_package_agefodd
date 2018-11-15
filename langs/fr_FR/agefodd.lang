@@ -138,6 +138,7 @@ AgfTerminatedPoint=Tâche terminée
 AgfTerminatedNoPoint=Réouvrir la tâche terminée
 AgfXDaysBeforeAlert=8 jours avant la limite
 AgfYDaysBeforeAlert=3 jours avant la limite
+AgfZDaysBeforeAlert=Dans plus de 8 avant la limite
 AgfAlertDay=limite arbitraire atteinte ou dépassée
 AgfAlertLevel0=tâches à traiter en priorité absolue (limite arbitraire atteinte ou dépassée)
 AgfAlertLevel1=tâches à traiter en urgence (3 jours avant limite arbitraire)
