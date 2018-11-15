@@ -50,6 +50,8 @@ $langs->load('agefodd@agefodd');
 
 llxHeader('', $langs->trans('AgefoddShort'));
 
+print_barre_liste($langs->trans("AgfBilanGlobal"),0,'','', '', '', '', 0);
+
 print '<table class="noborder">';
 print '<tr>';
 print '<td>';

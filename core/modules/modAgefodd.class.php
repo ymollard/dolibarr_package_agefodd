@@ -1514,9 +1514,6 @@ class modAgefodd extends DolibarrModules
 		$r ++;
 		$this->boxes[$r][1] = "box_agefodd_preferedtraining@agefodd";
 		$r ++;
-		/*$this->boxes[$r][1] = "box_referenceletter_elements@referenceletters";
-		$r ++;
-		$this->boxes[$r][1] = "box_referenceletter_models_archive@referenceletters";*/
 
 		// Permissions
 		$this->rights = array();
