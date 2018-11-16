@@ -765,16 +765,61 @@ if (! empty($id)) {
 
 						print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
 						print '	<td>';
-						$events = array();
-						$events[] = array(
-								'method' => 'getContacts',
-								'url' => dol_buildpath('/core/ajax/contacts.php', 1),
-								'htmlname' => 'fksocpeopleOPCA',
-								'params' => array(
-										'add-customer-contact' => 'disabled'
-								)
-						);
-						print $form->select_company($agf_opca->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2))', 'SelectThirdParty', 1, 0, $events);
+						$htmlname_thirdparty='fksocOPCA';
+						print $form->select_company($agf_opca->fk_soc_OPCA, $htmlname_thirdparty, '(s.client IN (1,2))', 'SelectThirdParty', 1, 0);
+						$events[]=array('method' => 'getContacts', 'url' => dol_buildpath('/core/ajax/contacts.php',1), 'htmlname' => 'fksocpeopleOPCA', 'params' => array('add-customer-contact' => 'disabled'));
+						//Select contact regarding comapny
+						if (count($events))
+						{
+							print '<script type="text/javascript">
+								jQuery(document).ready(function() {
+									$("#search_'.$htmlname_thirdparty.'").change(function() {
+										var obj = '.json_encode($events).';
+										$.each(obj, function(key,values) {
+											if (values.method.length) {
+												runJsCodeForEvent'.$htmlname_thirdparty.'(values);
+											}
+										});
+										/* Clean contact */
+										$("div#s2id_contactid>a>span").html(\'\');
+									});
+
+									// Function used to execute events when search_htmlname change
+									function runJsCodeForEvent'.$htmlname_thirdparty.'(obj) {
+										var id = $("#'.$htmlname_thirdparty.'").val();
+										var method = obj.method;
+										var url = obj.url;
+										var htmlname = obj.htmlname;
+										var showempty = obj.showempty;
+										console.log("Run runJsCodeForEvent-'.$htmlname_thirdparty.' from selectCompaniesForNewContact id="+id+" method="+method+" showempty="+showempty+" url="+url+" htmlname="+htmlname);
+										$.getJSON(url,
+											{
+												action: method,
+												id: id,
+												htmlname: htmlname
+											},
+											function(response) {
+												if (response != null)
+												{
+													console.log("Change select#"+htmlname+" with content "+response.value)
+													$.each(obj.params, function(key,action) {
+														if (key.length) {
+															var num = response.num;
+															if (num > 0) {
+																$("#" + key).removeAttr(action);
+															} else {
+																$("#" + key).attr(action, action);
+															}
+														}
+													});
+													$("select#" + htmlname).html(response.value);
+												}
+											}
+										);
+									};
+								});
+								</script>';
+						}
 						if (! empty($agf_opca->fk_soc_OPCA) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 							print
 									'<a href="' . $_SERVER['PHP_SELF'] . '?sessid=' . $agf->id . '&amp;action=remove_opcafksocOPCA&amp;stagerowid=' . $stagiaires->lines[$i]->stagerowid . '&amp;fk_soc_trainee=' . $stagiaires->lines[$i]->socid . '&amp;modstagid=' . $stagiaires->lines[$i]->id . '">' . img_delete(
@@ -784,13 +829,7 @@ if (! empty($id)) {
 
 						print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
 						print '	<td>';
-						if (! empty($agf_opca->fk_soc_OPCA)) {
-							$form->select_contacts($agf_opca->fk_soc_OPCA, $agf_opca->fk_socpeople_OPCA, 'fksocpeopleOPCA', 1, '', '', 1, '', 1);
-						} else {
-							print '<select class="flat" id="fksocpeopleOPCA" name="fksocpeopleOPCA">';
-							print '<option value="0">' . $langs->trans("AgfDefSocNeed") . '</option>';
-							print '</select>';
-						}
+						$form->select_contacts(($agf_opca->fk_soc_OPCA > 0 ? $agf_opca->fk_soc_OPCA : -1), $agf_opca->fk_socpeople_OPCA, 'fksocpeopleOPCA', 3, '', '', 0, 'minwidth100imp');
 						print '</td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
@@ -1078,16 +1117,61 @@ if (! empty($id)) {
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAName") . '</td>';
 				print '	<td>';
-				$events = array();
-				$events[] = array(
-						'method' => 'getContacts',
-						'url' => dol_buildpath('/core/ajax/contacts.php', 1),
-						'htmlname' => 'fksocpeopleOPCA',
-						'params' => array(
-								'add-customer-contact' => 'disabled'
-						)
-				);
-				print $form->select_company($agf->fk_soc_OPCA, 'fksocOPCA', '(s.client IN (1,2,3))', 'SelectThirdParty', 1, 0, $events);
+				$htmlname_thirdparty='fksocOPCA';
+				print $form->select_company($agf->fk_soc_OPCA, $htmlname_thirdparty, '(s.client IN (1,2,3))', 'SelectThirdParty', 1, 0);
+				$events[]=array('method' => 'getContacts', 'url' => dol_buildpath('/core/ajax/contacts.php',1), 'htmlname' => 'fksocpeopleOPCA', 'params' => array('add-customer-contact' => 'disabled'));
+				//Select contact regarding comapny
+				if (count($events))
+				{
+					print '<script type="text/javascript">
+								jQuery(document).ready(function() {
+									$("#search_'.$htmlname_thirdparty.'").change(function() {
+										var obj = '.json_encode($events).';
+										$.each(obj, function(key,values) {
+											if (values.method.length) {
+												runJsCodeForEvent'.$htmlname_thirdparty.'(values);
+											}
+										});
+										/* Clean contact */
+										$("div#s2id_contactid>a>span").html(\'\');
+									});
+
+									// Function used to execute events when search_htmlname change
+									function runJsCodeForEvent'.$htmlname_thirdparty.'(obj) {
+										var id = $("#'.$htmlname_thirdparty.'").val();
+										var method = obj.method;
+										var url = obj.url;
+										var htmlname = obj.htmlname;
+										var showempty = obj.showempty;
+										console.log("Run runJsCodeForEvent-'.$htmlname_thirdparty.' from selectCompaniesForNewContact id="+id+" method="+method+" showempty="+showempty+" url="+url+" htmlname="+htmlname);
+										$.getJSON(url,
+											{
+												action: method,
+												id: id,
+												htmlname: htmlname
+											},
+											function(response) {
+												if (response != null)
+												{
+													console.log("Change select#"+htmlname+" with content "+response.value)
+													$.each(obj.params, function(key,action) {
+														if (key.length) {
+															var num = response.num;
+															if (num > 0) {
+																$("#" + key).removeAttr(action);
+															} else {
+																$("#" + key).attr(action, action);
+															}
+														}
+													});
+													$("select#" + htmlname).html(response.value);
+												}
+											}
+										);
+									};
+								});
+								</script>';
+				}
 				if (! empty($agf->fk_soc_OPCA) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
 					print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_fksocOPCA">' . img_delete($langs->trans('Delete')) . '</a>';
 				}
@@ -1098,13 +1182,7 @@ if (! empty($id)) {
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAContact") . '</td>';
 				print '	<td>';
-				if (! empty($agf->fk_soc_OPCA)) {
-					$form->select_contacts($agf->fk_soc_OPCA, $agf->fk_socpeople_OPCA, 'fksocpeopleOPCA', 1, '', '', 1, '', 1);
-				} else {
-					print '<select class="flat" id="fksocpeopleOPCA" name="fksocpeopleOPCA">';
-					print '<option value="0">' . $langs->trans("AgfDefSocNeed") . '</option>';
-					print '</select>';
-				}
+				$form->select_contacts(($agf->fk_soc_OPCA > 0 ? $agf->fk_soc_OPCA : -1), $agf->fk_socpeople_OPCA, 'fksocpeopleOPCA', 3, '', '', 0, 'minwidth100imp');
 				print '</td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
