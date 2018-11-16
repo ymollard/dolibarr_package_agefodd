@@ -1204,7 +1204,7 @@ if (! empty($id)) {
 		print '<tr><td  width="20%" valign="top" ';
 		if ($nbstag < 1) {
 			print '>' . $langs->trans("AgfParticipants") . '</td>';
-			print '<td style="text-decoration: blink;">' . $langs->trans("AgfNobody") . '</td></tr>';
+			print '<td style="color:red;">' . $langs->trans("AgfNobody") . '</td></tr>';
 		} else {
 			print ' rowspan=' . ($nbstag) . '>' . $langs->trans("AgfParticipants");
 			if ($nbstag > 1)
