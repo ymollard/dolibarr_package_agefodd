@@ -281,13 +281,18 @@ if (($action == 'createproposal') && $user->rights->agefodd->creer) {
 // Confirm create propal
 if (($action == 'createinvoice_confirm') && $user->rights->agefodd->creer) {
 	$agf = new Agsession($db);
-	$frompropalid = GETPOST('propalid', 'int');
+	$financialdoc = GETPOST('financialid', 'alpha');
+	$financialdoc_array = explode('_',$financialdoc);
+	if (is_array($financialdoc_array) && count($financialdoc_array)>0) {
+		$financial_type = $financialdoc_array[0];
+		$financial_id = $financialdoc_array[1];
+	}
 	$amount = GETPOST('amount');
 	$result = $agf->fetch($id);
 	if ($result < 0) {
 		setEventMessage($agf->error, 'errors');
 	} else {
-		$result = $agf->createInvoice($user, $socid, $frompropalid, $amount);
+		$result = $agf->createInvoice($user, $socid, $financial_id, $amount, $financial_type);
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
 		}
@@ -502,13 +507,16 @@ if (! empty($id)) {
 
 			$agf_liste = new Agefodd_session_element($db);
 			$result = $agf_liste->fetch_by_session_by_thirdparty($id);
-			$propal_array = array (
+			$fin_array = array (
 					'0' => $langs->trans('AgfFromScratchInvoice')
 			);
 
 			foreach ( $agf_liste->lines as $line ) {
 				if ($line->element_type == 'propal') {
-					$propal_array[$line->fk_element] = $langs->trans('AgfFromObject') . ' ' . $line->propalref;
+					$fin_array['propal_'.$line->fk_element] = $langs->trans('AgfFromObject') . ' ' . $line->propalref;
+				}
+				if ($line->element_type == 'order') {
+					$fin_array['order_'.$line->fk_element] = $langs->trans('AgfFromObject') . ' ' . $line->comref;
 				}
 			}
 
@@ -517,7 +525,7 @@ if (! empty($id)) {
 				$(document).ready(function(){
 					$tramount = $('#dialog-confirm #amount').parent().parent();
 					$tramount.hide(0);
-					$('#dialog-confirm').on('change', '#propalid', function(){
+					$('#dialog-confirm').on('change', '#financialid', function(){
 						if($(this).val() == '0') {
 							$tramount.show(0);
 						}else{
@@ -530,10 +538,10 @@ if (! empty($id)) {
 
 			$form_question = array ();
 			$form_question[] = array (
-					'label' => $langs->trans("AgfCreateInvoiceFromPropal"),
+					'label' => $langs->trans("AgfCreateInvoiceFromPropalOrder"),
 					'type' => 'radio',
-					'values' => $propal_array,
-					'name' => 'propalid'
+					'values' => $fin_array,
+					'name' => 'financialid'
 			);
 			$form_question[] = array (
 					'label' => $langs->trans("Amount"),
