@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.3.2';
+		$this->version = '4.3.3';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -673,6 +673,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][1] = "chaine";
 		$this->const[$r][2] = '0';
 		$this->const[$r][3] = 'default type';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_USE_SITE_IN_AGENDA";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = '0';
+		$this->const[$r][3] = 'use site on agenda standard module';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
@@ -2434,7 +2442,12 @@ class modAgefodd extends DolibarrModules
 				$result_cleanright = run_sql($dir . 'clean_admin_right.sql', 1, '', 1);
 			}
 		}
-		$reult = $result && $result_cleanright;
+		$result = $result && $result_cleanright;
+
+		$ext = new ExtraFields($this->db);
+		$params=array('options'=>array ('agefodd_place:ref_interne:rowid::control_occupation=1'=>null));
+
+		$ext->addExtraField('agf_site', 'Lieu (module formation)', 'sellist', 0, 0, 'actioncomm', 0, 0, '', $params, 1, '', 1, 0,0,'',0,'agefodd@agefodd');
 
 		if (! $result) {
 			setEventMessage('Problem during Migration, please contact your administrator', 'errors');

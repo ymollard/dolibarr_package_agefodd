@@ -257,7 +257,12 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			if (is_array($agf->lines_place) && count($agf->lines_place) > 0) {
 				$sessionplaceerror = '';
 				foreach ( $agf->lines_place as $linesess ) {
-					$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+
+					if ($linesess->typeevent=='session') {
+						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+					} elseif ($linesess->typeevent=='event') {
+						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherEvent') . '<a href=' . dol_buildpath('/comm/action/list.php', 1) . '?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&search_options_agf_site='.$fk_session_place . '" target="_blanck">' . $linesess->rowid . '</a><br>';
+					}
 				}
 				setEventMessage($sessionplaceerror, 'warnings');
 			}
@@ -507,7 +512,12 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				$sessionplaceerror = '';
 				foreach ( $agf->lines_place as $linesess ) {
 					if ($linesess->rowid != $new_session_id) {
-						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+						if ($linesess->typeevent=='session') {
+							$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+						} elseif ($linesess->typeevent=='event') {
+							$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherEvent') . '<a href=' . dol_buildpath('/comm/action/list.php', 1) . '?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&search_options_agf_site='.$fk_session_place . '" target="_blanck">' . $linesess->rowid . '</a><br>';
+						}
+
 					}
 				}
 				if (! empty($sessionplaceerror)) {
