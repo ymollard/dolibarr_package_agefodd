@@ -210,15 +210,15 @@ class Agsession extends CommonObject
 		$sql .= "intitule_custo";
 		$sql .= ") VALUES (";
 		$sql .= " " . (! isset($ref) ? "''" : "'" . $ref. "'") . ",";
-		$sql .= " " . (! isset($this->fk_soc) ? 'NULL' : "'" . $this->fk_soc . "'") . ",";
-		$sql .= " " . (! isset($this->fk_soc_requester) ? 'NULL' : "'" . $this->fk_soc_requester . "'") . ",";
-		$sql .= " " . (empty($this->fk_socpeople_requester) ? 'NULL' : "'" . $this->fk_socpeople_requester . "'") . ",";
-		$sql .= " " . (empty($this->fk_socpeople_presta) ? 'NULL' : "'" . $this->fk_socpeople_presta . "'") . ",";
-		$sql .= " " . (empty($this->fk_soc_employer) ? 'NULL' : "'" . $this->fk_soc_employer . "'") . ",";
-		$sql .= " " . (! isset($this->fk_formation_catalogue) ? 'NULL' : "'" . $this->fk_formation_catalogue . "'") . ",";
-		$sql .= " " . (! isset($this->fk_session_place) ? 'NULL' : "'" . $this->fk_session_place . "'") . ",";
-		$sql .= " " . (! isset($this->nb_place) ? 'NULL' : $this->nb_place) . ",";
-		$sql .= " " . (! isset($this->type_session) ? '0' : "'" . $this->type_session . "'") . ",";
+		$sql .= " " . (empty($this->fk_soc) ? 'NULL' : $this->fk_soc) . ",";
+		$sql .= " " . (empty($this->fk_soc_requester) ? 'NULL' : $this->fk_soc_requester ) . ",";
+		$sql .= " " . (empty($this->fk_socpeople_requester) ? 'NULL' : $this->fk_socpeople_requester) . ",";
+		$sql .= " " . (empty($this->fk_socpeople_presta) ? 'NULL' : $this->fk_socpeople_presta) . ",";
+		$sql .= " " . (empty($this->fk_soc_employer) ? 'NULL' : $this->fk_soc_employer ) . ",";
+		$sql .= " " . (empty($this->fk_formation_catalogue) ? 'NULL' : $this->fk_formation_catalogue) . ",";
+		$sql .= " " . (empty($this->fk_session_place) ? 'NULL' : $this->fk_session_place) . ",";
+		$sql .= " " . (empty($this->nb_place) ? 'NULL' : $this->nb_place) . ",";
+		$sql .= " " . (empty($this->type_session) ? '0' : $this->type_session) . ",";
 		$sql .= " " . (! isset($this->dated) || dol_strlen($this->dated) == 0 ? 'NULL' : "'" . $this->db->idate($this->dated) . "'") . ",";
 		$sql .= " " . (! isset($this->datef) || dol_strlen($this->datef) == 0 ? 'NULL' : "'" . $this->db->idate($this->datef) . "'") . ",";
 		$sql .= " " . (! isset($this->notes) ? "''" : "'" . $this->db->escape($this->notes) . "'") . ",";
@@ -228,7 +228,7 @@ class Agsession extends CommonObject
 		$sql .= " " . $this->db->escape($user->id) . ",";
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (empty($this->fk_product) ? 'NULL' : $this->fk_product) . ",";
-		$sql .= " " . (! isset($this->status) ? 'NULL' : "'" . $this->db->escape($this->status) . "'") . ",";
+		$sql .= " " . (! isset($this->status) ? 'NULL' : $this->db->escape($this->status)) . ",";
 		$sql .= " " . (empty($this->duree_session) ? '0' : price2num($this->duree_session)) . ",";
 		$sql .= " " . (! isset($this->intitule_custo) ? 'NULL' : "'" . $this->db->escape($this->intitule_custo) . "'") . "";
 		$sql .= ")";
@@ -4880,7 +4880,7 @@ class Agsession extends CommonObject
 			return 1;
 		}
 
-		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_place WHERE control_occupation IS NOT NULL';
+		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_place WHERE control_occupation > 0';
 		dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {

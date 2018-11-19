@@ -1426,9 +1426,10 @@ class FormAgefodd extends Form
 	 * @param Object $object
 	 * @param string $typeelement
 	 * @param int $socid user
+	 * @param int $with_calendar with_calendar
 	 * @return int if KO, >=0 if OK
 	 */
-	public function showactions($object, $typeelement = 'agefodd_agsession', $socid = 0) {
+	public function showactions($object, $typeelement = 'agefodd_agsession', $socid = 0, $with_calendar='withcalendar') {
 		global $langs, $conf, $user;
 		global $bc;
 
@@ -1441,6 +1442,15 @@ class FormAgefodd extends Form
 		$actioncode= GETPOST('actioncode','array');
 
 		$action_arr = ActionComm::getActions($this->db, $socid, $object->id, $typeelement);
+
+		if ($with_calendar=='nocalendar') {
+			foreach ( $action_arr as $key=>$action ) {
+				if ($action->type_code=='AC_AGF_SESS' || $action->type_code=='AC_AGF_SESST') {
+					unset($action_arr[$key]);
+				}
+			}
+			$action_arr=array_values($action_arr);
+		}
 
 		// On récupère les événements liés aux factures elles mêmes liées à la session de formation
 		$agf = new Agefodd_session_element($this->db);
@@ -1490,8 +1500,14 @@ class FormAgefodd extends Form
 		print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
 		print '<input type="hidden" name="action" value="view_actioncomm"/>';
 		print '<input type="hidden" name="id" value="'.$object->id.'"/>';
+		print '<input type="hidden" name="with_calendar" value="'.$with_calendar.'"/>';
 
-		print_barre_liste($title, 0, $_SERVER['PHP_SELF'], $option . "&arch=" . $arch, '', '', "", $num, $num, 'title_generic.png', 0, '', '', -1,1,1);
+		print_barre_liste($title, 0, $_SERVER['PHP_SELF'], '', '', '', "", $num, $num, 'title_generic.png', 0, '', '', -1,1,1);
+		if ($with_calendar=='withcalendar') {
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?id='.$object->id.'&with_calendar=nocalendar">'.$langs->trans('AgfHideCalendarEventsType').'</a>';
+		} else {
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?id='.$object->id.'&with_calendar=withcalendar">'.$langs->trans('AgfDisplayCalendarEventsType').'</a>';
+		}
 
 		$total = 0;
 		$var = true;

@@ -492,7 +492,7 @@ if ($id) {
 						print '<td width="20%">' . dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td>';
 						print '<td  width="150px">' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour');
 						if ($user->rights->agefodd->modifier) {
-							print '<a href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '&amp;modperiod=' . $calendrier->lines[$i]->id . '&amp;anchor=period">' . img_picto($langs->trans("Save"), 'edit') . '</a>';
+							print '<a href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '&amp;modperiod=' . $calendrier->lines[$i]->id . '&amp;anchor=period">' . img_picto($langs->trans("Edit"), 'edit') . '</a>';
 						}
 						print '&nbsp;';
 						if (!empty($user->rights->agefodd->modifier)) {

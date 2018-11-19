@@ -230,30 +230,40 @@ if ($result >= 0) {
 	}
 
 	// Extra fields
-	if (file_exists(DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php')) {
-		include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_input.tpl.php';
+	if (file_exists(DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php')) {
+		$object=$agf;
+		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php';
 	} else {
-		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
-		{
-			foreach($extrafields->attribute_label as $key => $val)
-			{
-				if (! empty($arrayfields["ef.".$key]['checked'])) {
-					$align=$extrafields->getAlignFlag($key);
-					$typeofextrafield=$extrafields->attribute_type[$key];
-					print '<td class="liste_titre'.($align?' '.$align:'').'">';
-					if (in_array($typeofextrafield, array('varchar', 'int', 'double', 'select')) && empty($extrafields->attribute_computed[$key]))
-					{
-						$crit=$val;
-						$tmpkey=preg_replace('/search_options_/','',$key);
-						$searchclass='';
-						if (in_array($typeofextrafield, array('varchar', 'select'))) $searchclass='searchstring';
-						if (in_array($typeofextrafield, array('int', 'double'))) $searchclass='searchnum';
-						print '<input class="flat'.($searchclass?' '.$searchclass:'').'" size="4" type="text" name="search_options_'.$tmpkey.'" value="'.dol_escape_htmltag($search_array_options['search_options_'.$tmpkey]).'">';
-					}
-					else
-					{
+
+		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
+			foreach ( $extrafields->attribute_label as $key => $val ) {
+				if (! empty($arrayfields["ef." . $key]['checked'])) {
+					$align = $extrafields->getAlignFlag($key);
+					$typeofextrafield = $extrafields->attribute_type[$key];
+					print '<td class="liste_titre' . ($align ? ' ' . $align : '') . '">';
+					if (in_array($typeofextrafield, array(
+							'varchar',
+							'int',
+							'double',
+							'select'
+					)) && empty($extrafields->attribute_computed[$key])) {
+						$crit = $val;
+						$tmpkey = preg_replace('/search_options_/', '', $key);
+						$searchclass = '';
+						if (in_array($typeofextrafield, array(
+								'varchar',
+								'select'
+						)))
+							$searchclass = 'searchstring';
+							if (in_array($typeofextrafield, array(
+									'int',
+									'double'
+							)))
+								$searchclass = 'searchnum';
+								print '<input class="flat' . ($searchclass ? ' ' . $searchclass : '') . '" size="4" type="text" name="search_options_' . $tmpkey . '" id="search_options_' . $tmpkey . '" value="' . dol_escape_htmltag($search_array_options['search_options_' . $tmpkey]) . '">';
+					} else {
 						// for the type as 'checkbox', 'chkbxlst', 'sellist' we should use code instead of id (example: I declare a 'chkbxlst' to have a link with dictionnairy, I have to extend it with the 'code' instead 'rowid')
-						echo $extrafields->showInputField($key, $search_array_options['search_options_'.$key], '', '', 'search_');
+						echo $extrafields->showInputField($key, $search_array_options['search_options_' . $key], '', '', 'search_');
 					}
 					print '</td>';
 				}
@@ -297,16 +307,14 @@ if ($result >= 0) {
 		print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.mail", "", $option, '', $sortfield, $sortorder);
 	}
 	// Extra fields
-	if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
-	{
-		foreach($extrafields->attribute_label as $key => $val)
-		{
-			if (! empty($arrayfields["ef.".$key]['checked']))
-			{
-				$align=$extrafields->getAlignFlag($key);
-				$sortonfield = "ef.".$key;
-				if (! empty($extrafields->attribute_computed[$key])) $sortonfield='';
-				print getTitleFieldOfList($langs->trans($extralabels[$key]), 0, $_SERVER["PHP_SELF"], $sortonfield, "", $option, ($align?'align="'.$align.'"':''), $sortfield, $sortorder)."\n";
+	if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
+		foreach ( $extrafields->attribute_label as $key => $val ) {
+			if (! empty($arrayfields["ef." . $key]['checked'])) {
+				$align = $extrafields->getAlignFlag($key);
+				$sortonfield = "ef." . $key;
+				if (! empty($extrafields->attribute_computed[$key]))
+					$sortonfield = '';
+					print getTitleFieldOfList($langs->trans($extralabels[$key]), 0, $_SERVER["PHP_SELF"], $sortonfield, "", $option, ($align ? 'align="' . $align . '"' : ''), $sortfield, $sortorder) . "\n";
 			}
 		}
 	}
@@ -353,13 +361,24 @@ if ($result >= 0) {
 		}
 
 		// Extra fields
-		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
-		{
-			foreach($extrafields->attribute_label as $key => $val)
-			{
-				if (! empty($arrayfields["ef.".$key]['checked']))
-				{
-					print '<td>'.$line->array_options['options_'.$key].'</td>';
+		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
+			foreach ( $extrafields->attribute_label as $key => $val ) {
+				if (! empty($arrayfields["ef." . $key]['checked'])) {
+					$align = $extrafields->getAlignFlag($key);
+					print '<td';
+					if ($align)
+						print ' align="' . $align . '"';
+						print '>';
+						$tmpkey = 'options_' . $key;
+						print $extrafields->showOutputField($key, $line->array_options[$tmpkey], '');
+						print '</td>';
+						if (! $i)
+							$totalarray['nbfield'] ++;
+							if (! empty($val['isameasure'])) {
+								if (! $i)
+									$totalarray['pos'][$totalarray['nbfield']] = 'ef.' . $tmpkey;
+									$totalarray['val']['ef.' . $tmpkey] += $line->array_options[$tmpkey];
+							}
 				}
 			}
 		}
