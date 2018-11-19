@@ -283,7 +283,7 @@ class pdf_attestationendtraining_trainee extends ModelePDFAgefodd {
 			if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
 				dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
 				$agfssh = new Agefoddsessionstagiaireheures($this->db);
-				$duree_session=$agfssh->heures_stagiaire($agf->id, $agf_session_trainee->id);
+				$duree_session=$agfssh->heures_stagiaire($agf->id, $agf_session_trainee->fk_stagiaire);
 			} else {
 				$duree_session=$agf->duree_session;
 			}
