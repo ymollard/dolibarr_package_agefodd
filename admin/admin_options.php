@@ -47,7 +47,6 @@ if ($action == 'setvarother') {
 
     if (empty($conf->use_javascript_ajax))
     {
-
         $logo_client = GETPOST('AGF_USE_LOGO_CLIENT', 'alpha');
         $res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $logo_client, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
@@ -67,9 +66,6 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
-        
-
-        
 
         $usesearch_stagstype = GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT', 'alpha');
         $res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype, 'chaine', 0, '', $conf->entity);
@@ -206,11 +202,27 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
-		
+
 		$usesearch_training = GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT', 'alpha');
 		$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
+
+        $usesiteinagenda = GETPOST('AGF_USE_SITE_IN_AGENDA', 'int');
+        $res = dolibarr_set_const($db, 'AGF_USE_SITE_IN_AGENDA', $usesiteinagenda, 'chaine', 0, '', $conf->entity);
+        if (! $res > 0) {
+        	$error ++;
+        }  else {
+        	if (empty($usesiteinagenda)) {
+        		$sql='UPDATE '.MAIN_DB_PREFIX.'extrafields SET list=0,ishidden=1 WHERE name =\'agf_site\' AND  elementtype=\'actioncomm\' AND entity='.$conf->entity;
+        	} else {
+        		$sql='UPDATE '.MAIN_DB_PREFIX.'extrafields SET list=1,ishidden=0 WHERE name =\'agf_site\' AND  elementtype=\'actioncomm\' AND entity='.$conf->entity;
+        	}
+        	$resUpdate = $db->query($sql);
+        	if(! $resUpdate) {
+        		setEventMessage($db->lasterror,'errors');
+        	}
+        }
 	}
 
     $fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
@@ -1200,6 +1212,18 @@ $var=!$var;
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfMergeAdviseAndConvoc") . '</td>';
 print '<td align="left">';
 print ajax_constantonoff('AGF_MERGE_ADVISE_AND_CONVOC');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfUseSiteInAgendaStd") . '</td>';
+print '<td align="left">';
+$arrval = array (
+		'0' => $langs->trans("No"),
+		'1' => $langs->trans("Yes")
+);
+print $form->selectarray("AGF_USE_SITE_IN_AGENDA", $arrval, $conf->global->AGF_USE_SITE_IN_AGENDA);
 print '</td>';
 print '<td></td>';
 print '</tr>';

@@ -5017,6 +5017,9 @@ class Agsession extends CommonObject
 	/**
 	 */
 	public function fetchOtherSessionSameplacedate() {
+
+		global $conf;
+
 		$this->lines_place = array();
 
 		$place_to_test = array();
@@ -5081,7 +5084,7 @@ class Agsession extends CommonObject
 					while ( $obj = $this->db->fetch_object($resql) ) {
 						$line = new AgfSessionLine();
 						$line->rowid = $obj->rowid;
-						// $line->typeevent='session';
+						$line->typeevent='session';
 						$this->lines_place[] = $line;
 					}
 				} else {
@@ -5091,31 +5094,33 @@ class Agsession extends CommonObject
 				}
 			}
 
-			// find event on calendar (not only session)
-			/*foreach ( $date_to_test_array as $date_data ) {
+			if (!empty($conf->global->AGF_USE_SITE_IN_AGENDA)) {
+				// find event on calendar (not only session)
+				foreach ( $date_to_test_array as $date_data ) {
 
-			 $sql = "SELECT ";
-			 $sql .= "DISTINCT actcomm.id as rowid FROM " . MAIN_DB_PREFIX . "actioncomm as actcomm ";
-			 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "actioncomm_extrafields as actcomm_extra ON actcomm.id=actcomm_extra.fk_object";
-			 $sql .= " WHERE actcomm_extra.location=" . $this->fk_session_place;
-			 $sql .= " AND (actcomm.datep BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
-			 $sql .= " AND (actcomm.datep2 BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
+					$sql = "SELECT ";
+					$sql .= "DISTINCT actcomm.id as rowid FROM " . MAIN_DB_PREFIX . "actioncomm as actcomm ";
+					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "actioncomm_extrafields as actcomm_extra ON actcomm.id=actcomm_extra.fk_object";
+					$sql .= " WHERE actcomm_extra.agf_site=" . $this->fk_session_place;
+					$sql .= " AND (actcomm.datep BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
+					$sql .= " AND (actcomm.datep2 BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
 
-			 dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
-			 $resql = $this->db->query($sql);
-			 if ($resql) {
-			 while ( $obj = $this->db->fetch_object($resql) ) {
-			 $line = new AgfSessionLine();
-			 $line->rowid = $obj->rowid;
-			 $line->typeevent='actioncomm';
-			 $this->lines_place[] = $line;
-			 }
-			 } else {
-			 $this->error = "Error " . $this->db->lasterror();
-			 dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
-			 return - 1;
-			 }
-			 }*/
+					dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
+					$resql = $this->db->query($sql);
+					if ($resql) {
+						while ( $obj = $this->db->fetch_object($resql) ) {
+							$line = new AgfSessionLine();
+							$line->rowid = $obj->rowid;
+							$line->typeevent = 'actioncomm';
+							$this->lines_place[] = $line;
+						}
+					} else {
+						$this->error = "Error " . $this->db->lasterror();
+						dol_syslog(get_class($this) . "::" . __METHOD__ . $this->error, LOG_ERR);
+						return - 1;
+					}
+				}
+			}
 
 			return 1;
 		} else {
