@@ -591,7 +591,7 @@ if ($resql) {
 }
 
 //Collation, PS: il existe aussi un script dans abricot pour ça.
-$sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;\') AS    mySQL
+$sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET utf8 COLLATE '.$dolibarr_main_db_collation.';\') AS    mySQL
         FROM INFORMATION_SCHEMA.TABLES
         WHERE TABLE_SCHEMA= "'.$dolibarr_main_db_name.'"
                 AND TABLE_TYPE="BASE TABLE"
@@ -618,9 +618,12 @@ if ($resql) {
 }
 
 
-_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur');
-_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier');
-_datec_check(MAIN_DB_PREFIX.'agefodd_formateur_category');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_formateur_category', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_adminsitu', 'datea');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'heured');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'heuref');
 
 print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';
 
@@ -628,11 +631,11 @@ llxFooter();
 $db->close();
 
 
-function _datec_check($table){
+function _datec_check($table, $datefield){
 
     global $db;
     // datec agefodd_session_formateur calendrier
-    $sql = 'SELECT COUNT(*) as nb FROM '.$table.' WHERE CAST(datec AS CHAR(20)) = \'0000-00-00 00:00:00\';';
+    $sql = 'SELECT COUNT(*) as nb FROM '.$table.' WHERE CAST('.$datefield.' AS CHAR(20)) = \'0000-00-00 00:00:00\';';
     //echo $sql;
     $resql = $db->query($sql);
     if ($resql) {
@@ -643,8 +646,8 @@ function _datec_check($table){
 
                 print 'Certaines lignes de la table '.$table.' utilisent une valeur de date incompatible ';
                 print '<BR>Suggestion de correction';
-                print '<BR>ALTER TABLE '.$table.' CHANGE datec datec DATETIME NULL DEFAULT NULL;';
-                print '<BR>UPDATE '.$table.' SET datec = NULL   WHERE CAST(datec AS CHAR(20)) = \'0000-00-00 00:00:00\'; <BR><BR><BR>';
+                print '<BR>ALTER TABLE '.$table.' CHANGE '.$datefield.' '.$datefield.' DATETIME NULL DEFAULT NULL;';
+                print '<BR>UPDATE '.$table.' SET '.$datefield.' = NULL   WHERE CAST('.$datefield.' AS CHAR(20)) = \'0000-00-00 00:00:00\'; <BR><BR><BR>';
 
             }
 
