@@ -23,6 +23,7 @@
  * \brief File of class to generate report for agefodd
  */
 require_once ('agefodd_export_excel_by_customer.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 
 /**
  * Class to build report by customer
@@ -1399,7 +1400,13 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 		$sql .= " ,s.fk_socpeople_requester";
 		$sql .= " ,so.rowid as socid";
 		$sql .= " ,so.nom as socname";
-		$sql .= " ,soextra.ts_nameextra as raissocial2";
+		$extrafields = new ExtraFields($this->db);
+		$extrafields->fetch_name_optionals_label('thirdparty');
+		if (is_array($extrafields->attributes['societe']) && array_key_exists('ts_nameextra',$extrafields->attributes['societe']['type'])) {
+			$sql .= " ,soextra.ts_nameextra as raissocial2";
+		} else {
+			$sql .= " ,so.name_alias as raissocial2";
+		}
 		$sql .= " ,s.type_session";
 		$sql .= " ,p.ref_interne as lieucode";
 		$sql .= " ,s.intitule_custo";
@@ -1578,7 +1585,13 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 		$sql .= " ,'' as fk_socpeople_requester";
 		$sql .= " ,so.rowid as socid";
 		$sql .= " ,so.nom as socname";
-		$sql .= " ,soextra.ts_nameextra as raissocial2";
+		$extrafields = new ExtraFields($this->db);
+		$extrafields->fetch_name_optionals_label('thirdparty');
+		if (is_array($extrafields->attributes['societe']) && array_key_exists('ts_nameextra',$extrafields->attributes['societe']['type'])) {
+			$sql .= " ,soextra.ts_nameextra as raissocial2";
+		} else {
+			$sql .= " ,so.name_alias as raissocial2";
+		}
 		$sql .= " ,'' as type_session";
 		$sql .= " ,'' as lieucode";
 		$sql .= " ,'' as intitule_custo";
