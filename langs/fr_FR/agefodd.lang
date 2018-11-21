@@ -1462,3 +1462,4 @@ AgfHideCalendarEventsType=Cacher les evelements de type calendrier de sessions
 AgfDisplayCalendarEventsType=Afficher les evelements de type calendrier de sessions
 AgfPlaceUseInOtherEvent=La salle est utilisée pour une autre événement aux même dates :
 AgfUseSiteInAgendaStd=Activer la possiblité de reservation des salles de formation dans le module Agenda
+AgfPDFAttestation10=Fait pour servir et valoir ce que de droit
