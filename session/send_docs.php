@@ -87,6 +87,7 @@ if (! empty($id)) {
 /*
  * Envoi document unique
  */
+
 if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel)) {
 	$langs->load('mails');
 
@@ -427,10 +428,11 @@ if (! empty($id)) {
 		/*
 		 * Formulaire d'envoi des documents
 		 */
+
 		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_presence_empty' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc' || $action == 'presend_attestationendtraining') {
 		    $mode = GETPOST("mode");
 		    if (!empty($mode)) $formmail->param['mode'] = $mode;
-		    
+
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_' . $agf->id . '.pdf';
 			} elseif ($action == 'presend_presence_direct') {
@@ -1256,7 +1258,7 @@ if (! empty($id)) {
 				$formmail->withbody = $langs->trans('AgfSendFicheMissionTrainerBody', '__FORMINTITULE__');
 				$formmail->param['models'] = 'mission_trainer';
 				$formmail->param['pre_action'] = 'presend_mission_trainer';
-
+				$formmail->param['sessiontrainerid'] = $sessiontrainerid;
 				$agf_trainer_session = new Agefodd_session_formateur($db);
 				$result = $agf_trainer_session->fetch($sessiontrainerid);
 				if ($result < 0) {
@@ -1281,6 +1283,7 @@ if (! empty($id)) {
 				$formmail->withbody = $langs->trans('AgfSendFicheDocTrainerBody', '__FORMINTITULE__');
 				$formmail->param['models'] = 'trainer_doc';
 				$formmail->param['pre_action'] = 'presend_trainer_doc';
+				$formmail->param['sessiontrainerid'] = $sessiontrainerid;
 
 				$withto = array();
 				$withtoname = array();
@@ -2038,6 +2041,7 @@ if (! empty($id)) {
 			}
 
 			$formmail->param['fileinit'] = $file_array;
+			$formmail->param['mode'] ='';
 
 			$formmail->show_form();
 
