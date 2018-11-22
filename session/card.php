@@ -1271,6 +1271,16 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					 print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 					 print '</div>';
 					 */
+
+					$parameters = array('id' => $id);
+					$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $agf, $action); // Note that $action and $object may have been modified by hook
+					if (empty($reshook)) $formconfirm=$hookmanager->resPrint;
+
+					// Print form confirm
+					if (!empty($formconfirm)) {
+						print $formconfirm;
+					}
+
 					printSessionFieldsWithCustomOrder();
 					print '<div class="fichecenter">';
 					// print '<table id="session_card" class="border" width="100%">';
