@@ -4690,10 +4690,17 @@ class Agsession extends CommonObject
 						$invoiceline->fk_product = $line->fk_product;
 						$invoiceline->qty = $line->qty;
 						$invoiceline->desc = $line->desc;
+
 						$invoiceline->total_ht = $line->total_ht;
 						$invoiceline->total_ttc = $line->total_ttc;
 						$invoiceline->total_tva = $line->total_tva;
 						$invoiceline->subprice = $line->subprice;
+
+                                                $invoiceline->multicurrency_total_ht = $line->multicurrency_total_ht;
+                                                $invoiceline->multicurrency_total_ttc = $line->multicurrency_total_ttc;
+                                                $invoiceline->multicurrency_total_tva = $line->multicurrency_total_tva;
+                                                $invoiceline->multicurrency_subprice = $line->multicurrency_subprice;
+
 						$invoiceline->tva_tx = $line->tva_tx;
 						$invoiceline->vat_src_code = $line->vat_src_code;
 						$invoice->lines[] = $invoiceline;
