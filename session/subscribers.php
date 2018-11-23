@@ -771,9 +771,11 @@ if (! empty($id)) {
 						//Select contact regarding comapny
 						if (count($events))
 						{
+
 							print '<script type="text/javascript">
+
 								jQuery(document).ready(function() {
-									$("#search_'.$htmlname_thirdparty.'").change(function() {
+									$("#'.$htmlname_thirdparty.'").change(function() {
 										var obj = '.json_encode($events).';
 										$.each(obj, function(key,values) {
 											if (values.method.length) {
@@ -1125,7 +1127,7 @@ if (! empty($id)) {
 				{
 					print '<script type="text/javascript">
 								jQuery(document).ready(function() {
-									$("#search_'.$htmlname_thirdparty.'").change(function() {
+									$("#'.$htmlname_thirdparty.'").change(function() {
 										var obj = '.json_encode($events).';
 										$.each(obj, function(key,values) {
 											if (values.method.length) {
