@@ -831,7 +831,7 @@ if (! empty($id)) {
 
 						print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
 						print '	<td>';
-						$form->select_contacts(($agf_opca->fk_soc_OPCA > 0 ? $agf_opca->fk_soc_OPCA : -1), $agf_opca->fk_socpeople_OPCA, 'fksocpeopleOPCA', 3, '', '', 0, 'minwidth100imp');
+						$form->select_contacts(($agf_opca->fk_soc_OPCA > 0 ? $agf_opca->fk_soc_OPCA : -1), $agf_opca->fk_socpeople_OPCA, 'fksocpeopleOPCA', ((DOL_VERSION < 8.0)?1:3), '', '', 0, 'minwidth100imp');
 						print '</td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
@@ -1100,6 +1100,7 @@ if (! empty($id)) {
 		 * Manage funding for intra-enterprise session
 		 */
 		if (! $agf->type_session > 0) {
+			//Intra entreprise
 			if ($action == "edit_subrogation" && $agf->type_session == 0 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
 				print '</div>';
 
@@ -1184,7 +1185,7 @@ if (! empty($id)) {
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAContact") . '</td>';
 				print '	<td>';
-				$form->select_contacts(($agf->fk_soc_OPCA > 0 ? $agf->fk_soc_OPCA : -1), $agf->fk_socpeople_OPCA, 'fksocpeopleOPCA', 3, '', '', 0, 'minwidth100imp');
+				$form->select_contacts(($agf->fk_soc_OPCA > 0 ? $agf->fk_soc_OPCA : -1), $agf->fk_socpeople_OPCA, 'fksocpeopleOPCA', ((DOL_VERSION < 8.0)?1:3), '', '', 0, 'minwidth100imp');
 				print '</td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
