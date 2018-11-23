@@ -556,7 +556,7 @@ class Agefodd_opca extends CommonObject {
 	public function getOpcaSession($id_session) {
 		global $langs;
 
-		$sql = "SELECT";
+		$sql = "SELECT DISTINCT";
 		$sql .= " t.rowid,";
 		$sql .= " t.fk_session_trainee,";
 		$sql .= " t.fk_soc_trainee,";
@@ -577,6 +577,8 @@ class Agefodd_opca extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_opca as t";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as concactOPCA ";
 		$sql .= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as sessta ON sessta.rowid=t.fk_session_trainee";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sessta.fk_stagiaire AND sta.fk_soc=t.fk_soc_trainee";
 
 		$sql .= " WHERE t.fk_session_agefodd = " . $id_session;
 		dol_syslog(get_class($this) . "::getOpcaSession", LOG_DEBUG);
