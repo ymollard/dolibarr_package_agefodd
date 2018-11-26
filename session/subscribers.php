@@ -309,12 +309,12 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && ($user->rights->age
 	$result = $agf->delete($user);
 
 	if ($result > 0) {
-	    // supprimer le certificat du stagiaire supprimé
-	    $agf_certif = new Agefodd_stagiaire_certif($db);
-	    $result = $agf_certif->fetch_all('', '', 0, 0, array('t.fk_session_agefodd'=>$id, 't.fk_session_stagiaire'=>$stagerowid));
-	    foreach ($agf_certif->line as $cert) {
-	       $cert->delete($user);
-	    }
+		// supprimer le certificat du stagiaire supprimé
+		$agf_certif = new Agefodd_stagiaire_certif($db);
+		$result = $agf_certif->fetch_all('', '', 0, 0, array('t.fk_session_agefodd'=>$id, 't.fk_session_stagiaire'=>$stagerowid));
+		foreach ($agf_certif->lines as $cert) {
+			$cert->delete($user);
+		}
 
 		// s'il y a des heures réelles saisies pour ce stagiaire, on les supprime
 		$heures = new Agefoddsessionstagiaireheures($db);
