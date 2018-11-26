@@ -934,6 +934,7 @@ ItemsCount=Elément(s)
 AgfConvTrainees=Participant(s) associé(s) à cette convention
 AgfExplainListTrainee=List_Participants sera remplacé par les participants séléctionnés ci-dessus au moment de la génération du PDF
 AgfExplainListOPCA=List_OPCA sera remplacé par la liste des OPCA concernés au moment de la génération du PDF
+AgfEmptyListOPCA=Pas d'OPCA sélectionné
 AgfFactureFacNoOrderValidHelp=La commande doit être validée avant de créer la facture
 AgfExplainNbparticipants=Nb_Participants sera remplacé par le nombre de participants séléctionnés ci dessus au moment de la génération du PDF
 AgfSelectTraineeCreationForm=Sélectionner le mode de création du participant

@@ -904,6 +904,7 @@ ItemsCount=Element(s)
 AgfConvTrainees=trainee(s) linked to this training contract
 AgfExplainListTrainee=List_Participants will be replaced by selected trainees beyond when generating documents
 AgfExplainListOPCA=List_OPCA will be replaced by relevant funding organisations when generating documents
+AgfEmptyListOPCA=No OPCA selected
 AgfFactureFacNoOrderValidHelp=Ths order has to be validated to create the invoice
 AgfExplainNbparticipants=Nb_Participants will be replaced by the number of trainee beyond when generating documents
 AgfSelectTraineeCreationForm=Select trainee creation mode
