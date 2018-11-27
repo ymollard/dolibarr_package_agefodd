@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.3.3';
+		$this->version = '4.3.4';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -109,9 +109,7 @@ class modAgefodd extends DolibarrModules
 						'invoicesuppliercard',
 						'admin',
 						'emailtemplates',
-						'upgrade',
-						'externalaccesspage',
-						'externalaccessinterface'
+						'upgrade'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
 				'models' => 1
@@ -676,14 +674,6 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
-		$r ++;
-		$this->const[$r][0] = "AGF_USE_SITE_IN_AGENDA";
-		$this->const[$r][1] = "chaine";
-		$this->const[$r][2] = '0';
-		$this->const[$r][3] = 'use site on agenda standard module';
-		$this->const[$r][4] = 0;
-		$this->const[$r][5] = 0;
-
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = ( object ) array();
@@ -699,8 +689,7 @@ class modAgefodd extends DolibarrModules
 						MAIN_DB_PREFIX . "agefodd_certificate_type",
 						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type",
 						MAIN_DB_PREFIX . "agefodd_formateur_category_dict",
-						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf",
-						MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type'
+						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf"
 				),
 				'tablib' => array(
 						"AgfTraineeType",
@@ -708,8 +697,7 @@ class modAgefodd extends DolibarrModules
 						"AgfCertificateType",
 						"AgfTrainingCategTbl",
 						"AgfTrainerCategoryDict",
-						"AgfTrainingCategTblBPF",
-						"AgfSessionCreneauType"
+						"AgfTrainingCategTblBPF"
 				),
 				'tabsql' => array(
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as f',
@@ -717,8 +705,7 @@ class modAgefodd extends DolibarrModules
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_certificate_type as f',
 						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f',
 						'SELECT f.rowid as rowid, f.code, f.label, f.description, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_category_dict as f',
-						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f',
-						'SELECT f.rowid as rowid, f.code, f.label, f.entity, f.active FROM ' . MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type as f WHERE entity = '.$conf->entity
+						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f'
 				),
 				'tabsqlsort' => array(
 						'sort ASC',
@@ -726,8 +713,7 @@ class modAgefodd extends DolibarrModules
 						'sort ASC',
 						'sort ASC',
 						'code ASC',
-						'sort ASC',
-						'label, code ASC'
+						'sort ASC'
 				),
 				'tabfield' => array(
 						"intitule,sort",
@@ -735,8 +721,7 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort",
-						"code,label"
+						"code,intitule,sort"
 				),
 				'tabfieldvalue' => array(
 						"intitule,sort",
@@ -744,8 +729,7 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort",
-						"code,label"
+						"code,intitule,sort"
 				),
 				'tabfieldinsert' => array(
 						"intitule,sort",
@@ -753,11 +737,9 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort",
-						"code,label,entity"
+						"code,intitule,sort"
 				),
 				'tabrowid' => array(
-						"rowid",
 						"rowid",
 						"rowid",
 						"rowid",
@@ -766,7 +748,6 @@ class modAgefodd extends DolibarrModules
 						"rowid"
 				),
 				'tabcond' => array(
-						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
@@ -1512,16 +1493,15 @@ class modAgefodd extends DolibarrModules
 		);
 
 		// Boxes
-		$this->boxes = array (); // Boxes list
+		$this->boxes = array();
 		$r = 0;
-		$this->boxes[$r][1] = "box_agefodd_stats@agefodd";
-		$r ++;
-		$this->boxes[$r][1] = "box_agefodd_board@agefodd";
-		$r ++;
-		$this->boxes[$r][1] = "box_agefodd_lastsession@agefodd";
-		$r ++;
-		$this->boxes[$r][1] = "box_agefodd_preferedtraining@agefodd";
-		$r ++;
+
+		// Add here list of php file(s) stored in core/boxes that contains class to show a box.
+		// Example:
+		// $this->boxes[$r][1] = "myboxa.php";
+		// $r++;
+		// $this->boxes[$r][1] = "myboxb.php";
+		// $r++;
 
 		// Permissions
 		$this->rights = array();
@@ -2340,17 +2320,17 @@ class modAgefodd extends DolibarrModules
 		);
 
 		$r ++;
-		$this->menu[$r] = array(
-		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
-		    'type' => 'left',
-			'titre' => 'AgfMenuReportByCustomer',
-			'url' => '/agefodd/report/report_by_customer.php',
-			'langs' => 'agefodd@agefodd',
-			'position' => 900 + $r,
-			'enabled' => '$user->rights->agefodd->report',
-			'perms' => '$user->rights->agefodd->report',
-			'target' => '',
-			'user' => 0
+		$this->menu [$r] = array (
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+				'type' => 'left',
+				'titre' => 'AgfMenuReportByCustomer',
+				'url' => '/agefodd/report/report_by_customer.php',
+				'langs' => 'agefodd@agefodd',
+				'position' => 900 + $r,
+				'enabled' => '$user->rights->agefodd->report',
+				'perms' => '$user->rights->agefodd->report',
+				'target' => '',
+				'user' => 0
 		);
 
 		$r ++;
@@ -2442,12 +2422,7 @@ class modAgefodd extends DolibarrModules
 				$result_cleanright = run_sql($dir . 'clean_admin_right.sql', 1, '', 1);
 			}
 		}
-		$result = $result && $result_cleanright;
-
-		$ext = new ExtraFields($this->db);
-		$params=array('options'=>array ('agefodd_place:ref_interne:rowid::control_occupation=1'=>null));
-
-		$ext->addExtraField('agf_site', 'Lieu (module formation)', 'sellist', 0, 0, 'actioncomm', 0, 0, '', $params, 1, '', 1, 0,0,'',0,'agefodd@agefodd');
+		$reult = $result && $result_cleanright;
 
 		if (! $result) {
 			setEventMessage('Problem during Migration, please contact your administrator', 'errors');

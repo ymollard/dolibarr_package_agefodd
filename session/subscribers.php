@@ -333,7 +333,7 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && ($user->rights->age
 				't.fk_session_agefodd' => $id,
 				't.fk_session_stagiaire' => $stagerowid
 		));
-		foreach ( $agf_certif->line as $cert ) {
+		foreach ( $agf_certif->lines as $cert ) {
 			$cert->delete($user);
 		}
 
@@ -771,9 +771,11 @@ if (! empty($id)) {
 						//Select contact regarding comapny
 						if (count($events))
 						{
+
 							print '<script type="text/javascript">
+
 								jQuery(document).ready(function() {
-									$("#search_'.$htmlname_thirdparty.'").change(function() {
+									$("#'.$htmlname_thirdparty.'").change(function() {
 										var obj = '.json_encode($events).';
 										$.each(obj, function(key,values) {
 											if (values.method.length) {
@@ -829,7 +831,7 @@ if (! empty($id)) {
 
 						print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
 						print '	<td>';
-						$form->select_contacts(($agf_opca->fk_soc_OPCA > 0 ? $agf_opca->fk_soc_OPCA : -1), $agf_opca->fk_socpeople_OPCA, 'fksocpeopleOPCA', 3, '', '', 0, 'minwidth100imp');
+						$form->select_contacts(($agf_opca->fk_soc_OPCA > 0 ? $agf_opca->fk_soc_OPCA : -1), $agf_opca->fk_socpeople_OPCA, 'fksocpeopleOPCA', ((DOL_VERSION < 8.0)?1:3), '', '', 0, 'minwidth100imp');
 						print '</td></tr>';
 
 						print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
@@ -1098,6 +1100,7 @@ if (! empty($id)) {
 		 * Manage funding for intra-enterprise session
 		 */
 		if (! $agf->type_session > 0) {
+			//Intra entreprise
 			if ($action == "edit_subrogation" && $agf->type_session == 0 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
 				print '</div>';
 
@@ -1125,7 +1128,7 @@ if (! empty($id)) {
 				{
 					print '<script type="text/javascript">
 								jQuery(document).ready(function() {
-									$("#search_'.$htmlname_thirdparty.'").change(function() {
+									$("#'.$htmlname_thirdparty.'").change(function() {
 										var obj = '.json_encode($events).';
 										$.each(obj, function(key,values) {
 											if (values.method.length) {
@@ -1182,7 +1185,7 @@ if (! empty($id)) {
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCAContact") . '</td>';
 				print '	<td>';
-				$form->select_contacts(($agf->fk_soc_OPCA > 0 ? $agf->fk_soc_OPCA : -1), $agf->fk_socpeople_OPCA, 'fksocpeopleOPCA', 3, '', '', 0, 'minwidth100imp');
+				$form->select_contacts(($agf->fk_soc_OPCA > 0 ? $agf->fk_soc_OPCA : -1), $agf->fk_socpeople_OPCA, 'fksocpeopleOPCA', ((DOL_VERSION < 8.0)?1:3), '', '', 0, 'minwidth100imp');
 				print '</td></tr>';
 
 				print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';

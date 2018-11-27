@@ -721,8 +721,11 @@ class pdf_convention extends ModelePDFAgefodd
 
 					if (! empty($TOPCA)) {
 						$listOPCA = implode(', ', $TOPCA);
-						$this->str = str_replace('List_OPCA', $listOPCA, $this->str);
+					} else {
+						$listOPCA = $outputlangs->trans('AgfEmptyListOPCA');
 					}
+
+					$this->str = str_replace('List_OPCA', $listOPCA, $this->str);
 				}
 
 				$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
