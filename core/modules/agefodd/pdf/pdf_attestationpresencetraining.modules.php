@@ -291,7 +291,7 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 						$pdf->SetXY($posX, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 						$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
-						$pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfRepresant').':'.$this->str, 0, 'L', 0);
+						$pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfRepresant').':'."\n".$this->str, 0, 'L', 0);
 
 						// Incrustation image tampon
 						$newY = $pdf->GetY()+5;
