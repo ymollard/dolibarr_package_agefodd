@@ -401,7 +401,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	if ($id) {
 		$agf = new Agefodd_place($db);
 		$result = $agf->fetch($id);
-		$result = $agf->fetch_thirdparty();
+		$result2 = $agf->fetch_thirdparty();
 
 		if ($result > 0) {
 			$head = site_prepare_head($agf);
