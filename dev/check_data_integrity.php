@@ -620,7 +620,10 @@ if ($resql) {
 
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur', 'datec');
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'date_session');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'date_session');
 _datec_check(MAIN_DB_PREFIX.'agefodd_formateur_category', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_adminsitu', 'dated');
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_adminsitu', 'datea');
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'heured');
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'heuref');
