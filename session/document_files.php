@@ -90,29 +90,6 @@ if ($reshook < 0)
 
 include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 
-/*
-// Post file
-if (GETPOST ( 'sendit' ) && ! empty ( $conf->global->MAIN_UPLOAD_DOC )) {
-	if ($object->id) {
-		dol_add_file_process ( $upload_dir, 0, 1, 'userfile' );
-	}
-}
-
-// Delete file
-if ($action == 'confirm_deletefile' && $confirm == 'yes') {
-	if ($object->id) {
-		$file = $upload_dir . "/" . GETPOST ( 'urlfile' ); // Do not use urldecode here ($_GET and $_REQUEST are already decoded by PHP).
-
-		$ret = dol_delete_file ( $file, 0, 0, 0, $object );
-		if ($ret)
-			setEventMessage ( $langs->trans ( "FileWasRemoved", GETPOST ( 'urlfile' ) ) );
-		else
-			setEventMessage ( $langs->trans ( "ErrorFailToDeleteFile", GETPOST ( 'urlfile' ) ), 'errors' );
-		header ( 'Location: ' . $_SERVER ["PHP_SELF"] . '?id=' . $object->id );
-		exit ();
-	}
-}
-*/
 
 /*
  * View
@@ -123,6 +100,8 @@ $formAgefodd = new FormAgefodd($db);
 
 $help_url = '';
 llxHeader('', $langs->trans("AgfSessionDocuments") . ' - ' . $langs->trans("Files"), $help_url);
+
+
 
 if ($object->id) {
 	/*
@@ -135,6 +114,11 @@ if ($object->id) {
 	$form = new Form($db);
 
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfSessionDocuments"), 0, 'bill');
+
+	$parameters = array();
+	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $agf, $action); // Note that $action and $object may have been modified by hook
+	print $hookmanager->resPrint;
+
 
 	dol_agefodd_banner_tab($object, 'id');
 	print '<div class="underbanner clearboth"></div>';
