@@ -264,8 +264,8 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
 			$pdf->SetXY(50, $newY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$this->str = $agf_place->ref_interne ."\n".$agf_place->adresse . ", ".$agf_place->cp. ", ". $agf_place->ville;
-			$pdf->MultiCell(60, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
+			$this->str = $agf_place->ref_interne ."\n".$agf_place->adresse . ", ".$agf_place->cp. " - ". $agf_place->ville;
+			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
 
 			$newY = $pdf->GetY()+10;
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
