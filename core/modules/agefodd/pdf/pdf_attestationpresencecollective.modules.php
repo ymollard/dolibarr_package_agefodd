@@ -264,8 +264,8 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
 			$pdf->SetXY(50, $newY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$this->str = $agf_place->ref_interne . ", ".$agf_place->adresse . ", ".$agf_place->cp. ", ". $agf_place->ville;
-			$pdf->MultiCell(60, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
+			$this->str = $agf_place->ref_interne ."\n".$agf_place->adresse . ", ".$agf_place->cp. " - ". $agf_place->ville;
+			$pdf->MultiCell(100, 3, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
 
 			$newY = $pdf->GetY()+10;
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
@@ -286,7 +286,7 @@ class pdf_attestationpresencecollective extends ModelePDFAgefodd {
 			$pdf->SetXY($posX, $newY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 			$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
-			$pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfRepresant').':'.$this->str, 0, 'L', 0);
+			$pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfRepresant').':'."\n".$this->str, 0, 'L', 0);
 
 			// Incrustation image tampon
 			$newY = $pdf->GetY()+5;

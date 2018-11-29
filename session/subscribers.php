@@ -333,7 +333,7 @@ if ($action == 'confirm_delete_stag' && $confirm == "yes" && ($user->rights->age
 				't.fk_session_agefodd' => $id,
 				't.fk_session_stagiaire' => $stagerowid
 		));
-		foreach ( $agf_certif->line as $cert ) {
+		foreach ( $agf_certif->lines as $cert ) {
 			$cert->delete($user);
 		}
 

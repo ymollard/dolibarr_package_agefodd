@@ -893,6 +893,7 @@ ItemsCount=Item(s)
 AgfConvTrainees=Trainee(s) link to this convention
 AgfExplainListTrainee=List_Participants will be replace by list of trainee selected upper
 AgfExplainListOPCA=List_OPCA will be replaced by relevant funding organisations when generating documents
+AgfEmptyListOPCA=No OPCA selected
 AgfFactureFacNoOrderValidHelp=Order must be signed for create invoice
 AgfExplainNbparticipants=Nb_Participants will be replace by list of numbers of trainee selected upper
 AgfSelectTraineeCreationForm=Select creation trainee method
