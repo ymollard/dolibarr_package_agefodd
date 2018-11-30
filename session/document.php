@@ -361,7 +361,7 @@ if (($action == 'link') && $user->rights->agefodd->creer) {
 
 	$head = session_prepare_head($agf);
 
-	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'user');
+	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), -1, 'user');
 
 	dol_agefodd_banner_tab($agf, 'id');
 	print '<div class="underbanner clearboth"></div>';
@@ -439,7 +439,7 @@ if (! empty($id)) {
 	// Display View mode
 	$head = session_prepare_head($agf);
 
-	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
+	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), -1, 'generic');
 
 	dol_agefodd_banner_tab($agf, 'id');
 	print '<div class="underbanner clearboth"></div>';
