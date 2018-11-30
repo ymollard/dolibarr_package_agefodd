@@ -567,8 +567,7 @@ class Agsession extends CommonObject
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON t.status = dictstatus.rowid";
 		$sql .= " WHERE t.rowid = " . $id;
-		$sql .= " AND t.entity IN (" . getEntity('agefodd' /*agsession*/
-		) . ")";
+		$sql .= " AND t.entity IN (" . getEntity('agefodd') . ")";
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -2375,8 +2374,7 @@ class Agsession extends CommonObject
 			$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as ef ON (s.rowid = ef.fk_object)';
 		}
 
-		$sql .= " WHERE s.entity IN (" . getEntity('agefodd' /*agsession*/
-		) . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
 		if (is_object($user) && ! empty($user->id) && empty($user->admin)) {
 			if (empty($user->rights->agefodd->session->all)) {
@@ -2639,8 +2637,7 @@ class Agsession extends CommonObject
 		}
 
 		$sql .= " WHERE s.status <> 4";
-		$sql .= " AND s.entity IN (" . getEntity('agefodd' /*agsession*/
-		) . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
 		$sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid)<>0";
 
 		if (is_object($user) && ! empty($user->id) && empty($user->rights->agefodd->session->all) && empty($user->admin)) {
@@ -2798,8 +2795,7 @@ class Agsession extends CommonObject
 		$sql .= " ON s.status = dictstatus.rowid";
 		$sql .= " WHERE ";
 		$sql .= " s.type_session=1";
-		$sql .= " AND s.entity IN (" . getEntity('agefodd' /*agsession*/
-		) . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
 		// $sql .= " AND (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE archive=0 AND fk_agefodd_session=s.rowid)<>0)";
 
 		// Manage filter
@@ -3116,8 +3112,7 @@ class Agsession extends CommonObject
 			$type_affect = $langs->trans('AgfTypeEmployee');
 		}
 
-		$sql .= " WHERE s.entity IN (" . getEntity('agefodd' /*agsession*/
-		) . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
 		if ($filter['type_affect'] == 'opca') {
 			$sql .= ' AND (s.rowid IN (SELECT rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session WHERE is_OPCA=1 AND fk_soc_OPCA=' . $socid . ')';
@@ -3306,8 +3301,7 @@ class Agsession extends CommonObject
 			$sql .= " ON propal_dol.rowid = ord_inv.fk_element AND  ord_inv.element_type='propal'";
 			$sql .= ' AND propal_dol.rowid=' . $propalid;
 		}
-		$sql .= " WHERE s.entity IN (" . getEntity('agefodd' /*agsession*/
-		) . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
 		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne,ord_inv.rowid";
 
@@ -3414,8 +3408,7 @@ class Agsession extends CommonObject
 				$sql .= " AND ord_inv.element_type LIKE 'invoice_supplierline%'  ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn AS fourninvoice ON fourninvoice.rowid = fourninvoiceline.fk_facture_fourn ";
 				$sql .= " AND fourninvoice.rowid = " . $fourninvoiceid;
-				$sql .= " WHERE s.entity IN (" . getEntity('agefodd' /*agsession*/
-				) . ")";
+				$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 				$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
 				$sql .= " ,fourninvoice.ref ";
 				if (! empty($sortfield)) {
@@ -3710,11 +3703,12 @@ class Agsession extends CommonObject
 
 		if ($width_table)
 			print '</table>';
-		print '</div>';
 
-		print '<BR/>';
-		if ($width_table)
+
+		if ($width_table) {
 			print '<table class="border" width="100%">';
+		}
+
 		print '<tr class="order_calendrier">';
 
 		require_once 'agefodd_session_calendrier.class.php';
@@ -3723,44 +3717,47 @@ class Agsession extends CommonObject
 		$blocNumber = count($calendrier->lines);
 		$alertday = false;
 		if ($blocNumber < 1) {
-			print '<td  width="20%" valign="top" >' . $langs->trans("AgfCalendrier") . '</td>';
+			print '<td width="20%" valign="top" >' . $langs->trans("AgfCalendrier") . '</td>';
 			print '<td colspan="' . $colspan . '" style="color:red;">' . $langs->trans("AgfNoCalendar") . '</td></tr>';
 		} else {
 			print '<td  width="20%" valign="top" style="border-bottom:0px;">' . $langs->trans("AgfCalendrier") . '</td>';
 			$old_date = 0;
 			$duree = 0;
-			for($i = 0; $i < $blocNumber; $i ++) {
+			foreach($calendrier->lines as $line_cal) {
 				if ($i > 6) {
 					$styledisplay = " style=\"display:none\" class=\"otherdate\" ";
 				} else {
 					$styledisplay = " ";
 				}
-				if ($calendrier->lines[$i]->date_session != $old_date) {
+				if ($line_cal->date_session != $old_date) {
 					if ($i > 0) {
 						print '</tr><tr ' . $styledisplay . '><td width="150px" style="border:0px;">&nbsp;</td>';
 					}
 					print '<td width="150px">';
-					print dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td><td>';
+					print dol_print_date($line_cal->date_session, 'daytext') . '</td><td>';
 				} else {
 					print ', ';
 				}
 				if (! $user->rights->agefodd->session->trainer) {
-					print dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour');
+					print dol_print_date($line_cal->heured, 'hour') . ' - ' . dol_print_date($line_cal->heuref, 'hour');
 				}
 
-				if (($calendrier->lines[$i]->date_session < $this->dated) || ($calendrier->lines[$i]->date_session > $this->datef))
+				if (($line_cal->date_session < $this->dated) || ($line_cal->date_session > $this->datef)) {
 					$alertday = true;
-				if ($i == $blocNumber - 1)
+				}
+
+				if ($i == $blocNumber - 1) {
 					print '</td></tr>';
+				}
 
-				$old_date = $calendrier->lines[$i]->date_session;
-
+				$old_date = $line_cal->date_session;
+				$i ++;
 				// We calculate the total duration times
 				// reminders: mktime(hours, minutes, secondes, month, day, year);
-				$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
+				$duree += ($line_cal->heuref - $line_cal->heured);
 			}
 			if ((($this->duree_session * 3600) != $duree) && (empty($conf->glogal->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
-				print '<tr><td colspan=2>';
+				print '<tr><td colspan=3>';
 				if (($this->duree_session * 3600) < $duree)
 					$textdurationwarning = $langs->trans("AgfCalendarSup");
 				if (($this->duree_session * 3600) > $duree)
@@ -4265,7 +4262,7 @@ class Agsession extends CommonObject
 				$desc .= "\n" . dol_print_date($this->dated, 'day');
 
 				$refclient .= "\n" . dol_print_date($this->dated, 'day');
-				;
+
 				if ($this->datef != $this->dated) {
 					$desc .= '-' . dol_print_date($this->datef, 'day');
 					$refclient .= '-' . dol_print_date($this->datef, 'day');

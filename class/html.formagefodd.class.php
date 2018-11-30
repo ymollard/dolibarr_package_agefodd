@@ -105,8 +105,7 @@ class FormAgefodd extends Form
 		$sql = "SELECT c.rowid, c.intitule, c.ref, c.ref_interne";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " WHERE archive = 0";
-		$sql .= " AND entity IN (" . getEntity('agefodd' /*agsession*/
-		) . ")";
+		$sql .= " AND entity IN (" . getEntity('agefodd') . ")";
 		if (count($filters) > 0) {
 			foreach ( $filters as $filter )
 				$sql .= $filter;
@@ -176,8 +175,7 @@ class FormAgefodd extends Form
 		$sql = "SELECT c.rowid, c.intitule, c.ref_interne";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as c";
 		$sql .= " WHERE archive = 0";
-		$sql .= " AND entity IN (" . getEntity('agefodd' /*agsession*/
-		) . ")";
+		$sql .= " AND entity IN (" . getEntity('agefodd') . ")";
 		if (count($filters) > 0) {
 			foreach ( $filters as $filter )
 				$sql .= $filter;
@@ -426,8 +424,7 @@ class FormAgefodd extends Form
 		if (! empty($filter))
 			$sql .= ' AND ' . $filter;
 
-		$sql .= " AND p.entity IN (" . getEntity('agefodd' /*agsession*/
-		) . ")";
+		$sql .= " AND p.entity IN (" . getEntity('agefodd') . ")";
 		$sql .= " ORDER BY p.ref_interne";
 
 		dol_syslog(get_class($this) . "::select_site_forma", LOG_DEBUG);
@@ -523,11 +520,9 @@ class FormAgefodd extends Form
 
 		if (! empty($filter)) {
 			$sql .= ' WHERE ' . $filter;
-			$sql .= " AND s.entity IN (" . getEntity('agefodd' /* agsession */
-			) . ")";
+			$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
 		} else {
-			$sql .= " WHERE s.entity IN (" . getEntity('agefodd' /* agsession */
-			) . ")";
+			$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 		}
 		$sql .= " ORDER BY fullname";
 
@@ -1321,8 +1316,9 @@ class FormAgefodd extends Form
 		$time = 5;
 		$heuref = 23;
 		$min = 0;
-		if ($with_empty)
+		if ($with_empty) {
 			$options = '<option value=""></option>' . "\n";
+		}
 		while ( $time < $heuref ) {
 			if ($min == 60) {
 				$min = 0;

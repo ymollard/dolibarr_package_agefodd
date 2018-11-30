@@ -1545,16 +1545,16 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '<tr><td  width="20%" valign="top" ';
 					if ($nbstag < 1) {
 						print '>' . $langs->trans("AgfParticipants") . '</td>';
-						print '<td style="color:red;">' . $langs->trans("AgfNobody") . '</td></tr>';
+						print '<td style="color:red;">' . $langs->trans("AgfNobody") . '</td></tr>'."\n";
 					} else {
 						print ' rowspan=' . ($nbstag) . '>' . $langs->trans("AgfParticipants");
 						if ($nbstag > 1)
 							print ' (' . $nbstag . ')';
-						print '</td>';
+						print '</td>'."\n";
 
 						for($i = 0; $i < $nbstag; $i ++) {
-							print '<td witdth="20px" align="center">' . ($i + 1) . '</td>';
-							print '<td width="400px"style="border-right: 0px;">';
+							print '<td width="20px" align="center">' . ($i + 1) . '</td>'."\n";
+							print '<td width="400px" style="border-right: 0px;">';
 							// Infos stagiaires
 							if (strtolower($stagiaires->lines[$i]->nom) == "undefined") {
 								print $langs->trans("AgfUndefinedStagiaire");
@@ -1569,30 +1569,30 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								if ($agf->type_session == 1 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
 									print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
 									print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
-									print '</td></tr>';
+									print '</td></tr>'."\n";
 
 									$agf_opca->getOpcaForTraineeInSession($stagiaires->lines[$i]->socid, $agf->id, $stagiaires->lines[$i]->stagerowid);
-									print '<tr class="noborder"><td  class="noborder" width="45%">' . $langs->trans("AgfSubrocation") . '</td>';
+									print '<tr class="noborder"><td class="noborder" width="45%">' . $langs->trans("AgfSubrocation") . '</td>';
 									if ($agf_opca->is_OPCA == 1) {
 										$chckisOPCA = 'checked="checked"';
 									} else {
 										$chckisOPCA = '';
 									}
-									print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" ' . $chckisOPCA . '" disabled="disabled" readonly="readonly"/></td></tr>';
+									print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" ' . $chckisOPCA . ' disabled="disabled" readonly="readonly"/></td></tr>'."\n";
 
-									print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
+									print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>'."\n";
 									print '	<td>';
 									if (DOL_VERSION < 6.0) {
 										print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
 									} else {
 										print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
 									}
-									print '</td></tr>';
+									print '</td></tr>'."\n";
 
 									print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
 									print '	<td>';
 									print '<a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf_opca->fk_socpeople_OPCA . '">' . $agf_opca->contact_name_OPCA . '</a>';
-									print '</td></tr>';
+									print '</td></tr>'."\n";
 
 									print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
 									print '<td>' . $agf_opca->num_OPCA_soc . '</td></tr>';
@@ -1604,13 +1604,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 									print '<td>';
 									print dol_print_date($agf_opca->date_ask_OPCA, 'daytext');
 									print '</td><td>';
-									print '</td></tr></table>';
-									print '</td></tr>';
+									print '</td></tr>'."\n";
+									print "</table>"."\n";
+
+									print '</td></tr>'."\n";
 
 									print '<tr><td width="20%">' . $langs->trans("AgfOPCANumFile") . '</td>';
 									print '<td>' . $agf_opca->num_OPCA_file . '</td></tr>';
 
-									print '</table>';
+									print '</table>'."\n";
 								} else {
 									print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
 									if (! empty($stagiaires->lines[$i]->hour_foad) && ! empty($conf->global->AGF_MANAGE_BPF)) {
@@ -1618,7 +1620,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 									}
 								}
 							}
-							print '</td>';
+							print '</td>'."\n";
 							print '<td style="border-left: 0px; border-right: 0px;">';
 							// Infos organisme de rattachement
 							if ($stagiaires->lines[$i]->socid) {
@@ -1631,7 +1633,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 							} else {
 								print '&nbsp;';
 							}
-							print '</td>';
+							print '</td>'."\n";
 							print '<td style="border-left: 0px;" class="traineefin">';
 							// Infos mode de financement
 							if (($stagiaires->lines[$i]->type) && (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
@@ -1640,7 +1642,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 							} else {
 								print '&nbsp;';
 							}
-							print '</td>';
+							print '</td>'."\n";
 
 							// Infos thirdparty linked for doc
 							print '<td style="border-left: 0px;" class="traineefk_soc_link">';
@@ -1674,10 +1676,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								print '&nbsp;';
 							}
 							print '</td>';
-							print "</tr>\n";
+							print "</tr>"."\n";
 						}
 					}
-					print "</table>";
+					print "</table>"."\n";
 
 					print '</td></tr>';
 					print '</table>';
