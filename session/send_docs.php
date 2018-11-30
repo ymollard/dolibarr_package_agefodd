@@ -2041,8 +2041,7 @@ if (! empty($id)) {
 			}
 
 			$formmail->param['fileinit'] = $file_array;
-			$formmail->param['mode'] ='';
-
+			$formmail->param['mode'] = GETPOST('mode');
 			$formmail->show_form();
 
 			if (! empty($mesg)) {
