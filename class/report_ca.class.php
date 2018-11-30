@@ -659,20 +659,8 @@ class ReportCA extends AgefoddExportExcel {
 			for($month_todo = 1; $month_todo <= 12; $month_todo ++) {
 
 				// For Total HT/TTC
-				$sql = 'SELECT ';
-				if (array_key_exists('sale.fk_user', $filter) || array_key_exists('group_by_session', $filter)
-						|| array_key_exists('s.type_session', $filter)
-						|| array_key_exists('socrequester.nom', $filter)
-						|| array_key_exists('so.parent|sorequester.parent', $filter)
-						|| preg_match('/^s\./',	$accounting_date)) {
-
-					$sql .= 'sum(facdet.total_ttc / (SELECT COUNT(DISTINCT rowid) FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ttc';
-					$sql .= ', SUM(facdet.total_ht / (SELECT COUNT(DISTINCT rowid) FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ht';
-				} else {
-					$sql .= 'sum(facdet.total_ttc) as amount_ttc';
-					$sql .= ', SUM(facdet.total_ht ) as amount_ht';
-				}
-
+				$sql = "SELECT SUM(facdet.total_ttc) as amount_ttc";
+				$sql.= ", SUM(facdet.total_ht) as amount_ht";
 				if(array_key_exists('group_by_session', $filter)) $sql.= ", s.rowid";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
@@ -713,8 +701,22 @@ class ReportCA extends AgefoddExportExcel {
 				// Manage filter
 				if (count($filter) > 0) {
 					foreach ( $filter as $key => $value ) {
-						if (($key == 's.type_session') || ($key == 'sale.fk_user')) {
+						if ($key == 's.type_session') {
 							$sql .= ' AND ' . $key . ' = ' . $this->db->escape($value);
+						} elseif ($key == 'sale.fk_user') {
+							$sql .= ' AND ' . $value . ' IN (';
+							$sql .= '	SELECT sale.fk_user';
+							$sql .= '	FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass';
+							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire trainee ON trainee.rowid = ass.fk_stagiaire';
+							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'societe_commerciaux as sale ON sale.fk_soc = trainee.fk_soc';
+							$sql .= '	LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca opca ON ass.fk_session_agefodd = opca.fk_session_agefodd AND opca.fk_session_trainee = ass.rowid';
+							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element ase ON ase.fk_session_agefodd = ass.fk_session_agefodd AND ase.element_type = "invoice"';
+							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'facture f2 ON ase.fk_element = f2.rowid';
+							$sql .= '	WHERE ass.fk_session_agefodd = s.rowid';
+							$sql .= '	AND f2.rowid = f.rowid';
+							$sql .= '	AND f2.fk_soc = COALESCE(IF(s.type_session = 1, IF(opca.fk_soc_OPCA <= 0, NULL, opca.fk_soc_OPCA), s.fk_soc_OPCA), trainee.fk_soc)';
+							$sql .= '	AND sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)';
+							$sql .= ')';
 						} elseif ($key == 'so.parent|sorequester.parent') {
 							$sql .= ' AND (so.parent=' . $this->db->escape($value) . ' OR socrequester.parent=' . $this->db->escape($value);
 							$sql .= ' OR so.rowid=' . $this->db->escape($value) . ' OR socrequester.rowid=' . $this->db->escape($value) . ')';
@@ -787,19 +789,8 @@ class ReportCA extends AgefoddExportExcel {
 				$this->db->free($resql);
 
 				// For TotalHF/HT
-				$sql = 'SELECT ';
-				if (array_key_exists('sale.fk_user', $filter) || array_key_exists('group_by_session', $filter)
-						|| array_key_exists('s.type_session', $filter)
-						|| array_key_exists('socrequester.nom', $filter)
-						|| array_key_exists('so.parent|sorequester.parent', $filter)
-						|| preg_match('/^s\./',	$accounting_date)) {
-
-							$sql .= 'sum(facdet.total_ttc / (SELECT COUNT(DISTINCT rowid) FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ttc';
-							$sql .= ', SUM(facdet.total_ht / (SELECT COUNT(DISTINCT rowid) FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd = s.rowid)) as amount_ht';
-						} else {
-							$sql .= 'sum(facdet.total_ttc) as amount_ttc';
-							$sql .= ', SUM(facdet.total_ht ) as amount_ht';
-						}
+				$sql = "SELECT SUM(facdet.total_ttc) as amount_ttc";
+				$sql.= ", SUM(facdet.total_ht) as amount_ht";
 				if(array_key_exists('group_by_session', $filter)) $sql.= ", s.rowid";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
@@ -822,14 +813,7 @@ class ReportCA extends AgefoddExportExcel {
 					$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as socrequester";
 					$sql .= " ON socrequester.rowid = s.fk_soc_requester";
 				}
-				if (array_key_exists('sale.fk_user', $filter)) {
-					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ass";
-					$sql .= " ON ass.fk_session_agefodd = s.rowid";
-					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire trainee";
-					$sql .= " ON trainee.rowid = ass.fk_stagiaire";
-					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sale";
-					$sql .= " ON sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)";
-				}
+
 				$sql .= " WHERE YEAR(".$accounting_date.")=" . $year_todo;
 				$sql .= " AND MONTH(".$accounting_date.")=" . $month_todo;
 				$sql .= " AND f.fk_statut in (1,2)";
@@ -842,8 +826,22 @@ class ReportCA extends AgefoddExportExcel {
 				// Manage filter
 				if (count($filter) > 0) {
 					foreach ( $filter as $key => $value ) {
-						if (($key == 's.type_session') || ($key == 'sale.fk_user')) {
-							$sql .= ' AND ' . $key . ' = ' . $value;
+						if ($key == 's.type_session') {
+							$sql .= ' AND ' . $key . ' = ' . $this->db->escape($value);
+						} elseif ($key == 'sale.fk_user') {
+							$sql .= ' AND ' . $value . ' IN (';
+							$sql .= '	SELECT sale.fk_user';
+							$sql .= '	FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass';
+							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire trainee ON trainee.rowid = ass.fk_stagiaire';
+							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'societe_commerciaux as sale ON sale.fk_soc = trainee.fk_soc';
+							$sql .= '	LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca opca ON ass.fk_session_agefodd = opca.fk_session_agefodd AND opca.fk_session_trainee = ass.rowid';
+							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element ase ON ase.fk_session_agefodd = ass.fk_session_agefodd AND ase.element_type = "invoice"';
+							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'facture f2 ON ase.fk_element = f2.rowid';
+							$sql .= '	WHERE ass.fk_session_agefodd = s.rowid';
+							$sql .= '	AND f2.rowid = f.rowid';
+							$sql .= '	AND f2.fk_soc = COALESCE(IF(s.type_session = 1, IF(opca.fk_soc_OPCA <= 0, NULL, opca.fk_soc_OPCA), s.fk_soc_OPCA), trainee.fk_soc)';
+							$sql .= '	AND sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)';
+							$sql .= ')';
 						} elseif ($key == 'so.parent|sorequester.parent') {
 							$sql .= ' AND (so.parent=' . $this->db->escape($value) . ' OR socrequester.parent=' . $this->db->escape($value);
 							$sql .= ' OR so.rowid=' . $this->db->escape($value) . ' OR socrequester.rowid=' . $this->db->escape($value) . ')';
