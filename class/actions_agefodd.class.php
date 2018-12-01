@@ -148,15 +148,30 @@ class ActionsAgefodd
 
 		$arrayresult = array();
 		if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH) && $user->rights->agefodd->lire && empty($user->societe_id)) {
+			if (DOL_VERSION < 8) {
+				$str_search_id='&search_id=' . urlencode($parameters['search_boxvalue']);
+			} else {
+				$str_search_id='';
+			}
+			if (DOL_VERSION < 8) {
+				$str_search_ref='&search_session_ref=' . urlencode($parameters['search_boxvalue']);
+			} else {
+				$str_search_ref='';
+			}
+			if (DOL_VERSION < 8) {
+				$str_search_trainee='&search_namefirstname=' . urlencode($parameters['search_boxvalue']);
+			} else {
+				$str_search_trainee='';
+			}
 			$arrayresult['searchintoagefoddsession'] = array(
 					'position' => $modAgefodd->numero,
 					'text' => img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"),
-					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_id=' . urlencode($parameters['search_boxvalue'])
+					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_by=search_id'.$str_search_id
 			);
 			$arrayresult['searchintoagefoddtrainee'] = array(
 					'position' => $modAgefodd->numero,
 					'text' => img_object('', 'contact') . ' ' . $langs->trans("AgfMenuActStagiaire"),
-					'url' => dol_buildpath('/agefodd/trainee/list.php', 1) . '?search_namefirstname=' . urlencode($parameters['search_boxvalue'])
+					'url' => dol_buildpath('/agefodd/trainee/list.php', 1) . '?search_by=search_namefirstname'.$str_search_trainee
 			);
 		}
 		$this->results = $arrayresult;
