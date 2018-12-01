@@ -57,6 +57,15 @@ $search_tel = GETPOST("search_tel");
 $search_mail = GETPOST("search_mail");
 $search_namefirstname = GETPOST("search_namefirstname");
 
+//Since 8.0 sall get parameters is sent with rapid search
+$search_by=GETPOST('search_by', 'alpha');
+if (!empty($search_by)) {
+	$sall=GETPOST('sall');
+	if (!empty($sall)) {
+		${$search_by}=$sall;
+	}
+}
+
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_name = '';
