@@ -54,8 +54,9 @@ $parameters = array(
 		'from' => 'original'
 );
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
-if ($reshook < 0)
+if ($reshook < 0) {
 	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+}
 
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
@@ -136,6 +137,18 @@ if (! empty($conf->global->AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH)) {
 		$search_year = date("Y");
 	}
 }
+
+//Since 8.0 sall get parameters is sent with rapid search
+$search_by=GETPOST('search_by', 'alpha');
+if (!empty($search_by)) {
+	$sall=GETPOST('sall');
+	if (!empty($sall)) {
+		${$search_by}=$sall;
+	}
+	$search_month='';
+	$search_year='';
+}
+
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_trainning_name = '';
