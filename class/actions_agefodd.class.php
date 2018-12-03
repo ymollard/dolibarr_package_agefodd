@@ -241,6 +241,44 @@ class ActionsAgefodd
 					header('Location: '.$context->getRootUrl(GETPOST('controller')));
 					exit;
 				}
+				elseif ($action == "uploadfile" && GETPOST('sessid') > 0)
+				{
+				    if (GETPOST('sendit','alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC))
+				    {
+				        $upload_dir = $conf->agefodd->dir_output . "/" .GETPOST('sessid');
+				        if (! empty($_FILES))
+				        {
+				            if (is_array($_FILES['userfile']['tmp_name'])) $userfiles=$_FILES['userfile']['tmp_name'];
+				            else $userfiles=array($_FILES['userfile']['tmp_name']);
+				            
+				            foreach($userfiles as $key => $userfile)
+				            {
+				                if (empty($_FILES['userfile']['tmp_name'][$key]))
+				                {
+				                    $error++;
+				                    if ($_FILES['userfile']['error'][$key] == 1 || $_FILES['userfile']['error'][$key] == 2){
+				                        setEventMessages($langs->trans('ErrorFileSizeTooLarge'), null, 'errors');
+				                    }
+				                    else {
+				                        setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("File")), null, 'errors');
+				                    }
+				                }
+				            }
+				            
+				            if (! $error)
+				            {
+				                if (! empty($upload_dirold) && ! empty($conf->global->PRODUCT_USE_OLD_PATH_FOR_PHOTO))
+				                {
+				                    $result = dol_add_file_process($upload_dirold, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
+				                }
+				                elseif (! empty($upload_dir))
+				                {
+				                    $result = dol_add_file_process($upload_dir, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
+				                }
+				            }
+				        }
+				    }
+				}
 			}
 			else if ($context->controller == 'agefodd_session_card_time_slot' && in_array($action, array('add', 'update')) && GETPOST('sessid','int') > 0)
 			{

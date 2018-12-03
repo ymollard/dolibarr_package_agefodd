@@ -259,11 +259,26 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 		$calendrier_type_label = !empty($agf_calendrier) ? $agf_calendrier->calendrier_type_label : '';
 		$out.= ' <td class="text-center" data-order="'.$calendrier_type_label.'" data-search="'.$calendrier_type_label.'" >'.$calendrier_type_label.'</td>';
 
-		$edit = '<a href="'.$url.'"><i class="fa fa-edit"></a></i>';
-		$delete = '<i class="fa fa-trash" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)"></i>';
-		$out.= ' <td class="text-center" >'.$edit.' '.$delete.'</td>';
+		//$edit = '<a href="'.$url.'"><i class="fa fa-edit"></a></i>';
+		$delete = '<i class="fa fa-trash" ></i>  Supprimer';
+		$out.= ' <td class="text-center" >';
+		
+		$out.= '<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+		<a  class="btn btn-xs btn-secondary" href="'.$url.'"><i class="fa fa-edit"></i></a>
+		
+		<div class="btn-group" role="group">
+		<button id="btnGroupDrop1" type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+		<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+		<button type="button" class="dropdown-item" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)" >'.$delete.' </button>
+		</div>
+		</div>
+		</div>
+		
+		
+		</td>';
 
 		$out.= '</tr>';
+		
 		
 //		var_dump($item);break;
 	}
@@ -418,42 +433,6 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
     global $langs, $db, $conf;
     $context = Context::getInstance();
     
-    if (GETPOST('sendit','alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC))
-    {
-        $upload_dir = $conf->agefodd->dir_output . "/" .$agsession->id;
-        if (! empty($_FILES))
-        {
-            if (is_array($_FILES['userfile']['tmp_name'])) $userfiles=$_FILES['userfile']['tmp_name'];
-            else $userfiles=array($_FILES['userfile']['tmp_name']);
-            
-            foreach($userfiles as $key => $userfile)
-            {
-                if (empty($_FILES['userfile']['tmp_name'][$key]))
-                {
-                    $error++;
-                    if ($_FILES['userfile']['error'][$key] == 1 || $_FILES['userfile']['error'][$key] == 2){
-                        setEventMessages($langs->trans('ErrorFileSizeTooLarge'), null, 'errors');
-                    }
-                    else {
-                        setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("File")), null, 'errors');
-                    }
-                }
-            }
-            
-            if (! $error)
-            {
-                if (! empty($upload_dirold) && ! empty($conf->global->PRODUCT_USE_OLD_PATH_FOR_PHOTO))
-                {
-                    $result = dol_add_file_process($upload_dirold, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
-                }
-                elseif (! empty($upload_dir))
-                {
-                    $result = dol_add_file_process($upload_dir, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
-                }
-            }
-        }
-    }
-    
     $upload_dir = $conf->agefodd->dir_output;
     $filearray=dol_dir_list($upload_dir,"files",0,'','',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
 
@@ -540,7 +519,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 	// Show upload form (document and links)
 	ob_start();
 	$formfile->form_attach_new_file(
-	    $_SERVER["PHP_SELF"].'?controller=agefodd_session_card&sessid='.$agsession->id.'&tab=session-files-tab',
+	    $_SERVER["PHP_SELF"].'?controller=agefodd_session_card&action=uploadfile&sessid='.$agsession->id.'&tab=session-files-tab',
 	    'none',
 	    0,
 	    0,
