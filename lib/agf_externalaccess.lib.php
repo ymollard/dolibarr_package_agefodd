@@ -161,7 +161,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	global $db,$langs;
 	
 	$context = Context::getInstance();
-	
+	$tab = GETPOST('tab');
 	$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
 	$agf_calendrier_formateur->fetchAllBy(array('trainer.rowid'=>$trainer->id, 'sf.fk_session'=>$agsession->id), '');
 	
@@ -176,18 +176,22 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 		</blockquote>
 		<ul class="nav nav-tabs mb-3" id="section-session-card-calendrier-formateur-tab" role="tablist">
 			<li class="nav-item">
-				<a class="nav-link active" id="calendrier-info-tab" data-toggle="tab" href="#nav-calendrier-info" role="tab" aria-controls="calendrier-info" aria-selected="true">Créneaux</a>
+				<a class="nav-link'.((empty($tab) || $tab == 'calendrier-info-tab') ? ' active' : '').'" id="calendrier-info-tab" data-toggle="tab" href="#nav-calendrier-info" role="tab" aria-controls="calendrier-info" aria-selected="'.((empty($tab) || $tab == 'calendrier-info-tab') ? 'true' : 'false').'">Créneaux</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" id="calendrier-summary-tab" data-toggle="tab" href="#nav-calendrier-summary" role="tab" aria-controls="calendrier-summary" aria-selected="false">Récapitulatif</a>
+				<a class="nav-link'.(($tab == 'calendrier-summary-tab') ? ' active' : '').'" id="calendrier-summary-tab" data-toggle="tab" href="#nav-calendrier-summary" role="tab" aria-controls="calendrier-summary" aria-selected="'.(($tab == 'calendrier-summary-tab') ? 'true' : 'false').'">Récapitulatif</a>
+			</li>
+            <li class="nav-item">
+				<a class="nav-link'.(($tab == 'session-files-tab') ? ' active' : '').'" id="session-files-tab" data-toggle="tab" href="#nav-session-files" role="tab" aria-controls="session-files" aria-selected="'.(($tab == 'session-files-tab') ? 'true' : 'false').'">Fichiers joints</a>
 			</li>
 		</ul>
 	';
 	
 	$out.= '
 		<div class="tab-content" id="section-session-card-calendrier-formateur-tab-tabContent">
-			<div class="tab-pane fade show active" id="nav-calendrier-info" role="tabpanel" aria-labelledby="nav-calendrier-info-tab">'.getPageViewSessionCardExternalAccess_creneaux($agsession, $trainer, $agf_calendrier_formateur).'</div>
-			<div class="tab-pane fade" id="nav-calendrier-summary" role="tabpanel" aria-labelledby="nav-calendrier-summary-tab">'.getPageViewSessionCardExternalAccess_summary($agsession, $trainer, $agf_calendrier_formateur).'</div>
+			<div class="tab-pane fade'.((empty($tab) || $tab == 'calendrier-info-tab') ? ' show active' : '').'" id="nav-calendrier-info" role="tabpanel" aria-labelledby="nav-calendrier-info-tab">'.getPageViewSessionCardExternalAccess_creneaux($agsession, $trainer, $agf_calendrier_formateur).'</div>
+			<div class="tab-pane fade'.(($tab == 'calendrier-summary-tab') ? ' show active' : '').'" id="nav-calendrier-summary" role="tabpanel" aria-labelledby="nav-calendrier-summary-tab">'.getPageViewSessionCardExternalAccess_summary($agsession, $trainer, $agf_calendrier_formateur).'</div>
+            <div class="tab-pane fade'.(($tab == 'session-files-tab') ? ' show active' : '').'" id="nav-session-files" role="tabpanel" aria-labelledby="nav-session-files-tab">'.getPageViewSessionCardExternalAccess_files($agsession, $trainer).'</div>
 		</div>
 	';
 	
@@ -409,7 +413,173 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	return $out;
 }
 
+function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
+{
+    global $langs, $db, $conf;
+    $context = Context::getInstance();
+    
+    if (GETPOST('sendit','alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC))
+    {
+        $upload_dir = $conf->agefodd->dir_output . "/" .$agsession->id;
+        if (! empty($_FILES))
+        {
+            if (is_array($_FILES['userfile']['tmp_name'])) $userfiles=$_FILES['userfile']['tmp_name'];
+            else $userfiles=array($_FILES['userfile']['tmp_name']);
+            
+            foreach($userfiles as $key => $userfile)
+            {
+                if (empty($_FILES['userfile']['tmp_name'][$key]))
+                {
+                    $error++;
+                    if ($_FILES['userfile']['error'][$key] == 1 || $_FILES['userfile']['error'][$key] == 2){
+                        setEventMessages($langs->trans('ErrorFileSizeTooLarge'), null, 'errors');
+                    }
+                    else {
+                        setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("File")), null, 'errors');
+                    }
+                }
+            }
+            
+            if (! $error)
+            {
+                if (! empty($upload_dirold) && ! empty($conf->global->PRODUCT_USE_OLD_PATH_FOR_PHOTO))
+                {
+                    $result = dol_add_file_process($upload_dirold, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
+                }
+                elseif (! empty($upload_dir))
+                {
+                    $result = dol_add_file_process($upload_dir, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
+                }
+            }
+        }
+    }
+    
+    $upload_dir = $conf->agefodd->dir_output;
+    $filearray=dol_dir_list($upload_dir,"files",0,'','',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
 
+    $files = array();
+    if (!empty($filearray)){
+        $TCommonModels = array(
+//             "conseils",
+            "fiche_presence",
+            "fiche_presence_direct",
+            "fiche_presence_empty",
+            "fiche_presence_landscape",
+            "fiche_presence_trainee",
+            "fiche_presence_trainee_direct",
+//             "fiche_evaluation",
+//             "fiche_remise_eval",
+            "chevalet",
+//             "attestationendtraining_empty"
+        );
+        
+        $TTrad = array(
+            "fiche_presence" => "AgfFichePresence",
+            "fiche_presence_direct" => "AgfFichePresenceDirect",
+            "fiche_presence_empty" => "AgfFichePresenceEmpty",
+            "fiche_presence_landscape" => "AgfFichePresenceTraineeLandscape",
+            "fiche_presence_trainee" => "AgfFichePresenceTrainee",
+            "fiche_presence_trainee_direct" => "AgfFichePresenceTraineeDirect",
+            "chevalet" => "AgfChevalet",
+            "mission_trainer" => "AgfTrainerMissionLetter",
+            "contrat_trainer" => "AgfContratTrainer"
+        );
+        
+        foreach ($filearray as $file) {
+            $mod = substr($file['name'], 0, strrpos($file['name'], '_'));
+            if(in_array($mod, $TCommonModels) && preg_match("/^".$mod."_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $agsession->id) $files[$file['name']] = $langs->transnoentitiesnoconv($TTrad[$mod]);
+
+            if((preg_match("/^mission_trainer_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $trainer->agefodd_session_formateur->id)
+                || (preg_match("/^contrat_trainer_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $trainer->agefodd_session_formateur->id)
+                )
+            {
+                $files[$file['name']] = $langs->trans($TTrad[$mod]);
+            }
+        }
+    }
+    
+    $out = '';
+    $out.= '
+		<div class="container px-0">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="row clearfix">
+						<div class="col-md-6">
+                            <h5>Liste des fichiers générés pour cette session</h5>
+                            <br>';
+    if (count($files))
+    {
+        foreach ($files as $file => $type)
+        {
+            $out.= "<p>";
+            $legende = $langs->trans("AgfDocOpen");
+            $dowloadUrl = $context->getRootUrl().'script/interface.php?action=downloadSessionFile&file='.$file;
+            $downloadLink = '<a class="btn btn-xs btn-primary" href="'.$dowloadUrl.'&amp;forcedownload=1" target="_blank" ><i class="fa fa-download"></i> '.$langs->trans('Download').'</a>';
+            $out.= $downloadLink;
+//             $out.= '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
+//             $out.=img_picto($legende, 'pdf2').'</a>&nbsp;&nbsp;';
+            $out.= '&nbsp;&nbsp;'.$type;
+            $out.= "</p>";
+            
+        }
+    }
+    else
+    {
+        $out.= "<p>";
+        $out.= "Aucun fichier disponible pour le moment";
+        $out.= "</p>";
+    }
+	$out.= '
+						</div>
+								    
+						<div class="col-md-6">
+                            <h5>Déposer un fichier pour cette session</h5><br>';
+	dol_include_once('/core/class/html.formfile.class.php');
+	$formfile = new FormFile($db);
+	
+	// Show upload form (document and links)
+	ob_start();
+	$formfile->form_attach_new_file(
+	    $_SERVER["PHP_SELF"].'?controller=agefodd_session_card&sessid='.$agsession->id.'&tab=session-files-tab',
+	    'none',
+	    0,
+	    0,
+	    1,
+	    $conf->browser->layout == 'phone' ? 40 : 60,
+	    $agsession,
+	    '',
+	    1,
+	    '',
+	    0
+	    );
+	$out.= ob_get_clean();
+	$out.= '				<h5>Liste des fichiers déposés pour cette session</h5><br>';
+	$upload_dir = $conf->agefodd->dir_output . "/" .$agsession->id;
+	$filearray=dol_dir_list($upload_dir,"files",0,'','',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
+
+	if(count($filearray))
+	{
+	    foreach ($filearray as $file)
+	    {
+	        $out.="<p>";
+	        $out.= $file['name'];
+	        $out.= "</p>";
+	    }
+	}
+	else
+	{
+	    $out.= "<p>";
+	    $out.= "Aucun fichier déposé pour le moment";
+	    $out.= "</p>";
+	}
+	
+	$out.=			    '</div>
+					</div>
+				</div>
+			</div>';
+    
+    return $out;
+}
 
 
 function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')

@@ -404,6 +404,30 @@ class ActionsAgefodd
 	}
 	
 	/**
+	 * Overloading the interface function : replacing the parent's function with the one below
+	 *
+	 * @param   array()         $parameters     Hook metadatas (context, etc...)
+	 * @param   CommonObject    &$object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+	 * @param   string          &$action        Current action (if set). Generally create or edit or null
+	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+	 */
+	public function doActionInterface($parameters, &$object, &$action, $hookmanager)
+	{
+	    $error = 0; // Error counter
+	    global $langs, $db, $conf, $user;
+	    
+	    if (in_array('externalaccessinterface', explode(':', $parameters['context'])))
+	    {
+	        dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
+	        
+	        if ($action == "downloadSessionFile")
+	        {
+	            $this->_downloadSessionFile();
+	        }
+	    }
+	}
+	/**
 	 * Mes nouvelles pages pour l'accés au portail externe
 	 * 
 	 * @param type $parameters
@@ -496,6 +520,43 @@ class ActionsAgefodd
 		return 0;
 	}
 	
+	/**
+	 * 
+	 * @param unknown $parameters
+	 * @param unknown $object
+	 * @param unknown $action
+	 * @param unknown $hookmanager
+	 */
+	public function PrintTopMenu($parameters, &$object, &$action, $hookmanager)
+	{
+	    global $langs;
+	    
+	    $context = Context::getInstance();
+	    
+	    $this->results['agefodd'] = array(
+	        'id' => 'agefodd',
+	        'rank' => 90,
+	        'url' => $context->getRootUrl('agefodd'),
+	        'name' => $langs->trans('AgfTraining')
+	    );
+	    
+	    $this->results['agefodd']['children']['global'] = array(
+	        'id' => 'agefodd',
+	        'rank' => 10,
+	        'url' => $context->getRootUrl('agefodd'),
+	        'name' => $langs->trans('AgfTraining')
+	    );
+	    
+	    $this->results['agefodd']['children']['agefodd_session_list'] = array(
+	        'id' => 'agefodd',
+	        'rank' => 20,
+	        'url' => $context->getRootUrl('agefodd_session_list'),
+	        'name' => $langs->trans('AgfMenuSess')
+	    );
+	    
+	    
+	    return 0;
+	}
 	
 	public function PrintServices($parameters, &$object, &$action, $hookmanager)
 	{
