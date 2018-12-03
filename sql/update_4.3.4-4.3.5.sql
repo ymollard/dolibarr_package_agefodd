@@ -1,0 +1,2 @@
+ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN calendrier_type varchar(15) AFTER fk_actioncomm;
+ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN status integer DEFAULT 0 AFTER calendrier_type;
