@@ -118,20 +118,17 @@ class ActionsAgefodd
 
 		$arrayresult = array();
 		if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH) && $user->rights->agefodd->lire && empty($user->societe_id)) {
+			$str_search_id='';
 			if (DOL_VERSION < 8) {
 				$str_search_id='&search_id=' . urlencode($parameters['search_boxvalue']);
-			} else {
-				$str_search_id='';
 			}
+			$str_search_ref='';
 			if (DOL_VERSION < 8) {
 				$str_search_ref='&search_session_ref=' . urlencode($parameters['search_boxvalue']);
-			} else {
-				$str_search_ref='';
 			}
+			$str_search_trainee='';
 			if (DOL_VERSION < 8) {
 				$str_search_trainee='&search_namefirstname=' . urlencode($parameters['search_boxvalue']);
-			} else {
-				$str_search_trainee='';
 			}
 			$arrayresult['searchintoagefoddsession'] = array(
 					'position' => $modAgefodd->numero,
