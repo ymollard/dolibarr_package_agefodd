@@ -118,24 +118,36 @@ class ActionsAgefodd
 
 		$arrayresult = array();
 		if (empty($conf->global->AGEFODD_HIDE_QUICK_SEARCH) && $user->rights->agefodd->lire && empty($user->societe_id)) {
+			$str_search_id='';
+			if (DOL_VERSION < 8) {
+				$str_search_id='&search_id=' . urlencode($parameters['search_boxvalue']);
+			}
+			$str_search_ref='';
+			if (DOL_VERSION < 8) {
+				$str_search_ref='&search_session_ref=' . urlencode($parameters['search_boxvalue']);
+			}
+			$str_search_trainee='';
+			if (DOL_VERSION < 8) {
+				$str_search_trainee='&search_namefirstname=' . urlencode($parameters['search_boxvalue']);
+			}
 			$arrayresult['searchintoagefoddsession'] = array(
 					'position' => $modAgefodd->numero,
 					'text' => img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionId"),
-					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_id=' . urlencode($parameters['search_boxvalue'])
+					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_by=search_id'.$str_search_id
 			);
 			if (!empty($conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_SESSION)) $arrayresult['searchintoagefoddsession']['position'] = $conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_SESSION;
-			
+
 			$arrayresult['searchintoagefoddsessionref'] = array(
 					'position' => $modAgefodd->numero,
 					'text' => img_object('', 'agefodd@agefodd') . ' ' . $langs->trans("AgfSessionRef"),
-					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_session_ref=' . urlencode($parameters['search_boxvalue'])
+					'url' => dol_buildpath('/agefodd/session/list.php', 1) . '?search_by=search_session_ref'.$str_search_ref
 			);
 			if (!empty($conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_SESSION_REF)) $arrayresult['searchintoagefoddsessionref']['position'] = $conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_SESSION_REF;
-			
+
 			$arrayresult['searchintoagefoddtrainee'] = array(
 					'position' => $modAgefodd->numero,
 					'text' => img_object('', 'contact') . ' ' . $langs->trans("AgfMenuActStagiaire"),
-					'url' => dol_buildpath('/agefodd/trainee/list.php', 1) . '?search_namefirstname=' . urlencode($parameters['search_boxvalue'])
+					'url' => dol_buildpath('/agefodd/trainee/list.php', 1) . '?search_by=search_namefirstname'.$str_search_trainee
 			);
 			if (!empty($conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_TRAINEE)) $arrayresult['searchintoagefoddtrainee']['position'] = $conf->global->AGEFODD_POSITION_SEARCH_TO_AGEFODD_TRAINEE;
 		}
@@ -171,10 +183,21 @@ class ActionsAgefodd
 	 * @return void
 	 */
 	public function doActions($parameters, &$object, &$action, $hookmanager) {
-		global $langs, $conf, $user;
+		global $langs, $conf, $user, $mc;
+
+		if (is_object($mc))
+		{
+		    if(!in_array('agefodd', $mc->sharingelements)){
+		        $mc->sharingelements[] = 'agefodd';
+		    }
+		    if(!isset($mc->sharingobjects['agefodd'])){
+		        $mc->sharingobjects['agefodd'] = array('element'=>'agefodd');
+		    }
+			$mc->setValues($conf);
+		}
+
 		$TContext = explode(':', $parameters['context']);
-		
-		
+
 		if (in_array('externalaccesspage', $TContext))
 		{
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
@@ -184,7 +207,7 @@ class ActionsAgefodd
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 			dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 			dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
-			
+
 			// TODO gérer ici les actions de mes pages pour update les données
 			$context = Context::getInstance();
 			if ($context->controller == 'agefodd_session_card')
@@ -198,19 +221,19 @@ class ActionsAgefodd
 						if ($trainer)
 						{
 							$context->setControllerFound();
-							
+
 							$error = 0;
 							$this->db->begin();
 							$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($this->db);
 							if ($agf_calendrier_formateur->fetch(GETPOST('fk_agefodd_session_formateur_calendrier')) > 0)
 							{
 								$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur, true, true);
-								if (is_string($TCalendrier)) 
+								if (is_string($TCalendrier))
 								{
 									$error++;
 									$context->setError($langs->trans('Agf_EA_error_sql'));
 								}
-								else 
+								else
 								{
 									$agf_calendrier = $TCalendrier[0];
 									$r=$agf_calendrier->delete($user);
@@ -220,8 +243,8 @@ class ActionsAgefodd
 									if ($r < 0) $error++;
 								}
 							}
-							
-							
+
+
 							if ($error > 0)
 							{
 								$this->db->rollback();
@@ -237,7 +260,7 @@ class ActionsAgefodd
 							exit;
 						}
 					}
-					
+
 					header('Location: '.$context->getRootUrl(GETPOST('controller')));
 					exit;
 				}
@@ -251,10 +274,10 @@ class ActionsAgefodd
 					if ($trainer)
 					{
 						$slotid = GETPOST('slotid', 'int');
-						
+
 						$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($this->db);
 						if (!empty($slotid)) $agf_calendrier_formateur->fetch($slotid);
-						
+
 						// Est ce que mon calendrier appartient bien à ma session ? OU que l'id est vide pour un "add"
 						if (($agf_calendrier_formateur->id > 0 && $agf_calendrier_formateur->sessid == $agsession->id) || empty($agf_calendrier_formateur->id))
 						{
@@ -263,40 +286,40 @@ class ActionsAgefodd
 							$heuref = GETPOST('heuref');
 							$status = GETPOST('status');
 							$code_c_session_calendrier_type = GETPOST('code_c_session_calendrier_type');
-							
+
 							if (!empty($date_session) && !empty($heured) && !empty($heuref))
 							{
 								$context->setControllerFound();
 								dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
-								
+
 								$error = 0;
-								
+
 								// Je récupère le/les calendrier participants avant modificatino du calendrier formateur
 								$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur, true, true);
-								if (is_string($TCalendrier)) 
+								if (is_string($TCalendrier))
 								{
 									$context->setError($langs->trans('Agf_EA_error_sql'));
 									$TCalendrier = array();
 								}
 								$this->db->begin();
-								
+
 								$agf_calendrier_formateur->sessid = $agsession->id;
 								$agf_calendrier_formateur->date_session = strtotime($date_session);
 								$agf_calendrier_formateur->heured = strtotime($date_session.' '.$heured);
 								$agf_calendrier_formateur->heuref = strtotime($date_session.' '.$heuref);
 								$agf_calendrier_formateur->fk_agefodd_session_formateur = $trainer->agefodd_session_formateur->id;
-								
+
 								if (in_array($status, array(Agefoddsessionformateurcalendrier::STATUS_DRAFT, Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, Agefoddsessionformateurcalendrier::STATUS_CANCELED)))
 								{
 									$agf_calendrier_formateur->status = $status;
 								}
 								else $agf_calendrier_formateur->status = 0;
-								
+
 								if (empty($agf_calendrier_formateur->id)) $r=$agf_calendrier_formateur->create($user);
 								else $r=$agf_calendrier_formateur->update($user);
-								
+
 								if ($r <= 0) $error++;
-								
+
 								if (empty($TCalendrier))
 								{
 									$agf_calendrier = new Agefodd_sesscalendar($this->db);
@@ -306,7 +329,7 @@ class ActionsAgefodd
 									$agf_calendrier->heuref = $agf_calendrier_formateur->heuref;
 									$agf_calendrier->status = $agf_calendrier_formateur->status;
 									$agf_calendrier->calendrier_type = $code_c_session_calendrier_type;
-									
+
 									$r=$agf_calendrier->create($user);
 									if ($r <= 0) $error++;
 									$TCalendrier[] = $agf_calendrier;
@@ -326,7 +349,7 @@ class ActionsAgefodd
 										if ($r <= 0) $error++;
 //									}
 								}
-								
+
 								$now = dol_now();
 								$THour = GETPOST('hours', 'array');
 								$stagiaires = new Agefodd_session_stagiaire($this->db);
@@ -374,14 +397,14 @@ class ActionsAgefodd
 										}
 									}
 								}
-								
+
 								if (empty($error)) $this->db->commit();
-								else 
+								else
 								{
 									$this->db->rollback();
 									$context->setError($langs->trans('AgfExternalAccessErrorCreateOrUpdateCreneau'));
 								}
-								
+
 								header('Location: '.$context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id));
 								exit;
 							}
@@ -389,23 +412,23 @@ class ActionsAgefodd
 							{
 								$context->setError($langs->trans('AgefoddMissingFieldRequired'));
 							}
-							
+
 						}
 					}
 				}
-				
+
 			}
-			
-			
+
+
 			return 1;
 		}
-		
+
 		return 0;
 	}
-	
+
 	/**
 	 * Mes nouvelles pages pour l'accés au portail externe
-	 * 
+	 *
 	 * @param type $parameters
 	 * @param type $object
 	 * @param type $action
@@ -415,9 +438,9 @@ class ActionsAgefodd
 	public function PrintPageView($parameters, &$object, &$action, $hookmanager)
 	{
 		global $langs,$user;
-		
+
 		$TContext = explode(':', $parameters['context']);
-		
+
 		if (in_array('externalaccesspage', $TContext))
 		{
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
@@ -425,10 +448,10 @@ class ActionsAgefodd
 			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 			dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
-		
+
 			$langs->load('agefodd@agefodd');
 			$context = Context::getInstance();
-			
+
 			if ($context->controller == 'agefodd')
 			{
 				$context->setControllerFound();
@@ -438,7 +461,7 @@ class ActionsAgefodd
 			{
 				$context->setControllerFound();
 				print getPageViewSessionListExternalAccess();
-				
+
 			}
 			else if ($context->controller == 'agefodd_session_card' && GETPOST('sessid', 'int') > 0)
 			{
@@ -452,7 +475,7 @@ class ActionsAgefodd
 						print getPageViewSessionCardExternalAccess($agsession, $trainer);
 					}
 				}
-				
+
 			}
 			else if ($context->controller == 'agefodd_session_card_time_slot' && GETPOST('sessid','int') > 0)
 			{
@@ -471,32 +494,32 @@ class ActionsAgefodd
 							// Est ce que mon calendrier appartient bien à ma session
 							if ($agf_calendrier_formateur->sessid != $agsession->id) $ok = false; // Tantative d'édition avec un calendrier qui n'appartient pas au formateur
 						}
-						
+
 						// $ok = true par défaut pour du create, mais si j'ai un $soltid, alors j'ai vérifié que l'utilisateur a le droit
 						if ($ok)
 						{
 							dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
-							
+
 							$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur, true, true);
-							if (is_string($TCalendrier)) 
+							if (is_string($TCalendrier))
 							{
 								$context->setError($langs->trans('Agf_EA_error_sql'));
 								$TCalendrier = array();
 							}
 							if (!empty($TCalendrier)) $agf_calendrier = $TCalendrier[0];
 							else $agf_calendrier = null;
-							
+
 							$context->setControllerFound();
 							print getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action);
 						}
-					} 
+					}
 				}
 			}
 		}
 		return 0;
 	}
-	
-	
+
+
 	public function PrintServices($parameters, &$object, &$action, $hookmanager)
 	{
 		global $langs;
@@ -517,7 +540,7 @@ class ActionsAgefodd
 
 		return 0;
 	}
-	
+
 	/**
 	 * elementList Method Hook Call
 	 *
@@ -822,19 +845,19 @@ class ActionsAgefodd
 
 		return 0;
 	}
-	
-	
+
+
 	function printSearchForm($parameters, &$object, &$action, $hookmanager)
 	{
 		global $user,$conf;
-		
+
 		$TContext = explode(':', $parameters['context']);
 		if (!empty($user->rights->agefodd->lire) && !empty($conf->fullcalendarscheduler->enabled) && in_array('agefodd_session_scheduler', $TContext))
 		{
 			// Add my mini calendar
 			$this->resprints = '<div id="agf_session_scheduler_mini"></div>';
 		}
-		
+
 		return 0;
 	}
 }
