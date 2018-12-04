@@ -431,7 +431,6 @@ if (! empty($id)) {
 
 		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_presence_empty' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc' || $action == 'presend_attestationendtraining') {
 		    $mode = GETPOST("mode");
-		    if (!empty($mode)) $formmail->param['mode'] = $mode;
 
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_' . $agf->id . '.pdf';
@@ -913,6 +912,18 @@ if (! empty($id)) {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 					$file_array[]=$file;
 				}
+			}
+			else 
+			{
+			    $newfilearray = $formmail->get_attached_files();
+			    if (!empty($newfilearray['paths']))
+			    {
+			        foreach ($newfilearray['paths'] as $key => $path)
+			        {
+			            $formmail->add_attached_files($path, basename($path), dol_mimetype($path));
+			            $file_array[]=$path;
+			        }
+			    }
 			}
 			if (! empty($socid)) {
 				$formmail->param['socid'] = $socid;
@@ -2041,7 +2052,6 @@ if (! empty($id)) {
 			}
 
 			$formmail->param['fileinit'] = $file_array;
-			$formmail->param['mode'] = GETPOST('mode');
 			$formmail->show_form();
 
 			if (! empty($mesg)) {
