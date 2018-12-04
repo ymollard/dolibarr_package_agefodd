@@ -269,12 +269,11 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 		<div class="btn-group" role="group">
 		<button id="btnGroupDrop1" type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
 		<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+        <a  class="dropdown-item" href="'.$url.'"><i class="fa fa-edit"> Editer</i></a>
 		<button type="button" class="dropdown-item" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)" >'.$delete.' </button>
 		</div>
 		</div>
 		</div>
-		
-		
 		</td>';
 
 		$out.= '</tr>';
