@@ -257,7 +257,7 @@ class ActionsAgefodd
 				                {
 				                    $error++;
 				                    if ($_FILES['userfile']['error'][$key] == 1 || $_FILES['userfile']['error'][$key] == 2){
-				                        setEventMessages($langs->trans('ErrorFileSizeTooLarge'), null, 'errors');
+				                        $context->setError($langs->trans('ErrorFileSizeTooLarge'));
 				                    }
 				                    else {
 				                        setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("File")), null, 'errors');
