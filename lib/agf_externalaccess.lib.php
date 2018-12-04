@@ -95,7 +95,7 @@ function getPageViewSessionListExternalAccess()
 		$out.= '</thead>';
 
 		$out.= '<tbody>';
-
+		
 		/** @var AgfSessionLine $item */
 		foreach ($agsession->lines as &$item)
 		{
@@ -121,7 +121,31 @@ function getPageViewSessionListExternalAccess()
 			$out.= ' <td data-order="'.$item->datef.'" data-search="'.dol_print_date($item->datef, '%d/%m/%Y').'" >'.dol_print_date($item->datef, '%d/%m/%Y').'</td>';
 			$out.= ' <td class="text-center" data-order="'.$item->duree_session.'" data-session="'.$item->duree_session.'"  >'.$item->duree_session.'</td>';
 			$duree_declared = Agsession::getStaticSumDureePresence($item->rowid);
-			$out.= ' <td class="text-center" data-order="'.$duree_declared.'">'.$duree_declared.'</td>';
+			if (!empty($duree_declared) && !empty($conf->global->AGF_EA_ECLATE_HEURES_PAR_TYPE))
+			{
+			    $duree_exploded = Agsession::getStaticSumExplodeDureePresence($item->rowid);
+			    
+			    if (count($duree_exploded))
+			    {
+			        $plus = ' <i class="fa fa-plus hours-detail"></i>';
+			        
+			        
+			        $popcontent = '';
+			        foreach ($duree_exploded as $label => $hours)
+			        {
+			            $popcontent.= dol_escape_htmltag('<br>'.$label.' : '.$hours, 1);
+			        }
+			        $plus = ' <span data-toggle="popover" title="Détail des heures" data-content="'.$popcontent.'"><i class="fa fa-plus hours-detail"></i></span>';
+			        $plus.= '<span style="display:none;">';
+			        
+			        $plus.='</span>';
+			    }
+			}
+			else
+			{
+			    $plus = '';
+			}
+			$out.= ' <td class="text-center" data-order="'.$duree_declared.'">'.$duree_declared.$plus.'</td>';
 			$solde = $item->duree_session - $duree_declared;
 			$out.= ' <td class="text-center" data-order="'.$solde.'">'.$solde.'</td>';
 			$statut = Agsession::getStaticLibStatut($item->status, 0);
@@ -152,6 +176,8 @@ function getPageViewSessionListExternalAccess()
 								"aTargets": [-1]
 							}]
 						});
+                        /* on réaffecte event js on mouseenter pour hacker datatable */
+                        $(document).on("mouseenter", \'[data-toggle="popover"]\', function(e){$(this).popover({html : true});});
 					});
 			   </script>';
 	}

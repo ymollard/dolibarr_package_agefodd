@@ -347,6 +347,35 @@ class Agsession extends CommonObject
 
 		return $duree;
 	}
+	
+	public static function getStaticSumExplodeDureePresence($fk_agession)
+	{
+	    global $db;
+	    
+	    $sql = "SELECT
+                SUM(assh.heures) as heures, IF(c.label IS NULL, 'Autre', c.label) as type
+            FROM
+                llx_agefodd_session_stagiaire_heures as assh
+            LEFT JOIN llx_agefodd_session_calendrier as agfsc ON assh.fk_calendrier = agfsc.rowid
+            LEFT JOIN llx_c_agefodd_session_calendrier_type as c ON c.code = agfsc.calendrier_type
+            WHERE
+                fk_session = ".$fk_agession."
+                
+            GROUP BY agfsc.calendrier_type";
+	    
+	    $TDuree = array();
+	    
+	    $res = $db->query($sql);
+	    if ($res)
+	    {
+	        while ($obj = $db->fetch_object($res))
+	        {
+	            $TDuree[$obj->type] = $obj->heures;
+	        }
+	    }
+	    
+	    return $TDuree;
+	}
 
 	public function getSumDureePresence($fk_stagiaire=null)
 	{
