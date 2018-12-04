@@ -260,7 +260,7 @@ class ActionsAgefodd
 				                        $context->setError($langs->trans('ErrorFileSizeTooLarge'));
 				                    }
 				                    else {
-				                        setEventMessages($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("File")), null, 'errors');
+				                        $context->setError($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("File")));
 				                    }
 				                }
 				            }
