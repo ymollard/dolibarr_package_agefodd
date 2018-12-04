@@ -461,7 +461,10 @@ class ActionsAgefodd
 	        
 	        if ($action == "downloadSessionFile")
 	        {
-	            $this->_downloadSessionFile();
+	            $file = GETPOST('file');
+	            $filename = $conf->agefodd->dir_output . '/' . $file;
+// 	            var_dump($file, $filename); exit;
+	            $this->_downloadSessionFile($filename);
 	        }
 	    }
 	}
@@ -935,5 +938,13 @@ class ActionsAgefodd
 		}
 		
 		return 0;
+	}
+	
+	function _downloadSessionFile($filename)
+	{
+	    dol_include_once('/externalaccess/lib/externalaccess.lib.php');
+	    $forceDownload = GETPOST('forcedownload','int');
+	    
+	    downloadFile($filename, $forceDownload);
 	}
 }
