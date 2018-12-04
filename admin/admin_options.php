@@ -1205,6 +1205,18 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
+// configuration external access
+if(!empty($conf->externalaccess->enabled))
+{
+    print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHeuresDeclareesEclateesParType") . '</td>';
+    print '<td align="left">';
+    print ajax_constantonoff('AGF_EA_ECLATE_HEURES_PAR_TYPE');
+    print '</td>';
+    print '<td></td>';
+    print '</tr>';
+    $var=!$var;
+}
+
 print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
 
 print '</table><br>';

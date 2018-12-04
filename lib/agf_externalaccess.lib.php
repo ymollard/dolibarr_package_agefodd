@@ -17,6 +17,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+/**
+ * Ajout les icône dans l'écran "services"
+ * 
+ * @return string
+ */
 function getMenuAgefoddExternalAccess()
 {
 	global $langs;
@@ -45,9 +50,14 @@ function getMenuAgefoddExternalAccess()
 	return $html;
 }
 
+/**
+ * Affiche la liste des sessions du formateur courant agefodd
+ * 
+ * @return string
+ */
 function getPageViewSessionListExternalAccess()
 {
-	global $langs,$db,$user;
+	global $langs,$db,$user, $conf;
 
 	$context = Context::getInstance();
 
@@ -102,7 +112,7 @@ function getPageViewSessionListExternalAccess()
 				}
 
 			}
-
+			
 			$out.= '<tr>';
 			$out.= ' <td data-order="'.$item->sessionref.'" data-search="'.$item->sessionref.'"  ><a href="'.$context->getRootUrl('agefodd_session_card', '&sessid='.$item->rowid).'">'.$item->sessionref.'</a></td>';
 			$out.= ' <td data-order="'.$item->intitule.'" data-search="'.$item->intitule.'"  >'.$item->intitule.'</td>';
@@ -156,6 +166,13 @@ function getPageViewSessionListExternalAccess()
 	return $out;
 }
 
+/**
+ * Génère les écrans liés à une session
+ * 
+ * @param Agsession $agsession
+ * @param Teacher $trainer
+ * @return string
+ */
 function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 {
 	global $db,$langs;
@@ -204,6 +221,14 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	return $out;
 }
 
+/**
+ * Affiche les créneaux du calendrier formateur
+ * 
+ * @param Agsession $agsession
+ * @param Teacher $trainer
+ * @param Teacher_calendar $agf_calendrier_formateur
+ * @return string
+ */
 function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &$agf_calendrier_formateur)
 {
 	global $langs;
