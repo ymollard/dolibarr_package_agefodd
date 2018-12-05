@@ -581,6 +581,30 @@ class Agefodd_sesscalendar extends CommonObject{
 			return - 1;
 		}
 	}
+	
+	public static function getStaticLibStatut($status, $mode=0)
+	{
+	    global $langs;
+	    
+	    $out = '';
+	    if ($status == self::STATUS_DRAFT)
+	    {
+	        if ($mode == 1) $out.= img_picto('', 'statut0').' ';
+	        $out.= $langs->trans('AgfStatusCalendar_draft');
+	    }
+	    else if ($status == self::STATUS_CONFIRMED)
+	    {
+	        if ($mode == 1) $out.= img_picto('', 'statut4').' ';
+	        $out.= $langs->trans('AgfStatusCalendar_confirmed');
+	    }
+	    else if ($status == self::STATUS_CANCELED)
+	    {
+	        if ($mode == 1) $out.= img_picto('', 'statut6').' ';
+	        $out.= $langs->trans('AgfStatusCalendar_canceled');
+	    }
+	    
+	    return $out;
+	}
 }
 class Agefodd_sesscalendar_line {
 	public $id;

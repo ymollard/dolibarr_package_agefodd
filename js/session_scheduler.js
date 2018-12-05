@@ -421,9 +421,11 @@ $(document).ready(function() {
 			
 		if (typeof event !== 'undefined')
 		{
+			//console.log(event);
+			
 			// Init inputs
 			fullcalendarscheduler_div.find('[name=calendrier_type]').val(event.calendrier_type);
-			
+			fullcalendarscheduler_div.find('[name=calendrier_status]').val(event.calendrier_status);
 			if (typeof event.TFormateur !== 'undefined')
 			{
 				for (let i in event.TFormateur)

@@ -179,6 +179,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 		if (! empty($heuref))
 			$agf->heuref = $heuref;
 
+		$agf->status = GETPOST('calendar_status');
 		$agf->calendrier_type = GETPOST('code_c_session_calendrier_type');
 		$result = $agf->update($user);
 
@@ -468,6 +469,7 @@ if ($id) {
 			print '<tr class="liste_titre">';
 			print '<th width="15%" class="liste_titre">' . $langs->trans('Date') . '</th>';
 			print '<th width="35%" class="liste_titre">' . $langs->trans('Hours') . '</th>';
+			print '<th class="text-center" >'.$langs->trans('Status').'</th>';
 			print '<th class="liste_titre">' . $langs->trans('AgfCalendarType') . '</th>';
 			if ($user->rights->agefodd->modifier)
 			{
@@ -497,7 +499,12 @@ if ($id) {
 					print ' - ' . $langs->trans("AgfPeriodTimeE") . ' ';
 					print $formAgefodd->select_time(dol_print_date($calendrier->lines[$i]->heuref, 'hour'), 'datef');
 					print '</td>';
-
+					$TStatus = array(
+					    '0' => $langs->trans('AgfStatusCalendar_previsionnel'),
+					    '1' => $langs->trans('AgfStatusCalendar_confirmed'),
+					    '-1' => $langs->trans('AgfStatusCalendar_canceled')
+					);
+					print '<td>'.$form->selectarray('calendar_status', $TStatus, $calendrier->lines[$i]->status).'</td>';
 					print '<td>'.$formAgefodd->select_calendrier_type($calendrier->lines[$i]->calendrier_type).'</td>';
 
 					if (!empty($user->rights->agefodd->modifier))
@@ -514,6 +521,9 @@ if ($id) {
 				} else {
 					print '<td width="20%">' . dol_print_date($calendrier->lines[$i]->date_session, 'daytext') . '</td>';
 					print '<td  width="150px">' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour').'</td>';
+					if ($calendrier->lines[$i]->status == Agefodd_sesscalendar::STATUS_DRAFT) $statut = $langs->trans('AgfStatusCalendar_previsionnel');
+					else $statut = Agefodd_sesscalendar::getStaticLibStatut($calendrier->lines[$i]->status, 0);
+					print '<td>'.$statut.'</td>';
 					print '<td>'.$calendrier->lines[$i]->calendrier_type_label.'</td>';
 					if (!empty($user->rights->agefodd->modifier))
 					{

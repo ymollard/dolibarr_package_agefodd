@@ -125,6 +125,14 @@ $inputs_hidden = '<input type="hidden" name="fk_agefodd_session" value="'.$objec
 
 $select_calendrier_type = '<label>'.$langs->trans("AgfCalendarType").'</label> '.$formagefodd->select_calendrier_type('', 'calendrier_type');
 
+$TStatus = array(
+    "" => "",
+    '0' => $langs->trans('AgfStatusCalendar_previsionnel'),
+    '1' => $langs->trans('AgfStatusCalendar_confirmed'),
+    '-1' => $langs->trans('AgfStatusCalendar_canceled')
+);
+$select_calendrier_status = $langs->trans('Status') . '&nbsp;' . $form->selectarray('calendrier_status', $TStatus);
+
 ob_start();
 echo '<label>'.$langs->trans("DateActionStart").'</label> ';
 $form->select_date(null,'date_start',1,1,1,"action",1,1,0,0,'fulldaystart');
@@ -216,6 +224,7 @@ echo '
 	fullcalendarscheduler_div = $(\'<form id="form_add_event" action="#"></form>\');
 	fullcalendarscheduler_div	.append('.json_encode($inputs_hidden).')
 								.append("<p>"+'.json_encode($select_calendrier_type).'+"</p>")
+                                .append("<p>"+'.json_encode($select_calendrier_status).'+"</p>")
 								.append("<p class=\'is_past\'>"+'.json_encode($select_date_start).'+"</p>")
 								.append("<p class=\'is_past\'>"+'.json_encode($select_date_end).'+"</p>")
 								.append("<div>"+'.json_encode($html_participants).'+"</div>")	
