@@ -295,11 +295,11 @@ class pdf_courrier extends ModelePDFAgefodd {
 				if(!empty($agf->contactid)) {
 					$result = $agf_contact->fetch($agf->contactid, 'contact');
 					$contact_static = new Contact($this->db);
-					$contact_static->civility_id = $agf->contactcivilite;
+					$contact_static->fetch($agf_contact->spid);
 					$this->madame_monsieur = $contact_static->getCivilityLabel();
 
-					$this->str = ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf->contactname . "\n";
-					$this->str .= $agf_contact->address . "\n" . $agf_contact->zip . ' ' . $agf_contact->town;
+					$this->str = $contact_static->getFullName($outputlangs). "\n";
+					$this->str .= $contact_static->address . "\n" . $contact_static->zip . ' ' . $contact_static->town;
 					$findadress =true;
 				} else {
 					//If session contact is not set we try to find a sta signataire convention
@@ -312,7 +312,7 @@ class pdf_courrier extends ModelePDFAgefodd {
 								$contact_static->fetch($line_sta->fk_socpeople_sign);
 								$this->madame_monsieur = $contact_static->getCivilityLabel();
 
-								$this->str = $contact_static->getFullName($outputlangs);
+								$this->str = $contact_static->getFullName($outputlangs). "\n";
 								$this->str .= $contact_static->address . "\n" . $contact_static->zip . ' ' . $contact_static->town;
 								$findadress =true;
 								break;
