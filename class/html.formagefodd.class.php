@@ -1313,7 +1313,8 @@ class FormAgefodd extends Form
 	 * @return string The HTML control
 	 */
 	public function select_time($selectval = '', $htmlname = 'period', $enabled = 1, $with_empty = true, $more_class = '') {
-		$time = 5;
+		global $conf;
+		$time = (isset($conf->global->AGF_MIN_HOUR_SCHEDULE) && $conf->global->AGF_MIN_HOUR_SCHEDULE >= 0) ? $conf->global->AGF_MIN_HOUR_SCHEDULE : 5;
 		$heuref = 23;
 		$min = 0;
 		if ($with_empty) {

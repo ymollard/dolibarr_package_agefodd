@@ -46,5 +46,3 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_place (
   tms timestamp NOT NULL,
   entity integer NOT NULL DEFAULT 1
 ) ENGINE=InnoDB;
-
-ALTER TABLE llx_agefodd_place ADD COLUMN nb_place integer NULL;
