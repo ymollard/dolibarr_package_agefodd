@@ -109,6 +109,8 @@ class modAgefodd extends DolibarrModules
 						'invoicesuppliercard',
 						'admin',
 						'emailtemplates',
+				        'externalaccesspage',
+				        'externalaccessinterface',
 						'upgrade'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',

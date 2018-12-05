@@ -42,6 +42,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	public $fk_actioncomm;
 	public $calendrier_type;
 	public $status = 0;
+	public $billed = 0;
 	public $lines = array ();
 
 
@@ -86,7 +87,7 @@ class Agefodd_sesscalendar extends CommonObject{
 
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_calendrier(";
-		$sql .= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec, calendrier_type, status";
+		$sql .= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec, calendrier_type, status, billed";
 		$sql .= ") VALUES (";
 		$sql .= " " . $this->sessid . ", ";
 		$sql .= "'" . $this->db->idate($this->date_session) . "', ";
@@ -97,7 +98,8 @@ class Agefodd_sesscalendar extends CommonObject{
 		$sql .= ' ' . $user->id . ', ';
 		$sql .= "'" . $this->db->idate(dol_now()) . "', ";
 		$sql .= "'" . $this->db->escape($this->calendrier_type) . "', ";
-		$sql .= " " . $this->status;
+		$sql .= " " . $this->status . ", ";
+		$sql .= " " . $this->billed;
 		$sql .= ")";
 
 		$this->db->begin();
@@ -152,7 +154,7 @@ class Agefodd_sesscalendar extends CommonObject{
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label', s.billed ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.rowid = " . $id;
@@ -171,6 +173,7 @@ class Agefodd_sesscalendar extends CommonObject{
 				$this->calendrier_type = $obj->calendrier_type;
 				$this->calendrier_type_label = $obj->calendrier_type_label;
 				$this->status = $obj->status;
+				$this->billed = $obj->billed;
 			}
 			$this->db->free($resql);
 
@@ -192,7 +195,7 @@ class Agefodd_sesscalendar extends CommonObject{
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label', s.billed ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.fk_actioncomm = " . $actionid;
@@ -211,6 +214,7 @@ class Agefodd_sesscalendar extends CommonObject{
 				$this->calendrier_type = $obj->calendrier_type;
 				$this->calendrier_type_label = $obj->calendrier_type_label;
 				$this->status = $obj->status;
+				$this->billed = $obj->billed;
 			}
 			$this->db->free($resql);
 
@@ -268,7 +272,7 @@ class Agefodd_sesscalendar extends CommonObject{
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
+		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod, s.calendrier_type, s.status, d.label as 'calendrier_type_label', s.billed ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.rowid = " . $id;
@@ -286,6 +290,7 @@ class Agefodd_sesscalendar extends CommonObject{
 				$this->calendrier_type = $obj->calendrier_type;
 				$this->calendrier_type_label = $obj->calendrier_type_label;
 				$this->status = $obj->status;
+				$this->billed = $obj->billed;
 			}
 			$this->db->free($resql);
 
@@ -310,6 +315,7 @@ class Agefodd_sesscalendar extends CommonObject{
 
 		// Clean parameters
 		if (!is_numeric($this->status)) $this->status = 0;
+		if (!is_numeric($this->billed)) $this->billed = 0;
 		// Check parameters
 		// Put here code to add control on parameters values
 
@@ -321,6 +327,7 @@ class Agefodd_sesscalendar extends CommonObject{
 		$sql .= " fk_user_mod=" . $user->id . ", ";
 		$sql .= " calendrier_type='" . $this->db->escape($this->calendrier_type) . "', ";
 		$sql .= " status=" . $this->status;
+		$sql .= " billed=" . $this->billed;
 		$sql .= " WHERE rowid = " . $this->id;
 
 		$this->db->begin();
