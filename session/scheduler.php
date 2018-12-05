@@ -126,7 +126,6 @@ $inputs_hidden = '<input type="hidden" name="fk_agefodd_session" value="'.$objec
 $select_calendrier_type = '<label>'.$langs->trans("AgfCalendarType").'</label> '.$formagefodd->select_calendrier_type('', 'calendrier_type');
 
 $TStatus = array(
-    "" => "",
     '0' => $langs->trans('AgfStatusCalendar_previsionnel'),
     '1' => $langs->trans('AgfStatusCalendar_confirmed'),
     '-1' => $langs->trans('AgfStatusCalendar_canceled')
