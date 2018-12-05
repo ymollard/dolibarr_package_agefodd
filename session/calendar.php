@@ -55,6 +55,8 @@ $hookmanager->initHooks(array(
 		'agefoddsessioncalendar'
 ));
 
+$langs->load('bills');
+
 $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
@@ -90,7 +92,64 @@ if (! empty($delete_calsel)) {
 
 if (!empty($massaction))
 {
-    if($massaction = "delete") $action = 'delete_calsel';
+    switch ($massaction)
+    {
+        case "delete":
+            $action = 'delete_calsel';
+            break;
+            
+        case "bill":
+            if (count($toselect) > 0) {
+                foreach ( $toselect as $lineid ) {
+                    $calrem = new Agefodd_sesscalendar($db);
+                    $result = $calrem->fetch($lineid);
+                    if ($result < 0) {
+                        setEventMessage($calrem->error, 'errors');
+                        $error ++;
+                    }
+                    else
+                    {
+                        $calrem->billed = 1;
+                        $res = $calrem->update($user);
+                        if ($res < 0) {
+                            setEventMessage($calrem->error, 'errors');
+                            $error ++;
+                        }
+                    }
+                }
+            }
+            if (! $error) {
+                Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
+                exit();
+            }
+            break;
+            
+        case "tobill":
+            if (count($toselect) > 0) {
+                foreach ( $toselect as $lineid ) {
+                    $calrem = new Agefodd_sesscalendar($db);
+                    $result = $calrem->fetch($lineid);
+                    if ($result < 0) {
+                        setEventMessage($calrem->error, 'errors');
+                        $error ++;
+                    }
+                    else
+                    {
+                        $calrem->billed = 0;
+                        $res = $calrem->update($user);
+                        if ($res < 0) {
+                            setEventMessage($calrem->error, 'errors');
+                            $error ++;
+                        }
+                    }
+                }
+            }
+            if (! $error) {
+                Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
+                exit();
+            }
+            break;
+    }
 }
 
 /*
@@ -460,7 +519,11 @@ if ($id) {
 				print $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("AgfAllDeletePeriod"), $langs->trans("AgfConfirmAllDeletePeriod"), "confirm_delete_period_all", '', '', 1);
 			}
 			
-			$arrayofaction=array('delete' => $langs->trans('Delete'));
+			$arrayofaction=array(
+			    'bill' => $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('Billed').'"',
+			    'tobill' => $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('ToBill').'"',
+			    'delete' => $langs->trans('Delete')
+			);
 			
 			$massactionbutton = $formAgefodd->selectMassAction('', $arrayofaction);
 			

@@ -326,7 +326,7 @@ class Agefodd_sesscalendar extends CommonObject{
 		$sql .= " heuref='" . $this->db->idate($this->heuref) . "',";
 		$sql .= " fk_user_mod=" . $user->id . ", ";
 		$sql .= " calendrier_type='" . $this->db->escape($this->calendrier_type) . "', ";
-		$sql .= " status=" . $this->status;
+		$sql .= " status=" . $this->status . ", ";
 		$sql .= " billed=" . $this->billed;
 		$sql .= " WHERE rowid = " . $this->id;
 
