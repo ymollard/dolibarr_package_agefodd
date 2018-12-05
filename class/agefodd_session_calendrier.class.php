@@ -612,6 +612,19 @@ class Agefodd_sesscalendar extends CommonObject{
 	    
 	    return $out;
 	}
+	
+	public function getLibStatutBilled()
+	{
+	    global $langs;
+	    
+	    $langs->load('bills');
+	    $out = '';
+	    
+	    if (empty($this->billed)) $out .= img_picto($langs->trans('ToBill'), 'statut1');
+	    else $out .= img_picto($langs->trans('Billed'), 'statut4');
+	    
+	    return $out;
+	}
 }
 class Agefodd_sesscalendar_line {
 	public $id;

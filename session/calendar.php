@@ -483,6 +483,7 @@ if ($id) {
 			print '<th width="35%" class="liste_titre">' . $langs->trans('Hours') . '</th>';
 			print '<th class="text-center" >'.$langs->trans('Status').'</th>';
 			print '<th class="liste_titre">' . $langs->trans('AgfCalendarType') . '</th>';
+			print '<th class="liste_titre">' . $langs->trans('Billed') . '</th>';
 			if ($user->rights->agefodd->modifier)
 			{
 				print '<th width="1%" class="liste_titre linecoledit center">&nbsp;</th>';
@@ -537,6 +538,7 @@ if ($id) {
 					else $statut = Agefodd_sesscalendar::getStaticLibStatut($calendrier->lines[$i]->status, 0);
 					print '<td>'.$statut.'</td>';
 					print '<td>'.$calendrier->lines[$i]->calendrier_type_label.'</td>';
+					print '<td>'.$calendrier->lines[$i]->getLibStatutBilled().'</td>';
 					if (!empty($user->rights->agefodd->modifier))
 					{
 						print '<td class="linecoledit center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modperiod=' . $calendrier->lines[$i]->id . '&anchor=period">' . img_picto($langs->trans("Edit"), 'edit') . '</a></td>';
