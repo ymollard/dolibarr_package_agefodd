@@ -87,7 +87,7 @@ class box_agefodd_board extends ModeleBoxes {
 			$key ++;
 		}
 
-		$result = $agf->fetch_tache_en_retard(-1);
+		$result = $agf->fetch_tache_late();
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
 		} else {
@@ -104,7 +104,7 @@ class box_agefodd_board extends ModeleBoxes {
 			$key ++;
 		}
 
-		$result = $agf->fetch_tache_en_retard(3,8);
+		$result = $agf->fetch_tache_in_between(0,3);
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
 		} else {
@@ -121,7 +121,7 @@ class box_agefodd_board extends ModeleBoxes {
 			$key ++;
 		}
 
-		$result = $agf->fetch_tache_en_retard(8, 0);
+		$result = $agf->fetch_tache_in_between(3,8);
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
 		} else {
@@ -131,25 +131,42 @@ class box_agefodd_board extends ModeleBoxes {
 					'text' => img_object($langs->trans("AgfXDaysBeforeAlert"), "generic").$langs->trans("AgfAdmSuivi").' : '.$langs->trans("AgfXDaysBeforeAlert")
 			);
 			$this->info_box_contents[$key][1] = array(
-					'td' => 'align="left" bgcolor="#ffe27d"',
+					'td' => 'align="left" bgcolor="ffe27d"',
 					'text' => $nbre,
 					'url' => (dol_buildpath('/agefodd/session/list_ope.php', 1) . '?search_alert=alert2&mainmenu=agefodd')
 			);
 			$key ++;
 		}
 
-		$result = $agf->fetch_tache_en_retard(0, 8);
+		$result = $agf->fetch_tache_in_between(8,0);
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
 		} else {
 			$nbre = count($agf->lines);
 			$this->info_box_contents[$key][0] = array(
 					'td' => 'align="left"',
-					'text' => img_object($langs->trans("AgfAlertLevel3Short"), "generic").$langs->trans("AgfAdmSuivi").' : '.$langs->trans("AgfAlertLevel3Short")
+					'text' => img_object($langs->trans("AgfZDaysBeforeAlert"), "generic").$langs->trans("AgfAdmSuivi").' : '.$langs->trans("AgfZDaysBeforeAlert")
 			);
 			$this->info_box_contents[$key][1] = array(
 					'td' => 'align="left" bgcolor="#d5baa8"',
 					'text' => $nbre,
+					'url' => (dol_buildpath('/agefodd/session/list_ope.php', 1) . '?search_alert=morethanzdays&mainmenu=agefodd')
+			);
+			$key ++;
+		}
+
+
+		$result = $agf->fetch_tache_en_cours();
+		if ($result < 0) {
+			setEventMessage($agf->error, 'errors');
+		} else {
+			$this->info_box_contents[$key][0] = array(
+					'td' => 'align="left"',
+					'text' => img_object($langs->trans("AgfAlertLevel3Short"), "generic").$langs->trans("AgfAdmSuivi").' : '.$langs->trans("AgfAlertLevel3Short")
+			);
+			$this->info_box_contents[$key][1] = array(
+					'td' => 'align="left"',
+					'text' => $agf->total,
 					'url' => (dol_buildpath('/agefodd/session/list_ope.php', 1) . '?search_alert=alert3&mainmenu=agefodd')
 			);
 			$key ++;

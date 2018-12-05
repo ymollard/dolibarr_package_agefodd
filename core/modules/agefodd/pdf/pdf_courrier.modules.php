@@ -281,34 +281,47 @@ class pdf_courrier extends ModelePDFAgefodd {
 				$pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 				$pdf->SetXY($posX + 20, $posY + 3);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 12);
-				$this->str = $agf_soc->nom;
+				$this->str = $agf_soc->name;
 				$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 
 				// Show recipient information
 
-				// if agefodd contact exist
-				$agf_contact = new Agefodd_contact($this->db);
-				$result = $agf_contact->fetch($socid);
-				// on en profite pour préparer la ligne "madame, monsieur"
 				$this->madame_monsieur = $outputlangs->transnoentities('AgfPDFCourrierAcceuil4');
-				$this->str = '';
+				$this->str='';
+				$findadress=false;
 
-				if (! (empty($agf->contactname))) {
+				//If session contact is set we set receipents as contact
+				$agf_contact = new Agefodd_contact($this->db);
+				if(!empty($agf->contactid)) {
+					$result = $agf_contact->fetch($agf->contactid, 'contact');
 					$contact_static = new Contact($this->db);
-					$contact_static->civility_id = $agf->contactcivilite;
+					$contact_static->fetch($agf_contact->spid);
+					$this->madame_monsieur = $contact_static->getCivilityLabel();
 
-					$this->str = ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf->contactname . "\n";
-					$this->madame_monsieur = $contact_static->getCivilityLabel();
-				}
-				if (($agf_contact->name) && (empty($this->str))) {
-					$contact_static = new Contact($this->db);
-					$contact_static->civility_id = $agf_contact->civilite;
-					$this->str = ucfirst(strtolower($contact_static->getCivilityLabel())) . ' ' . $agf_contact->name . ' ' . $agf_contact->firstname . "\n";
-					$this->madame_monsieur = $contact_static->getCivilityLabel();
-				}
-				if (! empty($agf_contact->address)) {
-					$this->str .= $agf_contact->address . "\n" . $agf_contact->zip . ' ' . $agf_contact->town;
+					$this->str = $contact_static->getFullName($outputlangs). "\n";
+					$this->str .= $contact_static->address . "\n" . $contact_static->zip . ' ' . $contact_static->town;
+					$findadress =true;
 				} else {
+					//If session contact is not set we try to find a sta signataire convention
+					$sta = new Agefodd_session_stagiaire($this->db);
+					$result=$sta->fetch_stagiaire_per_session($agf->id,$socid);
+					if ($result>0) {
+						foreach($sta->lines as $line_sta) {
+							if (!empty($line_sta->fk_socpeople_sign)) {
+								$contact_static = new Contact($this->db);
+								$contact_static->fetch($line_sta->fk_socpeople_sign);
+								$this->madame_monsieur = $contact_static->getCivilityLabel();
+
+								$this->str = $contact_static->getFullName($outputlangs). "\n";
+								$this->str .= $contact_static->address . "\n" . $contact_static->zip . ' ' . $contact_static->town;
+								$findadress =true;
+								break;
+							}
+						}
+					}
+				}
+				//else we output just customer adress
+				if (!$findadress) {
 					$this->str = $agf_soc->address . "\n" . $agf_soc->zip . ' ' . $agf_soc->town;
 				}
 

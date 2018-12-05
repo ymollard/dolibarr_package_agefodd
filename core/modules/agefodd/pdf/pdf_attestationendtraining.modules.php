@@ -337,7 +337,7 @@ class pdf_attestationendtraining extends ModelePDFAgefodd {
 						$newY = $pdf->GetY() + 10;
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 						$pdf->SetXY($this->marge_gauche + 1, $newY);
-						$this->str = $outputlangs->transnoentities('Fait pour servir et valoir ce que droit');
+						$this->str = $outputlangs->transnoentities('AgfPDFAttestation10');
 						$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
 
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);

@@ -186,12 +186,10 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 
 	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_place($db);
-		// thirdparty is not required (uncomment if needed)
-		/*
 		if ($societe < 1) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
 			$error ++;
-		}*/
+		}
 
 		$label = GETPOST('ref_interne', 'alpha');
 		if (empty($label)) {
@@ -401,7 +399,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	if ($id) {
 		$agf = new Agefodd_place($db);
 		$result = $agf->fetch($id);
-		$result = $agf->fetch_thirdparty();
+		$result2 = $agf->fetch_thirdparty();
 
 		if ($result > 0) {
 			$head = site_prepare_head($agf);

@@ -50,29 +50,39 @@ $langs->load('agefodd@agefodd');
 
 llxHeader('', $langs->trans('AgefoddShort'));
 
+print_barre_liste($langs->trans("AgfBilanGlobal"),0,'','', '', '', '', 0);
 
+print '<table class="noborder">';
+print '<tr>';
+print '<td>';
 $box = new box_agefodd_stats($db);
 $box->loadBox();
 $box->showBox();
-
+print '</td>';
+print '<td>';
 $box = new box_agefodd_board($db);
 $box->loadBox();
 $box->showBox();
-
+print '</td>';
+print '</tr>';
+print '<tr>';
+print '<td>';
 $box = new box_agefodd_lastsession($db);
 
 $box->loadBox();
 $box->showBox();
-
+print '</td>';
+print '<td>';
 $box = new box_agefodd_preferedtraining($db);
 
 $box->loadBox();
 $box->showBox();
+print '</td>';
+print '</tr>';
 
-
-$agf = new Agefodd_index($db);
+print '</table>';
 if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
-	// tableau de bord travail
+	$agf = new Agefodd_index($db);
 
 	$time_expiration = GETPOST('certif_time', 'int');
 	if (empty($time_expiration)) {
@@ -90,7 +100,7 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 	print '<form name="search_certif" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
 	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">';
 	print '<div style="overflow:auto; height: 200px; overflow-x: hidden;">';
-	print '<table class="noborder" width="500px" align="left">';
+	print '<table class="noborder">';
 	print '<tr class="liste_titre"><th>' . $langs->trans("AgfIndexCertif");
 	print '<select name="certif_time">';
 	foreach ( $filter_month_array as $i ) {
@@ -136,6 +146,7 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 	print '</div>';
 	print '</form>';
 }
+
 
 llxFooter();
 $db->close();

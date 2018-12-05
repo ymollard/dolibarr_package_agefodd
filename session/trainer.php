@@ -682,11 +682,11 @@ if (! $res)
 
 										print '<td class="actions" align="right">';
 
-										if ($user->rights->agefodd->modifier) {
+										if ($user->rights->agefodd->modifier && ! $user->rights->agefodd->session->trainer) {
 											print '<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&amp;sessid=' . $formateurs->lines[$i]->sessid . '&amp;opsid=' . $formateurs->lines[$i]->opsid . '&amp;id=' . $id . '&amp;form_edit=1">' . img_picto($langs->trans("Edit"), 'edit') . '</a>';
 										}
 										print '&nbsp;';
-										if ($user->rights->agefodd->modifier) {
+										if ($user->rights->agefodd->modifier&& ! $user->rights->agefodd->session->trainer ) {
 											print '<a href="' . dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&amp;sessid=' . $formateurs->lines[$i]->sessid . '&amp;opsid=' . $formateurs->lines[$i]->opsid . '&amp;id=' . $id . '&amp;form_remove=1">' . img_picto($langs->trans("Delete"), 'delete') . '</a>';
 										}
 										if ($user->rights->agefodd->modifier && ! empty($conf->global->AGF_DOL_TRAINER_AGENDA) && ! $user->rights->agefodd->session->trainer) {
@@ -1051,11 +1051,13 @@ if (! $res)
 				}
 			}
 			if ($action == 'edit' && $newform_var < 1){
-				if ($user->rights->agefodd->modifier) {
-                    print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '&newform=1">' . $langs->trans("AgfFormateurAdd") . '</a>';
-                } else {
-                    print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
-                }
+				if (! $user->rights->agefodd->session->trainer) {
+					if ($user->rights->agefodd->modifier) {
+	                    print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '&newform=1">' . $langs->trans("AgfFormateurAdd") . '</a>';
+	                } else {
+	                    print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
+	                }
+				}
 
                 if (! $user->rights->agefodd->session->trainer) {
 	                if ($user->rights->agefodd->modifier) {

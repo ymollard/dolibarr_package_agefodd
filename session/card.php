@@ -240,7 +240,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$error = 0;
 
 		$agf = new Agsession($db);
-		$agf->id = $id;
+		$result = $agf->fetch($id);
 
 		$fk_session_place = GETPOST('place', 'int');
 		if (($fk_session_place == - 1) || (empty($fk_session_place))) {
@@ -257,7 +257,12 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			if (is_array($agf->lines_place) && count($agf->lines_place) > 0) {
 				$sessionplaceerror = '';
 				foreach ( $agf->lines_place as $linesess ) {
-					$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+
+					if ($linesess->typeevent=='session') {
+						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+					} elseif ($linesess->typeevent=='event') {
+						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherEvent') . '<a href=' . dol_buildpath('/comm/action/list.php', 1) . '?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&search_options_agf_site='.$fk_session_place . '" target="_blanck">' . $linesess->rowid . '</a><br>';
+					}
 				}
 				setEventMessage($sessionplaceerror, 'warnings');
 			}
@@ -272,8 +277,6 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 				setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("AgfSessionContact")), 'errors');
 			}
 		}
-
-		$result = $agf->fetch($id);
 
 		if ($agf->fk_formation_catalogue != GETPOST('formation', 'int')) {
 			$training_session = new Formation($db);
@@ -509,7 +512,12 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				$sessionplaceerror = '';
 				foreach ( $agf->lines_place as $linesess ) {
 					if ($linesess->rowid != $new_session_id) {
-						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+						if ($linesess->typeevent=='session') {
+							$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
+						} elseif ($linesess->typeevent=='event') {
+							$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherEvent') . '<a href=' . dol_buildpath('/comm/action/list.php', 1) . '?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&search_options_agf_site='.$fk_session_place . '" target="_blanck">' . $linesess->rowid . '</a><br>';
+						}
+
 					}
 				}
 				if (! empty($sessionplaceerror)) {
@@ -653,7 +661,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	$fk_soc_crea = GETPOST('fk_soc', 'int');
 	$fk_propal = GETPOST('fk_propal', 'int');
 	$fk_order = GETPOST('fk_order', 'int');
-	$urlreturnsite='';
+	$urlreturnsite = '';
 
 	print_fiche_titre($langs->trans("AgfMenuSessNew"));
 
@@ -662,11 +670,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<input type="hidden" name="action" value="add_confirm">';
 	if (! empty($fk_propal)) {
 		print '<input type="hidden" name="fk_propal" value="' . $fk_propal . '">';
-		$urlreturnsite='&fk_propal='.$fk_propal;
+		$urlreturnsite = '&fk_propal=' . $fk_propal;
 	}
 	if (! empty($fk_order)) {
 		print '<input type="hidden" name="fk_order" value="' . $fk_order . '">';
-		$urlreturnsite='&fk_order='.$fk_order;
+		$urlreturnsite = '&fk_order=' . $fk_order;
 	}
 
 	print '<table id="session_card" class="border tableforfield" width="100%">';
@@ -675,7 +683,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td><table class="nobordernopadding"><tr><td>';
 	print $formAgefodd->select_site_forma(GETPOST('place', 'int'), 'place', 1);
 	print '</td>';
-	print '<td> <a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?action=create&url_return=' . urlencode($_SERVER['PHP_SELF'] . '?action=create'.$urlreturnsite) . '" title="' . $langs->trans('AgfCreateNewSite') . '">' . $langs->trans('AgfCreateNewSite') . '</a>';
+	print '<td> <a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?action=create&url_return=' . urlencode($_SERVER['PHP_SELF'] . '?action=create' . $urlreturnsite) . '" title="' . $langs->trans('AgfCreateNewSite') . '">' . $langs->trans('AgfCreateNewSite') . '</a>';
 	print '</td><td>' . $form->textwithpicto('', $langs->trans("AgfCreateNewSiteHelp"), 1, 'help') . '</td></tr></table>';
 	print '</td></tr>';
 
@@ -1263,6 +1271,16 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					 print $formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($id), ebi_get_level_number($id), $langs->trans("AgfAdmLevel"));
 					 print '</div>';
 					 */
+
+					$parameters = array('id' => $id);
+					$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $agf, $action); // Note that $action and $object may have been modified by hook
+					if (empty($reshook)) $formconfirm=$hookmanager->resPrint;
+
+					// Print form confirm
+					if (!empty($formconfirm)) {
+						print $formconfirm;
+					}
+
 					printSessionFieldsWithCustomOrder();
 					print '<div class="fichecenter">';
 					// print '<table id="session_card" class="border" width="100%">';
@@ -1456,7 +1474,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 										} else {
 											print ', ';
 										}
-										if (! $user->rights->agefodd->session->trainer){
+										if (! $user->rights->agefodd->session->trainer) {
 											print dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
 										}
 
@@ -1512,7 +1530,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '<tr class="tr_order_trainee"><td colspan="4">';
 
 					print '<table class="border order_trainee" width="100%">';
-
+					$agf_opca = new Agefodd_opca($db);
 					$stagiaires = new Agefodd_session_stagiaire($db);
 					if (! empty($conf->global->AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS)) {
 						$resulttrainee = $stagiaires->fetch_stagiaire_per_session($agf->id, null, 0, 'ss.status_in_session,sa.nom');
@@ -1527,17 +1545,17 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '<tr><td  width="20%" valign="top" ';
 					if ($nbstag < 1) {
 						print '>' . $langs->trans("AgfParticipants") . '</td>';
-						print '<td style="color:red;">' . $langs->trans("AgfNobody") . '</td></tr>';
+						print '<td style="color:red;">' . $langs->trans("AgfNobody") . '</td></tr>'."\n";
 					} else {
 						print ' rowspan=' . ($nbstag) . '>' . $langs->trans("AgfParticipants");
 						if ($nbstag > 1)
 							print ' (' . $nbstag . ')';
-						print '</td>';
+						print '</td>'."\n";
 
 						for($i = 0; $i < $nbstag; $i ++) {
-							print '<td witdth="20px" align="center">' . ($i + 1) . '</td>';
+							print '<td width="20px" align="center">' . ($i + 1) . '</td>'."\n";
 							print '<td width="400px" style="border-right: 0px;">';
-							// Infos trainee
+							// Infos stagiaires
 							if (strtolower($stagiaires->lines[$i]->nom) == "undefined") {
 								print $langs->trans("AgfUndefinedStagiaire");
 							} else {
@@ -1549,80 +1567,119 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								$trainee_info .= ' (' . $contact_static->getCivilityLabel() . ')';
 
 								if ($agf->type_session == 1 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
-									print '<table class="nobordernopadding" width="100%"><tr><td colspan="2">';
+									print '<table class="nobordernopadding" width="100%"><tr class="noborder"><td colspan="2">';
 									print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
-									print '</td></tr>';
-									$opca = new Agefodd_opca($db);
+									print '</td></tr>'."\n";
 
-									$opca->getOpcaForTraineeInSession($stagiaires->lines[$i]->socid, $agf->id, $stagiaires->lines[$i]->stagerowid);
-									print '<tr><td width="45%">' . $langs->trans("AgfSubrocation") . '</td>';
-									if ($opca->is_OPCA == 1) {
+									$agf_opca->getOpcaForTraineeInSession($stagiaires->lines[$i]->socid, $agf->id, $stagiaires->lines[$i]->stagerowid);
+									print '<tr class="noborder"><td class="noborder" width="45%">' . $langs->trans("AgfSubrocation") . '</td>';
+									if ($agf_opca->is_OPCA == 1) {
 										$chckisOPCA = 'checked="checked"';
 									} else {
 										$chckisOPCA = '';
 									}
-									print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" ' . $chckisOPCA . ' disabled="disabled" readonly="readonly"></td></tr>';
+									print '<td><input type="checkbox" class="flat" name="isOPCA" value="1" ' . $chckisOPCA . ' disabled="disabled" readonly="readonly"/></td></tr>'."\n";
 
-									print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>';
+									print '<tr><td>' . $langs->trans("AgfOPCAName") . '</td>'."\n";
 									print '	<td>';
 									if (DOL_VERSION < 6.0) {
-										print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $opca->fk_soc_OPCA . '">' . $opca->soc_OPCA_name . '</a>';
+										print '<a href="' . dol_buildpath('/societe/soc.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
 									} else {
-										print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $opca->fk_soc_OPCA . '">' . $opca->soc_OPCA_name . '</a>';
+										print '<a href="' . dol_buildpath('/societe/card.php', 1) . '?socid=' . $agf_opca->fk_soc_OPCA . '">' . $agf_opca->soc_OPCA_name . '</a>';
 									}
-									print '</td></tr>';
+									print '</td></tr>'."\n";
 
 									print '<tr><td>' . $langs->trans("AgfOPCAContact") . '</td>';
 									print '	<td>';
-									print '<a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $opca->fk_socpeople_OPCA . '">' . $opca->contact_name_OPCA . '</a>';
-									print '</td></tr>';
+									print '<a href="' . dol_buildpath('/contact/card.php', 1) . '?id=' . $agf_opca->fk_socpeople_OPCA . '">' . $agf_opca->contact_name_OPCA . '</a>';
+									print '</td></tr>'."\n";
 
 									print '<tr><td width="20%">' . $langs->trans("AgfOPCANumClient") . '</td>';
-									print '<td>' . $opca->num_OPCA_soc . '</td></tr>';
+									print '<td>' . $agf_opca->num_OPCA_soc . '</td></tr>';
 
 									print '<tr><td width="20%">' . $langs->trans("AgfOPCADateDemande") . '</td>';
 
 									print '<td><table class="nobordernopadding"><tr>';
+
 									print '<td>';
-									print dol_print_date($opca->date_ask_OPCA, 'daytext');
+									print dol_print_date($agf_opca->date_ask_OPCA, 'daytext');
 									print '</td><td>';
-									print '</td></tr></table>';
-									print '</td></tr>';
+									print '</td></tr>'."\n";
+									print "</table>"."\n";
+
+									print '</td></tr>'."\n";
 
 									print '<tr><td width="20%">' . $langs->trans("AgfOPCANumFile") . '</td>';
-									print '<td>' . $opca->num_OPCA_file . '</td></tr>';
+									print '<td>' . $agf_opca->num_OPCA_file . '</td></tr>';
 
-									print '</table>';
+									print '</table>'."\n";
 								} else {
 									print $trainee_info . ' ' . $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
+									if (! empty($stagiaires->lines[$i]->hour_foad) && ! empty($conf->global->AGF_MANAGE_BPF)) {
+										print '<br>' . $langs->trans('AgfHourFOAD') . ' : ' . $stagiaires->lines[$i]->hour_foad . ' ' . $langs->trans('Hour') . '(s)';
+									}
 								}
 							}
-							print '</td>';
+							print '</td>'."\n";
 							print '<td style="border-left: 0px; border-right: 0px;">';
-							// Info funding company
+							// Infos organisme de rattachement
 							if ($stagiaires->lines[$i]->socid) {
 								$socstatic = new Societe($db);
 								$socstatic->fetch($stagiaires->lines[$i]->socid);
 								if (! empty($socstatic->id)) {
 									print $socstatic->getNomUrl(1);
 								}
+								unset($socstatic);
 							} else {
 								print '&nbsp;';
 							}
-							print '</td>';
-							print '<td style="border-left: 0px;">';
-							// Info funding type
-							if ($stagiaires->lines[$i]->type && (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
+							print '</td>'."\n";
+							print '<td style="border-left: 0px;" class="traineefin">';
+							// Infos mode de financement
+							if (($stagiaires->lines[$i]->type) && (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE))) {
 								print '<div class=adminaction>';
 								print '<span>' . stripslashes($stagiaires->lines[$i]->type) . '</span></div>';
 							} else {
 								print '&nbsp;';
 							}
+							print '</td>'."\n";
+
+							// Infos thirdparty linked for doc
+							print '<td style="border-left: 0px;" class="traineefk_soc_link">';
+							if (! empty($stagiaires->lines[$i]->fk_soc_link)) {
+								$socstatic = new Societe($db);
+								$socstatic->fetch($stagiaires->lines[$i]->fk_soc_link);
+								if (! empty($socstatic->id)) {
+									print $langs->trans('AgfTraineeSocDocUse') . ':' . $socstatic->getNomUrl(1);
+								}
+								unset($socstatic);
+							} else {
+								print '&nbsp;';
+							}
+							if (! empty($stagiaires->lines[$i]->fk_soc_requester)) {
+								$socstatic = new Societe($db);
+								$socstatic->fetch($stagiaires->lines[$i]->fk_soc_requester);
+								if (! empty($socstatic->id)) {
+									print '<br>' . $langs->trans('AgfTypeRequester') . ':' . $socstatic->getNomUrl(1);
+								}
+								unset($socstatic);
+							} else {
+								print '&nbsp;';
+							}
+							if (! empty($stagiaires->lines[$i]->fk_socpeople_sign)) {
+								$contactstatic = new Contact($db);
+								$contactstatic->fetch($stagiaires->lines[$i]->fk_socpeople_sign);
+								if (! empty($contactstatic->id)) {
+									print '<br>' . $langs->trans('AgfContactSign') . ':' . $contactstatic->getNomUrl(1);
+								}
+							} else {
+								print '&nbsp;';
+							}
 							print '</td>';
-							print "</tr>\n";
+							print "</tr>"."\n";
 						}
 					}
-					print "</table>";
+					print "</table>"."\n";
 
 					print '</td></tr>';
 					print '</table>';
@@ -1700,7 +1757,6 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=clone&id=' . $id . '">' . $langs->trans('ToClone') . '</a>';
 		}
 		print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
-
 	}
 }
 

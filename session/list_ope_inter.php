@@ -408,7 +408,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->trainerrn.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// Lieu
 			print '<td>' . stripslashes($line->ref_interne) . '</td>';
@@ -462,7 +462,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->convoc.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// Support
 			if ($line->support) {
@@ -472,7 +472,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->support.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// FEE Edit
 			if ($line->support) {
@@ -482,7 +482,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->support.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// Fact Clients
 			print '<td nowrap="nowrap"	>';
@@ -500,7 +500,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->attrn.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// FEE Env.
 			if ($line->ffeenv) {
@@ -510,7 +510,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->ffeenv.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// Fact Formateur
 			if ($line->invtrainer) {
@@ -520,7 +520,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->invtrainer.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// Fact lieu
 			if ($line->invroom) {
@@ -530,7 +530,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->invroom.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			print '<td title="' . stripslashes($line->notes) . '">' . stripslashes(dol_trunc($line->notes, 30)) . '</td>';
 
