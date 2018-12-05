@@ -236,8 +236,10 @@ class ActionsAgefodd
 								else
 								{
 									$agf_calendrier = $TCalendrier[0];
-									$r=$agf_calendrier->delete($user);
-									if ($r < 0) $error++;
+									if (!empty($agf_calendrier)){
+									    $r=$agf_calendrier->delete($user);
+									    if ($r < 0) $error++;
+									}
 
 									$r=$agf_calendrier_formateur->delete($user);
 									if ($r < 0) $error++;

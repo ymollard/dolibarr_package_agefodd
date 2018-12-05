@@ -704,7 +704,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			$out.= '
 				<div class="form-group">
 					<label for="stagiaire_'.$stagiaire->id.'">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</label>
-					<input '.($action == 'view' ? 'readonly' : '').' type="time" step="900" max="12:00" class="form-control" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.(!empty($secondes) ? convertSecondToTime($secondes) : '00:00').'" />
+					<input '.($action == 'view' || $agf_calendrier_formateur->date_session > dol_now() ? 'readonly' : '').' type="time" step="900" max="12:00" class="form-control" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.(!empty($secondes) ? convertSecondToTime($secondes) : '00:00').'" />
 				</div>';
 		}
 	}
