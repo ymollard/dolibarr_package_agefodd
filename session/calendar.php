@@ -60,6 +60,8 @@ $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
 $arch = GETPOST('arch', 'int');
 $anchor = GETPOST('anchor');
+$massaction = GETPOST('massaction', 'alpha');
+$toselect = GETPOST('toselect', 'array');
 
 $agf = new Agsession($db);
 $extrafields = new ExtraFields($db);
@@ -84,6 +86,11 @@ $period_remove_all = GETPOST('period_remove_all', 'int');
 $delete_calsel = GETPOST('deletecalsel_x', 'alpha');
 if (! empty($delete_calsel)) {
 	$action = 'delete_calsel';
+}
+
+if (!empty($massaction))
+{
+    if($massaction = "delete") $action = 'delete_calsel';
 }
 
 /*
@@ -340,9 +347,9 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 }
 
 if ($action == 'delete_calsel' && !empty($user->rights->agefodd->modifier)) {
-	$deleteselcal = GETPOST('deleteselcal', 'array');
-	if (count($deleteselcal) > 0) {
-		foreach ( $deleteselcal as $lineid ) {
+	$toselect = GETPOST('toselect', 'array');
+	if (count($toselect) > 0) {
+		foreach ( $toselect as $lineid ) {
 			$calrem = new Agefodd_sesscalendar($db);
 			$result = $calrem->remove($lineid);
 			if ($result < 0) {
@@ -452,12 +459,17 @@ if ($id) {
 				// Param url = id de la periode à supprimer - id session
 				print $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("AgfAllDeletePeriod"), $langs->trans("AgfConfirmAllDeletePeriod"), "confirm_delete_period_all", '', '', 1);
 			}
+			
+			$arrayofaction=array('delete' => $langs->trans('Delete'));
+			
+			$massactionbutton = $formAgefodd->selectMassAction('', $arrayofaction);
+			
 			print '<div class="" id="formdateall">';
 			print '<form name="obj_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
 			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
 			print '<input type="hidden" name="action" value="edit">' . "\n";
 			print '<input type="hidden" name="sessid" value="' . $agf->id . '">' . "\n";
-			print load_fiche_titre($langs->trans('AgfCalendarDates'), '', '');
+			print load_fiche_titre($langs->trans('AgfCalendarDates'), '', '', 0, 0, '', $massactionbutton);
 			print '<table class="noborder period" width="100%" id="period">';
 
 			$calendrier = new Agefodd_sesscalendar($db);
@@ -476,7 +488,7 @@ if ($id) {
 				print '<th width="1%" class="liste_titre linecoledit center">&nbsp;</th>';
 				print '<th width="1%" class="liste_titre linecoldelete center">&nbsp;</th>';
 				print '<th class="liste_titre center">';
-				print '<input type="image" src="' . img_picto($langs->trans("Delete"), 'delete', '', false, 1) . '" border="0" align="absmiddle" name="deletecalsel" title="' . $langs->trans("AgfDeleteOnlySelectedLines") . '" alt="' . $langs->trans("AgfDeleteOnlySelectedLines") . '">';
+				print $form->showCheckAddButtons('checkforselect', 1);
 				print '</th>';
 			}
 			print '</tr>';
@@ -529,7 +541,7 @@ if ($id) {
 					{
 						print '<td class="linecoledit center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modperiod=' . $calendrier->lines[$i]->id . '&anchor=period">' . img_picto($langs->trans("Edit"), 'edit') . '</a></td>';
 						print '<td class="linecoldelete center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&period_remove=1&modperiod=' . $calendrier->lines[$i]->id . '">' . img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
-						print '<td class="center" width="1%"><input type="checkbox" name="deleteselcal[]" value="' . $calendrier->lines[$i]->id . '"/></td>';
+						print '<td class="center" width="1%"><input class="flat checkforselect" type="checkbox" name="toselect[]" value="' . $calendrier->lines[$i]->id . '"/></td>';
 					}
 				}
 
