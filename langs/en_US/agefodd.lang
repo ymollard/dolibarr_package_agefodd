@@ -1155,3 +1155,4 @@ AgfMenuContactCreate=New trainning contact
 AgfNobodyTrainer=No trainer subs.
 AgfThirdpartyOfTraineeMandatory=Cannot create trainnee without thirdparty linked
 AgfHeuresDeclareesEclateesParType=Explode declared hours by type in ATM external access module
+AgfManageSessionCalendarFacturation=Manage billing status on session calendar

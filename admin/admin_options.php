@@ -1245,6 +1245,14 @@ if(!empty($conf->externalaccess->enabled))
     $var=!$var;
 }
 
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfManageSessionCalendarFacturation") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_MANAGE_SESSION_CALENDAR_FACTURATION');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
 print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
 
 print '</table><br>';

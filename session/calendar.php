@@ -519,11 +519,13 @@ if ($id) {
 				print $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("AgfAllDeletePeriod"), $langs->trans("AgfConfirmAllDeletePeriod"), "confirm_delete_period_all", '', '', 1);
 			}
 			
-			$arrayofaction=array(
-			    'bill' => $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('Billed').'"',
-			    'tobill' => $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('ToBill').'"',
-			    'delete' => $langs->trans('Delete')
-			);
+			$arrayofaction=array();
+			if (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION))
+			{
+			    $arrayofaction['bill'] = $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('Billed').'"';
+			    $arrayofaction['tobill'] = $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('ToBill').'"';
+			}
+			$arrayofaction['delete']=$langs->trans('Delete');
 			
 			$massactionbutton = $formAgefodd->selectMassAction('', $arrayofaction);
 			
@@ -546,7 +548,7 @@ if ($id) {
 			print '<th width="35%" class="liste_titre">' . $langs->trans('Hours') . '</th>';
 			print '<th class="text-center" >'.$langs->trans('Status').'</th>';
 			print '<th class="liste_titre">' . $langs->trans('AgfCalendarType') . '</th>';
-			print '<th class="liste_titre">' . $langs->trans('Billed') . '</th>';
+			if (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION)) print '<th class="liste_titre">' . $langs->trans('Billed') . '</th>';
 			if ($user->rights->agefodd->modifier)
 			{
 				print '<th width="1%" class="liste_titre linecoledit center">&nbsp;</th>';
@@ -582,7 +584,7 @@ if ($id) {
 					);
 					print '<td>'.$form->selectarray('calendar_status', $TStatus, $calendrier->lines[$i]->status).'</td>';
 					print '<td>'.$formAgefodd->select_calendrier_type($calendrier->lines[$i]->calendrier_type).'</td>';
-
+					if (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION)) print '<td></td>';
 					if (!empty($user->rights->agefodd->modifier))
 					{
 						print '<td class="linecoledit center">';
@@ -601,7 +603,7 @@ if ($id) {
 					else $statut = Agefodd_sesscalendar::getStaticLibStatut($calendrier->lines[$i]->status, 0);
 					print '<td>'.$statut.'</td>';
 					print '<td>'.$calendrier->lines[$i]->calendrier_type_label.'</td>';
-					print '<td>'.$calendrier->lines[$i]->getLibStatutBilled().'</td>';
+					if (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION)) print '<td>'.$calendrier->lines[$i]->getLibStatutBilled().'</td>';
 					if (!empty($user->rights->agefodd->modifier))
 					{
 						print '<td class="linecoledit center"><a href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '&modperiod=' . $calendrier->lines[$i]->id . '&anchor=period">' . img_picto($langs->trans("Edit"), 'edit') . '</a></td>';
