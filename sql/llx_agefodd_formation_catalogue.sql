@@ -52,5 +52,3 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   tms timestamp NOT NULL,
   import_key varchar(36) DEFAULT NULL
 ) ENGINE=InnoDB;
-
-ALTER TABLE llx_agefodd_formation_catalogue ADD COLUMN nb_place integer NULL;
