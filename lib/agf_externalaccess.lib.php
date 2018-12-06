@@ -320,8 +320,12 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 		<div class="btn-group" role="group">
 		<button id="btnGroupDrop1" type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
 		<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-        <a  class="dropdown-item" href="'.$url.'"><i class="fa fa-edit"> Editer</i></a>
-		<button type="button" class="dropdown-item" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)" >'.$delete.' </button>
+        <a  class="dropdown-item" href="'.$url.'"><i class="fa fa-edit"> Editer</i></a>';
+		
+		if (empty($agf_calendrier) || empty($agf_calendrier->billed))
+		  $out.= '<button type="button" class="dropdown-item" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)" >'.$delete.' </button>';
+		
+		$out.= '
 		</div>
 		</div>
 		</div>
@@ -620,6 +624,10 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	
 	$context = Context::getInstance();
 	
+	$billed = $agf_calendrier->billed;
+	
+	if ($billed) $action = 'view';
+	
 	if ($action != 'view')
 	{
 		if (!empty($agf_calendrier_formateur->id)) $action = 'update';
@@ -643,7 +651,17 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	
 	$calendrier_type = !empty($agf_calendrier->calendrier_type) ? $agf_calendrier->calendrier_type : '';
 	$out.= '
-			<h4>'.$langs->trans('AgfExternalAccessSessionCardCreneau').'</h4>
+			<h4>'.$langs->trans('AgfExternalAccessSessionCardCreneau').'</h4>';
+	
+	if ($billed)
+	{
+	    $out.= '
+			<div class="alert alert-secondary" role="alert">
+				'.$langs->trans('AgfExternalAccessSessionCardBilled').'
+			</div>';
+	}
+	
+	$out.='
 			<div class="form-group">
 				<label for="heured">Date</label>
 				<input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="date_session" required name="date_session" value="'.(($action == 'update' || $action == 'view') ? date('Y-m-d', $agf_calendrier_formateur->date_session) : date('Y-m-d')).'">
