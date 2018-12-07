@@ -114,7 +114,8 @@ class modAgefodd extends DolibarrModules
 						'upgrade'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
-				'models' => 1
+				'models' => 1,
+		        'css' => array('/agefodd/css/agefodd.css'),
 		);
 
 		// Dependencies

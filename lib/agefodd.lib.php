@@ -29,6 +29,7 @@ dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
 dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue_modules.class.php');
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 
 $langs->load('agefodd@agefodd');
 
@@ -1858,7 +1859,17 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         $sess_adm = new Agefodd_sessadm($db);
         $result = $sess_adm->fetch_all($object->id);
 
-        if ($result > 0) $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"))."<br>";
+        if ($result > 0) $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"));
+        if (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION))
+        {
+            $billed = Agefodd_sesscalendar::countBilledshedule($object->id);
+            $total = Agefodd_sesscalendar::countTotalshedule($object->id);
+            
+            if (empty($total)) $roundedBilled = 0;
+            else $roundedBilled = round($billed*100/$total);
+            
+            $morehtmlstatus.= displayProgress($roundedBilled, $langs->trans('AgfSheduleBillingState'). " : ", $billed."/".$total, '9em');
+        }
         if (! $user->rights->agefodd->session->trainer) {
         	$morehtmlstatus.= $langs->trans("AgfFormTypeSession") . ' : ' . ($object->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra'))."<br>";
         }
@@ -2037,4 +2048,21 @@ function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $stri
 	}
 
 	return $TRes;
+}
+
+function displayProgress($percentProgress = 0, $title = '', $insideDisplay = "", $width="")
+{
+    $out = '';
+    
+    if (!empty($title)) $out.= $title;
+    
+    $out.= '<div class="agefodd-progress-group"';
+    if (!empty($width)) $out.='style="width:'.$width.';"';
+    $out.='>
+           <div class="agefodd-progress">
+             <div class="agefodd-progress-bar" style="width: '.$percentProgress.'%">'.(!empty($insideDisplay) ? $insideDisplay : '').'</div>
+           </div>
+         </div><br/>';
+    
+    return $out;
 }

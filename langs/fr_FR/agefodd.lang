@@ -1467,3 +1467,4 @@ AgfUseSiteInAgendaStd=Activer la possiblité de reservation des salles de format
 AgfPDFAttestation10=Fait pour servir et valoir ce que de droit
 AgfHeuresDeclareesEclateesParType=Eclater les heures déclarées par type de créneaux dans le portail client
 AgfManageSessionCalendarFacturation=Gérer le statut de facturation sur les créneaux du calendrier de session
+AgfSheduleBillingState=Facturation du calendrier

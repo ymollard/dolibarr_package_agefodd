@@ -625,6 +625,48 @@ class Agefodd_sesscalendar extends CommonObject{
 	    
 	    return $out;
 	}
+	
+	/**
+	 * @param int $sessid Id de la session
+	 * Retourne le nombre de créneaux du calendrier marqués "facturé"
+	 */
+	public static function countBilledshedule($sessid)
+	{
+	    global $db;
+	    
+	    if (empty($sessid)) return -1;
+	    
+	    $sql = "SELECT count(billed) as billed FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier WHERE billed = 1 AND fk_agefodd_session =  ".$sessid;
+	    $res = $db->query($sql);
+	    if ($res)
+	    {
+	        $obj = $db->fetch_object($res);
+	        if ($obj) return $obj->billed;
+	        else return 0;
+	    }
+	    else return -1;
+	}
+	
+	/**
+	 * @param int $sessid Id de la session
+	 * Retourne le nombre de créneaux du calendrier de session
+	 */
+	public static function countTotalshedule($sessid)
+	{
+	    global $db;
+	    
+	    if (empty($sessid)) return -1;
+	    
+	    $sql = "SELECT COUNT(rowid) as total FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier WHERE fk_agefodd_session = ".$sessid;
+	    $res = $db->query($sql);
+	    if ($res)
+	    {
+	        $obj = $db->fetch_object($res);
+	        if ($obj) return $obj->total;
+	        else return 0;
+	    }
+	    else return -1;
+	}
 }
 class Agefodd_sesscalendar_line {
 	public $id;
