@@ -647,20 +647,8 @@ if (! $res)
 
 
 													if ($blocNumber > 6) {
-														$hourhtml .= '<tr><td colapsn="2" style="font-weight: bold; font-size:150%; cursor:pointer" id="switchtimetrainer">+</td></tr>';
-														$hourhtml .= '<script>' . "\n";
-														$hourhtml .= '$(document).ready(function () { ' . "\n";
-														$hourhtml .= '		$(\'#switchtimetrainer\').click(function(){' . "\n";
-														$hourhtml .= '			$(\'.otherdatetrainer\').toggle();' . "\n";
-														$hourhtml .= '			if ($(\'#switchtimetrainer\').text()==\'+\') { ' . "\n";
-														$hourhtml .= '				$(\'#switchtimetrainer\').text(\'-\'); ' . "\n";
-														$hourhtml .= '			}else { ' . "\n";
-														$hourhtml .= '				$(\'#switchtimetrainer\').text(\'+\'); ' . "\n";
-														$hourhtml .= '			} ' . "\n";
-														$hourhtml .= '			' . "\n";
-														$hourhtml .= '		});' . "\n";
-														$hourhtml .= '});' . "\n";
-														$hourhtml .= '</script>' . "\n";
+														$hourhtml .= '<tr><td colapsn="2" style="font-weight: bold; font-size:150%; cursor:pointer" class="switchtimetrainer">+</td></tr>';
+														
 													}
 													$hourhtml .= '</table>'."\n";
 
@@ -698,6 +686,20 @@ if (! $res)
 
 									print '</tr>' . "\n";
 						}
+						
+						print '<script>' . "\n";
+						print '$(document).ready(function () { ' . "\n";
+						print '		$(".switchtimetrainer").click(function(){' . "\n";
+						print '         $(this).parent().parent().find(".otherdatetrainer").each(function(){$(this).toggle()});';
+						print '			if ($(this).text()==\'+\') { ' . "\n";
+						print '				$(this).text(\'-\'); ' . "\n";
+						print '			}else { ' . "\n";
+						print '				$(this).text(\'+\'); ' . "\n";
+						print '			} ' . "\n";
+						print '			' . "\n";
+						print '		});' . "\n";
+						print '});' . "\n";
+						print '</script>' . "\n";
 					}
 
 					// New trainers
