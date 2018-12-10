@@ -343,11 +343,11 @@ class Agsession extends CommonObject
 
 		return $duree;
 	}
-	
+
 	public static function getStaticSumExplodeDureePresence($fk_agession)
 	{
 	    global $db;
-	    
+
 	    $sql = "SELECT
                 SUM(assh.heures) as heures, IF(c.label IS NULL, 'Autre', c.label) as type
             FROM
@@ -356,11 +356,11 @@ class Agsession extends CommonObject
             LEFT JOIN llx_c_agefodd_session_calendrier_type as c ON c.code = agfsc.calendrier_type
             WHERE
                 fk_session = ".$fk_agession."
-                
+
             GROUP BY agfsc.calendrier_type";
-	    
+
 	    $TDuree = array();
-	    
+
 	    $res = $db->query($sql);
 	    if ($res)
 	    {
@@ -369,7 +369,7 @@ class Agsession extends CommonObject
 	            $TDuree[$obj->type] = $obj->heures;
 	        }
 	    }
-	    
+
 	    return $TDuree;
 	}
 
@@ -3744,7 +3744,10 @@ class Agsession extends CommonObject
 
 		require_once 'agefodd_session_calendrier.class.php';
 		$calendrier = new Agefodd_sesscalendar($this->db);
-		$calendrier->fetch_all($this->id);
+		$result=$calendrier->fetch_all($this->id);
+		if ($result<0) {
+			setEventMessages(null, $calendrier->errors,'errors');
+		}
 		$blocNumber = count($calendrier->lines);
 		$alertday = false;
 		if ($blocNumber < 1) {

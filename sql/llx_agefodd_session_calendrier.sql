@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_calendrier (
   fk_actioncomm int DEFAULT NULL,
   calendrier_type varchar(15),
   status integer DEFAULT 0,
+  billed integer NOT NULL DEFAULT 0,
   fk_user_author integer NOT NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,
