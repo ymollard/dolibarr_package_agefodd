@@ -1492,31 +1492,33 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 										setEventMessage($langs->trans("AgfCalendarDayOutOfScopeTrainer"), 'warnings');
 									}
 									if ($blocNumber > 6) {
-										print '<tr><td style="font-weight: bold; font-size:150%; cursor:pointer" id="switchtimetrainer">+</td></tr>';
-										print '<script>' . "\n";
-										print '$(document).ready(function () { ' . "\n";
-										print '		$(\'#switchtimetrainer\').click(function(){' . "\n";
-										print '			$(\'.otherdatetrainer\').toggle();' . "\n";
-										print '			if ($(\'#switchtimetrainer\').text()==\'+\') { ' . "\n";
-										print '				$(\'#switchtimetrainer\').text(\'-\'); ' . "\n";
-										print '			}else { ' . "\n";
-										print '				$(\'#switchtimetrainer\').text(\'+\'); ' . "\n";
-										print '			} ' . "\n";
-										print '			' . "\n";
-										print '		});' . "\n";
-										print '});' . "\n";
-										print '</script>' . "\n";
+										print '<tr><td style="font-weight: bold; font-size:150%; cursor:pointer" class="switchtimetrainer">+</td></tr>';
 									}
 
 									print '</table>';
+									
 									print '</td>';
+									
 								}
+								
 							}
 							print '</tr>';
 						}
 
 						print '</table>';
-
+						print '<script>' . "\n";
+						print '$(document).ready(function () { ' . "\n";
+						print '		$(".switchtimetrainer").click(function(){' . "\n";
+						print '         $(this).parent().parent().find(".otherdatetrainer").each(function(){$(this).toggle()});';
+						print '			if ($(this).text()==\'+\') { ' . "\n";
+						print '				$(this).text(\'-\'); ' . "\n";
+						print '			}else { ' . "\n";
+						print '				$(this).text(\'+\'); ' . "\n";
+						print '			} ' . "\n";
+						print '			' . "\n";
+						print '		});' . "\n";
+						print '});' . "\n";
+						print '</script>' . "\n";
 						print '</td>';
 						print "</tr>\n";
 					}
