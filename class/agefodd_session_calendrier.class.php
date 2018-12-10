@@ -54,8 +54,8 @@ class Agefodd_sesscalendar extends CommonObject{
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function __construct($DB) {
-		$this->db = $DB;
+	public function __construct($db) {
+		$this->db = $db;
 		return 1;
 	}
 
@@ -257,6 +257,7 @@ class Agefodd_sesscalendar extends CommonObject{
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 			return - 1;
 		}
@@ -588,11 +589,11 @@ class Agefodd_sesscalendar extends CommonObject{
 			return - 1;
 		}
 	}
-	
+
 	public static function getStaticLibStatut($status, $mode=0)
 	{
 	    global $langs;
-	    
+
 	    $out = '';
 	    if ($status == self::STATUS_DRAFT)
 	    {
@@ -609,23 +610,23 @@ class Agefodd_sesscalendar extends CommonObject{
 	        if ($mode == 1) $out.= img_picto('', 'statut6').' ';
 	        $out.= $langs->trans('AgfStatusCalendar_canceled');
 	    }
-	    
+
 	    return $out;
 	}
-	
+
 	public function getLibStatutBilled()
 	{
 	    global $langs;
-	    
+
 	    $langs->load('bills');
 	    $out = '';
-	    
+
 	    if (empty($this->billed)) $out .= img_picto($langs->trans('ToBill'), 'statut1');
 	    else $out .= img_picto($langs->trans('Billed'), 'statut4');
-	    
+
 	    return $out;
 	}
-	
+
 	/**
 	 * @param int $sessid Id de la session
 	 * Retourne le nombre de créneaux du calendrier marqués "facturé"
@@ -633,9 +634,9 @@ class Agefodd_sesscalendar extends CommonObject{
 	public static function countBilledshedule($sessid)
 	{
 	    global $db;
-	    
+
 	    if (empty($sessid)) return -1;
-	    
+
 	    $sql = "SELECT count(billed) as billed FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier WHERE billed = 1 AND fk_agefodd_session =  ".$sessid;
 	    $res = $db->query($sql);
 	    if ($res)
@@ -646,7 +647,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	    }
 	    else return -1;
 	}
-	
+
 	/**
 	 * @param int $sessid Id de la session
 	 * Retourne le nombre de créneaux du calendrier de session
@@ -654,9 +655,9 @@ class Agefodd_sesscalendar extends CommonObject{
 	public static function countTotalshedule($sessid)
 	{
 	    global $db;
-	    
+
 	    if (empty($sessid)) return -1;
-	    
+
 	    $sql = "SELECT COUNT(rowid) as total FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier WHERE fk_agefodd_session = ".$sessid;
 	    $res = $db->query($sql);
 	    if ($res)
