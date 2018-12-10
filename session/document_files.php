@@ -79,7 +79,7 @@ if ($result < 0) {
 	$upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
 }
 
-$parameters = array('id'=>$id);
+$parameters = array('id'=>$id, 'upload_dir'=>$upload_dir);
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0)
 	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
@@ -116,7 +116,7 @@ if ($object->id) {
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfSessionDocuments"), 0, 'bill');
 
 	$parameters = array();
-	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $agf, $action); // Note that $action and $object may have been modified by hook
+	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 	print $hookmanager->resPrint;
 
 
