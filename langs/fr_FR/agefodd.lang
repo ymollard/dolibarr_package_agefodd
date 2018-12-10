@@ -1428,6 +1428,7 @@ AgfStatusCalendar_draft=Brouillon
 AgfStatusCalendar_previsionnel=Prévisionnel
 AgfStatusCalendar_confirmed=Confirmé
 AgfStatusCalendar_canceled=Annulé
+AgfStatusCalendar_missing=Absent
 
 Agf_EA_DeleteClandrierFormateurTitle=Suppression d'un créneau horaire
 Agf_EA_DeleteClandrierFormateurBody=Êtes-vous sûr de vouloir supprimer ce créneau horaire ?<br /> <small>Ceci supprimera aussi les saisies de temps des participants</small>
