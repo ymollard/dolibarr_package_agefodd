@@ -512,7 +512,7 @@ class ActionsAgefodd
 	 */
 	public function PrintPageView($parameters, &$object, &$action, $hookmanager)
 	{
-		global $langs,$user;
+		global $langs,$user, $conf;
 
 		$TContext = explode(':', $parameters['context']);
 
@@ -603,7 +603,7 @@ class ActionsAgefodd
 	 */
 	public function PrintTopMenu($parameters, &$object, &$action, $hookmanager)
 	{
-	    global $langs;
+	    global $langs, $conf;
 	    
 	    if (empty($conf->global->AGF_EACCESS_ACTIVATE)) return 0;
 	    
@@ -636,7 +636,7 @@ class ActionsAgefodd
 
 	public function PrintServices($parameters, &$object, &$action, $hookmanager)
 	{
-		global $langs;
+		global $langs, $conf;
 
 		$TContext = explode(':', $parameters['context']);
 
