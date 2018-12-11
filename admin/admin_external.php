@@ -47,9 +47,21 @@ if ($action == 'setvarother') {
 
     if (empty($conf->use_javascript_ajax))
     {
+        // Active l'accés externe pour agefodd
+        $activAccesexterne = GETPOST('AGF_EACCESS_ACTIVATE');
+        $res = dolibarr_set_const($db, 'AGF_EACCESS_ACTIVATE', $activAccesexterne, 'chaine', 0, '', $conf->entity);
+        if ($res < 0) $error++;
+        
+        // Active l'accés formateur
+        $activeAccesFormateur = GETPOST('AGF_EA_TRAINER_ENABLED');
+        $res = dolibarr_set_const($db, 'AGF_EA_TRAINER_ENABLED', $activeAccesFormateur, 'chaine', 0, '', $conf->entity);
+        if ($res < 0) $error++;
+        
+        // Vue éclatée des heures participant sur la liste des sessions
         $heuresEclatee = GETPOST('AGF_EA_ECLATE_HEURES_PAR_TYPE');
         $res = dolibarr_set_const($db, 'AGF_EA_ECLATE_HEURES_PAR_TYPE', $heuresEclatee, 'chaine', 0, '', $conf->entity);
         if ($res < 0) $error++;
+        
     }
 
     if (! $error) {
@@ -100,6 +112,7 @@ $var = true;
 // configuration external access
 if(!empty($conf->externalaccess->enabled))
 {
+    // Active l'accés externe pour agefodd
     print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfActivateExternalAccessForAgefodd") . '</td>';
     print '<td align="left">';
     if ($conf->use_javascript_ajax) {
@@ -138,6 +151,8 @@ if(!empty($conf->externalaccess->enabled))
     
     print_titre($langs->trans("Options")." ".$langs->trans('AgfExternalAccess'));
     print '<table class="noborder" width="100%" id="externaloption">';
+    
+    // Active l'accés formateur
     print '<tr '.$bc[$var].'"><td>' . $langs->trans("AgfActivateAccessForTrainers") . '</td>';
     print '<td align="left">';
     if ($conf->use_javascript_ajax) {
@@ -154,6 +169,7 @@ if(!empty($conf->externalaccess->enabled))
     print '</tr>';
     $var=!$var;
     
+    // Vue éclatée des heures participant sur la liste des sessions
     print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHeuresDeclareesEclateesParType") . '</td>';
     print '<td align="left">';
     if ($conf->use_javascript_ajax) {

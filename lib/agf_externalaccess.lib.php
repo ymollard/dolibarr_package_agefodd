@@ -53,6 +53,8 @@ function getMenuAgefoddExternalAccess()
 /**
  * Affiche la liste des sessions du formateur courant agefodd
  * 
+ * route => agefodd_session_list
+ * 
  * @return string
  */
 function getPageViewSessionListExternalAccess()
@@ -60,6 +62,8 @@ function getPageViewSessionListExternalAccess()
 	global $langs,$db,$user, $conf;
 
 	$context = Context::getInstance();
+	
+	if (!validateFormateur($context)) return '';
 
 	$formateur = new Agefodd_teacher($db);
 	$agsession = new Agsession($db);
@@ -195,15 +199,19 @@ function getPageViewSessionListExternalAccess()
 /**
  * Génère les écrans liés à une session
  * 
+ * route => agefodd_session_card
+ * 
  * @param Agsession $agsession
  * @param Teacher $trainer
  * @return string
  */
 function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 {
-	global $db,$langs;
+	global $db,$langs, $user;
 	
 	$context = Context::getInstance();
+	if (!validateFormateur($context)) return '';
+	
 	$tab = GETPOST('tab');
 	$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
 	$agf_calendrier_formateur->fetchAllBy(array('trainer.rowid'=>$trainer->id, 'sf.fk_session'=>$agsession->id), '');
@@ -211,7 +219,10 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	$out = '';
 	$out.= '<section id="section-session-card" class="py-5"><div class="container">';
 	
-	$out.= getEaNavbar($context->getRootUrl('agefodd_session_list', '&save_lastsearch_values=1'), $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0'));
+	$url_add = '';
+	if (!empty($user->rights->agefodd->external_trainer_write)) $url_add = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0');
+	
+	$out.= getEaNavbar($context->getRootUrl('agefodd_session_list', '&save_lastsearch_values=1'), $url_add);
 	
 	$out.= '
 		<blockquote class="blockquote">
@@ -257,9 +268,11 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
  */
 function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &$agf_calendrier_formateur)
 {
-	global $langs;
+	global $langs, $user;
 	
 	$context = Context::getInstance();
+	
+	if (!validateFormateur($context)) return '';
 	
 	$out = '';
 	$out.= '<table id="session-list" class="table table-striped w-100" >';
@@ -322,7 +335,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 		<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
         <a  class="dropdown-item" href="'.$url.'"><i class="fa fa-edit"> Editer</i></a>';
 		
-		if (empty($agf_calendrier) || empty($agf_calendrier->billed))
+		if ((empty($agf_calendrier) || empty($agf_calendrier->billed)) && $user->rights->agefodd->external_trainer_write)
 		  $out.= '<button type="button" class="dropdown-item" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)" >'.$delete.' </button>';
 		
 		$out.= '
@@ -371,6 +384,9 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$agf_calendrier_formateur)
 {
 	global $langs,$db;
+	
+	$context = Context::getInstance();
+	if (!validateFormateur($context)) return '';
 	
 	$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
 	$agefodd_sesscalendar->fetch_all($agsession->id);
@@ -484,8 +500,9 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 
 function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 {
-    global $langs, $db, $conf;
+    global $langs, $db, $conf, $user;
     $context = Context::getInstance();
+    if (!validateFormateur($context)) return '';
     
     $upload_dir = $conf->agefodd->dir_output;
     $filearray=dol_dir_list($upload_dir,"files",0,'','',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
@@ -540,6 +557,11 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 						<div class="col-md-6">
                             <h5>Liste des fichiers générés pour cette session</h5>
                             <br>';
+    if (empty($user->rights->agefodd->external_trainer_download)){
+        $out.='<div class="alert alert-secondary" role="alert">
+				Vous n\'avez pas le droit nécessaire au téléchargement de fichiers
+			</div>';
+    }
     if (count($files))
     {
         foreach ($files as $file => $type)
@@ -548,9 +570,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
             $legende = $langs->trans("AgfDocOpen");
             $dowloadUrl = $context->getRootUrl().'script/interface.php?action=downloadSessionFile&file='.$file;
             $downloadLink = '<a class="btn btn-xs btn-primary" href="'.$dowloadUrl.'&amp;forcedownload=1" target="_blank" ><i class="fa fa-download"></i> '.$langs->trans('Download').'</a>';
-            $out.= $downloadLink;
-//             $out.= '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $file . '" alt="' . $legende . '" title="' . $legende . '">';
-//             $out.=img_picto($legende, 'pdf2').'</a>&nbsp;&nbsp;';
+            if (!empty($user->rights->agefodd->external_trainer_download)) $out.= $downloadLink;
             $out.= '&nbsp;&nbsp;'.$type;
             $out.= "</p>";
             
@@ -570,14 +590,19 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 	dol_include_once('/core/class/html.formfile.class.php');
 	$formfile = new FormFile($db);
 	
-	// Show upload form (document and links)
+	if (empty($user->rights->agefodd->external_trainer_upload)){
+	    $out.='<div class="alert alert-secondary" role="alert">
+				Vous n\'avez pas le droit nécessaire au dépot de fichiers
+			</div>';
+	}
+	// Show upload form (document)
 	ob_start();
 	$formfile->form_attach_new_file(
 	    $_SERVER["PHP_SELF"].'?controller=agefodd_session_card&action=uploadfile&sessid='.$agsession->id.'&tab=session-files-tab',
 	    'none',
 	    0,
 	    0,
-	    1,
+	    $user->rights->agefodd->external_trainer_upload,
 	    $conf->browser->layout == 'phone' ? 40 : 60,
 	    $agsession,
 	    '',
@@ -623,6 +648,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	$formAgefodd = new FormAgefodd($db);
 	
 	$context = Context::getInstance();
+	if (!validateFormateur($context)) return '';
 	
 	$billed = $agf_calendrier->billed;
 	
@@ -739,3 +765,30 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	
 	return $out;
 }
+
+function validateFormateur($context)
+{
+    global $conf, $user, $langs;
+    
+    $errors = array();
+    
+    // si l'accés formateur n'est pas activé ont rejette
+    if (empty($conf->global->AGF_EA_TRAINER_ENABLED))
+    {
+        $errors[] = $context->setError($langs->trans('AgfErrorAccessTrainerNotActivated'));
+    }
+    
+    // si l'utilisateur n'a pas le droit de lecture externe
+    if(empty($user->rights->agefodd->external_trainer_read))
+    {
+        $errors[] = $context->setError($langs->trans('AgfErrorRightsNotValide'));
+    }
+    
+    if (count($errors))
+    {
+        $context->setError($errors);
+        return false;
+    }
+    else return true;
+}
+

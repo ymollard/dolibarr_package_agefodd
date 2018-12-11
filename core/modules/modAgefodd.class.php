@@ -1660,6 +1660,37 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][4] = 'session';
 		$this->rights[$r][5] = 'trainer';
 
+		if ($conf->externalaccess->enabled)
+		{
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerRead';
+		    $this->rights[$r][2] = 'r';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_read';
+		    
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerWrite';
+		    $this->rights[$r][2] = 'w';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_write';
+		    
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerDownload';
+		    $this->rights[$r][2] = 'r';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_download';
+		    
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerUpload';
+		    $this->rights[$r][2] = 'w';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_upload';
+		}
+		
 		// Main menu entries
 		$this->menus = array();
 		$r = 0;
