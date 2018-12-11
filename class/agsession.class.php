@@ -3569,7 +3569,7 @@ class Agsession extends CommonObject
 			}
 			print '</tr>';
 		}
-		if (! $user->rights->agefodd->session->trainer) {
+		if (! $user->rights->agefodd->session->trainer && empty($conf->global->AGF_DOT_NOT_MANAGE_REQUESTER)) {
 			print '<tr class="order_typeRequester"><td width="20%">' . $langs->trans("AgfTypeRequester") . '</td>';
 			print '	<td colspan="' . $colspan . '">';
 			if ((! empty($this->fk_soc_requester)) && ($this->fk_soc_requester > 0)) {
@@ -3582,7 +3582,7 @@ class Agsession extends CommonObject
 			print '</td></tr>';
 		}
 
-		if (! $user->rights->agefodd->session->trainer) {
+		if (! $user->rights->agefodd->session->trainer && empty($conf->global->AGF_DOT_NOT_MANAGE_REQUESTER)) {
 			print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
 			print '<td colspan="' . $colspan . '">';
 			if ((! empty($this->fk_socpeople_requester)) && ($this->fk_socpeople_requester > 0)) {
@@ -3605,6 +3605,7 @@ class Agsession extends CommonObject
 			}
 			print '</td></tr>';
 		}
+
 
 		if (! $user->rights->agefodd->session->trainer) {
 			print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . '</td>';
