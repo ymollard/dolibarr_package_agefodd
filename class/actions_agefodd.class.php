@@ -405,14 +405,21 @@ class ActionsAgefodd
 									else
 									{
 										$duree = 0;
-										// Si le statut passe à "annulé", alors je force la saisie du compteur d'heure car c'est du consommé
-										if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED)
+										// Si le statut passe à "absent", alors je force la saisie du compteur d'heure car c'est du consommé
+										if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING)
 										{
 											$duree = $duree_session;
 										}
+										// Si le statut passe à annulé, les heures participants doivent passer à 0 car la session n'a pas eu lieu
+										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED)
+										{
+										    $duree = 0;
+										}
 										else if ($agf_calendrier->date_session < $now && !empty($THour[$stagiaire->id]))
 										{
-											list($hours, $minutes) = explode(':', $THour[$stagiaire->id]);
+											$tmp = explode(':', $THour[$stagiaire->id]);
+											$hours = $tmp[0];
+											$minutes = $tmp[1];
 											$duree = $hours + $minutes / 60;
 										}
 
