@@ -557,6 +557,13 @@ function agefodd_admin_prepare_head() {
 		$head [$h] [2] = 'catbpf';
 		$h ++;
 	}
+	if (!empty($conf->externalaccess->enabled))
+	{
+	    $head [$h] [0] = dol_buildpath("/agefodd/admin/admin_external.php", 1);
+	    $head [$h] [1] = $langs->trans("AgfExternalAccess");
+	    $head [$h] [2] = 'external';
+	    $h ++;
+	}
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/about.php", 1);
 	$head [$h] [1] = $langs->trans("About");

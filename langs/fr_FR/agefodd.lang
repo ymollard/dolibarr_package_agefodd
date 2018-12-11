@@ -1469,3 +1469,9 @@ AgfPDFAttestation10=Fait pour servir et valoir ce que de droit
 AgfHeuresDeclareesEclateesParType=Eclater les heures déclarées par type de créneaux dans le portail client
 AgfManageSessionCalendarFacturation=Gérer le statut de facturation sur les créneaux du calendrier de session
 AgfSheduleBillingState=Facturation du calendrier
+
+AgfExternalAccess=Accès externe
+AgfErrorEANotActivated=Le module portail client doit être activé pour accéder à cette section
+AgfErrorAccessNotActivated=L'accès externe du module formation doit être activé pour accéder à cette section
+AgfActivateExternalAccessForAgefodd=Activer l'accès externe aux données du module Formation
+AgfActivateAccessForTrainers=Activer l'accès externe pour les formateurs

@@ -210,6 +210,7 @@ class ActionsAgefodd
 
 			// TODO gérer ici les actions de mes pages pour update les données
 			$context = Context::getInstance();
+			
 			if ($context->controller == 'agefodd_session_card')
 			{
 				if ($action == 'deleteCalendrierFormateur' && GETPOST('sessid') > 0 && GETPOST('fk_agefodd_session_formateur_calendrier') > 0)
@@ -515,7 +516,7 @@ class ActionsAgefodd
 
 		$TContext = explode(':', $parameters['context']);
 
-		if (in_array('externalaccesspage', $TContext))
+		if (in_array('externalaccesspage', $TContext) && !empty($conf->global->AGF_EACCESS_ACTIVATE))
 		{
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
 			dol_include_once('/agefodd/class/agsession.class.php');
@@ -604,6 +605,8 @@ class ActionsAgefodd
 	{
 	    global $langs;
 	    
+	    if (empty($conf->global->AGF_EACCESS_ACTIVATE)) return 0;
+	    
 	    $context = Context::getInstance();
 	    
 	    $this->results['agefodd'] = array(
@@ -637,7 +640,7 @@ class ActionsAgefodd
 
 		$TContext = explode(':', $parameters['context']);
 
-		if (in_array('externalaccesspage', $TContext))
+		if (in_array('externalaccesspage', $TContext) && !empty($conf->global->AGF_EACCESS_ACTIVATE))
 		{
 			$langs->load('agefodd@agefodd');
 			$context = Context::getInstance();
