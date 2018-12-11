@@ -452,8 +452,11 @@ $(document).ready(function() {
 			// Init des inputs TRealHour
 			var duration;
 			if (is_past) duration = end.diff(start) / 1000 / 60 / 60; //  /1000 pour avoir des secondes; /60 pour avoir des minutes; /60 pour avoir des heures
-			if (is_futur) fullcalendarscheduler_div.find('input[name^="TRealHour"]').prop('disabled', true);
 			else duration = '';
+			
+			if (is_futur) fullcalendarscheduler_div.find('input[name^="TRealHour"]').prop('disabled', true);
+			else fullcalendarscheduler_div.find('input[name^="TRealHour"]').prop('disabled', false);
+			
 			fullcalendarscheduler_div.find('.type_hour').val(duration);
 		}
 		
