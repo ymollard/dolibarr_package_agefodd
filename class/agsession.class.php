@@ -2924,191 +2924,79 @@ class Agsession extends CommonObject
 		$sql .= " ,s.intitule_custo";
 		$sql .= " ,s.duree_session";
 		$sql .= " ,s.ref as sessionref";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
+		$sql .= " ON c.rowid = s.fk_formation_catalogue";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
+		$sql .= " ON p.rowid = s.fk_session_place";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
+		$sql .= " ON s.rowid = sa.fk_agefodd_session";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
+		$sql .= " ON sf.fk_session = s.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
+		$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
+		$sql .= " ON f.fk_socpeople = socpf.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
+		$sql .= " ON s.status = dictstatus.rowid";
+		
 		if ($filter['type_affect'] == 'thirdparty') {
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
-			$sql .= " ON c.rowid = s.fk_formation_catalogue";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
-			$sql .= " ON p.rowid = s.fk_session_place";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
-			$sql .= " ON s.rowid = sa.fk_agefodd_session";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 			$sql .= " ON so.rowid = s.fk_soc AND s.fk_soc=" . $socid;
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
-			$sql .= " ON sf.fk_session = s.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
-			$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
-			$sql .= " ON f.fk_socpeople = socpf.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
-			$sql .= " ON s.status = dictstatus.rowid";
-
 			$type_affect = $langs->trans('ThirdParty');
 		} elseif ($filter['type_affect'] == 'trainee') {
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
-			$sql .= " ON c.rowid = s.fk_formation_catalogue";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
-			$sql .= " ON p.rowid = s.fk_session_place";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta";
 			$sql .= " ON ss.fk_stagiaire = sta.rowid AND sta.fk_soc=" . $socid;
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
-			$sql .= " ON s.rowid = sa.fk_agefodd_session";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 			$sql .= " ON so.rowid = s.fk_soc";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
-			$sql .= " ON sf.fk_session = s.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
-			$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
-			$sql .= " ON f.fk_socpeople = socpf.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
-			$sql .= " ON s.status = dictstatus.rowid";
-
 			$type_affect = $langs->trans('AgfParticipant');
 		} elseif ($filter['type_affect'] == 'opca') {
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
-			$sql .= " ON c.rowid = s.fk_formation_catalogue";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
-			$sql .= " ON p.rowid = s.fk_session_place";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
-			$sql .= " ON s.rowid = sa.fk_agefodd_session";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 			$sql .= " ON so.rowid = s.fk_soc";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
-			$sql .= " ON sf.fk_session = s.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
-			$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
-			$sql .= " ON f.fk_socpeople = socpf.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
-			$sql .= " ON s.status = dictstatus.rowid";
-
 			$type_affect = $langs->trans('AgfMailTypeContactOPCA');
 		} elseif ($filter['type_affect'] == 'requester') {
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
-			$sql .= " ON c.rowid = s.fk_formation_catalogue";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
-			$sql .= " ON p.rowid = s.fk_session_place";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
-			$sql .= " ON s.rowid = sa.fk_agefodd_session";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 			$sql .= " ON so.rowid = s.fk_soc_requester AND so.rowid=" . $socid;
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
-			$sql .= " ON sf.fk_session = s.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
-			$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
-			$sql .= " ON f.fk_socpeople = socpf.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
-			$sql .= " ON s.status = dictstatus.rowid";
-
 			$type_affect = $langs->trans('AgfTypeRequester');
 		} elseif ($filter['type_affect'] == 'presta') {
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
-			$sql .= " ON c.rowid = s.fk_formation_catalogue";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
-			$sql .= " ON p.rowid = s.fk_session_place";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
-			$sql .= " ON s.rowid = sa.fk_agefodd_session";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "socpeople as socpp";
 			$sql .= " ON socpp.rowid = s.fk_socpeople_presta";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 			$sql .= " ON so.rowid = socpp.fk_soc AND so.rowid=" . $socid;
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
-			$sql .= " ON sf.fk_session = s.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
-			$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
-			$sql .= " ON f.fk_socpeople = socpf.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
-			$sql .= " ON s.status = dictstatus.rowid";
-
 			$type_affect = $langs->trans('AgfTypePresta');
 		} elseif ($filter['type_affect'] == 'trainer') {
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
-			$sql .= " ON c.rowid = s.fk_formation_catalogue";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
-			$sql .= " ON p.rowid = s.fk_session_place";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
-			$sql .= " ON s.rowid = sa.fk_agefodd_session";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as elemnt";
 			$sql .= " ON elemnt.fk_session_agefodd = s.rowid AND elemnt.element_type='invoice_supplier_trainer'";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn as factfourn";
 			$sql .= " ON factfourn.rowid = elemnt.fk_element";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 			$sql .= " ON so.rowid = factfourn.fk_soc AND so.rowid=" . $socid;
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
-			$sql .= " ON sf.fk_session = s.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
-			$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
-			$sql .= " ON f.fk_socpeople = socpf.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
-			$sql .= " ON s.status = dictstatus.rowid";
-
 			$type_affect = $langs->trans('AgfFormateur');
 		} elseif ($filter['type_affect'] == 'trainee_requester') {
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
-			$sql .= " ON c.rowid = s.fk_formation_catalogue";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
-			$sql .= " ON p.rowid = s.fk_session_place";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd AND ss.fk_soc_requester=" . $socid;
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta";
 			$sql .= " ON ss.fk_stagiaire = sta.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
-			$sql .= " ON s.rowid = sa.fk_agefodd_session";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 			$sql .= " ON so.rowid = s.fk_soc";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
-			$sql .= " ON sf.fk_session = s.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
-			$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
-			$sql .= " ON f.fk_socpeople = socpf.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
-			$sql .= " ON s.status = dictstatus.rowid";
-
 			$type_affect = $langs->trans('AgfTypeTraineeRequester');
 		} elseif ($filter['type_affect'] == 'employer') {
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
-			$sql .= " ON c.rowid = s.fk_formation_catalogue";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
-			$sql .= " ON p.rowid = s.fk_session_place";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
-			$sql .= " ON s.rowid = sa.fk_agefodd_session";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as so";
 			$sql .= " ON so.rowid = s.fk_soc_employer AND s.fk_soc=" . $socid;
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
-			$sql .= " ON sf.fk_session = s.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
-			$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
-			$sql .= " ON f.fk_socpeople = socpf.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
-			$sql .= " ON s.status = dictstatus.rowid";
-
 			$type_affect = $langs->trans('AgfTypeEmployee');
 		}
 
