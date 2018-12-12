@@ -1067,37 +1067,38 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						print '</td></tr>';
 					}
 
-					print '<tr class="order_typeRequester"><td>' . $langs->trans("AgfTypeRequester") . '</td>';
-					print '<td>';
-					$events = array();
-					$events[] = array(
-							'method' => 'getContacts',
-							'url' => dol_buildpath('/core/ajax/contacts.php', 1),
-							'htmlname' => 'fk_socpeople_requester',
-							'params' => array(
-									'add-customer-contact' => 'disabled'
-							)
-					);
-					print $form->select_company($agf->fk_soc_requester, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
-					if (! empty($agf->fk_soc_requester) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
-						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_requester">' . img_delete($langs->trans('Delete')) . '</a>';
-					}
-					print '</td></tr>';
+					if (empty($conf->global->AGF_DOT_NOT_MANAGE_REQUESTER)) {
+						print '<tr class="order_typeRequester"><td>' . $langs->trans("AgfTypeRequester") . '</td>';
+						print '<td>';
+						$events = array();
+						$events[] = array(
+								'method' => 'getContacts',
+								'url' => dol_buildpath('/core/ajax/contacts.php', 1),
+								'htmlname' => 'fk_socpeople_requester',
+								'params' => array(
+										'add-customer-contact' => 'disabled'
+								)
+						);
+						print $form->select_company($agf->fk_soc_requester, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
+						if (! empty($agf->fk_soc_requester) && ! empty($conf->global->COMPANY_USE_SEARCH_TO_SELECT)) {
+							print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_requester">' . img_delete($langs->trans('Delete')) . '</a>';
+						}
+						print '</td></tr>';
 
-					print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
-					print '<td><table class="nobordernopadding"><tr><td>';
-					if (! empty($agf->fk_soc_requester)) {
-						$formAgefodd->select_contacts_custom($agf->fk_soc_requester, $agf->fk_socpeople_requester, 'fk_socpeople_requester', 1, '', '', 1, '', 1);
-					} else {
-						$formAgefodd->select_contacts_custom(0, $agf->fk_socpeople_requester, 'fk_socpeople_requester', 1, '', '', 1, '', 1);
+						print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
+						print '<td><table class="nobordernopadding"><tr><td>';
+						if (! empty($agf->fk_soc_requester)) {
+							$formAgefodd->select_contacts_custom($agf->fk_soc_requester, $agf->fk_socpeople_requester, 'fk_socpeople_requester', 1, '', '', 1, '', 1);
+						} else {
+							$formAgefodd->select_contacts_custom(0, $agf->fk_socpeople_requester, 'fk_socpeople_requester', 1, '', '', 1, '', 1);
+						}
+						print '</td>';
+						print '<td>' . $form->textwithpicto('', $langs->trans("AgfAgefoddDolRequesterHelp"), 1, 'help') . '</td></tr></table>';
+						if (! empty($agf->fk_socpeople_requester) && ! empty($conf->global->CONTACT_USE_SEARCH_TO_SELECT)) {
+							print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_contactrequester">' . img_delete($langs->trans('Delete')) . '</a>';
+						}
+						print '</td></tr>';
 					}
-					print '</td>';
-					print '<td>' . $form->textwithpicto('', $langs->trans("AgfAgefoddDolRequesterHelp"), 1, 'help') . '</td></tr></table>';
-					if (! empty($agf->fk_socpeople_requester) && ! empty($conf->global->CONTACT_USE_SEARCH_TO_SELECT)) {
-						print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $agf->id . '&amp;action=remove_contactrequester">' . img_delete($langs->trans('Delete')) . '</a>';
-					}
-					print '</td></tr>';
-
 					print '<tr class="order_typePresta"><td>' . $langs->trans("AgfTypePresta") . '</td>';
 					print '<td><table class="nobordernopadding"><tr><td>';
 					$formAgefodd->select_contacts_custom(0, $agf->fk_socpeople_presta, 'fk_socpeople_presta', 1, '', '', 1, '', 1, 0, array(), false, 1);
