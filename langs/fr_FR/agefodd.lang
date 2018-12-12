@@ -1134,6 +1134,7 @@ AgfTimeSchedule=Horaire par défaut
 AgfMenuReport=Rapport
 AgfMenuReportBPF=Rapport BPF
 AgfMenuReportByCustomer=Rapport détaillé par client
+AgfMenuReportCalendarByCustomer=Rapport calendrier par client
 Permission103016=Voir les informations financières (marges) des sessions
 Permission103017=Voir les rapports
 Permission103018=Voir le BPF

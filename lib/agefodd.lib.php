@@ -711,6 +711,35 @@ function agf_report_by_customer_prepare_head() {
     return $head;
 }
 
+function agf_report_calendar_by_customer_prepare_head() {
+    global $langs, $conf, $user;
+    
+    $h = 0;
+    $head = array ();
+    
+    $head[$h][0] = dol_buildpath("/agefodd/report/report_calendar_by_customer.php", 1);
+    $head[$h][1] = $langs->trans("AgfMenuReportCalendarByCustomer");
+    $head[$h][2] = 'AgfMenuReportCalendarByCustomer';
+    $h++;
+    
+    $head[$h][0] = dol_buildpath("/agefodd/report/report_calendar_by_customer_help.php", 1);
+    $head[$h][1] = $langs->trans("Help");
+    $head[$h][2] = 'help';
+    $h++;
+    
+    $object=new stdClass();
+    
+    // Show more tabs from modules
+    // Entries must be declared in modules descriptor with line
+    // $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
+    // $this->tabs = array('entity:-tabname);   												to remove a tab
+    complete_head_from_modules($conf,$langs,$object,$head,$h,'AgfMenuReportCalendarByCustomer');
+    
+    complete_head_from_modules($conf,$langs,$object,$head,$h,'AgfMenuReportCalendarByCustomer','remove');
+    
+    return $head;
+}
+
 /**
  *  renvoi le nombre de fichiers joints
  */
