@@ -580,6 +580,7 @@ if ($id) {
 					$TStatus = array(
 					    '0' => $langs->trans('AgfStatusCalendar_previsionnel'),
 					    '1' => $langs->trans('AgfStatusCalendar_confirmed'),
+					    '2' => $langs->trans('AgfStatusCalendar_missing'),
 					    '-1' => $langs->trans('AgfStatusCalendar_canceled')
 					);
 					print '<td>'.$form->selectarray('calendar_status', $TStatus, $calendrier->lines[$i]->status).'</td>';
