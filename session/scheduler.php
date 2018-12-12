@@ -128,6 +128,7 @@ $select_calendrier_type = '<label>'.$langs->trans("AgfCalendarType").'</label> '
 $TStatus = array(
     '0' => $langs->trans('AgfStatusCalendar_previsionnel'),
     '1' => $langs->trans('AgfStatusCalendar_confirmed'),
+    '2' => $langs->trans('AgfStatusCalendar_missing'),
     '-1' => $langs->trans('AgfStatusCalendar_canceled')
 );
 $select_calendrier_status = $langs->trans('Status') . '&nbsp;' . $form->selectarray('calendrier_status', $TStatus);
