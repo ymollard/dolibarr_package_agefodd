@@ -24,6 +24,7 @@
  */
 require_once ('agefodd_export_excel_by_customer.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+dol_include_once('/societe/class/societe.class.php');
 
 /**
  * Class to build report by customer
@@ -72,11 +73,16 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function getSubTitlFileName($filter) {
+	    global $db;
+	    
 		$str_sub_name = '';
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
-				if ($key == 'so.nom') {
-					$str_sub_name .= $this->outputlangs->transnoentities('Company') . $value;
+				if ($key == 'so.rowid') {
+				    $soc = new Societe($db);
+				    $soc->fetch($value);
+				    
+					$str_sub_name .= $this->outputlangs->transnoentities('Company') . $soc->name;
 				} elseif ($key == 'sesscal.date_session') {
 					$str_sub_name .= $this->outputlangs->transnoentities('AgfSessionDetail');
 					if (array_key_exists('start', $value)) {
@@ -1077,6 +1083,13 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 		}
 
 		$this->row++;
+		if (array_key_exists('so.rowid', $filter))
+		{
+		    $soc = new Societe($db);
+		    $soc->fetch($filter['so.rowid']);
+		    
+		    $filter['so.nom'] = $soc->name;
+		}
 		$result = $this->write_filter($filter);
 		if ($result < 0) {
 			return $result;
