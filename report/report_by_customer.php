@@ -244,7 +244,7 @@ print '</tr>';
 print '<tr>';
 print '<td>' . $langs->trans('AgfNotLinkedInvoices') . '</td>';
 print '<td>';
-print '&nbsp;<input type="checkbox" name="avoidNotLinked" id="avoidNotLinked">&nbsp;<label for="avoidNotLinked">' . $langs->trans('AgfAvoidNotLinkedInvoices') . '</label>';
+print '&nbsp;<input type="checkbox" name="avoidNotLinked" id="avoidNotLinked" '.(!empty($avoidNotLinked) ? 'checked' : '').'>&nbsp;<label for="avoidNotLinked">' . $langs->trans('AgfAvoidNotLinkedInvoices') . '</label>';
 print '</td>';
 print '</tr>';
 

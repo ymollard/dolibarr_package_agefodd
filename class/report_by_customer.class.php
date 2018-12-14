@@ -916,7 +916,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 
 							if (! empty($facture->id) && $output_invoice) {
 								$invoice_found[$facture->id] = $facture->socid;
-								if (is_array($facture->lines) && count($facture->lines) > 0) {
+								if (is_array($facture->lines) && count($facture->lines) > 0 && $facture->statut !== '0') {
 									foreach ( $facture->lines as $invoice_lines ) {
 
 										// Check if procut is in not in category of CHARGES
