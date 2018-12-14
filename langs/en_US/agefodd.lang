@@ -1154,3 +1154,5 @@ AgfMenuFormateurCreate=New trainer
 AgfMenuContactCreate=New trainning contact
 AgfNobodyTrainer=No trainer subs.
 AgfThirdpartyOfTraineeMandatory=Cannot create trainnee without thirdparty linked
+AgfNotLinkedInvoices=Not linked invoices
+AgfAvoidNotLinkedInvoices=Do not consider the invoices wich are not linked to a training session

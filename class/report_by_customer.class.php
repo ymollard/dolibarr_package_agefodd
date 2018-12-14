@@ -1219,153 +1219,156 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 			$array_total[21] += $array_sub_total[21];
 		}
 
-		// Start data for invoice witout training
-		$this->lines=array();
-		if (is_array($filter) && (array_key_exists('so.nom', $filter)
-				|| array_key_exists('so.parent|sorequester.parent', $filter)
-				|| array_key_exists('sale.fk_user_com', $filter)
-				|| array_key_exists('f.datef', $filter))
-				&& (!array_key_exists('sesscal.date_session', $filter))) {
-
-			$result = $this->fetch_invoice_without($filter);
-			if ($result < 0) {
-				return $result;
-			}
+		if (empty($this->avoidNotLinkedInvoices))
+		{
+    		// Start data for invoice witout training
+    		$this->lines=array();
+    		if (is_array($filter) && (array_key_exists('so.nom', $filter)
+    				|| array_key_exists('so.parent|sorequester.parent', $filter)
+    				|| array_key_exists('sale.fk_user_com', $filter)
+    				|| array_key_exists('f.datef', $filter))
+    				&& (!array_key_exists('sesscal.date_session', $filter))) {
+    
+    			$result = $this->fetch_invoice_without($filter);
+    			if ($result < 0) {
+    				return $result;
+    			}
+    		}
+    
+    		if (count($this->lines) > 0) {
+    			$total_line += count($this->lines);
+    			foreach ( $this->lines as $line ) {
+    				// Must have same struct than $array_column_header
+    				$line_to_output = array ();
+    
+    				$array_sub_total = array ();
+    
+    				$facture = new Facture($this->db);
+    				$result = $facture->fetch($line->id);
+    				if ($result < 0) {
+    					$this->error = $facture->error;
+    					return $result;
+    				}
+    
+    				// Soc reuester
+    				$line_to_output[0] = $line->socrequestername;
+    
+    				// contact
+    				$line_to_output[1] = '';
+    
+    				// Societe
+    				$line_to_output[2] = $line->socname;
+    
+    				// Pole
+    				$line_to_output[3] = $line->raissocial2;
+    
+    				// type session
+    				$line_to_output[4] = '';
+    
+    				// Num Dossier
+    				$line_to_output[5] = array ();
+    
+    				// Lieu
+    				$line_to_output[6] = '';
+    
+    				// dt deb
+    				$line_to_output[7] = '';
+    
+    				// dt fin
+    				$line_to_output[8] = '';
+    
+    				// nb heure
+    				$line_to_output[9] = '';
+    
+    				// Participant
+    				$line_to_output[10] = array ();
+    				// Nb
+    				$line_to_output[11] = array (
+    						0 => ''
+    				);
+    
+    				// Intervenant
+    				$line_to_output[12] = array ();
+    
+    				// Session
+    				$line_to_output[13] = '';
+    
+    				// Product and order and Invoice/propal and price
+    				$productlist = array ();
+    				$destservlist = array ();
+    				$refcustlist = array ();
+    				$invoicelist = array ();
+    				$productHTlist = array ();
+    				$totalHTlist = array ();
+    				$totalTTClist = array ();
+    				$totalFraiHTlist = array ();
+    
+    				if (is_array($facture->lines) && count($facture->lines) > 0) {
+    					foreach ( $facture->lines as $invoice_lines ) {
+    
+    						// Check if procut is in not in category of CHARGES
+    						$is_not_frais = true;
+    						if (! empty($invoice_lines->fk_product)) {
+    							$sql = " SELECT prod.rowid FROM " . MAIN_DB_PREFIX . "product as prod";
+    							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "categorie_product as catprod ON prod.rowid=catprod.fk_product AND catprod.fk_categorie IN (3,61)";
+    							$sql .= " WHERE  prod.rowid=" . $invoice_lines->fk_product;
+    							dol_syslog(get_class($this) . "::write_file sql=" . $sql, LOG_DEBUG);
+    							$result = $this->db->query($sql);
+    							if ($result) {
+    								if ($this->db->num_rows($result)) {
+    									$is_not_frais = false;
+    								}
+    							} else {
+    								$this->error = "Error " . $this->db->lasterror();
+    								dol_syslog(get_class($this) . "::write_file " . $this->error, LOG_ERR);
+    								return - 1;
+    							}
+    						}
+    
+    						if ($is_not_frais) {
+    							if (empty($invoice_lines->product_label)) {
+    								$productlist[$facture->id][$invoice_lines->rowid] = $invoice_lines->description;
+    							} else {
+    								// $productlist[$facture->id][$invoice_lines->rowid] = $invoice_lines->product_ref . '-' . $invoice_lines->product_label;
+    								$productlist[$facture->id][$invoice_lines->rowid] = $invoice_lines->product_label;
+    							}
+    
+    							$productHTlist[$facture->id][$invoice_lines->rowid] = $invoice_lines->total_ht;
+    							$array_sub_total[18] += $invoice_lines->total_ht;
+    						}
+    					}
+    
+    					$destservlist[$facture->id] = '';
+    					$refcustlist[$facture->id] = $facture->ref_client;
+    					$invoicelist[$facture->id] = $facture->ref;
+    					$totalHTlist[$facture->id] = $facture->total_ht;
+    					$totalTTClist[$facture->id] = $facture->total_ttc;
+    
+    					$array_sub_total[20] += $facture->total_ht;
+    					$array_sub_total[21] += $facture->total_ttc;
+    				}
+    
+    				$line_to_output[14] = $productlist;
+    				$line_to_output[15] = $destservlist;
+    				$line_to_output[16] = $refcustlist;
+    				$line_to_output[17] = $invoicelist;
+    				$line_to_output[18] = $productHTlist;
+    				$line_to_output[20] = $totalHTlist;
+    				$line_to_output[21] = $totalTTClist;
+    
+    				// Output line into Excel File
+    				$this->write_line($line_to_output);
+    
+    				// $array_total[9] += $array_sub_total[9];
+    				// $array_total[11] += $array_sub_total[11];
+    				$array_total[18] += $array_sub_total[18];
+    				$array_total[19] += $array_sub_total[19];
+    				$array_total[20] += $array_sub_total[20];
+    				$array_total[21] += $array_sub_total[21];
+    			}
+    		}
 		}
-
-		if (count($this->lines) > 0) {
-			$total_line += count($this->lines);
-			foreach ( $this->lines as $line ) {
-				// Must have same struct than $array_column_header
-				$line_to_output = array ();
-
-				$array_sub_total = array ();
-
-				$facture = new Facture($this->db);
-				$result = $facture->fetch($line->id);
-				if ($result < 0) {
-					$this->error = $facture->error;
-					return $result;
-				}
-
-				// Soc reuester
-				$line_to_output[0] = $line->socrequestername;
-
-				// contact
-				$line_to_output[1] = '';
-
-				// Societe
-				$line_to_output[2] = $line->socname;
-
-				// Pole
-				$line_to_output[3] = $line->raissocial2;
-
-				// type session
-				$line_to_output[4] = '';
-
-				// Num Dossier
-				$line_to_output[5] = array ();
-
-				// Lieu
-				$line_to_output[6] = '';
-
-				// dt deb
-				$line_to_output[7] = '';
-
-				// dt fin
-				$line_to_output[8] = '';
-
-				// nb heure
-				$line_to_output[9] = '';
-
-				// Participant
-				$line_to_output[10] = array ();
-				// Nb
-				$line_to_output[11] = array (
-						0 => ''
-				);
-
-				// Intervenant
-				$line_to_output[12] = array ();
-
-				// Session
-				$line_to_output[13] = '';
-
-				// Product and order and Invoice/propal and price
-				$productlist = array ();
-				$destservlist = array ();
-				$refcustlist = array ();
-				$invoicelist = array ();
-				$productHTlist = array ();
-				$totalHTlist = array ();
-				$totalTTClist = array ();
-				$totalFraiHTlist = array ();
-
-				if (is_array($facture->lines) && count($facture->lines) > 0) {
-					foreach ( $facture->lines as $invoice_lines ) {
-
-						// Check if procut is in not in category of CHARGES
-						$is_not_frais = true;
-						if (! empty($invoice_lines->fk_product)) {
-							$sql = " SELECT prod.rowid FROM " . MAIN_DB_PREFIX . "product as prod";
-							$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "categorie_product as catprod ON prod.rowid=catprod.fk_product AND catprod.fk_categorie IN (3,61)";
-							$sql .= " WHERE  prod.rowid=" . $invoice_lines->fk_product;
-							dol_syslog(get_class($this) . "::write_file sql=" . $sql, LOG_DEBUG);
-							$result = $this->db->query($sql);
-							if ($result) {
-								if ($this->db->num_rows($result)) {
-									$is_not_frais = false;
-								}
-							} else {
-								$this->error = "Error " . $this->db->lasterror();
-								dol_syslog(get_class($this) . "::write_file " . $this->error, LOG_ERR);
-								return - 1;
-							}
-						}
-
-						if ($is_not_frais) {
-							if (empty($invoice_lines->product_label)) {
-								$productlist[$facture->id][$invoice_lines->rowid] = $invoice_lines->description;
-							} else {
-								// $productlist[$facture->id][$invoice_lines->rowid] = $invoice_lines->product_ref . '-' . $invoice_lines->product_label;
-								$productlist[$facture->id][$invoice_lines->rowid] = $invoice_lines->product_label;
-							}
-
-							$productHTlist[$facture->id][$invoice_lines->rowid] = $invoice_lines->total_ht;
-							$array_sub_total[18] += $invoice_lines->total_ht;
-						}
-					}
-
-					$destservlist[$facture->id] = '';
-					$refcustlist[$facture->id] = $facture->ref_client;
-					$invoicelist[$facture->id] = $facture->ref;
-					$totalHTlist[$facture->id] = $facture->total_ht;
-					$totalTTClist[$facture->id] = $facture->total_ttc;
-
-					$array_sub_total[20] += $facture->total_ht;
-					$array_sub_total[21] += $facture->total_ttc;
-				}
-
-				$line_to_output[14] = $productlist;
-				$line_to_output[15] = $destservlist;
-				$line_to_output[16] = $refcustlist;
-				$line_to_output[17] = $invoicelist;
-				$line_to_output[18] = $productHTlist;
-				$line_to_output[20] = $totalHTlist;
-				$line_to_output[21] = $totalTTClist;
-
-				// Output line into Excel File
-				$this->write_line($line_to_output);
-
-				// $array_total[9] += $array_sub_total[9];
-				// $array_total[11] += $array_sub_total[11];
-				$array_total[18] += $array_sub_total[18];
-				$array_total[19] += $array_sub_total[19];
-				$array_total[20] += $array_sub_total[20];
-				$array_total[21] += $array_sub_total[21];
-			}
-		}
-
+		    
 		$result = $this->write_line_total($array_total, '3d85c6');
 		if ($result < 0) {
 			return $result;

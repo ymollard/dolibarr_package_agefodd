@@ -58,6 +58,7 @@ if ($search_parent == - 1)
 $search_soc_requester = GETPOST('search_soc_requester');
 $search_soc = GETPOST("search_soc");
 $search_session_status=GETPOST('search_session_status','array');
+$avoidNotLinked = GETPOST('avoidNotLinked');
 
 $modelexport = GETPOST('modelexport', 'alpha');
 $lang_id = GETPOST('lang_id');
@@ -140,6 +141,8 @@ if ($action == 'builddoc') {
 
 	$report_by_cust = new ReportByCustomer($db, $outputlangs);
 
+	if(!empty($avoidNotLinked)) $report_by_cust->avoidNotLinkedInvoices = 1;
+	
 	$file_sub_title=$report_by_cust->getSubTitlFileName($filter);
 	$report_by_cust->file = $upload_dir . 'reportbycust-' . $file_sub_title . '.xlsx';
 
@@ -236,6 +239,13 @@ print '</tr>';
 print '<tr>';
 print '<td>' . $langs->trans('AgfStatusSession') . '</td>';
 print '<td>' . $formAgefodd->multiselect_session_status('search_session_status',$search_session_status,'t.active=1') . '</td>';
+print '</tr>';
+
+print '<tr>';
+print '<td>' . $langs->trans('AgfNotLinkedInvoices') . '</td>';
+print '<td>';
+print '&nbsp;<input type="checkbox" name="avoidNotLinked" id="avoidNotLinked">&nbsp;<label for="avoidNotLinked">' . $langs->trans('AgfAvoidNotLinkedInvoices') . '</label>';
+print '</td>';
 print '</tr>';
 
 print '</table>' . "\n";
