@@ -1241,6 +1241,7 @@ AgfTypeEmployeeHelp=Client qui est la société qui vous sous-traite de la sessi
 AgfQRCodeCertifInfo=Information du QR code sur le certificat format carte de crédit
 AgfConseilsPratiqueByEmail=Document formateur envoyer par email
 AgfRptSelectAtLeastOneCriteria=Veuillez selectionner des critéres de recherche pour ce rapport.
+AgfRptSelectACustomer=Veuillez sélectionner une société
 AgfErroVarNotSetBPF = La configuration du module Formation (onglet BPF ou produit de frais) n'est pas complète. Notament pour la catégorie %s
 AgfBPFIntro=Ce rapport peut être utilisé pour les centres de formation professionnelle continue en France dans le cadre de l'exigence de l'administration qui exige le
 AgfBPFHelpconfig=La première étape est de configurer les différents éléments du module et de Dolibarr
@@ -1445,8 +1446,8 @@ AgfSessionSummary=Formation prévue du <b>%s</b> au <b>%s</b>
 AgfHours=%s heure(s)
 
 AgfSessionSummaryTotalHours=Total heures de formation
-AgfSessionSummaryTotalScheduled=Total heures programmée
-AgfSessionSummaryTotalLeft=Totale heures restante
+AgfSessionSummaryTotalScheduled=Total heures programmées
+AgfSessionSummaryTotalLeft=Totale heures restantes
 
 AgfSessionSummaryTotalPresence=Total heures déclarée (participants - tout statut)
 AgfSessionSummaryTauxAssiduite=Taux d'assiduité
