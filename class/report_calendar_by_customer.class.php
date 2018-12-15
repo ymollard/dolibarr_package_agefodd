@@ -22,7 +22,7 @@
  * \ingroup agefodd
  * \brief File of class to generate report for agefodd
  */
-require_once ('agefodd_export_excel_by_customer.class.php');
+require_once ('agefodd_export_excel.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 dol_include_once('/societe/class/societe.class.php');
 dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
@@ -32,7 +32,7 @@ dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
 /**
  * Class to build report by customer
  */
-class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
+class ReportCalendarByCustomer extends AgefoddExportExcel {
 	private $lines;
 
 	/**
@@ -49,7 +49,14 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 		$outputlangs->load("companies");
 		$outputlangs->load("products");
 
-		$array_column_header = array (
+		$sheet_array = array (
+		    0 => array (
+		        'name' => 'send',
+		        'title' => $outputlangs->transnoentities('AgfMenuReportCalendarByCustomer')
+		    )
+		);
+		
+		$array_column_header[0] = array (
 				0 => array (
 						'type' => 'text',
 						'title' => $outputlangs->transnoentities('SessionRef')
@@ -161,12 +168,12 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 		$array_total = array ();
 
 		$session = new Agsession($this->db);
-
+		
 		$total_line = count($this->lines);
 		if (count($this->lines) > 0) {
+		    //var_dump($this->lines);
 			foreach ( $this->lines as $line ) {
-			    
-			    if ($refsession != $line->refsession)
+			    if (!empty($refsession) && $refsession != $line->refsession)
 			    {
 			        $result = $this->write_line_total($array_sub_total);
 			        if ($result < 0) {
@@ -221,11 +228,13 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 			    $i++;
 
 			    $line_to_output[$i] = 0;
-			    $array_sub_total[$i]+= $line->total_heures;
+			    $array_sub_total[$i]+= 0;
 			    $i++;
-			    
-				$this->write_line($line_to_output);
+ 			    
+				$this->write_line($line_to_output, 0);
+				
 			}
+			
 			$result = $this->write_line_total($array_sub_total);
 			if ($result < 0) {
 				return $result;
@@ -257,7 +266,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 			return $result;
 		}
 
-		// exit;
+// 		exit;
 		if ($total_line>0) {
 			$this->close_file();
 		}
@@ -314,7 +323,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 
 			if ($num) {
 			    
-			    $lastref = '';
+			    $TSessions = array();
 			    
 			    while ( $i < $num)
 			    {
@@ -335,47 +344,42 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 			            $mode = $calendar->calendrier_type_label;
 			            if(empty($mode)) $mode = 'Non définie';
 			            
-			            $refline = $obj->ref.'-'.$trainee->stagerowid.'-'.$mode;
-			            
-			            if (!in_array($refline, $this->lines)){
-			                $this->lines[$refline] = new ReportCalendarByCustomerLine();
-			                $this->lines[$refline]->id = $refline;
-			                $this->lines[$refline]->refsession = $obj->ref;
-			                $this->lines[$refline]->stagiaire = $trainee->nom . ' ' . $trainee->prenom;
-			                $this->lines[$refline]->modalite = $mode;
-			                
-			                foreach ($Tmonths as $m)
-			                {
-			                    $this->lines[$refline]->months[$m]['canceled'] = 0;
-			                    $this->lines[$refline]->months[$m]['missing'] = 0;
-			                    $this->lines[$refline]->months[$m]['presence'] = 0;
-			                }
-			                
-			                $this->lines[$refline]->total_heures = 0;
-			            }
+			            if (!array_key_exists($obj->ref, $TSessions)) $TSessions[$obj->ref] = array();
+
+		                $TSessions[$obj->ref][$trainee->stagerowid]['name'] = $trainee->nom . ' ' . $trainee->prenom;
+		                if (empty($TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]))
+		                {
+		                    $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode] = array();
+		                    foreach ($Tmonths as $m)
+		                    {
+		                        $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['months'][$m]['canceled'] = 0;
+		                        $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['months'][$m]['missing'] = 0;
+		                        $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['months'][$m]['presence'] = 0;
+		                    }
+		                    $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['total_heures'] = 0;
+		                }
 			            
 			            $mois = dol_print_date(strtotime($obj->date_session), '__b__ %Y', 'tzserver', $this->outputlangs);
 			            
 			            if ($calendar->status == Agefodd_sesscalendar::STATUS_CANCELED)
 			            {
 			                $hourslabel = "canceled";
-			                $this->lines[$refline]->months[$mois]['canceled'] += $calendar->duration;
+			                $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['months'][$mois]['canceled'] += $calendar->duration;
 			            }
 			            elseif ($calendar->status == Agefodd_sesscalendar::STATUS_MISSING)
 			            {
 			                $hourslabel = "missing";
 			                
-			                $this->lines[$refline]->months[$mois]['missing'] += $calendar->duration;
-			                $this->lines[$refline]->total_heures += $calendar->duration;
+			                $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['months'][$mois]['missing'] += $calendar->duration;
+			                $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['total_heures'] += $calendar->duration;
 			            }
 			            else
 			            {
 			                $hourslabel = "presence";
 			                if (empty($conf->global->AGF_USE_REAL_HOURS)) // si on utilise pas les heures réelles
 			                {
-			                    
-			                    $this->lines[$refline]->months[$mois]['presence'] += $calendar->duration;
-			                    $this->lines[$refline]->total_heures += $calendar->duration;
+			                    $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['months'][$mois]['presence'] += $calendar->duration;
+			                    $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['total_heures'] += $calendar->duration;
 			                }
 			                else
 			                {
@@ -383,8 +387,8 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 			                    $heuresStagiaires = new Agefoddsessionstagiaireheures($this->db);
 			                    $heuresStagiaires->fetch_by_session($obj->rowid, $trainee->id, $calendar->id);
 			                    
-			                    $this->lines[$refline]->months[$mois]['presence'] += floatval($heuresStagiaires->heures);
-			                    $this->lines[$refline]->total_heures += floatval($heuresStagiaires->heures);
+			                    $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['months'][$mois]['presence'] += floatval($heuresStagiaires->heures);
+			                    $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]['total_heures'] += floatval($heuresStagiaires->heures);
 			                }
 			            }
 			            
@@ -392,7 +396,33 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 			        
 			        $i++;
 			    }
-// 			    echo '<pre>'; print_r($this->lines); exit;
+			    
+			    // Construire le tableau $this->lines
+			    $this->lines = array();
+			    $i = 0;
+			    // parcours du tableau $TSessions
+			    foreach ($TSessions as $refsession => $TStagiaires)
+			    {
+			        foreach ($TStagiaires as $stag_id => $stag)
+			        {
+			            foreach ($stag['modalite'] as $modname => $data)
+			            {
+			                $line = new ReportCalendarByCustomerLine();
+			                
+			                $line->id = $i;
+			                $line->refsession = $refsession;
+			                $line->stagiaire = $stag['name'];
+			                $line->modalite = $modname;
+			                $line->months = $data['months'];
+			                $line->total_heures = $data['total_heures'];
+
+			                $this->lines[] = $line;
+			                $i++;
+			            }
+			        }
+			    }
+			    
+// 			    echo '<pre>'; var_dump($this->array_column_header); echo '<br />'; print_r($this->lines); exit;
 			}
 			$this->db->free($resql);
 			return $num;
@@ -458,28 +488,28 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 	                $i++;
 	            }
 	            
-	            $nbhead = count($this->array_column_header);
+	            $nbhead = count($this->array_column_header[0]);
 	            foreach ($Tmonths as $month)
 	            {
-	                $this->array_column_header[$nbhead + 1]['type'] = 'text';
-	                $this->array_column_header[$nbhead + 1]['title'] = '';
+	                $this->array_column_header[0][$nbhead]['type'] = 'text';
+	                $this->array_column_header[0][$nbhead]['title'] = '';
 	                $nbhead++;
 	                
-	                $this->array_column_header[$nbhead + 1]['type'] = 'text';
-	                $this->array_column_header[$nbhead + 1]['title'] = $month;
+	                $this->array_column_header[0][$nbhead]['type'] = 'text';
+	                $this->array_column_header[0][$nbhead]['title'] = $month;
 	                $nbhead++;
 	                
-	                $this->array_column_header[$nbhead + 1]['type'] = 'text';
-	                $this->array_column_header[$nbhead + 1]['title'] = '';
+	                $this->array_column_header[0][$nbhead]['type'] = 'text';
+	                $this->array_column_header[0][$nbhead]['title'] = '';
 	                $nbhead++;
 	            }
 	            
-	            $this->array_column_header[$nbhead + 1]['type'] = 'text';
-	            $this->array_column_header[$nbhead + 1]['title'] = $this->outputlangs->transnoentities('AgfSessionSummaryTotalHours');
+	            $this->array_column_header[0][$nbhead]['type'] = 'text';
+	            $this->array_column_header[0][$nbhead]['title'] = $this->outputlangs->transnoentities('AgfSessionSummaryTotalHours');
 	            $nbhead++;
 	            
-	            $this->array_column_header[$nbhead + 1]['type'] = 'text';
-	            $this->array_column_header[$nbhead + 1]['title'] = $this->outputlangs->transnoentities('AgfSessionSummaryTotalLeft');
+	            $this->array_column_header[0][$nbhead]['type'] = 'text';
+	            $this->array_column_header[0][$nbhead]['title'] = $this->outputlangs->transnoentities('AgfSessionSummaryTotalLeft');
 	            $nbhead++;
 	            
 	        }
@@ -492,6 +522,50 @@ class ReportCalendarByCustomer extends AgefoddExportExcelByCustomer {
 	    }
 	    
 	}
+	
+	/**
+	 * Output filter line into file
+	 *
+	 * @return int if KO, >0 if OK
+	 */
+	public function write_filter($filter) {
+	    dol_syslog(get_class($this) . "::write_filter ");
+	    // Create a format for the column headings
+	    try {
+	        
+	        // Manage filter
+	        if (count($filter) > 0) {
+	            foreach ( $filter as $key => $value ) {
+	                
+	                
+	                if ($key=='sesscal.date_session') {
+	                    $str_cirteria = $this->outputlangs->transnoentities('AgfSessionDetail') . ' ';
+	                    if (array_key_exists('start', $value)) {
+	                        $str_criteria_value = $this->outputlangs->transnoentities("AgfDateDebut"). ':' . dol_print_date($value['start'],'daytext', 'tzserver', $this->outputlangs);
+	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[0], $str_cirteria);
+	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $str_criteria_value);
+	                        $this->row ++;
+	                    }
+	                    if (array_key_exists('end', $value)) {
+	                        $str_criteria_value = $this->outputlangs->transnoentities("AgfDateFin") . ':' . dol_print_date($value['end'],'daytext', 'tzserver', $this->outputlangs);
+	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[0], $str_cirteria);
+	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $str_criteria_value);
+	                        $this->row ++;
+	                    }
+	                } elseif ($key == 'so.nom') {
+	                    $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[0], $this->outputlangs->transnoentities('Company'));
+	                    $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $value);
+	                    $this->row ++;
+	                }
+	            }
+	        }
+	    } catch ( Exception $e ) {
+	        $this->error = $e->getMessage();
+	        return - 1;
+	    }
+	    
+	    return 1;
+	}
 }
 
 class ReportCalendarByCustomerLine {
@@ -501,6 +575,6 @@ class ReportCalendarByCustomerLine {
 	public $modalite;
 	public $months;
 	public $total_heures;
-	public $total_reste;
+// 	public $total_reste;
 	
 }
