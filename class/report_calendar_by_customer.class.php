@@ -193,15 +193,28 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			    // Must have same struct than $array_column_header
 			    $line_to_output = array ();
 			    
+			    // Manage display
+			    $displayref = false;
+			    $displaytraineename = false; 
+			    
+			    if ($refsession != $line->refsession) $displayref = true;
+			    if ($lasttrainee != $line->stagiaire)
+			    {
+			        $displaytraineename = true;
+			        $lasttrainee = $line->stagiaire;
+			    }
+			    
 			    // Use to break on session reference
 			    $refsession = $line->refsession;
 
 			    // ref session
-			    $line_to_output[0] = $line->refsession;
+			    if ($displayref) $line_to_output[0] = $line->refsession;
+			    else $line_to_output[0] = '';
 			    $array_sub_total[0] = $line->refsession;
 
 			    // nom du stagiaire
-			    $line_to_output[1] = $line->stagiaire;
+			    if ($displaytraineename) $line_to_output[1] = $line->stagiaire;
+			    else $line_to_output[1] = '';
 			    
                 // modalité pédagogique
 			    $line_to_output[2] = $line->modalite;
