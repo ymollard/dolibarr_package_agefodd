@@ -310,13 +310,13 @@ class AgefoddExportExcel {
 				$this->row[$keysheet] ++;
 
 				foreach ( $this->array_column_header[$keysheet] as $col => $value ) {
-
 					$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row[$keysheet], $value['title']);
 					// If header is set then write header
 					if (array_key_exists('header', $value)) {
 						if ($upper_hearder_output != $value['header']) {
 							$colstartheader = $col;
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row[$keysheet] - 1, $value['header']);
+							$headers = true;
 							$upper_hearder_output = $value['header'];
 						}
 					} else {

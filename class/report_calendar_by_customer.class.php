@@ -49,7 +49,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 		$outputlangs->load("companies");
 		$outputlangs->load("products");
 
-		$sheet_array = array (
+		$sheet_array[0] = array (
 		    0 => array (
 		        'name' => 'send',
 		        'title' => $outputlangs->transnoentities('AgfMenuReportCalendarByCustomer')
@@ -59,15 +59,15 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 		$array_column_header[0] = array (
 				0 => array (
 						'type' => 'text',
-						'title' => $outputlangs->transnoentities('SessionRef')
+						'header' => $outputlangs->transnoentities('SessionRef')
 				),
 				1 => array (
 						'type' => 'text',
-						'title' => $outputlangs->transnoentities('AgfMenuActStagiaire')
+						'header' => $outputlangs->transnoentities('AgfMenuActStagiaire')
 				),
 				2 => array (
 						'type' => 'text',
-						'title' => $outputlangs->transnoentities('Type')
+						'header' => $outputlangs->transnoentities('Type')
 				)
 				
 		);
@@ -152,11 +152,13 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 		// modifier le header en fonction du nombre de mois de la tranche
 		$this->complete_header($filter);
 		
+		$this->row[0]++;
 		$result = $this->write_header();
 		if ($result < 0) {
 			return $result;
 		}
-
+		
+		$this->apply_header_style();
 
 		// Start find data
 		$result = $this->fetch_all_session($filter);
@@ -202,6 +204,8 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			    {
 			        $displaytraineename = true;
 			        $lasttrainee = $line->stagiaire;
+			        
+			        $total_reste = $line->total_reste;
 			    }
 			    
 			    // Use to break on session reference
@@ -240,8 +244,10 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			    $array_sub_total[$i]+= $line->total_heures;
 			    $i++;
 
-			    $line_to_output[$i] = 0;
-			    $array_sub_total[$i]+= 0;
+			    // total restant
+			    $total_reste -= $line->total_heures;
+			    $line_to_output[$i] = $total_reste;
+			    $array_sub_total[$i]+= $total_reste;
 			    $i++;
  			    
 				$this->write_line($line_to_output, 0);
@@ -266,7 +272,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 // 			return $result;
 // 		}
 
-		$this->row++;
+		$this->row[0]++;
 		if (array_key_exists('so.rowid', $filter))
 		{
 		    $soc = new Societe($this->db);
@@ -360,6 +366,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			            if (!array_key_exists($obj->ref, $TSessions)) $TSessions[$obj->ref] = array();
 
 		                $TSessions[$obj->ref][$trainee->stagerowid]['name'] = $trainee->nom . ' ' . $trainee->prenom;
+		                $TSessions[$obj->ref][$trainee->stagerowid]['duree_session'] = $obj->duree_session;
 		                if (empty($TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode]))
 		                {
 		                    $TSessions[$obj->ref][$trainee->stagerowid]['modalite'][$mode] = array();
@@ -428,6 +435,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			                $line->modalite = $modname;
 			                $line->months = $data['months'];
 			                $line->total_heures = $data['total_heures'];
+			                $line->total_reste = $stag['duree_session'];
 
 			                $this->lines[] = $line;
 			                $i++;
@@ -505,24 +513,29 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 	            foreach ($Tmonths as $month)
 	            {
 	                $this->array_column_header[0][$nbhead]['type'] = 'text';
-	                $this->array_column_header[0][$nbhead]['title'] = '';
+	                $this->array_column_header[0][$nbhead]['header'] = $month;
+	                $this->array_column_header[0][$nbhead]['title'] = 'heures de présence';
 	                $nbhead++;
 	                
 	                $this->array_column_header[0][$nbhead]['type'] = 'text';
-	                $this->array_column_header[0][$nbhead]['title'] = $month;
+	                $this->array_column_header[0][$nbhead]['header'] = $month;
+	                $this->array_column_header[0][$nbhead]['title'] = 'heures d\'absence';
 	                $nbhead++;
 	                
 	                $this->array_column_header[0][$nbhead]['type'] = 'text';
-	                $this->array_column_header[0][$nbhead]['title'] = '';
+	                $this->array_column_header[0][$nbhead]['header'] = $month;
+	                $this->array_column_header[0][$nbhead]['title'] = 'heures annulées';
 	                $nbhead++;
 	            }
 	            
 	            $this->array_column_header[0][$nbhead]['type'] = 'text';
-	            $this->array_column_header[0][$nbhead]['title'] = $this->outputlangs->transnoentities('AgfSessionSummaryTotalHours');
+	            $this->array_column_header[0][$nbhead]['header'] = $this->outputlangs->transnoentities('AgfSessionSummaryTotalHours');
+	            $this->array_column_header[0][$nbhead]['title'] = '';
 	            $nbhead++;
 	            
 	            $this->array_column_header[0][$nbhead]['type'] = 'text';
-	            $this->array_column_header[0][$nbhead]['title'] = $this->outputlangs->transnoentities('AgfSessionSummaryTotalLeft');
+	            $this->array_column_header[0][$nbhead]['header'] = $this->outputlangs->transnoentities('AgfSessionSummaryTotalLeft');
+	            $this->array_column_header[0][$nbhead]['title'] = '';
 	            $nbhead++;
 	            
 	        }
@@ -557,18 +570,18 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 	                        $str_criteria_value = $this->outputlangs->transnoentities("AgfDateDebut"). ':' . dol_print_date($value['start'],'daytext', 'tzserver', $this->outputlangs);
 	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[0], $str_cirteria);
 	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $str_criteria_value);
-	                        $this->row ++;
+	                        $this->row[0]++;
 	                    }
 	                    if (array_key_exists('end', $value)) {
 	                        $str_criteria_value = $this->outputlangs->transnoentities("AgfDateFin") . ':' . dol_print_date($value['end'],'daytext', 'tzserver', $this->outputlangs);
 	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[0], $str_cirteria);
 	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $str_criteria_value);
-	                        $this->row ++;
+	                        $this->row[0]++;
 	                    }
 	                } elseif ($key == 'so.nom') {
 	                    $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[0], $this->outputlangs->transnoentities('Company'));
 	                    $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $value);
-	                    $this->row ++;
+	                    $this->row[0]++;
 	                }
 	            }
 	        }
@@ -579,6 +592,40 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 	    
 	    return 1;
 	}
+	
+	public function apply_header_style()
+	{
+	    $styleArray = array (
+	        'borders' => array (
+	            'allborders' => array (
+	                'style' => PHPExcel_Style_Border::BORDER_THIN,
+	                'color' => array (
+	                    'argb' => PHPExcel_Style_Color::COLOR_BLACK
+	                )
+	            )
+	        ),
+	        'fill' => array (
+	            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+	            'color' => array (
+	                'rgb' => 'cfe2f3'
+	            )
+	        ),
+	        'font' => array (
+	            'color' => array (
+	                'argb' => PHPExcel_Style_Color::COLOR_BLACK
+	            ),
+	            'bold' => true
+	        ),
+	        'alignment' => array (
+	            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+	        )
+	    );
+	    
+	    $min_value_key = min(array_keys($this->array_column_header[0]));
+	    $max_value_key = max(array_keys($this->array_column_header[0]));
+	    $range_header = PHPExcel_Cell::stringFromColumnIndex($min_value_key) . ($this->row[0]-2) . ':' . PHPExcel_Cell::stringFromColumnIndex($max_value_key) . ($this->row[0]-2);
+	    $this->workbook->getActiveSheet()->getStyle($range_header)->applyFromArray($styleArray);
+	}
 }
 
 class ReportCalendarByCustomerLine {
@@ -588,6 +635,6 @@ class ReportCalendarByCustomerLine {
 	public $modalite;
 	public $months;
 	public $total_heures;
-// 	public $total_reste;
+ 	public $total_reste;
 	
 }
