@@ -255,17 +255,17 @@ if (! empty($arrayfields['c.rowid']['checked']))print '<td><input type="text" cl
 
 if (! empty($arrayfields['c.intitule']['checked'])){
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_intitule" value="' . $search_intitule . '" size="20">';
+	print '<input type="text" class="flat maxwidth100" name="search_intitule" value="' . $search_intitule . '">';
 	print '</td>';
 }
 if (! empty($arrayfields['c.ref']['checked'])){
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_ref" value="' . $search_ref . '" size="20">';
+	print '<input type="text" class="flat maxwidth75" name="search_ref" value="' . $search_ref . '">';
 	print '</td>';
 }
 if (! empty($arrayfields['c.ref_interne']['checked'])){
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_ref_interne" value="' . $search_ref_interne . '" size="20">';
+	print '<input type="text" class="flat maxwidth75" name="search_ref_interne" value="' . $search_ref_interne . '">';
 	print '</td>';
 }
 if (! empty($arrayfields['dictcat.code']['checked'])){
@@ -280,18 +280,18 @@ if (! empty($arrayfields['dictcatbpf.code']['checked'])){
 }
 if (! empty($arrayfields['c.datec']['checked'])){
 
-	print '<td class="liste_titre">';
+	print '<td class="liste_titre nowraponall">';
 	print $form->select_date($search_datec, 'search_datec', 0, 0, 1, 'search_form');
 	print '</td>';
 }
 if (! empty($arrayfields['c.duree']['checked'])){
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_duree" value="' . $search_duree . '" size="5">';
+	print '<input type="text" class="flat maxwidth50" name="search_duree" value="' . $search_duree . '">';
 	print '</td>';
 }
 if (! empty($arrayfields['c.nb_place']['checked'])){
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_nb_place" value="' . $search_nb_place . '" size="5">';
+	print '<input type="text" class="flat maxwidth50" name="search_nb_place" value="' . $search_nb_place . '">';
 	print '</td>';
 }
 if (! empty($arrayfields['a.dated']['checked'])){
