@@ -72,7 +72,7 @@ class FormAgefodd extends Form
 				unset($formationtmpselect);
 			}
 			// mode=1 means customers products
-			$filter=json_encode($filter);
+			$filter=json_encode($filters);
 			$urloption = 'htmlname='.$htmlname.'&outjson=1&filter='.$filter;
 
 			print ajax_autocompleter($selectid, $htmlname, dol_buildpath('/agefodd/ajax/formation.php',1), $urloption,  $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT, 0, '');
