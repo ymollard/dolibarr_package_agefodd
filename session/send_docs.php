@@ -107,12 +107,28 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 		$sendtoid = 0;
 	} elseif (is_array($receiver)) {
 		$receiver = $receiver;
-		foreach ( $receiver as $socpeople_id ) {
+		foreach ( $receiver as $id_receiver ) {
 			// Initialisation donnees
-			$contactstatic = new Contact($db);
-			$contactstatic->fetch($socpeople_id);
-			if ($contactstatic->email != '') {
-				$sendto[$socpeople_id] = trim($contactstatic->firstname . " " . $contactstatic->lastname) . " <" . $contactstatic->email . ">";
+                        if (preg_match ( "/_third/", $id_receiver )) {
+                        	$id_receiver= preg_replace('/_third/', '', $id_receiver);
+                                $societe = new Societe($db);
+                                $societe->fetch($id_receiver);
+                                $sendto[$id_receiver.'_third'] = $societe->name . " <" . $societe->email . ">";
+                        } elseif (preg_match ( "/_socp/", $id_receiver )) {
+                        	$id_receiver= preg_replace('/_socp/', '', $id_receiver);
+                                if (!empty($id_receiver)) {
+                                	$contactstatic = new Contact($db);
+                                        $contactstatic->fetch($id_receiver);
+                                        if ($contactstatic->email != '') {
+                                        	$sendto[$id_receiver.'_socp'] = trim($contactstatic->firstname . " " . $contactstatic->lastname) . " <" . $contactstatic->email . ">";
+                                        }
+                        	}
+                        } else {
+				$contactstatic = new Contact($db);
+				$contactstatic->fetch($id_receiver);
+				if ($contactstatic->email != '') {
+					$sendto[$id_receiver] = trim($contactstatic->firstname . " " . $contactstatic->lastname) . " <" . $contactstatic->email . ">";
+				}
 			}
 		}
 	}
@@ -1699,6 +1715,13 @@ if (! empty($id)) {
 							$style_mesg = 'warnings';
 						}
 					}
+				}
+
+				if(!empty($socid)) {
+					$client = new Societe($db);
+					$client->fetch($socid);
+	                                $withto[$client->id . '_third'] = $client->name . ' - ' . $client->email;
+        	                        $withtoname[$client->id] = $client->name;
 				}
 
 				// Trainee List
