@@ -601,7 +601,7 @@ function show_fac($file, $socid, $mdle) {
 			foreach ( $order_array as $key => $val ) {
 				$commande_static = new Commande($db);
 				$commande_static->fetch($key);
-				if ($commande_static->statut == 1) {
+				if ($commande_static->statut !== 0) {
 					$legende = $langs->trans("AgfFactureAddFacFromOrder") . ' ' . $val;
 					if (DOL_VERSION < 6.0) {
 						$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
@@ -1005,7 +1005,7 @@ function document_send_line($intitule, $mdle, $socid = 0, $nom_courrier = '') {
 		} else
 			print $langs->trans('AgfDocNotDefined');
 		print '</td></tr>' . "\n";
-	    
+
 	} elseif ($mdle == 'attestationpresencetraining') {
     	print '<td style="border-left:0px; width:200px"  align="right">';
     	// Check if file exist
