@@ -61,18 +61,18 @@ llxHeader('', $langs->trans('AgfMenuReportCA'), '', '', '', '', $extrajs, $extra
  * View
  */
 
-$head = agf_report_by_customer_prepare_head(implode('&amp;', $_REQUEST));
+$head = agf_report_calendar_by_customer_prepare_head(implode('&amp;', $_REQUEST));
 dol_fiche_head($head, 'help', $langs->trans("AgfMenuReportByCustomer"), 0, 'bill');
 
 
 print '<h2>'.$langs->trans('AgfReportCAHelpAvailableFilters').'</h2>';
 
-$TFilters = array('AgfRptInvoice', 'AgfRptSession', 'Company', 'ParentCompany', 'AgfTypeRequester', 'SalesRepresentatives', 'Type', 'Status');
+$TFilters = array('Company', 'AgfRptSession');
 
 print '<table class="centpercent">';
 
 foreach($TFilters as $filterKey) {
-	print '<tr><td class="titlefieldcreate">'.$langs->trans($filterKey).'</td><td>'.$langs->trans('AgfReportUserHelpFilter'.$filterKey).'</td></tr>';
+	print '<tr><td class="titlefieldcreate">'.$langs->trans($filterKey).'</td><td>'.$langs->trans('AgfReportUserHelpCalendarFilter'.$filterKey).'</td></tr>';
 }
 
 print '</table>';
@@ -81,9 +81,9 @@ print '</table>';
 
 print '<h2>'.$langs->trans('AgfReportUserHelpReportStructure').'</h2>';
 
-$imghelp = '<img  src="'.dol_buildpath('/agefodd/img/report_by_customer_help.png', 1).'"/>';
+$imghelp = '<img  src="'.dol_buildpath('/agefodd/img/report_calendar_by_customer_help.png', 1).'"/>';
 
-$TExplainations = array(1 => 'LineExported', 2 =>'ParticipantList', 3 => 'CaTotals', 4 => 'CaTotalsSum', 5 => 'Recap');
+$TExplainations = array(1 => 'LineExported', 2 =>'ParticipantList', 3 => 'modalites', 4 => 'DetailMois', 5 => 'Recap');
 $i = 1;
 
 print $imghelp;
@@ -93,7 +93,7 @@ print '<table class="centpercent">';
 
 foreach($TExplainations as $i => $explaination) {
 	print '<tr>';
-	print '<td style="width:30px" valign="top" >'.$i.'</td><td>'.$langs->trans('AgfReportUserHelpExplaination'.$explaination).'</td></tr>';
+	print '<td style="width:30px" valign="top" >'.$i.'</td><td>'.$langs->trans('AgfReportUserCalendarHelpExplaination'.$explaination).'</td></tr>';
 
 }
 
