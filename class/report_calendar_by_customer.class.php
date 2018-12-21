@@ -177,7 +177,8 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			foreach ( $this->lines as $line ) {
 			    if (!empty($refsession) && $refsession != $line->refsession)
 			    {
-			        $result = $this->write_line_total($array_sub_total);
+			        $result = $this->write_line_total($array_sub_trainee);
+			        $result = $this->write_line_total($array_sub_total, '3d85c6');
 			        if ($result < 0) {
 			            return $result;
 			        }
@@ -202,10 +203,13 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			    if ($refsession != $line->refsession) $displayref = true;
 			    if ($lasttrainee != $line->stagiaire)
 			    {
+			        if (!empty($lasttrainee)) $result = $this->write_line_total($array_sub_trainee);
 			        $displaytraineename = true;
 			        $lasttrainee = $line->stagiaire;
 			        
 			        $total_reste = $line->total_reste;
+			        
+			        $array_sub_trainee = array();
 			    }
 			    
 			    // Use to break on session reference
@@ -217,7 +221,10 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			    $array_sub_total[0] = $line->refsession;
 
 			    // nom du stagiaire
-			    if ($displaytraineename) $line_to_output[1] = $line->stagiaire;
+			    if ($displaytraineename){
+			        $line_to_output[1] = $line->stagiaire;
+			        $array_sub_trainee[1] = $line->stagiaire;
+			    }
 			    else $line_to_output[1] = '';
 			    
                 // modalité pédagogique
@@ -229,32 +236,40 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			    {
 			        
 			        $line_to_output[$i] = $type['presence'];
+			        $array_sub_trainee[$i] += $type['presence'];
+			        $array_sub_total[$i] += $type['presence'];
 			        $i++;
 			        
 			        $line_to_output[$i] = $type['missing'];
+			        $array_sub_trainee[$i] += $type['missing'];
+			        $array_sub_total[$i] += $type['missing'];
 			        $i++;
 			        
 			        $line_to_output[$i] = $type['canceled'];
+			        $array_sub_trainee[$i] += $type['canceled'];
+			        $array_sub_total[$i] += $type['canceled'];
 			        $i++;
 			        
 			    }
 			    
 			    // total
 			    $line_to_output[$i] = $line->total_heures;
+			    $array_sub_trainee[$i] += $line->total_heures;
 			    $array_sub_total[$i]+= $line->total_heures;
 			    $i++;
 
 			    // total restant
 			    $total_reste -= $line->total_heures;
 			    $line_to_output[$i] = $total_reste;
-			    $array_sub_total[$i]+= $total_reste;
+			    $array_sub_trainee[$i] = $total_reste;
 			    $i++;
  			    
 				$this->write_line($line_to_output, 0);
 				
 			}
 			
-			$result = $this->write_line_total($array_sub_total);
+			$result = $this->write_line_total($array_sub_trainee);
+			$result = $this->write_line_total($array_sub_total, '3d85c6');
 			if ($result < 0) {
 				return $result;
 			}
