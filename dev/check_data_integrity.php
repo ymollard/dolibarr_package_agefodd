@@ -572,14 +572,31 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+//Agefoddsessioncontact
+
+
+$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_contact WHERE fk_agefodd_contact NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_contact)';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session contact'.$obj->rowid.' dans '.MAIN_DB_PREFIX.'agefodd_session_contact qui non un contact agefodd qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_contact WHERE fk_agefodd_contact NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_contact)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
 
 //Collation, PS: il existe aussi un script dans abricot pour ça.
-$sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;\') AS    mySQL
+$sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET utf8 COLLATE '.$dolibarr_main_db_collation.';\') AS    mySQL
         FROM INFORMATION_SCHEMA.TABLES
         WHERE TABLE_SCHEMA= "'.$dolibarr_main_db_name.'"
                 AND TABLE_TYPE="BASE TABLE"
-                AND TABLE_COLLATION != \''.$dolibarr_main_db_collation.'\'
-                AND TABLE_NAME LIKE \''.MAIN_DB_PREFIX.'agefodd%\' ';
+                AND TABLE_COLLATION != \''.$dolibarr_main_db_collation.'\'' ;
+$sql .= '                AND (TABLE_NAME LIKE \''.MAIN_DB_PREFIX.'agefodd%\' OR TABLE_NAME = \''.MAIN_DB_PREFIX.'c_civility\')';
 //echo $sql;
 $resql = $db->query($sql);
 if ($resql) {
@@ -601,9 +618,15 @@ if ($resql) {
 }
 
 
-_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur');
-_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier');
-_datec_check(MAIN_DB_PREFIX.'agefodd_formateur_category');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'date_session');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'date_session');
+_datec_check(MAIN_DB_PREFIX.'agefodd_formateur_category', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_adminsitu', 'dated');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_adminsitu', 'datea');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'heured');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'heuref');
 
 print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';
 
@@ -611,11 +634,11 @@ llxFooter();
 $db->close();
 
 
-function _datec_check($table){
+function _datec_check($table, $datefield){
 
     global $db;
     // datec agefodd_session_formateur calendrier
-    $sql = 'SELECT COUNT(*) as nb FROM '.$table.' WHERE CAST(datec AS CHAR(20)) = \'0000-00-00 00:00:00\';';
+    $sql = 'SELECT COUNT(*) as nb FROM '.$table.' WHERE CAST('.$datefield.' AS CHAR(20)) = \'0000-00-00 00:00:00\';';
     //echo $sql;
     $resql = $db->query($sql);
     if ($resql) {
@@ -626,8 +649,8 @@ function _datec_check($table){
 
                 print 'Certaines lignes de la table '.$table.' utilisent une valeur de date incompatible ';
                 print '<BR>Suggestion de correction';
-                print '<BR>ALTER TABLE '.$table.' CHANGE datec datec DATETIME NULL DEFAULT NULL;';
-                print '<BR>UPDATE '.$table.' SET datec = NULL   WHERE CAST(datec AS CHAR(20)) = \'0000-00-00 00:00:00\'; <BR><BR><BR>';
+                print '<BR>ALTER TABLE '.$table.' CHANGE '.$datefield.' '.$datefield.' DATETIME NULL DEFAULT NULL;';
+                print '<BR>UPDATE '.$table.' SET '.$datefield.' = NULL   WHERE CAST('.$datefield.' AS CHAR(20)) = \'0000-00-00 00:00:00\'; <BR><BR><BR>';
 
             }
 
