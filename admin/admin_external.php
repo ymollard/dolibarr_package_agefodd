@@ -29,6 +29,7 @@ if (! $res) die("Include of main fails");
 require_once '../class/agefodd_formation_catalogue.class.php';
 require_once '../class/agefodd_session_admlevel.class.php';
 require_once '../class/agefodd_calendrier.class.php';
+require_once '../class/agefodd_session_calendrier.class.php';
 require_once '../class/html.formagefodd.class.php';
 require_once '../lib/agefodd.lib.php';
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
@@ -63,7 +64,12 @@ if ($action == 'setvarother') {
         if ($res < 0) $error++;
         
     }
-
+    
+    // Vue éclatée des heures participant sur la liste des sessions
+    $heuresEclateeExclues = serialize(GETPOST('AGF_EA_ECLATE_HEURES_EXCLUES'));
+    $res = dolibarr_set_const($db, 'AGF_EA_ECLATE_HEURES_EXCLUES', $heuresEclateeExclues, 'chaine', 0, '', $conf->entity);
+    if ($res < 0) $error++;
+    
     if (! $error) {
         setEventMessage($langs->trans("SetupSaved"), 'mesgs');
     } else {
@@ -185,12 +191,43 @@ if(!empty($conf->externalaccess->enabled))
     print '<td></td>';
     print '</tr>';
     $var=!$var;
+    
+    // status à exclure des heures éclatées
+    print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHeuresDeclareesEclateesStatusExclus") . '</td>';
+    print '<td align="left">';
+    //AGF_EA_ECLATE_HEURES_EXCLUES
+    $arrval = array (
+        Agefodd_sesscalendar::STATUS_DRAFT => $langs->trans('AgfStatusCalendar_previsionnel'),
+        Agefodd_sesscalendar::STATUS_CONFIRMED => $langs->trans('AgfStatusCalendar_confirmed'),
+        Agefodd_sesscalendar::STATUS_CANCELED => $langs->trans('AgfStatusCalendar_canceled'),
+        Agefodd_sesscalendar::STATUS_MISSING => $langs->trans('AgfStatusCalendar_missing'),
+    );
+    print $form->multiselectarray('AGF_EA_ECLATE_HEURES_EXCLUES', $arrval, unserialize($conf->global->AGF_EA_ECLATE_HEURES_EXCLUES));
+    
+    // Petit hack parce qu'évidemment le multiselectarray ne prend pas en compte le valeur 0 => STATUS_DRAFT
+    if (is_array(unserialize($conf->global->AGF_EA_ECLATE_HEURES_EXCLUES)) && in_array(0, unserialize($conf->global->AGF_EA_ECLATE_HEURES_EXCLUES)))
+    {
+        ?>
+        <script>
+		$(document).ready(function(){
+			$('#AGF_EA_ECLATE_HEURES_EXCLUES > option[value=0]').attr('selected', true);
+			var first = $('#AGF_EA_ECLATE_HEURES_EXCLUES').next().find('ul li').first();
+			$('<li class="select2-selection__choice" title="Prévisionnel"><span class="select2-selection__choice__remove" role="presentation">×</span>Prévisionnel</li>').insertBefore(first);
+		});
+        </script>
+        <?php
+    }
+    
+    print '</td>';
+    print '<td></td>';
+    print '</tr>';
+    $var=!$var;
 }
 
-if (empty($conf->use_javascript_ajax))
-{
+// if (empty($conf->use_javascript_ajax))
+// {
     print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
-}
+// }
 
 if (!empty($conf->use_javascript_ajax) && empty($conf->global->AGF_EACCESS_ACTIVATE))
 {

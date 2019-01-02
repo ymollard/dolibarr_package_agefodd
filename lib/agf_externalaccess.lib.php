@@ -140,7 +140,7 @@ function getPageViewSessionListExternalAccess()
 			$duree_declared = Agsession::getStaticSumDureePresence($item->rowid, null, $filters);
 			if (!empty($duree_declared) && !empty($conf->global->AGF_EA_ECLATE_HEURES_PAR_TYPE))
 			{
-			    $duree_exploded = Agsession::getStaticSumExplodeDureePresence($item->rowid, true);
+			    $duree_exploded = Agsession::getStaticSumExplodeDureePresence($item->rowid);
 			    
 			    if (count($duree_exploded))
 			    {

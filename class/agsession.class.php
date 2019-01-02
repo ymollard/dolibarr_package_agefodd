@@ -376,9 +376,9 @@ class Agsession extends CommonObject
 		return $duree;
 	}
 
-	public static function getStaticSumExplodeDureePresence($fk_agession, $excludeCanceled = false)
+	public static function getStaticSumExplodeDureePresence($fk_agession)
 	{
-	    global $db;
+	    global $db, $conf;
 
 	    $sql = "SELECT
                 SUM(assh.heures) as heures, IF(c.label IS NULL, 'Autre', c.label) as type
@@ -388,7 +388,11 @@ class Agsession extends CommonObject
             LEFT JOIN llx_c_agefodd_session_calendrier_type as c ON c.code = agfsc.calendrier_type
             WHERE
                 fk_session = ".$fk_agession;
-	    if ($excludeCanceled) $sql .= " AND agfsc.status <> '-1'";
+	    $excluded = unserialize($conf->global->AGF_EA_ECLATE_HEURES_EXCLUES);
+	    if (is_array($excluded) && !empty($excluded))
+	    {
+	        $sql .= " AND agfsc.status NOT IN ('". implode("','", $excluded)."')";
+	    }
 	    $sql.=" GROUP BY agfsc.calendrier_type";
 
 	    $TDuree = array();
