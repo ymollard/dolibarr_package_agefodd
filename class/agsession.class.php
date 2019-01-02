@@ -3679,6 +3679,8 @@ class Agsession extends CommonObject
 			$old_date = 0;
 			$duree = 0;
 			foreach($calendrier->lines as $line_cal) {
+			    
+			    if ($line_cal->status == Agefodd_sesscalendar::STATUS_CANCELED) continue; // ne pas prendre en compte les créneaux annulés
 				if ($i > 6) {
 					$styledisplay = " style=\"display:none\" class=\"otherdate\" ";
 				} else {
