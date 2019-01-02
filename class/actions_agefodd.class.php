@@ -352,6 +352,7 @@ class ActionsAgefodd
 
 								if (in_array($status, array(Agefoddsessionformateurcalendrier::STATUS_DRAFT, Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, Agefoddsessionformateurcalendrier::STATUS_MISSING, Agefoddsessionformateurcalendrier::STATUS_CANCELED)))
 								{
+								    $old_status = $agf_calendrier_formateur->status;
 									$agf_calendrier_formateur->status = $status;
 								}
 								else $agf_calendrier_formateur->status = 0;
@@ -410,6 +411,13 @@ class ActionsAgefodd
 										if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING)
 										{
 											$duree = $duree_session;
+										}
+										// si on passe le status du créneaux en confirmer sans saisir de temps stagiaire, on met le max
+										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED
+										    && $agf_calendrier_formateur->status !== $old_status
+										    && $THour[$stagiaire->id] == '00:00')
+										{
+										    $duree = $duree_session;
 										}
 										// Si le statut passe à annulé, les heures participants doivent passer à 0 car la session n'a pas eu lieu
 										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED)
