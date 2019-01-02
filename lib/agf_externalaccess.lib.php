@@ -124,10 +124,23 @@ function getPageViewSessionListExternalAccess()
 			$out.= ' <td data-order="'.$item->dated.'" data-search="'.dol_print_date($item->dated, '%d/%m/%Y').'" >'.dol_print_date($item->dated, '%d/%m/%Y').'</td>';
 			$out.= ' <td data-order="'.$item->datef.'" data-search="'.dol_print_date($item->datef, '%d/%m/%Y').'" >'.dol_print_date($item->datef, '%d/%m/%Y').'</td>';
 			$out.= ' <td class="text-center" data-order="'.$item->duree_session.'" data-session="'.$item->duree_session.'"  >'.$item->duree_session.'</td>';
-			$duree_declared = Agsession::getStaticSumDureePresence($item->rowid);
+			
+			$filters['excludeCanceled'] = true;
+			$agsession->fetchTrainers($item->rowid);
+			$trainerinsessionid = 0;
+			if (!empty($agsession->TTrainer))
+			{
+			    foreach ($agsession->TTrainer as $trainer)
+			    {
+			        if ($trainer->id == $formateur->id) $trainerinsessionid = $trainer->agefodd_session_formateur->id;
+			    }
+			}
+			
+			if (!empty($trainerinsessionid)) $filters['formateur'] = $trainerinsessionid;
+			$duree_declared = Agsession::getStaticSumDureePresence($item->rowid, null, $filters);
 			if (!empty($duree_declared) && !empty($conf->global->AGF_EA_ECLATE_HEURES_PAR_TYPE))
 			{
-			    $duree_exploded = Agsession::getStaticSumExplodeDureePresence($item->rowid);
+			    $duree_exploded = Agsession::getStaticSumExplodeDureePresence($item->rowid, true);
 			    
 			    if (count($duree_exploded))
 			    {
@@ -403,6 +416,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 
 	foreach ($agf_calendrier_formateur->lines as &$line)
 	{
+	    if ($line->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED) continue;
 		$duree_scheduled += ($line->heuref - $line->heured) / 60 / 60;
 	}
 	

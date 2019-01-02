@@ -326,25 +326,57 @@ class Agsession extends CommonObject
 			return $this->id;
 		}
 	}
-	public static function getStaticSumDureePresence($fk_agsession, $fk_stagiaire = null) {
+	public static function getStaticSumDureePresence($fk_agsession, $fk_stagiaire = null, $filters = array()) {
 		global $db;
 
 		$duree = 0;
-
+		
+		$qualified = array();
+		
+		if (!empty($filters))
+		{
+		    $sql = "SELECT DISTINCT s.rowid";
+		    $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier as s";
+		    if (isset($filters['formateur']))
+		    {
+		        $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur as sf ON sf.fk_session = s.fk_agefodd_session";
+		        $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur_calendrier as fc on fc.fk_agefodd_session_formateur = sf.rowid";
+		    }
+		    $sql.= " WHERE s.fk_agefodd_session = ". $db->escape($fk_agsession);
+		    if (isset($filters['formateur']))
+		    {
+		        $sql.= " AND sf.rowid = ".$db->escape($filters['formateur']);
+		    }
+		    if (isset($filters['excludeCanceled'])) $sql.= " AND s.status <> '-1'";
+		    
+		    $resql = $db->query($sql);
+		    if ($resql) {
+		        while ($obj = $db->fetch_object($resql)) $qualified[] = $obj->rowid;
+		    }
+		}
+		
 		$agfssh = new Agefoddsessionstagiaireheures($db);
 		$agfssh->fetchAllBy($fk_agsession, 'fk_session');
 		if (! empty($agfssh->lines)) {
 			foreach ( $agfssh->lines as &$line ) {
-				if (! empty($fk_stagiaire) && $line->fk_stagiaire != $fk_stagiaire)
-					continue;
-				$duree += $line->heures;
+				if (! empty($fk_stagiaire) && $line->fk_stagiaire != $fk_stagiaire) continue;
+				
+				//if ($excludeCanceled && in_array($line->fk_calendrier, $canceled)) continue;
+				
+				if (!empty($filters))
+				{
+				    if (in_array($line->fk_calendrier, $qualified)){
+				        $duree += $line->heures;
+				    }
+				}
+				else $duree += $line->heures;
 			}
 		}
 
 		return $duree;
 	}
 
-	public static function getStaticSumExplodeDureePresence($fk_agession)
+	public static function getStaticSumExplodeDureePresence($fk_agession, $excludeCanceled = false)
 	{
 	    global $db;
 
@@ -355,9 +387,9 @@ class Agsession extends CommonObject
             LEFT JOIN llx_agefodd_session_calendrier as agfsc ON assh.fk_calendrier = agfsc.rowid
             LEFT JOIN llx_c_agefodd_session_calendrier_type as c ON c.code = agfsc.calendrier_type
             WHERE
-                fk_session = ".$fk_agession."
-
-            GROUP BY agfsc.calendrier_type";
+                fk_session = ".$fk_agession;
+	    if ($excludeCanceled) $sql .= " AND agfsc.status <> '-1'";
+	    $sql.=" GROUP BY agfsc.calendrier_type";
 
 	    $TDuree = array();
 
