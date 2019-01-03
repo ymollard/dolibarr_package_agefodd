@@ -5190,10 +5190,8 @@ class Agsession extends CommonObject
 			$stagiaires->fetch_stagiaire_per_session($this->id,$socid);
 			$this->TStagiairesSessionSoc = $stagiaires->lines;
 		}
-		
+
 		if(empty($this->TStagiairesSessionSocPresent) && !empty($this->TStagiairesSessionSoc)) {
-		    dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-		    $stagiaires = new Agefodd_session_stagiaire($db);
 		    if (is_array($this->TStagiairesSessionSoc) && count($this->TStagiairesSessionSoc)>0) {
 		        foreach($this->TStagiairesSessionSoc as $linesta) {
 		            if (($linesta->status_in_session == 3 || $linesta->status_in_session == 4)) {
@@ -5202,7 +5200,6 @@ class Agsession extends CommonObject
 		        }
 		    }
 		}
-
 		//Trainee link to the company convention
 		if (!empty($this->contactname)) {
 			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;

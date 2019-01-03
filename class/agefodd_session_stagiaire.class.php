@@ -105,7 +105,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_stagiaire_per_session", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-            
+
 		    $num = $this->db->num_rows($resql);
             if ($num){
                 $obj = $this->db->fetch_object($resql);
@@ -123,9 +123,9 @@ class Agefodd_session_stagiaire extends CommonObject {
     			$this->status_in_session = $obj->status_in_session;
     			$this->hour_foad= $obj->hour_foad;
             }
-            
+
 			$this->db->free($resql);
-			
+
 		    return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -133,7 +133,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	public function fetch_by_trainee($sessid, $traineeid) {
 	    $sql = "SELECT";
 	    $sql .= " rowid, fk_session_agefodd, fk_stagiaire, fk_agefodd_stagiaire_type, fk_user_author,fk_user_mod, datec, status_in_session";
@@ -144,15 +144,15 @@ class Agefodd_session_stagiaire extends CommonObject {
 	    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire";
 	    $sql .= " WHERE fk_session_agefodd = " . $sessid;
 	    $sql .= " AND fk_stagiaire = " . $traineeid;
-	    
+
 	    dol_syslog(get_class($this) . "::fetch_stagiaire_per_session", LOG_DEBUG);
 	    $resql = $this->db->query($sql);
 	    if ($resql) {
-	        
+
 	        $num = $this->db->num_rows($resql);
 	        if ($num){
 	            $obj = $this->db->fetch_object($resql);
-	        
+
     	        $this->id = $obj->rowid;
     	        $this->fk_session_agefodd = $obj->fk_session_agefodd;
     	        $this->fk_stagiaire = $obj->fk_stagiaire;
@@ -166,9 +166,9 @@ class Agefodd_session_stagiaire extends CommonObject {
     	        $this->status_in_session = $obj->status_in_session;
     	        $this->hour_foad= $obj->hour_foad;
 	        }
-	        
+
 	        $this->db->free($resql);
-	        
+
 	        return $num;
 	    } else {
 	        $this->error = "Error " . $this->db->lasterror();
@@ -284,6 +284,16 @@ class Agefodd_session_stagiaire extends CommonObject {
 
 				$line->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
 
+				require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+
+				$extrafields = new ExtraFields($this->db);
+				$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
+				if (count($extralabels) > 0) {
+					dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+					$stagiaire = new Agefodd_stagiaire($this->db);
+					$result = $stagiaire->fetch($line->id);
+					$line->agefodd_stagiaire=$stagiaire;
+				}
 				$this->lines[$i] = $line;
 				// dol_syslog(get_class($this) . "::fetch_stagiaire_per_session line=".var_export($line,true));
 				$i ++;
@@ -377,6 +387,15 @@ class Agefodd_session_stagiaire extends CommonObject {
 							}
 
 							$line->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
+
+							$extrafields = new ExtraFields($this->db);
+							$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
+							if (count($extralabels) > 0) {
+								dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+								$stagiaire = new Agefodd_stagiaire($this->db);
+								$result = $stagiaire->fetch($line->id);
+								$line->agefodd_stagiaire=$stagiaire;
+							}
 
 							$this->lines[$line->stagerowid] = $line;
 
@@ -518,7 +537,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Retour la liste des financements possible pour un stagiaire
 	 *
@@ -526,32 +545,32 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 */
 	public function fetch_type_fin($filter = '') {
 	    global $conf, $langs;
-	    
+
 	    $sql = "SELECT t.rowid, t.intitule";
 	    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as t";
 	    if (! empty($filter)) {
 	        $sql .= ' WHERE ' . $filter;
 	    }
 	    $sql .= " ORDER BY t.sort";
-	    
+
 	    dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 	    $result = $this->db->query($sql);
 	    if ($result) {
-	        
+
 	        $TTypes = array();
-	        
+
 	        $num = $this->db->num_rows($result);
-	        
+
 	        if ($num) {
 	            while ( $obj = $this->db->fetch_object($result) ) {
-	                
+
 	                $label = stripslashes($obj->intitule);
-	                
+
 	                $TTypes[$obj->rowid] = $label;
-	                
+
 	            }
 	        }
-	        
+
 	        $this->db->free($result);
 	        return $TTypes;
 	    } else {
@@ -1065,7 +1084,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 /**
  * Session Trainee Link Class
  */
-class AgfTraineeSessionLine {
+class AgfTraineeSessionLine extends CommonObject {
 	public $stagerowid;
 	public $sessid;
 	public $id;
