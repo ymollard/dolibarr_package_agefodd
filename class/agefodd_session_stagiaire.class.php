@@ -307,6 +307,16 @@ class Agefodd_session_stagiaire extends CommonObject {
 
 				$line->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
 
+				require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+
+				$extrafields = new ExtraFields($this->db);
+				$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
+				if (count($extralabels) > 0) {
+					dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+					$stagiaire = new Agefodd_stagiaire($this->db);
+					$result = $stagiaire->fetch($line->id);
+					$line->agefodd_stagiaire=$stagiaire;
+				}
 				$this->lines[$i] = $line;
 				// dol_syslog(get_class($this) . "::fetch_stagiaire_per_session line=".var_export($line,true));
 				$i ++;
@@ -400,6 +410,15 @@ class Agefodd_session_stagiaire extends CommonObject {
 							}
 
 							$line->fk_agefodd_stagiaire_type = $obj->fk_agefodd_stagiaire_type;
+
+							$extrafields = new ExtraFields($this->db);
+							$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
+							if (count($extralabels) > 0) {
+								dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+								$stagiaire = new Agefodd_stagiaire($this->db);
+								$result = $stagiaire->fetch($line->id);
+								$line->agefodd_stagiaire=$stagiaire;
+							}
 
 							$this->lines[$line->stagerowid] = $line;
 
@@ -1087,7 +1106,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 /**
  * Session Trainee Link Class
  */
-class AgfTraineeSessionLine {
+class AgfTraineeSessionLine extends CommonObject {
 	public $stagerowid;
 	public $sessid;
 	public $id;
