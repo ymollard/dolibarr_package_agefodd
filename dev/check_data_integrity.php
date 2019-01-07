@@ -595,8 +595,8 @@ $sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET u
         FROM INFORMATION_SCHEMA.TABLES
         WHERE TABLE_SCHEMA= "'.$dolibarr_main_db_name.'"
                 AND TABLE_TYPE="BASE TABLE"
-                AND TABLE_COLLATION != \''.$dolibarr_main_db_collation.'\'
-                AND TABLE_NAME LIKE \''.MAIN_DB_PREFIX.'agefodd%\' ';
+                AND TABLE_COLLATION != \''.$dolibarr_main_db_collation.'\'' ;
+$sql .= '                AND (TABLE_NAME LIKE \''.MAIN_DB_PREFIX.'agefodd%\' OR TABLE_NAME = \''.MAIN_DB_PREFIX.'c_civility\')';
 //echo $sql;
 $resql = $db->query($sql);
 if ($resql) {

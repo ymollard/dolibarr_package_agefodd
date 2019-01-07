@@ -5227,6 +5227,16 @@ class Agsession extends CommonObject
 			$stagiaires->fetch_stagiaire_per_session($this->id, $socid);
 			$this->TStagiairesSessionSoc = $stagiaires->lines;
 		}
+		
+		if(empty($this->TStagiairesSessionSocPresent) && !empty($this->TStagiairesSessionSoc)) {
+		    if (is_array($this->TStagiairesSessionSoc) && count($this->TStagiairesSessionSoc)>0) {
+		        foreach($this->TStagiairesSessionSoc as $linesta) {
+		            if (($linesta->status_in_session == 3 || $linesta->status_in_session == 4)) {
+		                $this->TStagiairesSessionSocPresent[]=$linesta;
+		            }
+		        }
+		    }
+		}
 
 		// Trainee link to the company convention
 		if (! empty($this->contactname)) {

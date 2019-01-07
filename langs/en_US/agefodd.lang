@@ -1,4 +1,4 @@
-# Language file - fr_FR - agefodd
+# Language file - en_US - agefodd
 CHARSET=UTF-8
 Module103000Name=Training
 Module103000Desc=Training management in Dolibarr Assistant
@@ -418,8 +418,7 @@ AgfConvArt4_3=The training organization declare to be subject to VAT depeding on
 AgfConvArt5_1=The invoice corresponding to the sum previously indicated will be sent by the training organization to the customer%s, who will pay the amount on the organization account.
 AgfConvArt6_1=In law enforcement, it is agreed between the signatories of this agreement, that, in case of total or partial lack of completion of the training service, the training organization will refund the co-contractor the sums unduly received. That is to say, the amounts that will not match wth the realization of the training service.
 AgfConvArt6_2=The total non-completion of the action due to the lack of provider or the renunciation of the customer does not imply an invoice in respect of continuing vocational training
-AgfConvArt6_3=La réalisation partielle de la prestation de formation, imputable ou non à l'organisme de formation ou à son client, ne donnera lieu qu'à facturation, au titre de la formation professionnelle continue, des sommes correspondantes à la réalisation effective de la prestation.
-The partial implementation of the training provision, attributable or not to the training organization or its customer will result only in respect of continuing vocational training of a billing of the amounts corresponding to the actual performance of the service.
+AgfConvArt6_3=The partial implementation of the training provision, attributable or not to the training organization or its customer will result only in respect of continuing vocational training of a billing of the amounts corresponding to the actual performance of the service.
 AgfConvArt6_4=In case of cancellation by the customer within 5 days before the start of the action referred to in Article 1, or training courses abandonment by one or more trainees, the organization will hold on the total cost the sums he has actually spent or committed for the implementation of the said action in accordance with the law.
 AgfConvArt7_1=In case of dispute between the two parties, they agree to seek an amicable solution prior.
 AgfConvArt7_2=In case of failure of a negotiated solution, the parties expressly agree to assign exclusive jurisdiction to the courts of the State agency which depends
@@ -525,8 +524,7 @@ AgfPDFFicheEval1=Session of
 AgfPDFFicheEval2=trainers:
 AgfPDFFicheEval3=trainer:
 AgfPDFFicheEval4=Are the objectives achieved?
-AgfPDFFicheEval5=
-Indicate your level of agreement to each statement presented below using the following scale: for each statement, indicate the figure corresponds most to your discretion:
+AgfPDFFicheEval5=Indicate your level of agreement to each statement presented below using the following scale: for each statement, indicate the figure corresponds most to your discretion:
 AgfPDFFicheEval6=I strongly disagree
 AgfPDFFicheEval7=In partial disagreement
 AgfPDFFicheEval8=Somewhat agree
