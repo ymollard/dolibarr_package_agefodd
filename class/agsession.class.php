@@ -3205,9 +3205,9 @@ class Agsession extends CommonObject
 			$sql .= " ON propal_dol.rowid = ord_inv.fk_element AND  ord_inv.element_type='propal'";
 			$sql .= ' AND propal_dol.rowid=' . $propalid;
 		}
-		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
-		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne,ord_inv.rowid";
+		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne, ord_inv.rowid";
 
 		if (! empty($invoiceid)) {
 			$sql .= " ,invoice.facnumber ";
@@ -3315,7 +3315,7 @@ class Agsession extends CommonObject
 				$sql .= " AND fourninvoice.rowid = ".$fourninvoiceid;
 				$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
 				$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
-				$sql .= " ,fourninvoice.ref ";
+				$sql .= " ,fourninvoice.ref, ord_inv.rowid ";
 				if (!empty($sortfield)) {
 					$sql .= " ORDER BY $sortfield $sortorder ";
 				}
