@@ -3065,7 +3065,7 @@ class Agsession extends CommonObject
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 
-		dol_syslog(get_class($this) . "::fetch_all_by_soc", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__. ' '.$filter['type_affect'], LOG_DEBUG);
 		$resql = $this->db->query($sql);
 
 		if ($resql) {

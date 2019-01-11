@@ -73,6 +73,7 @@ if (! empty($link_element)) {
 }
 
 $langs->load('bills');
+$langs->load('orders');
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter")) {
@@ -775,7 +776,7 @@ if (!empty($search_fournorderid)) {
 			INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf ON sf.fk_session = s.rowid
 			INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur
 			INNER JOIN " . MAIN_DB_PREFIX . "socpeople as socpf ON f.fk_socpeople = socpf.rowid AND socpf.fk_soc=".$object_socid."
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)";
+            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,1)";
 	if (is_array($excludeSessions) && count($excludeSessions)>0) {
 		$sql .=" AND s.rowid NOT IN (".implode(",", $excludeSessions).")";
 	}
@@ -786,7 +787,7 @@ if (!empty($search_fournorderid)) {
 	if($resql){
 		while ($obj = $db->fetch_object($resql)){
 			!empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
-			$sessions [$obj->rowid] = ' - '.$obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+			$sessions [$obj->rowid] = $obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
 		}
 	}
 
@@ -799,7 +800,7 @@ if (!empty($search_fournorderid)) {
             FROM ".MAIN_DB_PREFIX."agefodd_session as s
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)";
+            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,1)";
 		if (is_array($excludeSessions) && count($excludeSessions)>0) {
 			$sql .=" AND s.rowid NOT IN (".implode(",", $excludeSessions).")";
 		}
@@ -810,7 +811,7 @@ if (!empty($search_fournorderid)) {
 		if($resql){
 			while ($obj = $db->fetch_object($resql)){
 				!empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
-				$sessions [$obj->rowid] = ' - '.$obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+				$sessions [$obj->rowid] = $obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
 			}
 		}
 	}
@@ -829,7 +830,7 @@ if (!empty($search_fournorderid)) {
     	$sql2 .= " AND sess.rowid NOT IN (".implode(",", $session_array_id).")";
     }
 
-    $sql2 .= " ORDER BY sess.rowid ASC";
+    $sql2 .= " ORDER BY sess.dated  ASC";
 
     $resql2 = $db->query($sql2);
     if($resql2){
@@ -937,7 +938,7 @@ elseif (empty($search_fourninvoiceref)) {
             FROM ".MAIN_DB_PREFIX."agefodd_session as s
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)";
+            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,1) ";
 	    if (is_array($excludeSessions) && count($excludeSessions)>0) {
 	    	$sql .=" AND s.rowid NOT IN (".implode(",", $excludeSessions).")";
 	    }
@@ -979,12 +980,11 @@ elseif (empty($search_fourninvoiceref)) {
         LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = sp.fk_soc
         LEFT JOIN ".MAIN_DB_PREFIX."user as u ON f.fk_user = u.rowid
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formateur_type as st ON st.rowid = sf.fk_agefodd_formateur_type
-        WHERE soc.rowid = ".$object_socid;
+        WHERE soc.rowid = ".$object_socid." AND s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,1)";
     if (is_array($session_array_id) && count($session_array_id)>0) {
     	$sql .= " AND s.rowid NOT IN (".implode(",", $session_array_id).") ";
     }
-    $sql .= " ORDER BY s.rowid ASC";
-
+    $sql .= " ORDER BY s.dated ASC";
     $resql = $db->query($sql);
     if($resql){
         while ($obj = $db->fetch_object($resql)){
@@ -995,7 +995,6 @@ elseif (empty($search_fourninvoiceref)) {
     }
 
     // session dont le lieu appartient au tiers
-
     $sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne, s.ref as sessionref
         FROM ".MAIN_DB_PREFIX."agefodd_session as sess
         LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = sess.fk_formation_catalogue
@@ -1007,7 +1006,7 @@ elseif (empty($search_fourninvoiceref)) {
     if (is_array($session_array_id) && count($session_array_id)>0) {
     	$sql2 .= " AND sess.rowid NOT IN (".implode(",", $session_array_id).")";
     }
-    $sql2 .= " ORDER BY sess.rowid ASC";
+    $sql2 .= " ORDER BY sess.dated ASC";
     $resql2 = $db->query($sql2);
     if($resql2){
         while ($obj = $db->fetch_object($resql2)){
