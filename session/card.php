@@ -1737,7 +1737,7 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifyTrainer') . '</a>';
 		}
 
-		if ($user->rights->agefodd->creer && ! $user->rights->agefodd->session->trainer) {
+		if ($user->rights->agefodd->supprimer && ! $user->rights->agefodd->session->trainer) {
 			print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 		} else {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
