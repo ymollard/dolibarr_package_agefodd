@@ -1865,7 +1865,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
     // Other infos
     if ($object->table_element == 'agefodd_formation_catalogue'){ // formation catalogue
 
-        $morehtml.= '<a href="' . dol_buildpath('/agefodd/training/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/training/list.php', 1) . '?restore_lastsearch_values=1">' . $langs->trans("BackToList") . '</a>';
 
         $morehtmlref.='<div class="refidno">';
         $morehtmlref.= $langs->trans("AgfFormIntitule") . ' : ' . $object->intitule . '<br>';
@@ -1875,7 +1875,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
     }  elseif ($object->table_element == 'agefodd_session'){ //session formation
 
-        $morehtml.= '<a href="' . dol_buildpath('/agefodd/session/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/session/list.php', 1) . '?restore_lastsearch_values=1">' . $langs->trans("BackToList") . '</a>';
         $morehtmlref.='<div class="refidno">';
         dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
         $foramtion = new Formation($db);
@@ -1909,7 +1909,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
     } elseif ($object->table_element == 'agefodd_stagiaire'){ // trainee
 
-        $morehtml .= '<a href="' . dol_buildpath('/agefodd/trainee/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
+        $morehtml .= '<a href="' . dol_buildpath('/agefodd/trainee/list.php', 1) . '?restore_lastsearch_values=1">' . $langs->trans("BackToList") . '</a>';
         $morehtmlref.='<div class="refidno">';
 
         $morehtmlref.= $langs->trans('Name').' : ';
@@ -1929,7 +1929,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
     } elseif ($object->table_element == 'agefodd_formateur'){ // trainer
 
-        $morehtml.= '<a href="' . dol_buildpath('/agefodd/trainer/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/trainer/list.php', 1) . '?restore_lastsearch_values=1">' . $langs->trans("BackToList") . '</a>';
 
         $morehtmlref.='<div class="refidno">';
         $morehtmlref.= $langs->trans('Name').' : ' . ucfirst(strtolower($object->civilite)) . ' ' . strtoupper($object->name) . ' ' . ucfirst(strtolower($object->firstname));
@@ -1938,7 +1938,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
     } elseif ($object->table_element == 'agefodd_place'){ // Sites
 
-        $morehtml.= '<a href="' . dol_buildpath('/agefodd/site/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
+        $morehtml.= '<a href="' . dol_buildpath('/agefodd/site/list.php', 1) . '?restore_lastsearch_values=1">' . $langs->trans("BackToList") . '</a>';
 
         $morehtmlref.='<div class="refidno">';
         $morehtmlref.=  $langs->trans("Ref"). ' : ' . $object->ref_interne;
