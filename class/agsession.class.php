@@ -2308,6 +2308,18 @@ class Agsession extends CommonObject
 			foreach ( $filter as $key => $value ) {
 				if (($key == 'YEAR(s.dated)') || ($key == 'MONTH(s.dated)')) {
 					$sql .= ' AND ' . $key . ' IN (' . $value . ')';
+				} elseif (in_array($key, array('s.dated', 's.dated2')) && !empty($filter['s.dated']) && !empty($filter['s.dated2'])) {
+					if ($key == 's.dated') {
+						$sql.= ' AND s.dated BETWEEN \''.$this->db->escape($filter['s.dated']).'\' AND \''.$this->db->escape($filter['s.dated2']).'\'';
+					} else {
+						// do nothing more
+					}
+				} elseif (in_array($key, array('s.datef', 's.datef2')) && !empty($filter['s.datef']) && !empty($filter['s.datef2'])) {
+					if ($key == 's.datef') {
+						$sql.= ' AND s.datef BETWEEN \''.$this->db->escape($filter['s.datef']).'\' AND \''.$this->db->escape($filter['s.datef2']).'\'';
+					} else {
+						// do nothing more
+					}
 				} elseif ($key == 's.dated>') {
 					if ($this->db->type == 'pgsql') {
 						$intervalday = "'" . $value . " DAYS'";
