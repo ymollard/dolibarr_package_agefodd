@@ -2515,13 +2515,14 @@ class modAgefodd extends DolibarrModules
 				{
 					//Sort file array to be sure data is upgrade script are executed in correct order
 					ksort($filetorun);
+					$update_refsession_done = false;
 					foreach($filetorun as $key=>$data)
 					{
 						dol_syslog(get_class($this) . "::_load_tables_agefodd run file from sorted array :" . $data['file'], LOG_DEBUG);
 						$result = run_sql($dir . $data['file'], 1, '', 1);
-
-						if($last_version_install <='3.2' && $data['toversion']>='3.3') {
+						if (!$update_refsession_done && (float) $last_version_install <= 3.2 && (float) $data['toversion'] >= 3.3) {
 							$this->update_refsession();
+							$update_refsession_done = true;
 						}
 
 						if ($result <= 0){
