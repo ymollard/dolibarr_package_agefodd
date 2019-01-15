@@ -345,7 +345,7 @@ class Agefodd_teacher extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON f.fk_socpeople = s.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u ON f.fk_user = u.rowid";
-		$sql .= " WHERE f.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+		$sql .= " WHERE f.entity IN (" . getEntity('agefodd') . ")";
 		if ($arch == 0 || $arch == 1) {
 			$sql .= " AND f.archive = " . $arch;
 		}
@@ -796,8 +796,8 @@ class AgfTrainerLine {
 	 * @param string $label
 	 * @return string
 	 */
-	public function getNomUrl($label = 'name') {
-		$link = dol_buildpath('/agefodd/trainer/card.php', 1);
+	public function getNomUrl($label = 'name', $type='card') {
+		$link = dol_buildpath('/agefodd/trainer/'.$type.'.php', 1);
 		if ($label == 'name') {
 			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->name . ' ' . $this->firstname . '</a>';
 		} else {
