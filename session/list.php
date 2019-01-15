@@ -95,7 +95,9 @@ $search_soc = GETPOST("search_soc");
 $search_teacher_id = GETPOST("search_teacher_id");
 $search_training_ref = GETPOST("search_training_ref", 'alpha');
 $search_start_date = dol_mktime(0, 0, 0, GETPOST('search_start_datemonth', 'int'), GETPOST('search_start_dateday', 'int'), GETPOST('search_start_dateyear', 'int'));
+$search_start_date_2 = dol_mktime(23, 59, 59, GETPOST('search_start_date2month', 'int'), GETPOST('search_start_date2day', 'int'), GETPOST('search_start_date2year', 'int'));
 $search_end_date = dol_mktime(0, 0, 0, GETPOST('search_end_datemonth', 'int'), GETPOST('search_end_dateday', 'int'), GETPOST('search_end_dateyear', 'int'));
+$search_end_date_2 = dol_mktime(0, 0, 0, GETPOST('search_end_date2month', 'int'), GETPOST('search_end_date2day', 'int'), GETPOST('search_end_date2year', 'int'));
 $search_site = GETPOST("search_site");
 $search_training_ref_interne = GETPOST('search_training_ref_interne', 'alpha');
 $search_type_session = GETPOST("search_type_session", 'int');
@@ -143,7 +145,9 @@ if (GETPOST("button_removefilter_x")) {
 	$search_teacher_id = "";
 	$search_training_ref = '';
 	$search_start_date = "";
+	$search_start_date_2 = "";
 	$search_end_date = "";
+	$search_end_date_2 = "";
 	$search_site = "";
 	$search_training_ref_interne = "";
 	$search_type_session = "";
@@ -324,9 +328,17 @@ if (! empty($search_start_date)) {
 	$filter['s.dated'] = $db->idate($search_start_date);
 	$option .= '&search_start_datemonth=' . dol_print_date($search_start_date, '%m') . '&search_start_dateday=' . dol_print_date($search_start_date, '%d') . '&search_start_dateyear=' . dol_print_date($search_start_date, '%Y');
 }
+if (! empty($search_start_date_2)) {
+	$filter['s.dated2'] = $db->idate($search_start_date_2);
+	$option .= '&search_start_date2month=' . dol_print_date($search_start_date_2, '%m') . '&search_start_date2day=' . dol_print_date($search_start_date_2, '%d') . '&search_start_date2year=' . dol_print_date($search_start_date_2, '%Y');
+}
 if (! empty($search_end_date)) {
 	$filter['s.datef'] = $db->idate($search_end_date);
 	$option .= '&search_end_datemonth=' . dol_print_date($search_end_date, '%m') . '&search_end_dateday=' . dol_print_date($search_end_date, '%d') . '&search_end_dateyear=' . dol_print_date($search_end_date, '%Y');
+}
+if (! empty($search_end_date_2)) {
+	$filter['s.datef2'] = $db->idate($search_end_date_2);
+	$option .= '&search_end_date2month=' . dol_print_date($search_end_date_2, '%m') . '&search_end_date2day=' . dol_print_date($search_end_date_2, '%d') . '&search_end_date2year=' . dol_print_date($search_end_date_2, '%Y');
 }
 if (! empty($search_site) && $search_site != - 1) {
 	$filter['s.fk_session_place'] = $search_site;
@@ -659,14 +671,18 @@ if ($resql != - 1) {
 	}
 
 	if (! empty($arrayfields['s.dated']['checked'])) {
-		print '<td class="liste_titre">';
+		print '<td class="liste_titre nowrap">';
 		print $form->select_date($search_start_date, 'search_start_date', 0, 0, 1, 'search_form');
+		print '<br />';
+		print $form->select_date($search_start_date_2, 'search_start_date2', 0, 0, 1, 'search_form');
 		print '</td>';
 	}
 
 	if (! empty($arrayfields['s.datef']['checked'])) {
-		print '<td class="liste_titre">';
+		print '<td class="liste_titre nowrap">';
 		print $form->select_date($search_end_date, 'search_end_date', 0, 0, 1, 'search_form');
+		print '<br />';
+		print $form->select_date($search_end_date_2, 'search_end_date2', 0, 0, 1, 'search_form');
 		print '</td>';
 	}
 
