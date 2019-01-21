@@ -105,7 +105,7 @@ else
 
 	// When used from jQuery, the search term is added as GET param "term".
 	$searchkey = (($idtraining && GETPOST($idtraining,'alpha')) ? GETPOST($idtraining,'alpha') :  (GETPOST($htmlname, 'alpha') ? GETPOST($htmlname, 'alpha') : ''));
-	if(!is_array($filter)){
+	if(!is_array($filter) || empty($filter)){
 	$filter=array();
 	$filter[]=" AND (c.intitule LIKE '%$searchkey%' OR c.ref_interne LIKE '%$searchkey%') ";
 }
