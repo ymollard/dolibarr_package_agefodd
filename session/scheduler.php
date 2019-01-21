@@ -80,7 +80,7 @@ if (!empty($object->id))
 	$stagiaires->fetch_stagiaire_per_session($object->id);
 	$formateurs->fetch_formateur_per_session($object->id);
 }
-					
+
 
 $morejs = array(
 	'/fullcalendarscheduler/js/moment.min.js'
@@ -103,10 +103,10 @@ $langs->load('main');
 $langs->load('fullcalendarscheduler@fullcalendarscheduler');
 
 
-llxHeader('', $langs->trans("Agenda"), '', '', 0, 0, $morejs, $morecss);
+llxHeader('', $langs->trans("AgfSessionDetail"), '', '', 0, 0, $morejs, $morecss);
 
 $head = session_prepare_head($object);
-dol_fiche_head($head, 'scheduler', $langs->trans('SessionScheduler'), 0, 'action');
+dol_fiche_head($head, 'scheduler', $langs->trans('AgfSessionDetail'), 0, 'action');
 
 
 echo '<div id="agf_session_scheduler"></div>';
@@ -139,7 +139,7 @@ $html_participants = '';
 // Uniquement si la conf de saisie des temps réels par participant est actif, autrement ça sert à rien d'afficher la liste des participants
 if (!empty($conf->global->AGF_USE_REAL_HOURS))
 {
-	
+
 	$content_participants = '<div class="liste_participants">';
 	$nb_wrong_def = 0;
 	if (count($stagiaires->lines) > 8) $float_class = 'fleft';
@@ -162,7 +162,7 @@ if (!empty($conf->global->AGF_USE_REAL_HOURS))
 	}
 
 	$content_participants.= '<div class="clearboth"></div></div>';
-	
+
 	$html_participants.= '<div class="titre">'.$langs->transnoentitiesnoconv('AgfMenuActStagiaire');
 	if ($nb_wrong_def > 0) $html_participants.= ' <small class="error">('.$langs->transnoentitiesnoconv('AgfWarning_wrong_def_participant', $nb_wrong_def).')</small>';
 	$html_participants.='</div>';
@@ -191,16 +191,16 @@ echo '
 	fullcalendarscheduler_aspectRatio = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_ASPECT_RATIO) ? $conf->global->FULLCALENDARSCHEDULER_ASPECT_RATIO : '1.6').'";
 	fullcalendarscheduler_minTime = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_MIN_TIME) ? $conf->global->FULLCALENDARSCHEDULER_MIN_TIME : '00:00').'";
 	fullcalendarscheduler_maxTime = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_MAX_TIME) ? $conf->global->FULLCALENDARSCHEDULER_MAX_TIME : '23:00').'";
-	
-	
+
+
 	fullcalendar_scheduler_resources_allowed = [];
-	
+
 	fullcalendar_scheduler_businessHours_week_start = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_START) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_START : '08:00').'";
 	fullcalendar_scheduler_businessHours_week_end = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_END) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_END : '18:00').'";
 
 	fullcalendar_scheduler_businessHours_weekend_start = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START : '10:00').'";
 	fullcalendar_scheduler_businessHours_weekend_end = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END : '16:00').'";
-	
+
 	fullcalendarscheduler_title_dialog_create_event = "'.$langs->transnoentitiesnoconv('Agf_fullcalendarscheduler_title_dialog_create_event').'";
 	fullcalendarscheduler_title_dialog_update_event = "'.$langs->transnoentitiesnoconv('Agf_fullcalendarscheduler_title_dialog_update_event').'";
 	fullcalendarscheduler_title_dialog_delete_event = "'.$langs->transnoentitiesnoconv('Agf_fullcalendarscheduler_title_dialog_delete_event').'";
@@ -210,19 +210,19 @@ echo '
 	fullcalendarscheduler_button_dialog_cancel = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_button_dialog_cancel').'";
 	fullcalendarscheduler_button_dialog_confirm = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_button_dialog_confirm').'";
 	fullcalendarscheduler_content_dialog_delete = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_content_dialog_delete').' <br />'.$langs->transnoentitiesnoconv('Agf_fullcalendarscheduler_content_dialog_delete_for_calendrier_formateur').'<input type=\'checkbox\' name=\'delete_cal_formateur\' value=\'1\' />";
-	
+
 	fullcalendarscheduler_date_format = "'.$langs->trans("FormatDateShortJavaInput").'";
-	
+
 	fullcalendarscheduler_div = $(\'<form id="form_add_event" action="#"></form>\');
 	fullcalendarscheduler_div	.append('.json_encode($inputs_hidden).')
 								.append("<p>"+'.json_encode($select_calendrier_type).'+"</p>")
 								.append("<p class=\'is_past\'>"+'.json_encode($select_date_start).'+"</p>")
 								.append("<p class=\'is_past\'>"+'.json_encode($select_date_end).'+"</p>")
-								.append("<div>"+'.json_encode($html_participants).'+"</div>")	
-								.append("<div class=\'is_past\'>"+'.json_encode($html_formateurs).'+"</div>");		
-								
+								.append("<div>"+'.json_encode($html_participants).'+"</div>")
+								.append("<div class=\'is_past\'>"+'.json_encode($html_formateurs).'+"</div>");
+
 	fullcalendarscheduler_picto_delete = "'.addslashes(img_delete()).'";
-	
+
 	fullcalendarscheduler_error_msg_allday_event_exists = "'.$langs->transnoentitiesnoconv('fullcalendarscheduler_error_msg_allday_event_exists').'";
 </script>';
 
@@ -233,14 +233,14 @@ echo '
 		top:3px;
 		right:2px;
 	}
-	
+
 	#agf_session_scheduler .ajaxtool_link.need_to_be_adjust img {
 		position:relative;
 		top:-1px;
 	}
-	
+
 	.ui-dialog { overflow: visible; }
-	
+
 	'.(!empty($conf->global->FULLCALENDARSCHEDULER_ROW_HEIGHT) ? '.fc-agendaWeek-view tr { height: '.$conf->global->FULLCALENDARSCHEDULER_ROW_HEIGHT.'; }' : '').'
 </style>
 ';
