@@ -2396,6 +2396,18 @@ class Agsession extends CommonObject
 			foreach ( $filter as $key => $value ) {
 				if (($key == 'YEAR(s.dated)') || ($key == 'MONTH(s.dated)')) {
 					$sql .= ' AND ' . $key . ' IN (' . $value . ')';
+				} elseif (in_array($key, array('s.dated', 's.dated2')) && !empty($filter['s.dated']) && !empty($filter['s.dated2'])) {
+					if ($key == 's.dated') {
+						$sql.= ' AND s.dated BETWEEN \''.$this->db->escape($filter['s.dated']).'\' AND \''.$this->db->escape($filter['s.dated2']).'\'';
+					} else {
+						// do nothing more
+					}
+				} elseif (in_array($key, array('s.datef', 's.datef2')) && !empty($filter['s.datef']) && !empty($filter['s.datef2'])) {
+					if ($key == 's.datef') {
+						$sql.= ' AND s.datef BETWEEN \''.$this->db->escape($filter['s.datef']).'\' AND \''.$this->db->escape($filter['s.datef2']).'\'';
+					} else {
+						// do nothing more
+					}
 				} elseif ($key == 's.dated>') {
 					if ($this->db->type == 'pgsql') {
 						$intervalday = "'" . $value . " DAYS'";
@@ -3049,7 +3061,7 @@ class Agsession extends CommonObject
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 
-		dol_syslog(get_class($this) . "::fetch_all_by_soc", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__. ' '.$filter['type_affect'], LOG_DEBUG);
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
@@ -3298,7 +3310,7 @@ class Agsession extends CommonObject
 				$sql .= " AND fourninvoice.rowid = " . $fourninvoiceid;
 				$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 				$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
-				$sql .= " ,fourninvoice.ref ";
+				$sql .= " ,fourninvoice.ref, ord_inv.rowid ";
 				if (! empty($sortfield)) {
 					$sql .= " ORDER BY $sortfield $sortorder ";
 				}

@@ -96,6 +96,36 @@ class ActionsAgefodd
 			$this->results = $head;
 			return 1;
 		}
+		$contextarray=array('contactcard');
+		$res_array=array_intersect($contextarray, $contextcurrent);
+		//var_dump($contextcurrent);
+		if (is_array($res_array) && count($res_array)>0 && $parameters['mode']=='add') {
+			$head = $parameters['head'];
+			foreach ( $head as $key=>&$val) {
+				if ($val[2]=='tabAgefodd') {
+					dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+					$trainer = new Agefodd_teacher($this->db);
+					$nb_trainer  = $trainer->fetch_all('', '', 0, 0, -1, array('f.fk_socpeople'=>$current_obj->id));
+					if ($nb_trainer <0) {
+						setEventMessage('From hook completeTabsHead agefodd trainer :'.$trainer->error,'errors');
+					}
+
+					dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+					$trainee = new Agefodd_stagiaire($this->db);
+					$nb_trainee  = $trainee->fetch_all('', '', 0, 0, array('s.fk_socpeople'=>$current_obj->id));
+					if ($nb_trainee <0) {
+						setEventMessage('From hook completeTabsHead agefodd trainee:'.$trainee->error,'errors');
+					}
+					$nb_element = $nb_trainer + $nb_trainee;
+					if ($nb_element>0) {
+						$langs->load('agefodd@agefodd');
+						$val[1].= ' <span class="badge">'.$nb_element.'</span>';
+					}
+				}
+			}
+			$this->results = $head;
+			return 1;
+		}
 
 		return 0;
 	}

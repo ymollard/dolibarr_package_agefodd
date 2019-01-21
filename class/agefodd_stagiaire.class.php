@@ -312,13 +312,15 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " ON s.rowid = ef.fk_object";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON s.civilite = civ.code";
-		$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
 		// Manage filter
 		if (! empty($filter)) {
 			foreach ( $filter as $key => $value ) {
 				if ($key == 'naturalsearch') {
 					$sql .= ' AND (s.nom LIKE \'%' . $this->db->escape($value) . '%\' OR s.prenom LIKE \'%' . $this->db->escape($value) . '%\')';
+				} elseif ($key == 's.fk_socpeople') {
+					$sql .= ' AND ' . $key . ' = ' . $this->db->escape($value) . '';
 				} elseif ($key != 's.tel1') {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				} elseif (strpos($key,'ef.')!==false){
@@ -329,7 +331,9 @@ class Agefodd_stagiaire extends CommonObject {
 			}
 		}
 
-		$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
+		if (!empty($sortfield)) {
+			$sql .= " ORDER BY " . $sortfield . " " . $sortorder . " ";
+		}
 		if (! empty($limit)) {
 			$sql .= $this->db->plimit($limit + 1, $offset);
 		}
@@ -357,6 +361,7 @@ class Agefodd_stagiaire extends CommonObject {
 									$line->socname = $obj->socname;
 									$line->civilitecode = $obj->civilitecode;
 									$line->rowid = $obj->rowid;
+									$line->id = $obj->rowid;
 									$line->nom = $obj->nom;
 									$line->prenom = $obj->prenom;
 									$line->civilite = $obj->civilite;
@@ -376,6 +381,7 @@ class Agefodd_stagiaire extends CommonObject {
 							$line->socname = $obj->socname;
 							$line->civilitecode = $obj->civilitecode;
 							$line->rowid = $obj->rowid;
+							$line->id = $obj->rowid;
 							$line->nom = $obj->nom;
 							$line->prenom = $obj->prenom;
 							$line->civilite = $obj->civilite;
@@ -394,6 +400,7 @@ class Agefodd_stagiaire extends CommonObject {
 						$line->socname = $obj->socname;
 						$line->civilitecode = $obj->civilitecode;
 						$line->rowid = $obj->rowid;
+						$line->id = $obj->rowid;
 						$line->nom = $obj->nom;
 						$line->prenom = $obj->prenom;
 						$line->civilite = $obj->civilite;
@@ -410,7 +417,7 @@ class Agefodd_stagiaire extends CommonObject {
 
 					if (count($extralabels) > 0) {
 						$statictrainee=new self($this->db);
-						$statictrainee->fetch_optionals($line->rowid, $extralabels);
+						$statictrainee->fetch_optionals($line->id, $extralabels);
 						$line->array_options=$statictrainee->array_options;
 					}
 
@@ -667,5 +674,18 @@ class AgfTraineeLine {
 	public $place_birth;
 	public function __construct() {
 		return 1;
+	}
+	/**
+	 *
+	 * @param string $label
+	 * @return string
+	 */
+	public function getNomUrl($label = 'name', $type='card') {
+		$link = dol_buildpath('/agefodd/trainee/'.$type.'.php', 1);
+		if ($label == 'name') {
+			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->nom . ' ' . $this->prenom . '</a>';
+		} else {
+			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->$label . '</a>';
+		}
 	}
 }

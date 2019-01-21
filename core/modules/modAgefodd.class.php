@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.3.5';
+		$this->version = '4.3.6';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -109,7 +109,8 @@ class modAgefodd extends DolibarrModules
 						'invoicesuppliercard',
 						'admin',
 						'emailtemplates',
-						'upgrade'
+						'upgrade',
+						'contactcard'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
 				'models' => 1
@@ -1221,7 +1222,7 @@ class modAgefodd extends DolibarrModules
 				'c.ref' => 'Ref',
 				'c.ref_interne' => 'AgfFormCodeInterne',
 				'c.duree' => 'AgfDuree',
-				'dictcat.code as catcode ' => 'AgfTrainingCategCode',
+				'dictcat.code as catcode' => 'AgfTrainingCategCode',
 				'dictcat.intitule as catlib' => 'AgfTrainingCategLabel',
 				'product.ref' => 'ProductRef',
 				'product.label' => 'ProductLabel',
@@ -1293,7 +1294,7 @@ class modAgefodd extends DolibarrModules
 				'c.ref' => 'AgfCatalogDetail',
 				'c.ref_interne' => 'AgfCatalogDetail',
 				'c.duree' => 'AgfCatalogDetail',
-				'dictcat.code as catcode ' => 'AgfCatalogDetail',
+				'dictcat.code as catcode' => 'AgfCatalogDetail',
 				'dictcat.intitule as catlib' => 'AgfCatalogDetail',
 				'product.ref' => 'Product',
 				'product.label' => 'Product',
@@ -1489,7 +1490,8 @@ class modAgefodd extends DolibarrModules
 				'propal:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_fin.php?search_propalid=__ID__',
 				'thirdparty:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_soc.php?socid=__ID__',
 				'supplier_invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_fin.php?search_fourninvoiceid=__ID__',
-		        'supplier_order:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_fin.php?search_fournorderid=__ID__'
+		        'supplier_order:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_fin.php?search_fournorderid=__ID__',
+		        'contact:+tabAgefodd:Module103000Name:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/contact/contact_card.php?id=__ID__'
 		);
 
 		// Boxes
@@ -2566,12 +2568,14 @@ class modAgefodd extends DolibarrModules
 
 					//Sort file array to be sure data is upgrade script are executed in correct order
 					ksort($filetorun);
-					foreach($filetorun as $key=>$data) {
+					$update_refsession_done = false;
+					foreach($filetorun as $key=>$data)
+					{
 						dol_syslog(get_class($this) . "::_load_tables_agefodd run file from sorted array :" . $data['file'], LOG_DEBUG);
 						$result = run_sql($dir . $data['file'], 1, '', 1);
-
-						if($last_version_install <='3.2' && $data['toversion']>='3.3') {
+						if (!$update_refsession_done && (float) $last_version_install <= 3.2 && (float) $data['toversion'] >= 3.3) {
 							$this->update_refsession();
+							$update_refsession_done = true;
 						}
 
 						if ($result <= 0){
