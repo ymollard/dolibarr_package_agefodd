@@ -659,8 +659,8 @@ class ReportCA extends AgefoddExportExcel {
 			for($month_todo = 1; $month_todo <= 12; $month_todo ++) {
 
 				// For Total HT/TTC
-				$sql = "SELECT SUM(facdet.total_ttc) as amount_ttc";
-				$sql.= ", SUM(facdet.total_ht) as amount_ht";
+				$sql = "SELECT (facdet.total_ttc) as amount_ttc";
+				$sql.= ", (facdet.total_ht) as amount_ht";
 				if(array_key_exists('group_by_session', $filter)) $sql.= ", s.rowid";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
@@ -749,8 +749,8 @@ class ReportCA extends AgefoddExportExcel {
 					}
 				}
 
-				if(array_key_exists('group_by_session', $filter)) $sql.= " GROUP BY s.rowid ORDER BY s.rowid ASC";
-
+				if(array_key_exists('group_by_session', $filter)) $sql.= " GROUP BY s.rowid,facdet.rowid ORDER BY s.rowid ASC";
+				else $sql.=" GROUP BY facdet.rowid";
 				dol_syslog(get_class($this) . "::fetch_ca HT TTC sql=" . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
@@ -789,8 +789,8 @@ class ReportCA extends AgefoddExportExcel {
 				$this->db->free($resql);
 
 				// For TotalHF/HT
-				$sql = "SELECT SUM(facdet.total_ttc) as amount_ttc";
-				$sql.= ", SUM(facdet.total_ht) as amount_ht";
+				$sql = "SELECT (facdet.total_ttc) as amount_ttc";
+				$sql.= ", (facdet.total_ht) as amount_ht";
 				if(array_key_exists('group_by_session', $filter)) $sql.= ", s.rowid";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facturedet as facdet ON facdet.fk_facture=f.rowid ";
@@ -872,7 +872,8 @@ class ReportCA extends AgefoddExportExcel {
 					}
 				}
 
-				if(array_key_exists('group_by_session', $filter)) $sql.= " GROUP BY s.rowid ORDER BY s.rowid ASC";
+				if(array_key_exists('group_by_session', $filter)) $sql.= " GROUP BY s.rowid,facdet.rowid ORDER BY s.rowid ASC";
+				else $sql.=" GROUP BY facdet.rowid";
 
 				dol_syslog(get_class($this) . "::fetch_ca HFHT sql=" . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
