@@ -1457,7 +1457,8 @@ AgfSessionSummary=Formation prévue du <b>%s</b> au <b>%s</b>
 AgfHours=%s heure(s)
 
 AgfSessionSummaryTotalHours=Total heures de formation
-AgfSessionSummaryTotalScheduled=Total heures programmées
+AgfSessionSummaryTotalScheduled=Total heures programmées pour la session
+AgfSessionSummaryTotalScheduledTrainer=Total heures programmées pour le formateur
 AgfSessionSummaryTotalLeft=Totale heures restantes
 
 AgfSessionSummaryTotalPresence=Total heures déclarée (participants - tout statut)
