@@ -984,7 +984,7 @@ if (! empty($id)) {
 
 				$formmail->withtopic = $langs->trans('AgfSendFeuillePresence', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendFeuillePresenceBody', '__FORMINTITULE__');
-				$formmail->param['models'] = 'ficheirect';
+				$formmail->param['models'] = 'fiche_presence_direct';
 				$formmail->param['pre_action'] = 'presend_presence_direct';
 
 				// Feuille de présence peut être aux formateurs
