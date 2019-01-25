@@ -1496,3 +1496,5 @@ AgfErrorAccessTrainerNotActivated=L'accès externe formateur doit être activé 
 AgfErrorRightsNotValide=L'utilisateur courant n'a pas les droits d'accés nécessaires pour cette section
 AgfActivateExternalAccessForAgefodd=Activer l'accès externe aux données du module Formation
 AgfActivateAccessForTrainers=Activer l'accès externe pour les formateurs (il est nécessaire d'attribuer des droits utilisateurs aux formateurs)
+
+AgfTypeTime=Agefodd - Modalité de formation des creneaux horaire de session

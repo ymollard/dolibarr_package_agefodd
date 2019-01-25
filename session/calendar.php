@@ -97,7 +97,7 @@ if (!empty($massaction))
         case "delete":
             $action = 'delete_calsel';
             break;
-            
+
         case "bill":
             if (count($toselect) > 0) {
                 foreach ( $toselect as $lineid ) {
@@ -123,7 +123,7 @@ if (!empty($massaction))
                 exit();
             }
             break;
-            
+
         case "tobill":
             if (count($toselect) > 0) {
                 foreach ( $toselect as $lineid ) {
@@ -518,7 +518,7 @@ if ($id) {
 				// Param url = id de la periode à supprimer - id session
 				print $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $id, $langs->trans("AgfAllDeletePeriod"), $langs->trans("AgfConfirmAllDeletePeriod"), "confirm_delete_period_all", '', '', 1);
 			}
-			
+
 			$arrayofaction=array();
 			if (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION))
 			{
@@ -526,9 +526,9 @@ if ($id) {
 			    $arrayofaction['tobill'] = $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('ToBill').'"';
 			}
 			$arrayofaction['delete']=$langs->trans('Delete');
-			
+
 			$massactionbutton = $formAgefodd->selectMassAction('', $arrayofaction);
-			
+
 			print '<div class="" id="formdateall">';
 			print '<form name="obj_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '"  method="POST">' . "\n";
 			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
@@ -578,10 +578,10 @@ if ($id) {
 					print $formAgefodd->select_time(dol_print_date($calendrier->lines[$i]->heuref, 'hour'), 'datef');
 					print '</td>';
 					$TStatus = array(
-					    '0' => $langs->trans('AgfStatusCalendar_previsionnel'),
-					    '1' => $langs->trans('AgfStatusCalendar_confirmed'),
-					    '2' => $langs->trans('AgfStatusCalendar_missing'),
-					    '-1' => $langs->trans('AgfStatusCalendar_canceled')
+							Agefodd_sesscalendar::STATUS_DRAFT => $langs->trans('AgfStatusCalendar_previsionnel'),
+							Agefodd_sesscalendar::STATUS_CONFIRMED => $langs->trans('AgfStatusCalendar_confirmed'),
+							Agefodd_sesscalendar::STATUS_MISSING => $langs->trans('AgfStatusCalendar_missing'),
+							Agefodd_sesscalendar::STATUS_CANCELED => $langs->trans('AgfStatusCalendar_canceled')
 					);
 					print '<td>'.$form->selectarray('calendar_status', $TStatus, $calendrier->lines[$i]->status).'</td>';
 					print '<td>'.$formAgefodd->select_calendrier_type($calendrier->lines[$i]->calendrier_type).'</td>';
@@ -614,7 +614,9 @@ if ($id) {
 				}
 
 				// We calculated the total session duration time
-				$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
+				if ($calendrier->lines[$i]->status!=Agefodd_sesscalendar::STATUS_CANCELED) {
+					$duree += ($calendrier->lines[$i]->heuref - $calendrier->lines[$i]->heured);
+				}
 
 				print '</tr>' . "\n";
 			}
