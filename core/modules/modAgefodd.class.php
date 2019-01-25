@@ -84,6 +84,7 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/report/bpf",
 				"/agefodd/report/ca",
 		        "/agefodd/report/bycust/",
+		        "/agefodd/report/calendarbycust/",
 				"/agefodd/background"
 		);
 		$r = 0;
@@ -109,11 +110,14 @@ class modAgefodd extends DolibarrModules
 						'invoicesuppliercard',
 						'admin',
 						'emailtemplates',
+				        'externalaccesspage',
+				        'externalaccessinterface',
 						'upgrade',
 						'contactcard'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
-				'models' => 1
+				'models' => 1,
+		        'css' => array('/agefodd/css/agefodd.css'),
 		);
 
 		// Dependencies
@@ -672,6 +676,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][1] = "chaine";
 		$this->const[$r][2] = '0';
 		$this->const[$r][3] = 'default type';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_HELP_LINK";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'http://wiki.atm-consulting.fr/index.php/Agefodd_V2/Documentation_utilisateur';
+		$this->const[$r][3] = 'help wikipage';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
@@ -1659,6 +1671,37 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][4] = 'session';
 		$this->rights[$r][5] = 'trainer';
 
+		if ($conf->externalaccess->enabled)
+		{
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerRead';
+		    $this->rights[$r][2] = 'r';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_read';
+
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerWrite';
+		    $this->rights[$r][2] = 'w';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_write';
+
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerDownload';
+		    $this->rights[$r][2] = 'r';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_download';
+
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerUpload';
+		    $this->rights[$r][2] = 'w';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_upload';
+		}
+
 		// Main menu entries
 		$this->menus = array();
 		$r = 0;
@@ -2333,6 +2376,20 @@ class modAgefodd extends DolibarrModules
 				'perms' => '$user->rights->agefodd->report',
 				'target' => '',
 				'user' => 0
+		);
+
+		$r ++;
+		$this->menu [$r] = array (
+		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+		    'type' => 'left',
+		    'titre' => 'AgfMenuReportCalendarByCustomer',
+		    'url' => '/agefodd/report/report_calendar_by_customer.php',
+		    'langs' => 'agefodd@agefodd',
+		    'position' => 900 + $r,
+		    'enabled' => '$user->rights->agefodd->report',
+		    'perms' => '$user->rights->agefodd->report',
+		    'target' => '',
+		    'user' => 0
 		);
 
 		$r ++;

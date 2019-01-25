@@ -112,6 +112,7 @@ class Agsession extends CommonObject
 	public $fk_soc_employer;
 	public $formrefint;
 	public $ref;
+	public $trainer_ext_information;
 
 	/**
 	 * Constructor
@@ -156,6 +157,9 @@ class Agsession extends CommonObject
 			$this->status = trim($this->status);
 		if (empty($this->status))
 			$this->status = $conf->global->AGF_DEFAULT_SESSION_STATUS;
+
+		if (!empty($this->$trainer_ext_information))
+			$this->$trainer_ext_information = trim($trainer_ext_information);
 
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -207,6 +211,7 @@ class Agsession extends CommonObject
 		$sql .= "status,";
 		$sql .= "duree_session,";
 		$sql .= "intitule_custo";
+		$sql .= "trainer_ext_information";
 		$sql .= ") VALUES (";
 		$sql .= " " . (! isset($ref) ? "''" : "'" . $ref . "'") . ",";
 		$sql .= " " . (empty($this->fk_soc) ? 'NULL' : $this->fk_soc) . ",";
@@ -229,7 +234,8 @@ class Agsession extends CommonObject
 		$sql .= " " . (empty($this->fk_product) ? 'NULL' : $this->fk_product) . ",";
 		$sql .= " " . (! isset($this->status) ? 'NULL' : $this->db->escape($this->status)) . ",";
 		$sql .= " " . (empty($this->duree_session) ? '0' : price2num($this->duree_session)) . ",";
-		$sql .= " " . (! isset($this->intitule_custo) ? 'NULL' : "'" . $this->db->escape($this->intitule_custo) . "'") . "";
+		$sql .= " " . (! isset($this->intitule_custo) ? 'NULL' : "'" . $this->db->escape($this->intitule_custo) . "'") . ",";
+		$sql .= " " . (empty($this->trainer_ext_information) ? 'NULL' : "'" . $this->db->escape($this->trainer_ext_information) . "'") . "";
 		$sql .= ")";
 		$this->db->begin();
 
@@ -326,24 +332,113 @@ class Agsession extends CommonObject
 			return $this->id;
 		}
 	}
-	public static function getStaticSumDureePresence($fk_agsession, $fk_stagiaire = null) {
+
+	/**
+	 *
+	 * @param int $fk_agsession
+	 * @param int $fk_stagiaire
+	 * @param array $filters
+	 * @return number
+	 */
+	public static function getStaticSumDureePresence($fk_agsession, $fk_stagiaire = null, $filters = array()) {
 		global $db;
 
 		$duree = 0;
+
+		$qualified = array();
+
+		if (!empty($filters))
+		{
+		    $sql = "SELECT DISTINCT s.rowid";
+		    $sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier as s";
+		    if (isset($filters['formateur']))
+		    {
+		        $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur as sf ON sf.fk_session = s.fk_agefodd_session";
+		        $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur_calendrier as fc on fc.fk_agefodd_session_formateur = sf.rowid";
+		    }
+		    $sql.= " WHERE s.fk_agefodd_session = ". $db->escape($fk_agsession);
+		    if (isset($filters['formateur']))
+		    {
+		        $sql.= " AND sf.rowid = ".$db->escape($filters['formateur']);
+		    }
+		    if (isset($filters['excludeCanceled'])) $sql.= " AND s.status <> '-1'";
+
+		    $resql = $db->query($sql);
+		    if ($resql) {
+		        while ($obj = $db->fetch_object($resql)) $qualified[] = $obj->rowid;
+		    } else {
+	    		dol_syslog('Error:'.__METHOD__ . $db->lasterror(), LOG_ERR);
+		    }
+		}
 
 		$agfssh = new Agefoddsessionstagiaireheures($db);
 		$agfssh->fetchAllBy($fk_agsession, 'fk_session');
 		if (! empty($agfssh->lines)) {
 			foreach ( $agfssh->lines as &$line ) {
-				if (! empty($fk_stagiaire) && $line->fk_stagiaire != $fk_stagiaire)
-					continue;
-				$duree += $line->heures;
+				if (! empty($fk_stagiaire) && $line->fk_stagiaire != $fk_stagiaire) continue;
+
+				//if ($excludeCanceled && in_array($line->fk_calendrier, $canceled)) continue;
+
+				if (!empty($filters))
+				{
+				    if (in_array($line->fk_calendrier, $qualified)){
+				        $duree += $line->heures;
+				    }
+				}
+				else $duree += $line->heures;
 			}
 		}
 
 		return $duree;
 	}
-	public function getSumDureePresence($fk_stagiaire = null) {
+
+	/**
+	 *
+	 * @param int $fk_agession
+	 * @return NULL[]
+	 */
+	public static function getStaticSumExplodeDureePresence($fk_agession)
+	{
+	    global $db, $conf;
+
+	    $sql = "SELECT
+                SUM(assh.heures) as heures, IF(c.label IS NULL, 'Autre', c.label) as type
+            FROM
+                llx_agefodd_session_stagiaire_heures as assh
+            LEFT JOIN llx_agefodd_session_calendrier as agfsc ON assh.fk_calendrier = agfsc.rowid
+            LEFT JOIN llx_c_agefodd_session_calendrier_type as c ON c.code = agfsc.calendrier_type
+            WHERE
+                fk_session = ".$fk_agession;
+	    $excluded = unserialize($conf->global->AGF_EA_ECLATE_HEURES_EXCLUES);
+	    if (is_array($excluded) && !empty($excluded))
+	    {
+	        $sql .= " AND agfsc.status NOT IN ('". implode("','", $excluded)."')";
+	    }
+	    $sql.=" GROUP BY agfsc.calendrier_type, c.label";
+
+	    $TDuree = array();
+
+	    $res = $db->query($sql);
+	    if ($res)
+	    {
+	        while ($obj = $db->fetch_object($res))
+	        {
+	            $TDuree[$obj->type] = $obj->heures;
+	        }
+	    } else {
+	    	dol_syslog('Error:'.__METHOD__ . $db->lasterror(), LOG_ERR);
+	    }
+
+	    return $TDuree;
+	}
+
+	/**
+	 *
+	 * @param int $fk_stagiaire
+	 * @return number
+	 */
+	public function getSumDureePresence($fk_stagiaire=null)
+	{
 		return self::getStaticSumDureePresence($this->id, $fk_stagiaire);
 	}
 
@@ -526,6 +621,7 @@ class Agsession extends CommonObject
 		$sql .= " t.fk_product,";
 		$sql .= " t.duree_session,";
 		$sql .= " t.intitule_custo,";
+		$sql .= " t.trainer_ext_information,";
 		$sql .= " t.status,dictstatus.intitule as statuslib, dictstatus.code as statuscode,";
 		$sql .= " p.rowid as placeid, p.ref_interne as placecode,";
 		$sql .= " us.lastname as commercialname, us.firstname as commercialfirstname, ";
@@ -650,6 +746,7 @@ class Agsession extends CommonObject
 				}
 				$this->statuslib = $label;
 				$this->intitule_custo = $obj->intitule_custo;
+				$this->trainer_ext_information = $obj->trainer_ext_information;
 				$this->duree_session = $obj->duree_session;
 			}
 			$this->db->free($resql);
@@ -1715,6 +1812,8 @@ class Agsession extends CommonObject
 			$this->duree_session = trim($this->duree_session);
 		if (isset($this->intitule_custo))
 			$this->intitule_custo = trim($this->intitule_custo);
+		if (isset($this->trainer_ext_information))
+			$this->trainer_ext_information = trim($this->trainer_ext_information);
 		if (isset($this->ref))
 			$this->ref = trim($this->ref);
 
@@ -1789,7 +1888,8 @@ class Agsession extends CommonObject
 			$sql .= " fk_product=" . (! empty($this->fk_product) ? $this->fk_product : "null") . ",";
 			$sql .= " status=" . (isset($this->status) ? $this->status : "null") . ",";
 			$sql .= " duree_session=" . (! empty($this->duree_session) ? price2num($this->duree_session) : "0") . ",";
-			$sql .= " intitule_custo=" . (! empty($this->intitule_custo) ? "'" . $this->db->escape($this->intitule_custo) . "'" : "null") . "";
+			$sql .= " intitule_custo=" . (! empty($this->intitule_custo) ? "'" . $this->db->escape($this->intitule_custo) . "'" : "null") . ",";
+			$sql .= " trainer_ext_information=" . (! empty($this->trainer_ext_information) ? "'" . $this->db->escape($this->trainer_ext_information) . "'" : "null") . "";
 
 			$sql .= " WHERE rowid=" . $this->id;
 			$this->db->begin();
@@ -2284,6 +2384,7 @@ class Agsession extends CommonObject
 		$sql .= " ,so.nom as socname";
 		$sql .= " ,f.rowid as trainerrowid";
 		$sql .= " ,s.intitule_custo";
+		$sql .= " ,s.trainer_ext_information";
 		$sql .= " ,s.fk_soc_employer";
 		$sql .= " ,s.duree_session";
 		$sql .= " ,socp.rowid as contactid";
@@ -2522,6 +2623,7 @@ class Agsession extends CommonObject
 					$line->nb_cancelled = $obj->nb_cancelled;
 					$line->duree_session = $obj->duree_session;
 					$line->intitule_custo = $obj->intitule_custo;
+					$line->trainer_ext_information = $obj->trainer_ext_information;
 					$line->contactid = $obj->contactid;
 					$line->sell_price = $obj->sell_price;
 					$line->invoice_amount = $obj->invoice_amount;
@@ -2951,7 +3053,7 @@ class Agsession extends CommonObject
 		$sql .= " ON f.fk_socpeople = socpf.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON s.status = dictstatus.rowid";
-		
+
 		if ($filter['type_affect'] == 'thirdparty') {
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
@@ -3595,6 +3697,11 @@ class Agsession extends CommonObject
 			print '</tr>';
 		}
 
+		if (! $user->rights->agefodd->session->trainer) {
+			print '<tr class="order_trainer_ext_information"><td>' . $langs->trans("AgfTrainerExternalMessage") . '</td><td colspan="' . $colspan . '">';
+			print $this->trainer_ext_information . '</td></tr>';
+		}
+
 		/*print '<tr class="order_status"><td>' . $langs->trans("AgfStatusSession") . '</td><td>';
 		 print $this->statuslib . '</td></tr>';*/
 
@@ -3614,7 +3721,10 @@ class Agsession extends CommonObject
 
 		require_once 'agefodd_session_calendrier.class.php';
 		$calendrier = new Agefodd_sesscalendar($this->db);
-		$calendrier->fetch_all($this->id);
+		$result=$calendrier->fetch_all($this->id);
+		if ($result<0) {
+			setEventMessages(null, $calendrier->errors,'errors');
+		}
 		$blocNumber = count($calendrier->lines);
 		$alertday = false;
 		if ($blocNumber < 1) {
@@ -3625,6 +3735,8 @@ class Agsession extends CommonObject
 			$old_date = 0;
 			$duree = 0;
 			foreach($calendrier->lines as $line_cal) {
+
+			    if ($line_cal->status == Agefodd_sesscalendar::STATUS_CANCELED) continue; // ne pas prendre en compte les créneaux annulés
 				if ($i > 6) {
 					$styledisplay = " style=\"display:none\" class=\"otherdate\" ";
 				} else {
@@ -5239,7 +5351,7 @@ class Agsession extends CommonObject
 			$stagiaires->fetch_stagiaire_per_session($this->id, $socid);
 			$this->TStagiairesSessionSoc = $stagiaires->lines;
 		}
-		
+
 		if(empty($this->TStagiairesSessionSocPresent) && !empty($this->TStagiairesSessionSoc)) {
 		    if (is_array($this->TStagiairesSessionSoc) && count($this->TStagiairesSessionSoc)>0) {
 		        foreach($this->TStagiairesSessionSoc as $linesta) {
@@ -5613,6 +5725,7 @@ class AgfSessionLine
 	public $datef;
 	public $intitule;
 	public $intitule_custom;
+	public $trainer_ext_information;
 	public $ref;
 	public $ref_interne;
 	public $color;

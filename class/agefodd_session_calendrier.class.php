@@ -42,19 +42,21 @@ class Agefodd_sesscalendar extends CommonObject{
 	public $fk_actioncomm;
 	public $calendrier_type;
 	public $status = 0;
+	public $billed = 0;
 	public $lines = array ();
 
 
 	const STATUS_DRAFT = 0;
 	const STATUS_CONFIRMED = 1;
+	const STATUS_MISSING = 2;
 	const STATUS_CANCELED = -1;
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function __construct($DB) {
-		$this->db = $DB;
+	public function __construct($db) {
+		$this->db = $db;
 		return 1;
 	}
 
@@ -86,7 +88,7 @@ class Agefodd_sesscalendar extends CommonObject{
 
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_calendrier(";
-		$sql .= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec, calendrier_type, status";
+		$sql .= "fk_agefodd_session, date_session, heured, heuref,fk_actioncomm, fk_user_author,fk_user_mod, datec, calendrier_type, status, billed";
 		$sql .= ") VALUES (";
 		$sql .= " " . $this->sessid . ", ";
 		$sql .= "'" . $this->db->idate($this->date_session) . "', ";
@@ -97,7 +99,8 @@ class Agefodd_sesscalendar extends CommonObject{
 		$sql .= ' ' . $user->id . ', ';
 		$sql .= "'" . $this->db->idate(dol_now()) . "', ";
 		$sql .= "'" . $this->db->escape($this->calendrier_type) . "', ";
-		$sql .= " " . $this->status;
+		$sql .= " " . $this->status . ", ";
+		$sql .= " " . $this->billed;
 		$sql .= ")";
 
 		$this->db->begin();
@@ -152,7 +155,7 @@ class Agefodd_sesscalendar extends CommonObject{
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label', s.billed ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.rowid = " . $id;
@@ -171,6 +174,7 @@ class Agefodd_sesscalendar extends CommonObject{
 				$this->calendrier_type = $obj->calendrier_type;
 				$this->calendrier_type_label = $obj->calendrier_type_label;
 				$this->status = $obj->status;
+				$this->billed = $obj->billed;
 			}
 			$this->db->free($resql);
 
@@ -192,7 +196,7 @@ class Agefodd_sesscalendar extends CommonObject{
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label', s.billed ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.fk_actioncomm = " . $actionid;
@@ -211,6 +215,7 @@ class Agefodd_sesscalendar extends CommonObject{
 				$this->calendrier_type = $obj->calendrier_type;
 				$this->calendrier_type_label = $obj->calendrier_type_label;
 				$this->status = $obj->status;
+				$this->billed = $obj->billed;
 			}
 			$this->db->free($resql);
 
@@ -253,6 +258,7 @@ class Agefodd_sesscalendar extends CommonObject{
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 			return - 1;
 		}
@@ -268,7 +274,7 @@ class Agefodd_sesscalendar extends CommonObject{
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod, s.calendrier_type, s.status, d.label as 'calendrier_type_label' ";
+		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod, s.calendrier_type, s.status, d.label as 'calendrier_type_label', s.billed ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type as d ON (s.calendrier_type = d.code)';
 		$sql .= " WHERE s.rowid = " . $id;
@@ -286,6 +292,7 @@ class Agefodd_sesscalendar extends CommonObject{
 				$this->calendrier_type = $obj->calendrier_type;
 				$this->calendrier_type_label = $obj->calendrier_type_label;
 				$this->status = $obj->status;
+				$this->billed = $obj->billed;
 			}
 			$this->db->free($resql);
 
@@ -310,6 +317,7 @@ class Agefodd_sesscalendar extends CommonObject{
 
 		// Clean parameters
 		if (!is_numeric($this->status)) $this->status = 0;
+		if (!is_numeric($this->billed)) $this->billed = 0;
 		// Check parameters
 		// Put here code to add control on parameters values
 
@@ -320,7 +328,8 @@ class Agefodd_sesscalendar extends CommonObject{
 		$sql .= " heuref='" . $this->db->idate($this->heuref) . "',";
 		$sql .= " fk_user_mod=" . $user->id . ", ";
 		$sql .= " calendrier_type='" . $this->db->escape($this->calendrier_type) . "', ";
-		$sql .= " status=" . $this->status;
+		$sql .= " status=" . $this->status . ", ";
+		$sql .= " billed=" . $this->billed;
 		$sql .= " WHERE rowid = " . $this->id;
 
 		$this->db->begin();
@@ -580,6 +589,90 @@ class Agefodd_sesscalendar extends CommonObject{
 			dol_syslog(get_class($this) . "::updateAction " . $action->error, LOG_ERR);
 			return - 1;
 		}
+	}
+
+	public static function getStaticLibStatut($status, $mode=0)
+	{
+	    global $langs;
+
+	    $out = '';
+	    if ($status == self::STATUS_DRAFT)
+	    {
+	        if ($mode == 1) $out.= img_picto('', 'statut0').' ';
+	        $out.= $langs->trans('AgfStatusCalendar_draft');
+	    }
+	    else if ($status == self::STATUS_CONFIRMED)
+	    {
+	        if ($mode == 1) $out.= img_picto('', 'statut4').' ';
+	        $out.= $langs->trans('AgfStatusCalendar_confirmed');
+	    }
+	    else if ($status == self::STATUS_CANCELED)
+	    {
+	        if ($mode == 1) $out.= img_picto('', 'statut6').' ';
+	        $out.= $langs->trans('AgfStatusCalendar_canceled');
+	    }
+	    else if ($status == self::STATUS_MISSING)
+	    {
+	        if ($mode == 1) $out.= img_picto('', 'statut8').' ';
+	        $out.= $langs->trans('AgfStatusCalendar_missing');
+	    }
+
+	    return $out;
+	}
+
+	public function getLibStatutBilled()
+	{
+	    global $langs;
+
+	    $langs->load('bills');
+	    $out = '';
+
+	    if (empty($this->billed)) $out .= img_picto($langs->trans('ToBill'), 'statut1');
+	    else $out .= img_picto($langs->trans('Billed'), 'statut4');
+
+	    return $out;
+	}
+
+	/**
+	 * @param int $sessid Id de la session
+	 * Retourne le nombre de créneaux du calendrier marqués "facturé"
+	 */
+	public static function countBilledshedule($sessid)
+	{
+	    global $db;
+
+	    if (empty($sessid)) return -1;
+
+	    $sql = "SELECT count(billed) as billed FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier WHERE billed = 1 AND fk_agefodd_session =  ".$sessid;
+	    $res = $db->query($sql);
+	    if ($res)
+	    {
+	        $obj = $db->fetch_object($res);
+	        if ($obj) return $obj->billed;
+	        else return 0;
+	    }
+	    else return -1;
+	}
+
+	/**
+	 * @param int $sessid Id de la session
+	 * Retourne le nombre de créneaux du calendrier de session
+	 */
+	public static function countTotalshedule($sessid)
+	{
+	    global $db;
+
+	    if (empty($sessid)) return -1;
+
+	    $sql = "SELECT COUNT(rowid) as total FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier WHERE fk_agefodd_session = ".$sessid;
+	    $res = $db->query($sql);
+	    if ($res)
+	    {
+	        $obj = $db->fetch_object($res);
+	        if ($obj) return $obj->total;
+	        else return 0;
+	    }
+	    else return -1;
 	}
 }
 class Agefodd_sesscalendar_line {

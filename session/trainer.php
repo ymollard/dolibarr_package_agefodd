@@ -606,7 +606,8 @@ if (! $res)
 
 													for($j = 0; $j < $blocNumber; $j ++) {
 
-														$totaltime += $trainer_calendar->lines[$j]->heuref - $trainer_calendar->lines[$j]->heured;
+													    if ($trainer_calendar->lines[$j]->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED) continue;
+													    $totaltime += $trainer_calendar->lines[$j]->heuref - $trainer_calendar->lines[$j]->heured;
 
 														if ($j > 6) {
 															$styledisplay = " style=\"display:none\" class=\"otherdatetrainer\" ";

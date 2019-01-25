@@ -1140,6 +1140,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " WHERE formtime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND formtime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5,6)";
 		$sql .= " AND sess.rowid IN (SELECT DISTINCT fk_session_agefodd FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire)";
+		$sql .= " AND formtime.status <> '-1'"; // ne pas compter les heures des créneaux annulés
 		$sql .= " GROUP BY fromtype.intitule";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);

@@ -309,6 +309,8 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$agf->commercialid = GETPOST('commercial', 'int');
 		$agf->contactid = GETPOST('contact', 'int');
 
+		$agf->trainer_ext_information = dol_htmlcleanlastbr(GETPOST('trainer_ext_information'));
+
 		if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 			$agf->sourcecontactid = $agf->contactid;
 		}
@@ -730,9 +732,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						'add-customer-contact' => 'disabled'
 				)
 		);
-		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
+		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events, 0, 'minwidth100','','',2);
 	} else {
-		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1);
+		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, array(), 0, 'minwidth100','','',2);
 	}
 	print '</td></tr>';
 
@@ -768,7 +770,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					'add-customer-contact' => 'disabled'
 			)
 	);
-	print $form->select_company($fk_soc_crea, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
+	print $form->select_company($fk_soc_crea, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events, 0, 'minwidth100','','',2);
 	print '</td></tr>';
 
 	print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
@@ -789,7 +791,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . $form->textwithpicto('', $langs->trans("AgfTypeEmployeeHelp"), 1, 'help') . '</td>';
 	print '<td>';
-	print $form->select_company($fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
+	print $form->select_company($fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array(), 0, 'minwidth100','','',2);
 	print '</td></tr>';
 
 	print '<tr class="order_product"><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
@@ -1180,6 +1182,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print $formAgefodd->select_session_status($agf->status, "session_status", 't.active=1');
 					print '</td></tr>';
 
+					if (!empty($conf->externalaccess->enabled)) {
+						require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+						print '<tr class="order_trainer_ext_information"><td valign="top">' . $langs->trans("AgfTrainerExternalMessage") . '</td>';
+						print '<td>';
+						$doleditor = new DolEditor('trainer_ext_information', $agf->trainer_ext_information, '', 160, 'dolibarr_notes', 'In', true, false, 1, 4, 90);
+						$doleditor->Create();
+						print '</td></tr>';
+					}
+
 					if (! empty($extrafields->attribute_label)) {
 						print $agf->showOptionals($extrafields, 'edit');
 					}
@@ -1197,6 +1208,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						print_barre_liste($langs->trans("AgfCost"), "", "", "", "", "", '', 0);
 						// print '<div class="tabBar">';
 						print '<table class="border" width="100%">';
+
+						print '<tr><td width="20%">' . $langs->trans("AgfCoutFormation") . '</td>';
+						print '<td><input size="6" type="text" class="flat" name="sellprice" value="' . price($agf->sell_price_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . ' ' . $other_amount . '</td></tr>';
+
 						print '<tr><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
 						print '<td><input size="6" type="text" class="flat" name="costtrainer" value="' . price($agf->cost_trainer_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
 
@@ -1205,8 +1220,6 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						print '<tr><td width="20%">' . $langs->trans("AgfCoutDeplacement") . '</td>';
 						print '<td><input size="6" type="text" class="flat" name="costtrip" value="' . price($agf->cost_trip_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
 
-						print '<tr><td width="20%">' . $langs->trans("AgfCoutFormation") . '</td>';
-						print '<td><input size="6" type="text" class="flat" name="sellprice" value="' . price($agf->sell_price_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . ' ' . $other_amount . '</td></tr>';
 						print '</table>';
 						// print '</div>';
 					}
@@ -1497,11 +1510,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 									}
 
 									print '</table>';
-									
+
 									print '</td>';
-									
+
 								}
-								
+
 							}
 							print '</tr>';
 						}
