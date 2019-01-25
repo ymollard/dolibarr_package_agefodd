@@ -326,13 +326,21 @@ class Agsession extends CommonObject
 			return $this->id;
 		}
 	}
+
+	/**
+	 *
+	 * @param int $fk_agsession
+	 * @param int $fk_stagiaire
+	 * @param array $filters
+	 * @return number
+	 */
 	public static function getStaticSumDureePresence($fk_agsession, $fk_stagiaire = null, $filters = array()) {
 		global $db;
 
 		$duree = 0;
-		
+
 		$qualified = array();
-		
+
 		if (!empty($filters))
 		{
 		    $sql = "SELECT DISTINCT s.rowid";
@@ -348,21 +356,23 @@ class Agsession extends CommonObject
 		        $sql.= " AND sf.rowid = ".$db->escape($filters['formateur']);
 		    }
 		    if (isset($filters['excludeCanceled'])) $sql.= " AND s.status <> '-1'";
-		    
+
 		    $resql = $db->query($sql);
 		    if ($resql) {
 		        while ($obj = $db->fetch_object($resql)) $qualified[] = $obj->rowid;
+		    } else {
+	    		dol_syslog('Error:'.__METHOD__ . $db->lasterror(), LOG_ERR);
 		    }
 		}
-		
+
 		$agfssh = new Agefoddsessionstagiaireheures($db);
 		$agfssh->fetchAllBy($fk_agsession, 'fk_session');
 		if (! empty($agfssh->lines)) {
 			foreach ( $agfssh->lines as &$line ) {
 				if (! empty($fk_stagiaire) && $line->fk_stagiaire != $fk_stagiaire) continue;
-				
+
 				//if ($excludeCanceled && in_array($line->fk_calendrier, $canceled)) continue;
-				
+
 				if (!empty($filters))
 				{
 				    if (in_array($line->fk_calendrier, $qualified)){
@@ -393,7 +403,7 @@ class Agsession extends CommonObject
 	    {
 	        $sql .= " AND agfsc.status NOT IN ('". implode("','", $excluded)."')";
 	    }
-	    $sql.=" GROUP BY agfsc.calendrier_type";
+	    $sql.=" GROUP BY agfsc.calendrier_type, c.label";
 
 	    $TDuree = array();
 
@@ -404,6 +414,8 @@ class Agsession extends CommonObject
 	        {
 	            $TDuree[$obj->type] = $obj->heures;
 	        }
+	    } else {
+	    	dol_syslog('Error:'.__METHOD__ . $db->lasterror(), LOG_ERR);
 	    }
 
 	    return $TDuree;
@@ -3006,7 +3018,7 @@ class Agsession extends CommonObject
 		$sql .= " ON f.fk_socpeople = socpf.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON s.status = dictstatus.rowid";
-		
+
 		if ($filter['type_affect'] == 'thirdparty') {
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
@@ -3683,7 +3695,7 @@ class Agsession extends CommonObject
 			$old_date = 0;
 			$duree = 0;
 			foreach($calendrier->lines as $line_cal) {
-			    
+
 			    if ($line_cal->status == Agefodd_sesscalendar::STATUS_CANCELED) continue; // ne pas prendre en compte les créneaux annulés
 				if ($i > 6) {
 					$styledisplay = " style=\"display:none\" class=\"otherdate\" ";
@@ -5299,7 +5311,7 @@ class Agsession extends CommonObject
 			$stagiaires->fetch_stagiaire_per_session($this->id, $socid);
 			$this->TStagiairesSessionSoc = $stagiaires->lines;
 		}
-		
+
 		if(empty($this->TStagiairesSessionSocPresent) && !empty($this->TStagiairesSessionSoc)) {
 		    dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 		    $stagiaires = new Agefodd_session_stagiaire($db);
