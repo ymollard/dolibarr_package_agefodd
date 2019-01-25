@@ -210,7 +210,7 @@ class Agsession extends CommonObject
 		$sql .= "fk_product,";
 		$sql .= "status,";
 		$sql .= "duree_session,";
-		$sql .= "intitule_custo";
+		$sql .= "intitule_custo,";
 		$sql .= "trainer_ext_information";
 		$sql .= ") VALUES (";
 		$sql .= " " . (! isset($ref) ? "''" : "'" . $ref . "'") . ",";
