@@ -729,17 +729,42 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			</div>
 			<div class="form-group">
 				<label for="status">Status</label>
-				<select '.($action == 'view' ? 'disabled' : '').' class="form-control" id="status" name="status">
+				<select '.($action == 'view' ? 'disabled' : '').' class="form-control" id="status" name="status" >
 					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_DRAFT ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_DRAFT.'">'.$langs->trans('AgfStatusCalendar_previsionnel').'</option>
 					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, 0).'</option>
                     <option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_MISSING.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_MISSING, 0).'</option>
 					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CANCELED, 0).'</option>
 				</select>
+
 			</div>
 			<div class="form-group">
 				<label for="status">Type</label>
 				'.$formAgefodd->select_calendrier_type($calendrier_type, 'code_c_session_calendrier_type', true, ($action == 'view' ? 'disabled' : ''), 'form-control').'
 			</div>
+
+			<script>
+			$( document ).ready(function() {
+				if($("#status").val() == \''.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'\')
+				{
+					$("#code_c_session_calendrier_type").prop(\'required\',true);
+				} else {
+					$("#code_c_session_calendrier_type").prop(\'required\',false);
+				}
+				$("#status").change(function() {
+
+				   	var formStatus = $(this).val();
+
+					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'\')
+					{
+						$("#code_c_session_calendrier_type").prop(\'required\',true);
+					} else {
+						$("#code_c_session_calendrier_type").prop(\'required\',false);
+					}
+
+				});
+			});
+
+			</script>
 			';
 
 	$stagiaires = new Agefodd_session_stagiaire($db);
