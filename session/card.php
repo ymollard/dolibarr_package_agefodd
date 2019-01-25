@@ -732,9 +732,9 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						'add-customer-contact' => 'disabled'
 				)
 		);
-		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events);
+		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events, 0, 'minwidth100','','',2);
 	} else {
-		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1);
+		print $form->select_company($fk_soc_crea, 'fk_soc', '', 'SelectThirdParty', 1, 0, array(), 0, 'minwidth100','','',2);
 	}
 	print '</td></tr>';
 
@@ -770,7 +770,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					'add-customer-contact' => 'disabled'
 			)
 	);
-	print $form->select_company($fk_soc_crea, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events);
+	print $form->select_company($fk_soc_crea, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0, $events, 0, 'minwidth100','','',2);
 	print '</td></tr>';
 
 	print '<tr class="order_typeRequesterContact"><td>' . $langs->trans("AgfTypeRequesterContact") . '</td>';
@@ -791,7 +791,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '<tr class="order_typeEmployee"><td>' . $langs->trans("AgfTypeEmployee") . $form->textwithpicto('', $langs->trans("AgfTypeEmployeeHelp"), 1, 'help') . '</td>';
 	print '<td>';
-	print $form->select_company($fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array());
+	print $form->select_company($fk_soc_employer, 'fk_soc_employer', '', 'SelectThirdParty', 1, 0, array(), 0, 'minwidth100','','',2);
 	print '</td></tr>';
 
 	print '<tr class="order_product"><td width="20%">' . $langs->trans("AgfProductServiceLinked") . '</td><td>';
