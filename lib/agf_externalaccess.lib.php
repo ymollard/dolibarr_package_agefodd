@@ -442,7 +442,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 		}
 		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CANCELED)
 		{
-			$duree_presence_comptabilise_cancel += $duree_declared;
+			$duree_presence_comptabilise_cancel += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
 			$duree_presence_max_comptabilise += $duree_max;
 		}
 		else $duree_presence_draft += $duree_declared;
