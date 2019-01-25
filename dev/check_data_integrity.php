@@ -620,8 +620,8 @@ if ($resql) {
 
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur', 'datec');
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'datec');
-_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'date_session');
-_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'date_session');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'date_session' ,'DATE');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'date_session', 'DATE');
 _datec_check(MAIN_DB_PREFIX.'agefodd_formateur_category', 'datec');
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_adminsitu', 'dated');
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_adminsitu', 'datea');
@@ -634,11 +634,18 @@ llxFooter();
 $db->close();
 
 
-function _datec_check($table, $datefield){
+function _datec_check($table, $datefield, $type='DATETIME'){
 
     global $db;
+
+    if ($type=='DATETIME') {
+    	$hesh='0000-00-00 00:00:00';
+    } elseif($type=='DATE') {
+    	$hesh='0000-00-00';
+    }
+
     // datec agefodd_session_formateur calendrier
-    $sql = 'SELECT COUNT(*) as nb FROM '.$table.' WHERE CAST('.$datefield.' AS CHAR(20)) = \'0000-00-00 00:00:00\';';
+    $sql = 'SELECT COUNT(*) as nb FROM '.$table.' WHERE CAST('.$datefield.' AS CHAR('.(strlen($hesh)+1).')) = \''.$hesh.'\';';
     //echo $sql;
     $resql = $db->query($sql);
     if ($resql) {
@@ -649,8 +656,8 @@ function _datec_check($table, $datefield){
 
                 print 'Certaines lignes de la table '.$table.' utilisent une valeur de date incompatible ';
                 print '<BR>Suggestion de correction';
-                print '<BR>ALTER TABLE '.$table.' CHANGE '.$datefield.' '.$datefield.' DATETIME NULL DEFAULT NULL;';
-                print '<BR>UPDATE '.$table.' SET '.$datefield.' = NULL   WHERE CAST('.$datefield.' AS CHAR(20)) = \'0000-00-00 00:00:00\'; <BR><BR><BR>';
+                print '<BR>ALTER TABLE '.$table.' CHANGE '.$datefield.' '.$datefield.' '.$type.' NULL DEFAULT NULL;';
+                print '<BR>UPDATE '.$table.' SET '.$datefield.' = NULL   WHERE CAST('.$datefield.' AS CHAR('.(strlen($hesh)+1).')) = \''.$hesh.'\'; <BR><BR><BR>';
 
             }
 

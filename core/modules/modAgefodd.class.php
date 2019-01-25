@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.3.5';
+		$this->version = '4.3.6';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -675,6 +675,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][1] = "chaine";
 		$this->const[$r][2] = '0';
 		$this->const[$r][3] = 'default type';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
+		$r ++;
+		$this->const[$r][0] = "AGF_HELP_LINK";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'http://wiki.atm-consulting.fr/index.php/Agefodd_V2/Documentation_utilisateur';
+		$this->const[$r][3] = 'help wikipage';
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
@@ -1669,21 +1677,21 @@ class modAgefodd extends DolibarrModules
 		    $this->rights[$r][2] = 'r';
 		    $this->rights[$r][3] = 0;
 		    $this->rights[$r][4] = 'external_trainer_read';
-		    
+
 		    $r ++;
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerWrite';
 		    $this->rights[$r][2] = 'w';
 		    $this->rights[$r][3] = 0;
 		    $this->rights[$r][4] = 'external_trainer_write';
-		    
+
 		    $r ++;
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerDownload';
 		    $this->rights[$r][2] = 'r';
 		    $this->rights[$r][3] = 0;
 		    $this->rights[$r][4] = 'external_trainer_download';
-		    
+
 		    $r ++;
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerUpload';
@@ -1691,7 +1699,7 @@ class modAgefodd extends DolibarrModules
 		    $this->rights[$r][3] = 0;
 		    $this->rights[$r][4] = 'external_trainer_upload';
 		}
-		
+
 		// Main menu entries
 		$this->menus = array();
 		$r = 0;
@@ -2367,7 +2375,7 @@ class modAgefodd extends DolibarrModules
 				'target' => '',
 				'user' => 0
 		);
-		
+
 		$r ++;
 		$this->menu [$r] = array (
 		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',

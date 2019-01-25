@@ -112,6 +112,7 @@ class Agsession extends CommonObject
 	public $fk_soc_employer;
 	public $formrefint;
 	public $ref;
+	public $trainer_ext_information;
 
 	/**
 	 * Constructor
@@ -156,6 +157,9 @@ class Agsession extends CommonObject
 			$this->status = trim($this->status);
 		if (empty($this->status))
 			$this->status = $conf->global->AGF_DEFAULT_SESSION_STATUS;
+
+		if (!empty($this->$trainer_ext_information))
+			$this->$trainer_ext_information = trim($trainer_ext_information);
 
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -207,6 +211,7 @@ class Agsession extends CommonObject
 		$sql .= "status,";
 		$sql .= "duree_session,";
 		$sql .= "intitule_custo";
+		$sql .= "trainer_ext_information";
 		$sql .= ") VALUES (";
 		$sql .= " " . (! isset($ref) ? "''" : "'" . $ref . "'") . ",";
 		$sql .= " " . (empty($this->fk_soc) ? 'NULL' : $this->fk_soc) . ",";
@@ -229,7 +234,8 @@ class Agsession extends CommonObject
 		$sql .= " " . (empty($this->fk_product) ? 'NULL' : $this->fk_product) . ",";
 		$sql .= " " . (! isset($this->status) ? 'NULL' : $this->db->escape($this->status)) . ",";
 		$sql .= " " . (empty($this->duree_session) ? '0' : price2num($this->duree_session)) . ",";
-		$sql .= " " . (! isset($this->intitule_custo) ? 'NULL' : "'" . $this->db->escape($this->intitule_custo) . "'") . "";
+		$sql .= " " . (! isset($this->intitule_custo) ? 'NULL' : "'" . $this->db->escape($this->intitule_custo) . "'") . ",";
+		$sql .= " " . (empty($this->trainer_ext_information) ? 'NULL' : "'" . $this->db->escape($this->trainer_ext_information) . "'") . "";
 		$sql .= ")";
 		$this->db->begin();
 
@@ -386,6 +392,11 @@ class Agsession extends CommonObject
 		return $duree;
 	}
 
+	/**
+	 *
+	 * @param int $fk_agession
+	 * @return NULL[]
+	 */
 	public static function getStaticSumExplodeDureePresence($fk_agession)
 	{
 	    global $db, $conf;
@@ -421,6 +432,11 @@ class Agsession extends CommonObject
 	    return $TDuree;
 	}
 
+	/**
+	 *
+	 * @param int $fk_stagiaire
+	 * @return number
+	 */
 	public function getSumDureePresence($fk_stagiaire=null)
 	{
 		return self::getStaticSumDureePresence($this->id, $fk_stagiaire);
@@ -605,6 +621,7 @@ class Agsession extends CommonObject
 		$sql .= " t.fk_product,";
 		$sql .= " t.duree_session,";
 		$sql .= " t.intitule_custo,";
+		$sql .= " t.trainer_ext_information,";
 		$sql .= " t.status,dictstatus.intitule as statuslib, dictstatus.code as statuscode,";
 		$sql .= " p.rowid as placeid, p.ref_interne as placecode,";
 		$sql .= " us.lastname as commercialname, us.firstname as commercialfirstname, ";
@@ -729,6 +746,7 @@ class Agsession extends CommonObject
 				}
 				$this->statuslib = $label;
 				$this->intitule_custo = $obj->intitule_custo;
+				$this->trainer_ext_information = $obj->trainer_ext_information;
 				$this->duree_session = $obj->duree_session;
 			}
 			$this->db->free($resql);
@@ -1794,6 +1812,8 @@ class Agsession extends CommonObject
 			$this->duree_session = trim($this->duree_session);
 		if (isset($this->intitule_custo))
 			$this->intitule_custo = trim($this->intitule_custo);
+		if (isset($this->trainer_ext_information))
+			$this->trainer_ext_information = trim($this->trainer_ext_information);
 		if (isset($this->ref))
 			$this->ref = trim($this->ref);
 
@@ -1868,7 +1888,8 @@ class Agsession extends CommonObject
 			$sql .= " fk_product=" . (! empty($this->fk_product) ? $this->fk_product : "null") . ",";
 			$sql .= " status=" . (isset($this->status) ? $this->status : "null") . ",";
 			$sql .= " duree_session=" . (! empty($this->duree_session) ? price2num($this->duree_session) : "0") . ",";
-			$sql .= " intitule_custo=" . (! empty($this->intitule_custo) ? "'" . $this->db->escape($this->intitule_custo) . "'" : "null") . "";
+			$sql .= " intitule_custo=" . (! empty($this->intitule_custo) ? "'" . $this->db->escape($this->intitule_custo) . "'" : "null") . ",";
+			$sql .= " trainer_ext_information=" . (! empty($this->trainer_ext_information) ? "'" . $this->db->escape($this->trainer_ext_information) . "'" : "null") . "";
 
 			$sql .= " WHERE rowid=" . $this->id;
 			$this->db->begin();
@@ -2363,6 +2384,7 @@ class Agsession extends CommonObject
 		$sql .= " ,so.nom as socname";
 		$sql .= " ,f.rowid as trainerrowid";
 		$sql .= " ,s.intitule_custo";
+		$sql .= " ,s.trainer_ext_information";
 		$sql .= " ,s.fk_soc_employer";
 		$sql .= " ,s.duree_session";
 		$sql .= " ,socp.rowid as contactid";
@@ -2475,6 +2497,18 @@ class Agsession extends CommonObject
 			foreach ( $filter as $key => $value ) {
 				if (($key == 'YEAR(s.dated)') || ($key == 'MONTH(s.dated)')) {
 					$sql .= ' AND ' . $key . ' IN (' . $value . ')';
+				} elseif (in_array($key, array('s.dated', 's.dated2')) && !empty($filter['s.dated']) && !empty($filter['s.dated2'])) {
+					if ($key == 's.dated') {
+						$sql.= ' AND s.dated BETWEEN \''.$this->db->escape($filter['s.dated']).'\' AND \''.$this->db->escape($filter['s.dated2']).'\'';
+					} else {
+						// do nothing more
+					}
+				} elseif (in_array($key, array('s.datef', 's.datef2')) && !empty($filter['s.datef']) && !empty($filter['s.datef2'])) {
+					if ($key == 's.datef') {
+						$sql.= ' AND s.datef BETWEEN \''.$this->db->escape($filter['s.datef']).'\' AND \''.$this->db->escape($filter['s.datef2']).'\'';
+					} else {
+						// do nothing more
+					}
 				} elseif ($key == 's.dated>') {
 					if ($this->db->type == 'pgsql') {
 						$intervalday = "'" . $value . " DAYS'";
@@ -2589,6 +2623,7 @@ class Agsession extends CommonObject
 					$line->nb_cancelled = $obj->nb_cancelled;
 					$line->duree_session = $obj->duree_session;
 					$line->intitule_custo = $obj->intitule_custo;
+					$line->trainer_ext_information = $obj->trainer_ext_information;
 					$line->contactid = $obj->contactid;
 					$line->sell_price = $obj->sell_price;
 					$line->invoice_amount = $obj->invoice_amount;
@@ -3128,7 +3163,7 @@ class Agsession extends CommonObject
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 
-		dol_syslog(get_class($this) . "::fetch_all_by_soc", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__. ' '.$filter['type_affect'], LOG_DEBUG);
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
@@ -3377,7 +3412,7 @@ class Agsession extends CommonObject
 				$sql .= " AND fourninvoice.rowid = " . $fourninvoiceid;
 				$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 				$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
-				$sql .= " ,fourninvoice.ref ";
+				$sql .= " ,fourninvoice.ref, ord_inv.rowid ";
 				if (! empty($sortfield)) {
 					$sql .= " ORDER BY $sortfield $sortorder ";
 				}
@@ -3660,6 +3695,11 @@ class Agsession extends CommonObject
 			}
 			print '</td>';
 			print '</tr>';
+		}
+
+		if (! $user->rights->agefodd->session->trainer) {
+			print '<tr class="order_trainer_ext_information"><td>' . $langs->trans("AgfTrainerExternalMessage") . '</td><td colspan="' . $colspan . '">';
+			print $this->trainer_ext_information . '</td></tr>';
 		}
 
 		/*print '<tr class="order_status"><td>' . $langs->trans("AgfStatusSession") . '</td><td>';
@@ -5313,8 +5353,6 @@ class Agsession extends CommonObject
 		}
 
 		if(empty($this->TStagiairesSessionSocPresent) && !empty($this->TStagiairesSessionSoc)) {
-		    dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-		    $stagiaires = new Agefodd_session_stagiaire($db);
 		    if (is_array($this->TStagiairesSessionSoc) && count($this->TStagiairesSessionSoc)>0) {
 		        foreach($this->TStagiairesSessionSoc as $linesta) {
 		            if (($linesta->status_in_session == 3 || $linesta->status_in_session == 4)) {
@@ -5687,6 +5725,7 @@ class AgfSessionLine
 	public $datef;
 	public $intitule;
 	public $intitule_custom;
+	public $trainer_ext_information;
 	public $ref;
 	public $ref_interne;
 	public $color;

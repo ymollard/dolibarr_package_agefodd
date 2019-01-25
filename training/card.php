@@ -39,7 +39,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 require_once '../class/agefodd_formation_catalogue_modules.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 
-require_once (DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php');
+require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 
 // Security check
 if (! $user->rights->agefodd->agefodd_formation_catalogue->lire)

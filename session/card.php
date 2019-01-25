@@ -309,6 +309,8 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$agf->commercialid = GETPOST('commercial', 'int');
 		$agf->contactid = GETPOST('contact', 'int');
 
+		$agf->trainer_ext_information = dol_htmlcleanlastbr(GETPOST('trainer_ext_information'));
+
 		if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 			$agf->sourcecontactid = $agf->contactid;
 		}
@@ -1180,6 +1182,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print $formAgefodd->select_session_status($agf->status, "session_status", 't.active=1');
 					print '</td></tr>';
 
+					if (!empty($conf->externalaccess->enabled)) {
+						require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+						print '<tr class="order_trainer_ext_information"><td valign="top">' . $langs->trans("AgfTrainerExternalMessage") . '</td>';
+						print '<td>';
+						$doleditor = new DolEditor('trainer_ext_information', $agf->trainer_ext_information, '', 160, 'dolibarr_notes', 'In', true, false, 1, 4, 90);
+						$doleditor->Create();
+						print '</td></tr>';
+					}
+
 					if (! empty($extrafields->attribute_label)) {
 						print $agf->showOptionals($extrafields, 'edit');
 					}
@@ -1197,6 +1208,10 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						print_barre_liste($langs->trans("AgfCost"), "", "", "", "", "", '', 0);
 						// print '<div class="tabBar">';
 						print '<table class="border" width="100%">';
+
+						print '<tr><td width="20%">' . $langs->trans("AgfCoutFormation") . '</td>';
+						print '<td><input size="6" type="text" class="flat" name="sellprice" value="' . price($agf->sell_price_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . ' ' . $other_amount . '</td></tr>';
+
 						print '<tr><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
 						print '<td><input size="6" type="text" class="flat" name="costtrainer" value="' . price($agf->cost_trainer_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
 
@@ -1205,8 +1220,6 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						print '<tr><td width="20%">' . $langs->trans("AgfCoutDeplacement") . '</td>';
 						print '<td><input size="6" type="text" class="flat" name="costtrip" value="' . price($agf->cost_trip_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . '</td></tr>';
 
-						print '<tr><td width="20%">' . $langs->trans("AgfCoutFormation") . '</td>';
-						print '<td><input size="6" type="text" class="flat" name="sellprice" value="' . price($agf->sell_price_planned) . '" />' . ' ' . $langs->getCurrencySymbol($conf->currency) . ' ' . $other_amount . '</td></tr>';
 						print '</table>';
 						// print '</div>';
 					}
@@ -1497,11 +1510,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 									}
 
 									print '</table>';
-									
+
 									print '</td>';
-									
+
 								}
-								
+
 							}
 							print '</tr>';
 						}
@@ -1737,7 +1750,7 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfModifyTrainer') . '</a>';
 		}
 
-		if ($user->rights->agefodd->creer && ! $user->rights->agefodd->session->trainer) {
+		if ($user->rights->agefodd->supprimer && ! $user->rights->agefodd->session->trainer) {
 			print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
 		} else {
 			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';

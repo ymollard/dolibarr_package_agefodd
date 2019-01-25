@@ -1157,3 +1157,4 @@ AgfAvoidNotLinkedInvoices=Do not consider the invoices wich are not linked to a 
 AgfHeuresDeclareesEclateesParType=Explode declared hours by type in ATM external access module
 AgfManageSessionCalendarFacturation=Manage billing status on session calendar
 AgfSheduleBillingState=Billing state of schedules
+AgfTrainerExternalMessage=Information portail
