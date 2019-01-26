@@ -505,6 +505,13 @@ if (! $res)
 					print '<th class="liste_titre actions">&nbsp;</th>';
 					print '</tr>';
 
+					// Create as many as session caldendar
+					$agf_session_cal = new Agefodd_sesscalendar($db);
+					$result=$agf_session_cal->fetch_all($agf->id);
+					if ($result<0) {
+						setEventMessages(null,$agf_session_cal->errors,'errors');
+					}
+
 					// Display edit and update trainer
 					$formateurs = new Agefodd_session_formateur($db);
 					$nbform = $formateurs->fetch_formateur_per_session($agf->id);
@@ -605,8 +612,22 @@ if (! $res)
 													$totaltime = 0;
 
 													for($j = 0; $j < $blocNumber; $j ++) {
+														//Find if time is solo plateform for trainee
+														$platform_time=false;
+														if (is_array($agf_session_cal->lines) && count($agf_session_cal->lines)>0) {
+															foreach ($agf_session_cal->lines as $line_cal) {
 
-													    if ($trainer_calendar->lines[$j]->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED) continue;
+																if ($line_cal->calendrier_type=='AGF_TYPE_PLATF' &&  (($trainer_calendar->lines[$j]->heured <= $line_cal->heured && $trainer_calendar->lines[$j]->heuref >= $line_cal->heuref)
+																|| ($trainer_calendar->lines[$j]->heured >= $line_cal->heured && $trainer_calendar->lines[$j]->heuref <= $line_cal->heuref)
+																		|| ($trainer_calendar->lines[$j]->heured <= $line_cal->heured && $trainer_calendar->lines[$j]->heuref <= $line_cal->heuref && $trainer_calendar->lines[$j]->heuref > $line_cal->heured)
+																		|| ($trainer_calendar->lines[$j]->heured >= $line_cal->heured && $trainer_calendar->lines[$j]->heuref >= $line_cal->heuref && $trainer_calendar->lines[$j]->heured < $line_cal->heuref))) {
+																	$platform_time = true;
+																	break;
+																}
+															}
+														}
+
+														if ($trainer_calendar->lines[$j]->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED || $platform_time) continue;
 													    $totaltime += $trainer_calendar->lines[$j]->heuref - $trainer_calendar->lines[$j]->heured;
 
 														if ($j > 6) {
@@ -634,22 +655,9 @@ if (! $res)
 														$old_date = $trainer_calendar->lines[$j]->date_session;
 													}
 
-													/*foreach ( $trainer_calendar->lines as $line_trainer_calendar ) {
-													 $totaltime += $line_trainer_calendar->heuref - $line_trainer_calendar->heured;
-													 $hourhtml .= '<tr><td>';
-													 $hourhtml .= dol_print_date($line_trainer_calendar->heured, 'dayhourtext');
-													 $hourhtml .= '</td></tr>';
-													 if ($line_trainer_calendar->heured != $line_trainer_calendar->heuref) {
-													 $hourhtml .= '<tr><td>';
-													 $hourhtml .= dol_print_date($line_trainer_calendar->heuref, 'dayhourtext');
-													 $hourhtml .= '</td></tr>';
-													 }
-													 }*/
-
-
 													if ($blocNumber > 6) {
 														$hourhtml .= '<tr><td colapsn="2" style="font-weight: bold; font-size:150%; cursor:pointer" class="switchtimetrainer">+</td></tr>';
-														
+
 													}
 													$hourhtml .= '</table>'."\n";
 
@@ -687,7 +695,7 @@ if (! $res)
 
 									print '</tr>' . "\n";
 						}
-						
+
 						print '<script>' . "\n";
 						print '$(document).ready(function () { ' . "\n";
 						print '		$(".switchtimetrainer").click(function(){' . "\n";
