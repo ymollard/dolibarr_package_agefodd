@@ -599,7 +599,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	    if ($status == self::STATUS_DRAFT)
 	    {
 	        if ($mode == 1) $out.= img_picto('', 'statut0').' ';
-	        $out.= $langs->trans('AgfStatusCalendar_draft');
+	        $out.= $langs->trans('AgfStatusCalendar_previsionnel');
 	    }
 	    else if ($status == self::STATUS_CONFIRMED)
 	    {

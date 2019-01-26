@@ -577,13 +577,7 @@ if ($id) {
 					print ' - ' . $langs->trans("AgfPeriodTimeE") . ' ';
 					print $formAgefodd->select_time(dol_print_date($calendrier->lines[$i]->heuref, 'hour'), 'datef');
 					print '</td>';
-					$TStatus = array(
-							Agefodd_sesscalendar::STATUS_DRAFT => $langs->trans('AgfStatusCalendar_previsionnel'),
-							Agefodd_sesscalendar::STATUS_CONFIRMED => $langs->trans('AgfStatusCalendar_confirmed'),
-							Agefodd_sesscalendar::STATUS_MISSING => $langs->trans('AgfStatusCalendar_missing'),
-							Agefodd_sesscalendar::STATUS_CANCELED => $langs->trans('AgfStatusCalendar_canceled')
-					);
-					print '<td>'.$form->selectarray('calendar_status', $TStatus, $calendrier->lines[$i]->status).'</td>';
+					print '<td>'.$formAgefodd->select_calendrier_status($calendrier->lines[$i]->status).'</td>';
 					print '<td>'.$formAgefodd->select_calendrier_type($calendrier->lines[$i]->calendrier_type).'</td>';
 					if (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION)) print '<td></td>';
 					if (!empty($user->rights->agefodd->modifier))

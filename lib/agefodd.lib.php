@@ -713,30 +713,30 @@ function agf_report_by_customer_prepare_head() {
 
 function agf_report_calendar_by_customer_prepare_head() {
     global $langs, $conf, $user;
-    
+
     $h = 0;
     $head = array ();
-    
+
     $head[$h][0] = dol_buildpath("/agefodd/report/report_calendar_by_customer.php", 1);
     $head[$h][1] = $langs->trans("AgfMenuReportCalendarByCustomer");
     $head[$h][2] = 'AgfMenuReportCalendarByCustomer';
     $h++;
-    
+
     $head[$h][0] = dol_buildpath("/agefodd/report/report_calendar_by_customer_help.php", 1);
     $head[$h][1] = $langs->trans("Help");
     $head[$h][2] = 'help';
     $h++;
-    
+
     $object=new stdClass();
-    
+
     // Show more tabs from modules
     // Entries must be declared in modules descriptor with line
     // $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
     // $this->tabs = array('entity:-tabname);   												to remove a tab
     complete_head_from_modules($conf,$langs,$object,$head,$h,'AgfMenuReportCalendarByCustomer');
-    
+
     complete_head_from_modules($conf,$langs,$object,$head,$h,'AgfMenuReportCalendarByCustomer','remove');
-    
+
     return $head;
 }
 
@@ -1900,10 +1900,10 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         {
             $billed = Agefodd_sesscalendar::countBilledshedule($object->id);
             $total = Agefodd_sesscalendar::countTotalshedule($object->id);
-            
+
             if (empty($total)) $roundedBilled = 0;
             else $roundedBilled = round($billed*100/$total);
-            
+
             $morehtmlstatus.= displayProgress($roundedBilled, $langs->trans('AgfSheduleBillingState'). " : ", $billed."/".$total, '9em');
         }
         if (! $user->rights->agefodd->session->trainer) {
@@ -2089,16 +2089,16 @@ function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $stri
 function displayProgress($percentProgress = 0, $title = '', $insideDisplay = "", $width="")
 {
     $out = '';
-    
+
     if (!empty($title)) $out.= $title;
-    
+
     $out.= '<div class="agefodd-progress-group"';
-    if (!empty($width)) $out.='style="width:'.$width.';"';
+    if (!empty($width)) $out.=' style="width:'.$width.';"';
     $out.='>
            <div class="agefodd-progress">
              <div class="agefodd-progress-bar" style="width: '.$percentProgress.'%">'.(!empty($insideDisplay) ? $insideDisplay : '').'</div>
            </div>
          </div><br/>';
-    
+
     return $out;
 }
