@@ -1498,3 +1498,7 @@ AgfActivateExternalAccessForAgefodd=Activer l'accès externe aux données du mod
 AgfActivateAccessForTrainers=Activer l'accès externe pour les formateurs (il est nécessaire d'attribuer des droits utilisateurs aux formateurs)
 
 AgfTypeTime=Agefodd - Modalité de formation des creneaux horaire de session
+
+AgfModels=Modéle de documents
+AgfSelectDocEditModel=Quel modèle de documents voulez vous utiliser ?
+AgfDocModelStandard = Modèle standard

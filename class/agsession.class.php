@@ -5513,22 +5513,23 @@ class Agsession extends CommonObject
 			$this->formateur_session_societe = $formateurs->thirdparty;
 		}
 
-		if (! empty($id_trainee)) {
-			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 
-			$trainee = new Agefodd_stagiaire($db);
-			$trainee->fetch($id_trainee);
-			$this->stagiaire = $trainee;
+		if(!empty($id_trainee)) {
+		    dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+		    $trainee = new Agefodd_stagiaire($db);
+		    $trainee->fetch($id_trainee);
+		    $this->stagiaire = $trainee;
 		}
 
 		if (! empty($socid)) {
 			$document_thirdparty = new Societe($db);
 			$document_thirdparty->fetch($socid);
+
 			$this->document_societe = $document_thirdparty;
 		}
 
-		foreach ( $conf->global as $conf_name => $osef ) {
 
+		foreach ( $conf->global as $conf_name => $osef ) {
 			if (strpos($conf_name, 'AGF_') !== false) {
 				$this->{$conf_name} = $conf->global->{$conf_name};
 			}
@@ -5541,6 +5542,12 @@ class Agsession extends CommonObject
 			exit();
 		}
 	}
+
+	/**
+	 *
+	 * @param boolean $use_lines
+	 * @return number
+	 */
 	public function getTTotalBySession($use_lines = false) {
 		global $conf, $db;
 
