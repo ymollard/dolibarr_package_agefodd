@@ -102,7 +102,6 @@ if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->cre
 		}
 	}
 
-
 	if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
 		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
 		if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
@@ -490,7 +489,7 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 	}
 }
 
-if ($action == 'generateall' && $user->rights->agefodd->creer) {
+if ($action == 'confirm_generateall' && $user->rights->agefodd->creer && $confirm=='yes') {
 	// Define output language
 
 	$typemodel = GETPOST('typemodel');
@@ -532,7 +531,13 @@ if ($action == 'generateall' && $user->rights->agefodd->creer) {
 				}
 			}
 
-			$result = agf_pdf_create($db, $id, '', $typemodel_override, $outputlangs, $file, $line->stagerowid, $cour);
+			$id_external_model=GETPOST('id_external_model_confirm');
+			if (!empty($id_external_model) || strpos($typemodel, 'rfltr_agefodd') !== false) {
+				$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
+				if(strpos($typemodel, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($typemodel, array('rfltr_agefodd_'=>''));
+			}
+
+			$result = agf_pdf_create($db, $id, '', $typemodel_override, $outputlangs, $file, $line->stagerowid, $cour, $path_external_model, $id_external_model);
 		} elseif ($typemodel == 'attestation_trainee' || $typemodel == 'attestationendtraining_trainee') {
 			setEventMessage($langs->trans('AgfOnlyPresentTraineeGetAttestation', $line->nom . ' ' . $line->prenom), 'warnings');
 		}
@@ -579,17 +584,17 @@ if (! empty($id)) {
 
 	// Display View mode
 	$head = session_prepare_head($agf);
-	
+
 	dol_fiche_head($head, 'document_trainee', $langs->trans("AgfSessionDetail"), 0, 'generic');
-	
+
 	dol_agefodd_banner_tab($agf, 'id');
 	print '<div class="underbanner clearboth"></div>';
-	
+
 	$result = $agf->fetch_societe_per_session($id);
 
 	if ($result>0) {
 		$idform = $agf->formid;
-		
+
 		// Put user on the right action block after reload
 		if (! empty($session_trainee_id)) {
 			print '<script type="text/javascript">
@@ -796,6 +801,22 @@ if (! empty($id)) {
 				setEventMessage($agf_trainee->error, 'errors');
 			}
 
+			if ($action == 'generateall' && $conf->referenceletters->enabled) {
+
+				if (class_exists('RfltrTools') && method_exists('RfltrTools','getAgefoddModelList')) {
+					$TModels = RfltrTools::getAgefoddModelList();
+					if (array_key_exists('rfltr_agefodd_'.GETPOST('typemodel'), $TModels)) {
+						$model_array=$TModels['rfltr_agefodd_'.GETPOST('typemodel')];
+					}
+				}
+				$model_array[0]=$langs->trans('AgfDocModelStandard');
+				$formquestion = array(
+						array('type' => 'select','name' => 'id_external_model_confirm','label' => $langs->trans("AgfModels"),'values' => $model_array),
+						array('type' => 'hidden','name' => 'typemodel','value' => GETPOST('typemodel')),
+				);
+				print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfSelectDocEditModel"), '', "confirm_generateall", $formquestion, '', 1, 210, 600);
+			}
+
 			$linecount = count($agf_trainee->lines);
 
 			for($i = 0; $i < $linecount; $i ++) {
@@ -821,21 +842,39 @@ if (! empty($id)) {
 						print '&nbsp;' . "\n";
 				}
 			}
-			
+
 			print '</div>' . "\n";
-			
+
 		}
 	} elseif ($result==0) {
 	    print '<div style="text-align:center"><br>'.$langs->trans('AgfThirdparyMandatory').'</div>';
 	} else {
 	    setEventMessages($agf->error, null, 'errors');
 	}
-	
+
 	if (!empty($linecount)){
+
+		//find if docedit model exits
+		$docedit_convtrainee_exists = $docedit_attestrainee_exists = $docedit_attesendtraining_trainee_exists = false;
+		if ($conf->referenceletters->enabled) {
+			if (class_exists('RfltrTools') && method_exists('RfltrTools','getAgefoddModelList')) {
+				$TModels = RfltrTools::getAgefoddModelList();
+				if (array_key_exists('rfltr_agefodd_convocation_trainee', $TModels)) {
+					$docedit_convtrainee_exists=true;
+				}
+				if (array_key_exists('rfltr_agefodd_attestation_trainee', $TModels)) {
+					$docedit_attestrainee_exists=true;
+				}
+				if (array_key_exists('rfltr_agefodd_attestationendtraining_trainee', $TModels)) {
+					$docedit_attesendtraining_trainee_exists=true;
+				}
+			}
+		}
+
 	    print '<div class="tabsAction">';
-	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=convocation_trainee">' . $langs->trans('AgfGenerateAllConvocation') . '</a>';
-	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=attestation_trainee">' . $langs->trans('AgfGenerateAllAttestation') . '</a>';
-	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=generateall&typemodel=attestationendtraining_trainee">' . $langs->trans('AgfGenerateAllAttestationEndTraining') . '</a>';
+	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action='.((!$docedit_convtrainee_exists)?'confirm_generateall&confirm=yes':'generateall').'&typemodel=convocation_trainee">' . $langs->trans('AgfGenerateAllConvocation') . '</a>';
+	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action='.((!$docedit_attestrainee_exists)?'confirm_generateall&confirm=yes':'generateall').'&typemodel=attestation_trainee">' . $langs->trans('AgfGenerateAllAttestation') . '</a>';
+	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action='.((!$docedit_attesendtraining_trainee_exists)?'confirm_generateall&confirm=yes':'generateall').'&typemodel=attestationendtraining_trainee">' . $langs->trans('AgfGenerateAllAttestationEndTraining') . '</a>';
 	    print '<BR>';
 	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=convocation_trainee">' . $langs->trans('AgfSendMailAllConvocation') . '</a>';
 	    print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&action=sendmassmail&typemodel=attestation_trainee">' . $langs->trans('AgfSendMailAllAttestation') . '</a>';
