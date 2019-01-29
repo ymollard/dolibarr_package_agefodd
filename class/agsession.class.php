@@ -3697,7 +3697,7 @@ class Agsession extends CommonObject
 			print '</tr>';
 		}
 
-		if (! $user->rights->agefodd->session->trainer) {
+		if (! $user->rights->agefodd->session->trainer && !empty($conf->global->AGF_EACCESS_ACTIVATE)) {
 			print '<tr class="order_trainer_ext_information"><td>' . $langs->trans("AgfTrainerExternalMessage") . '</td><td colspan="' . $colspan . '">';
 			print $this->trainer_ext_information . '</td></tr>';
 		}
