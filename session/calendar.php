@@ -657,7 +657,7 @@ if ($id) {
 			// Add new line from template
 			$tmpl_calendar = new Agefoddcalendrier($db);
 			$result = $tmpl_calendar->fetch_all();
-			if ($result) {
+			if ($result>=0) {
 				print '<tr class="liste_titre_filter">';
 				print '<td class="liste_titre">&nbsp;</td>';
 				print '<td class="liste_titre">'.$formAgefodd->select_calendrier_type('', 'up', true, 'onclick="$(\'#period_create .select_calendrier_type\').val(this.value);"').'</td>';
@@ -704,6 +704,8 @@ if ($id) {
 				print '</td>';
 
 				print '</tr>' . "\n";
+			} else {
+				setEventMessages(null,$tmpl_calendar->errors,'errors');
 			}
 
 			print '</table>';
