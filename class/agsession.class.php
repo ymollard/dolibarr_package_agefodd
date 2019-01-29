@@ -5055,8 +5055,7 @@ class Agsession extends CommonObject
 		}
 
 		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer' || $object_refletter->element_type === 'rfltr_agefodd_mission_trainer') $id_trainer = $socid;
-		if($object_refletter->element_type === 'rfltr_agefodd_convocation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestationendtraining_trainee') $id_trainee = $socid;
-		//elseif($object_refletter->element_type === 'rfltr_agefodd_mission_trainer') $id_trainer = $socid; TODO quand on aura créé le modèle par participant
+		if($object_refletter->element_type === 'rfltr_agefodd_convocation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestationendtraining_trainee') $id_session_trainee = $socid;
 
 		// Chargement des participants
 		if(empty($this->TStagiairesSession)) {
@@ -5364,11 +5363,16 @@ class Agsession extends CommonObject
 
 		}
 
-		if(!empty($id_trainee)) {
+		if(!empty($id_session_trainee)) {
 		    dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
-		    $trainee = new Agefodd_stagiaire($db);
-		    $trainee->fetch($id_trainee);
-		    $this->stagiaire = $trainee;
+		    dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+		    $trainee_session = new Agefodd_session_stagiaire($db);
+		    $trainee_session->fetch($id_session_trainee);
+		    if (!empty($trainee_session->fk_stagiaire)) {
+			    $trainee = new Agefodd_stagiaire($db);
+			    $trainee->fetch($trainee_session->fk_stagiaire);
+			    $this->stagiaire = $trainee;
+		    }
 		}
 
 		if(!empty($socid)) {
