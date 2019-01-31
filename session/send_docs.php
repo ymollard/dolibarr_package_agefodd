@@ -447,7 +447,6 @@ if (! empty($id)) {
 		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_presence_empty' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc' || $action == 'presend_attestationendtraining' || $action == 'presend_attestationpresencetraining') {
 
 			$mode = GETPOST("mode");
-			if (!empty($mode)) $formmail->param['mode'] = $mode;
 
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_' . $agf->id . '.pdf';
@@ -2051,9 +2050,10 @@ if (! empty($id)) {
 			} elseif ($action == 'presend_attestationpresencetraining') {
 			    print_fiche_titre($langs->trans('AgfSendDocuments') . ' ' . $langs->trans('AgfSendAttestationPresence'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
 			}
-
 			$formmail->param['fileinit'] = $file_array;
-			$formmail->param['mode'] = GETPOST('mode');
+			
+			unset($_GET['mode']);//c'est checké dans la fonction show_form, ça vide les fichiers si ça vaut init
+			unset($_POST['modelmailselected']);
 			$formmail->show_form();
 
 			if (! empty($mesg)) {
