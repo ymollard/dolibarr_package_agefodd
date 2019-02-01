@@ -306,9 +306,11 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$agf->notes = GETPOST('notes', 'alpha');
 		$agf->status = GETPOST('session_status', 'int');
 
-		$agf->cost_trainer_planned = GETPOST('costtrainer', 'alpha');
-		$agf->cost_site_planned = GETPOST('costsite', 'alpha');
-		$agf->sell_price_planned = GETPOST('sellprice', 'alpha');
+		if ($user->rights->agefodd->session->margin) {
+			$agf->cost_trainer_planned = GETPOST('costtrainer', 'alpha');
+			$agf->cost_site_planned = GETPOST('costsite', 'alpha');
+			$agf->sell_price_planned = GETPOST('sellprice', 'alpha');
+		}
 
 		$agf->date_res_site = dol_mktime(0, 0, 0, GETPOST('res_sitemonth', 'int'), GETPOST('res_siteday', 'int'), GETPOST('res_siteyear', 'int'));
 		$agf->date_res_trainer = dol_mktime(0, 0, 0, GETPOST('res_trainmonth', 'int'), GETPOST('res_trainday', 'int'), GETPOST('res_trainyear', 'int'));
