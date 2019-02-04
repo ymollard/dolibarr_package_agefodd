@@ -969,7 +969,7 @@ if (! empty($id)) {
 
 			$formmail->withdeliveryreceipt = 1;
 			$formmail->withdeliveryreceiptreadonly = 0;
-			$formmail->withcancel = 1;
+//			$formmail->withcancel = 1;
 
 			$withtocompanyname = array();
 
@@ -2018,7 +2018,7 @@ if (! empty($id)) {
 			$formmail->param['action'] = 'send';
 			$formmail->param['models_id'] = GETPOST('modelmailselected');
 			$formmail->param['id'] = $agf->id;
-			$formmail->param['returnurl'] = dol_buildpath('/agefodd/session/document.php',1). '?id=' . $agf->id;
+			$formmail->param['returnurl'] = $_SERVER["PHP_SELF"]. '?id=' . $agf->id;
 
 			if ($action == 'presend_pedago') {
 				print_fiche_titre($langs->trans('AgfSendDocuments') . ' ' . $langs->trans('AgfFichePedagogique'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
