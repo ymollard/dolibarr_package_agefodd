@@ -47,6 +47,7 @@ if ($action == 'setvarother') {
 
     if (empty($conf->use_javascript_ajax))
     {
+
         $logo_client = GETPOST('AGF_USE_LOGO_CLIENT', 'alpha');
         $res = dolibarr_set_const($db, 'AGF_USE_LOGO_CLIENT', $logo_client, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
@@ -66,6 +67,9 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
+        
+
+        
 
         $usesearch_stagstype = GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT', 'alpha');
         $res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype, 'chaine', 0, '', $conf->entity);
@@ -202,7 +206,7 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
-
+		
 		$usesearch_training = GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT', 'alpha');
 		$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
@@ -1224,6 +1228,14 @@ $arrval = array (
 		'1' => $langs->trans("Yes")
 );
 print $form->selectarray("AGF_USE_SITE_IN_AGENDA", $arrval, $conf->global->AGF_USE_SITE_IN_AGENDA);
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfManageSessionCalendarFacturation") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_MANAGE_SESSION_CALENDAR_FACTURATION');
 print '</td>';
 print '<td></td>';
 print '</tr>';

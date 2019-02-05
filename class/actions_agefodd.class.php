@@ -240,6 +240,7 @@ class ActionsAgefodd
 
 			// TODO gérer ici les actions de mes pages pour update les données
 			$context = Context::getInstance();
+			
 			if ($context->controller == 'agefodd_session_card')
 			{
 				if ($action == 'deleteCalendrierFormateur' && GETPOST('sessid') > 0 && GETPOST('fk_agefodd_session_formateur_calendrier') > 0)
@@ -266,8 +267,10 @@ class ActionsAgefodd
 								else
 								{
 									$agf_calendrier = $TCalendrier[0];
-									$r=$agf_calendrier->delete($user);
-									if ($r < 0) $error++;
+									if (!empty($agf_calendrier)){
+									    $r=$agf_calendrier->delete($user);
+									    if ($r < 0) $error++;
+									}
 
 									$r=$agf_calendrier_formateur->delete($user);
 									if ($r < 0) $error++;
@@ -293,6 +296,44 @@ class ActionsAgefodd
 
 					header('Location: '.$context->getRootUrl(GETPOST('controller')));
 					exit;
+				}
+				elseif ($action == "uploadfile" && GETPOST('sessid') > 0)
+				{
+				    if (GETPOST('sendit','alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC))
+				    {
+				        $upload_dir = $conf->agefodd->dir_output . "/" .GETPOST('sessid');
+				        if (! empty($_FILES))
+				        {
+				            if (is_array($_FILES['userfile']['tmp_name'])) $userfiles=$_FILES['userfile']['tmp_name'];
+				            else $userfiles=array($_FILES['userfile']['tmp_name']);
+				            
+				            foreach($userfiles as $key => $userfile)
+				            {
+				                if (empty($_FILES['userfile']['tmp_name'][$key]))
+				                {
+				                    $error++;
+				                    if ($_FILES['userfile']['error'][$key] == 1 || $_FILES['userfile']['error'][$key] == 2){
+				                        $context->setError($langs->trans('ErrorFileSizeTooLarge'));
+				                    }
+				                    else {
+				                        $context->setError($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("File")));
+				                    }
+				                }
+				            }
+				            
+				            if (! $error)
+				            {
+				                if (! empty($upload_dirold) && ! empty($conf->global->PRODUCT_USE_OLD_PATH_FOR_PHOTO))
+				                {
+				                    $result = dol_add_file_process($upload_dirold, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
+				                }
+				                elseif (! empty($upload_dir))
+				                {
+				                    $result = dol_add_file_process($upload_dir, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
+				                }
+				            }
+				        }
+				    }
 				}
 			}
 			else if ($context->controller == 'agefodd_session_card_time_slot' && in_array($action, array('add', 'update')) && GETPOST('sessid','int') > 0)
@@ -339,8 +380,9 @@ class ActionsAgefodd
 								$agf_calendrier_formateur->heuref = strtotime($date_session.' '.$heuref);
 								$agf_calendrier_formateur->fk_agefodd_session_formateur = $trainer->agefodd_session_formateur->id;
 
-								if (in_array($status, array(Agefoddsessionformateurcalendrier::STATUS_DRAFT, Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, Agefoddsessionformateurcalendrier::STATUS_CANCELED)))
+								if (in_array($status, array(Agefoddsessionformateurcalendrier::STATUS_DRAFT, Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, Agefoddsessionformateurcalendrier::STATUS_MISSING, Agefoddsessionformateurcalendrier::STATUS_CANCELED)))
 								{
+								    $old_status = $agf_calendrier_formateur->status;
 									$agf_calendrier_formateur->status = $status;
 								}
 								else $agf_calendrier_formateur->status = 0;
@@ -395,14 +437,28 @@ class ActionsAgefodd
 									else
 									{
 										$duree = 0;
-										// Si le statut passe à "annulé", alors je force la saisie du compteur d'heure car c'est du consommé
-										if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED)
+										// Si le statut passe à "absent", alors je force la saisie du compteur d'heure car c'est du consommé
+										if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING)
 										{
 											$duree = $duree_session;
 										}
+										// si on passe le status du créneaux en confirmer sans saisir de temps stagiaire, on met le max
+										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED
+										    && $agf_calendrier_formateur->status !== $old_status
+										    && $THour[$stagiaire->id] == '00:00')
+										{
+										    $duree = $duree_session;
+										}
+										// Si le statut passe à annulé, les heures participants doivent passer à 0 car la session n'a pas eu lieu
+										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED)
+										{
+										    $duree = 0;
+										}
 										else if ($agf_calendrier->date_session < $now && !empty($THour[$stagiaire->id]))
 										{
-											list($hours, $minutes) = explode(':', $THour[$stagiaire->id]);
+											$tmp = explode(':', $THour[$stagiaire->id]);
+											$hours = $tmp[0];
+											$minutes = $tmp[1];
 											$duree = $hours + $minutes / 60;
 										}
 
@@ -457,6 +513,33 @@ class ActionsAgefodd
 	}
 
 	/**
+	 * Overloading the interface function : replacing the parent's function with the one below
+	 *
+	 * @param   array()         $parameters     Hook metadatas (context, etc...)
+	 * @param   CommonObject    &$object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+	 * @param   string          &$action        Current action (if set). Generally create or edit or null
+	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+	 */
+	public function doActionInterface($parameters, &$object, &$action, $hookmanager)
+	{
+	    $error = 0; // Error counter
+	    global $langs, $db, $conf, $user;
+	    
+	    if (in_array('externalaccessinterface', explode(':', $parameters['context'])))
+	    {
+	        dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
+	        
+	        if ($action == "downloadSessionFile")
+	        {
+	            $file = GETPOST('file');
+	            $filename = $conf->agefodd->dir_output . '/' . $file;
+// 	            var_dump($file, $filename); exit;
+	            $this->_downloadSessionFile($filename);
+	        }
+	    }
+	}
+	/**
 	 * Mes nouvelles pages pour l'accés au portail externe
 	 *
 	 * @param type $parameters
@@ -467,11 +550,11 @@ class ActionsAgefodd
 	 */
 	public function PrintPageView($parameters, &$object, &$action, $hookmanager)
 	{
-		global $langs,$user;
+		global $langs,$user, $conf;
 
 		$TContext = explode(':', $parameters['context']);
 
-		if (in_array('externalaccesspage', $TContext))
+		if (in_array('externalaccesspage', $TContext) && !empty($conf->global->AGF_EACCESS_ACTIVATE))
 		{
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
 			dol_include_once('/agefodd/class/agsession.class.php');
@@ -549,14 +632,53 @@ class ActionsAgefodd
 		return 0;
 	}
 
+	/**
+	 * 
+	 * @param unknown $parameters
+	 * @param unknown $object
+	 * @param unknown $action
+	 * @param unknown $hookmanager
+	 */
+	public function PrintTopMenu($parameters, &$object, &$action, $hookmanager)
+	{
+	    global $langs, $conf;
+	    
+	    if (empty($conf->global->AGF_EACCESS_ACTIVATE)) return 0;
+	    
+	    $context = Context::getInstance();
+	    
+	    $this->results['agefodd'] = array(
+	        'id' => 'agefodd',
+	        'rank' => 90,
+	        'url' => $context->getRootUrl('agefodd'),
+	        'name' => $langs->trans('AgfTraining')
+	    );
+	    
+	    $this->results['agefodd']['children']['global'] = array(
+	        'id' => 'agefodd',
+	        'rank' => 10,
+	        'url' => $context->getRootUrl('agefodd'),
+	        'name' => $langs->trans('AgfTraining')
+	    );
+	    
+	    $this->results['agefodd']['children']['agefodd_session_list'] = array(
+	        'id' => 'agefodd',
+	        'rank' => 20,
+	        'url' => $context->getRootUrl('agefodd_session_list'),
+	        'name' => $langs->trans('AgfMenuSess')
+	    );
+	    
+	    
+	    return 0;
+	}
 
 	public function PrintServices($parameters, &$object, &$action, $hookmanager)
 	{
-		global $langs;
+		global $langs, $conf;
 
 		$TContext = explode(':', $parameters['context']);
 
-		if (in_array('externalaccesspage', $TContext))
+		if (in_array('externalaccesspage', $TContext) && !empty($conf->global->AGF_EACCESS_ACTIVATE))
 		{
 			$langs->load('agefodd@agefodd');
 			$context = Context::getInstance();
@@ -889,5 +1011,13 @@ class ActionsAgefodd
 		}
 
 		return 0;
+	}
+	
+	function _downloadSessionFile($filename)
+	{
+	    dol_include_once('/externalaccess/lib/externalaccess.lib.php');
+	    $forceDownload = GETPOST('forcedownload','int');
+	    
+	    downloadFile($filename, $forceDownload);
 	}
 }

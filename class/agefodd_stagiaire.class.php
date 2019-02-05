@@ -48,6 +48,9 @@ class Agefodd_stagiaire extends CommonObject {
 	public $place_birth;
 	public $socid;
 	public $socname;
+	public $socaddr;
+	public $soczip;
+	public $soctown;
 	public $fk_socpeople;
 	public $lines = array ();
 
@@ -199,6 +202,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " civ.code as civilite_code,";
 		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
 		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
+		$sql .= " ,so.address as socaddr, so.zip as soczip, so.town as soctown";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON s.fk_soc = so.rowid";
@@ -222,7 +226,6 @@ class Agefodd_stagiaire extends CommonObject {
 
 						$this->id = $obj->rowid;
 						$this->ref = $obj->rowid; // use for next prev refs
-
 						$this->nom = $contact->lastname;
 						$this->prenom = $contact->firstname;
 						$this->civilite = $contact->civility_id;
@@ -254,6 +257,9 @@ class Agefodd_stagiaire extends CommonObject {
 					$this->fk_socpeople = 0;
 					$this->date_birth = $this->db->jdate($obj->date_birth);
 				}
+				$this->socaddr = $obj->socaddr;
+				$this->soczip = $obj->soczip;
+				$this->soctown = $obj->soctown;
 			} else {
 			    return 0;
 			}
@@ -428,6 +434,41 @@ class Agefodd_stagiaire extends CommonObject {
 			}
 			$this->db->free($resql);
 			return $num;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
+			return - 1;
+		}
+	}
+	
+	public function fetch_all_id_by($attribute)
+	{
+		$TRes = array();
+		
+		$sql = "SELECT";
+		$sql .= " so.rowid as socid, so.nom as socname,";
+		$sql .= " civ.code as civilitecode,";
+		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
+		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
+		
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
+		$sql .= " ON s.fk_soc = so.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
+		$sql .= " ON s.civilite = civ.code";
+		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
+
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			while ($obj = $this->db->fetch_object($resql))
+			{
+				$TRes[$obj->{$attribute}] = $obj->rowid;
+			}
+			
+			$this->db->free($resql);
+			return $TRes;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);

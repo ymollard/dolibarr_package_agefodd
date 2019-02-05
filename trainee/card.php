@@ -448,14 +448,16 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		print '<td>';
 
 		$agf_static = new Agefodd_stagiaire($db);
-		$agf_static->fetch_all('DESC', 's.rowid', '', 0);
-		$exclude_array = array ();
-		if (is_array($agf_static->lines) && count($agf_static->lines) > 0) {
-			foreach ( $agf_static->lines as $line ) {
-				if (! empty($line->fk_socpeople)) {
-					$exclude_array[] = $line->fk_socpeople;
-				}
-			}
+		$exclude_array = $agf_static->fetch_all_id_by('fk_socpeople');
+		if (is_array($exclude_array))
+		{
+			unset($exclude_array['']);
+			unset($exclude_array[0]);
+			$exclude_array = array_keys($exclude_array);
+		}
+		else
+		{
+			$exclude_array = array();
 		}
 		$formAgefodd->select_contacts_custom(0, '', 'contact', 1, $exclude_array, '', 1, '', 1);
 		print '</td></tr>';
@@ -488,7 +490,8 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</td>';
 	print '	</tr>';
 	print '<tr class="select_thirdparty_block"><td class="fieldrequired">' . $langs->trans("Company") . '</td><td colspan="3">';
-	print $form->select_company(GETPOST('societe', 'int'), 'societe', '(s.client = 1 OR s.client = 2 OR s.client = 3) AND status=1', 'SelectThirdParty', 0, 0, null, 0, 'minwidth300');
+if (!empty($conf->global->AGEFODD_USE_SELECT_WITH_AJAX)) print $form->select_company(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
+	else print $form->select_thirdparty_list(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
 	print '</td></tr>';
 
 	print '<tr class="create_thirdparty_block"><td class="fieldrequired">' . $langs->trans("ThirdPartyName") . '</td>';
@@ -613,10 +616,12 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		print $formAgefodd->select_type_stagiaire($stagiaire_type, 'stagiaire_type', 'active=1', 1);
 		print '</td></tr>';
 		print '<tr class="agelfoddline"><td>' . $langs->trans('AgfTraineeSocDocUse') . '</td><td colspan="3">';
-		print $form->select_thirdparty_list(0, 'fk_soc_link', '', 'SelectThirdParty', 1, 0);
+		if (!empty($conf->global->AGEFODD_USE_SELECT_WITH_AJAX)) print $form->select_company(0, 'fk_soc_link', '', 'SelectThirdParty', 1);
+		else print $form->select_thirdparty_list(0, 'fk_soc_link', '', 'SelectThirdParty', 1, 0);
 		print '</td></tr>';
 		print '<tr class="agelfoddline"><td>' . $langs->trans('AgfTypeRequester') . '</td><td colspan="3">';
-		print $form->select_thirdparty_list(0, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
+		if (!empty($conf->global->AGEFODD_USE_SELECT_WITH_AJAX)) print $form->select_company(0, 'fk_soc_requester', '', 'SelectThirdParty', 1);
+		else print $form->select_thirdparty_list(0, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
 		print '</td></tr>';
 		if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
 			print '<tr class="agelfoddline"><td>' . $langs->trans('Status') . '</td><td colspan="3">';
@@ -676,7 +681,8 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 					print '<tr><td valign="top">' . $langs->trans("Company") . '</td><td>';
 
-					print $form->select_thirdparty_list($agf->socid, 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
+					if (!empty($conf->global->AGEFODD_USE_SELECT_WITH_AJAX)) print $form->select_company($agf->socid, 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
+					else print $form->select_thirdparty_list($agf->socid, 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
 
 					print '</td></tr>';
 

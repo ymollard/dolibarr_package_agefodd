@@ -52,9 +52,10 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public $status = 0;
 	public $lines = array ();
 
-	
+
 	const STATUS_DRAFT = 0;
 	const STATUS_CONFIRMED = 1;
+	const STATUS_MISSING = 2;
 	const STATUS_CANCELED = -1;
 	/**
 	 * Constructor
@@ -84,7 +85,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		if (isset($this->trainer_cost))
 			$this->trainer_cost = trim($this->trainer_cost);
 		if (isset($this->trainer_status))
-			$this->trainer_cost = trim($this->trainer_status);
+			$this->trainer_status = trim($this->trainer_status);
 		if (isset($this->fk_actioncomm))
 			$this->fk_actioncomm = trim($this->fk_actioncomm);
 		if (isset($this->fk_user_author))
@@ -96,9 +97,9 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			// Put here code to add control on parameters values
 
 		if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
-			
+
 			$result = $this->createAction($user);
-			
+
 			if ($result <= 0) {
 				$error ++;
 				$this->errors[] = "Error " . $this->db->lasterror();
@@ -137,12 +138,12 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " " . $this->status;
 		$sql .= ")";
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
-			
+
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 
@@ -291,10 +292,10 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	{
 		return $this->fetchAllBy(array('s.fk_agefodd_session_formateur'=>$id));
 	}
-	
+
 	/**
 	 * Méthode à privilégier pour faire du fetchAll
-	 * 
+	 *
 	 * @param array		$TParam		tableau contenant en clé/valeur le champ par lequel on souhaite filtrer et sa valeur /!\ Si la valeur est un String, alors il faut y ajouter les guillemets à l'avance
 	 * @param string	$order
 	 * @return int
@@ -302,7 +303,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public function fetchAllBy($TParam, $order = 's.date_session ASC, s.heured ASC')
 	{
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
-		
+
 		$sql = "SELECT ";
 		$sql .= "s.rowid,";
 		$sql .= "s.fk_agefodd_session_formateur,";
@@ -326,7 +327,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			$sql.= ' AND '.$field_name.' = '.$field_value;
 		}
 		if (!empty($order))	$sql .= ' ORDER BY '.$order;
-		
+
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -350,7 +351,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$line->fk_session = $obj->fk_session;
 				$line->sessid = $obj->fk_session;
 				$line->trainer_status_in_session = $obj->trainer_status_in_session;
-				
+
 				$this->lines[$i] = $line;
 			}
 			$this->db->free($resql);
@@ -372,7 +373,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	{
 		return $this->fetchAllBy(array('trainer.rowid'=>$id));
 	}
-	
+
 	/**
 	 * Fait les verifications pour savoir si le formateur est déjà inscrit sur une plage horaire similaire
 	 * @param type $fk_trainer
@@ -381,10 +382,10 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public function checkTrainerBook($fk_trainer)
 	{
 		global $conf, $langs;
-		
+
 		$error = 0;
 		$error_message = $warning_message = array();
-		
+
 		$result = $this->fetch_all_by_trainer($fk_trainer);
 		if ($result < 0)
 		{
@@ -399,9 +400,9 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				if (!empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6)
 				{
 					if (
-						($this->heured <= $line->heured && $this->heuref >= $line->heuref) 
-						|| ($this->heured >= $line->heured && $this->heuref <= $line->heuref) 
-						|| ($this->heured <= $line->heured && $this->heuref <= $line->heuref && $this->heuref > $line->heured) 
+						($this->heured <= $line->heured && $this->heuref >= $line->heuref)
+						|| ($this->heured >= $line->heured && $this->heuref <= $line->heuref)
+						|| ($this->heured <= $line->heured && $this->heuref <= $line->heuref && $this->heuref > $line->heured)
 						|| ($this->heured >= $line->heured && $this->heuref >= $line->heuref && $this->heured < $line->heuref)
 					)
 					{
@@ -421,7 +422,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 
 		if (!empty($error_message)) $this->errors = $error_message;
 		if (!empty($warning_message)) $this->warnings = $warning_message;
-		
+
 		return $error;
 	}
 
@@ -523,11 +524,11 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public function delete($user)
 	{
 		$error = 0;
-		
+
 		dol_syslog(get_class($this) . "::delete", LOG_DEBUG);
-		
+
 		$this->db->begin();
-		
+
 		if (! empty($this->fk_actioncomm))
 		{
 			require_once DOL_DOCUMENT_ROOT.'/comm/action/class/actioncomm.class.php';
@@ -536,7 +537,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			$r=$action->delete();
 			if ($r < 0) $error++;
 		}
-		
+
 		if (!$error)
 		{
 			if (is_callable('parent::deleteCommon'))
@@ -555,7 +556,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				}
 			}
 		}
-		
+
 		if (!$error)
 		{
 			$this->db->commit();
@@ -568,7 +569,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			return -1 * $error;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
@@ -611,7 +612,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 
 		$formateur = new Agefodd_teacher($this->db);
 		$result = $formateur->fetch($formateur_session->formid);
-		
+
 		if ($result < 0) {
 			$error ++;
 		}
@@ -660,7 +661,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 					$action->socid = $contactstat->socid;
 			}
 		}
-		
+
 		if ($error == 0) {
 
 
@@ -811,11 +812,11 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$this->fk_user_mod = '';
 		$this->tms = '';
 	}
-	
+
 	public static function getStaticLibStatut($status, $mode=0)
 	{
 		global $langs;
-		
+
 		$out = '';
 		if ($status == self::STATUS_DRAFT)
 		{
@@ -832,10 +833,15 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			if ($mode == 1) $out.= img_picto('', 'statut6').' ';
 			$out.= $langs->trans('AgfStatusCalendar_canceled');
 		}
-		
+		else if ($status == self::STATUS_MISSING)
+		{
+		    if ($mode == 1) $out.= img_picto('', 'statut8').' ';
+		    $out.= $langs->trans('AgfStatusCalendar_missing');
+		}
+
 		return $out;
 	}
-	
+
 	function getLibStatut($mode = 0){
 	    return self::getStaticLibStatut($this->status, $mode);
 	}

@@ -17,6 +17,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+/**
+ * Ajout les icône dans l'écran "services"
+ *
+ * @return string
+ */
 function getMenuAgefoddExternalAccess()
 {
 	global $langs;
@@ -30,7 +35,7 @@ function getMenuAgefoddExternalAccess()
 					  <hr class="my-4">
 					</div>
 				  </div>
-				</div> 
+				</div>
 				<div class="container">
 				  <div class="row">';
 
@@ -45,11 +50,20 @@ function getMenuAgefoddExternalAccess()
 	return $html;
 }
 
+/**
+ * Affiche la liste des sessions du formateur courant agefodd
+ *
+ * route => agefodd_session_list
+ *
+ * @return string
+ */
 function getPageViewSessionListExternalAccess()
 {
-	global $langs,$db,$user;
+	global $langs,$db,$user, $conf;
 
 	$context = Context::getInstance();
+
+	if (!validateFormateur($context)) return '';
 
 	$formateur = new Agefodd_teacher($db);
 	$agsession = new Agsession($db);
@@ -110,8 +124,45 @@ function getPageViewSessionListExternalAccess()
 			$out.= ' <td data-order="'.$item->dated.'" data-search="'.dol_print_date($item->dated, '%d/%m/%Y').'" >'.dol_print_date($item->dated, '%d/%m/%Y').'</td>';
 			$out.= ' <td data-order="'.$item->datef.'" data-search="'.dol_print_date($item->datef, '%d/%m/%Y').'" >'.dol_print_date($item->datef, '%d/%m/%Y').'</td>';
 			$out.= ' <td class="text-center" data-order="'.$item->duree_session.'" data-session="'.$item->duree_session.'"  >'.$item->duree_session.'</td>';
-			$duree_declared = Agsession::getStaticSumDureePresence($item->rowid);
-			$out.= ' <td class="text-center" data-order="'.$duree_declared.'">'.$duree_declared.'</td>';
+
+			$filters['excludeCanceled'] = true;
+			$agsession->fetchTrainers($item->rowid);
+			$trainerinsessionid = 0;
+			if (!empty($agsession->TTrainer))
+			{
+			    foreach ($agsession->TTrainer as $trainer)
+			    {
+			        if ($trainer->id == $formateur->id) $trainerinsessionid = $trainer->agefodd_session_formateur->id;
+			    }
+			}
+
+			if (!empty($trainerinsessionid)) $filters['formateur'] = $trainerinsessionid;
+			$duree_declared = Agsession::getStaticSumDureePresence($item->rowid, null, $filters);
+			if (!empty($duree_declared) && !empty($conf->global->AGF_EA_ECLATE_HEURES_PAR_TYPE))
+			{
+			    $duree_exploded = Agsession::getStaticSumExplodeDureePresence($item->rowid);
+
+			    if (count($duree_exploded))
+			    {
+			        $plus = ' <i class="fa fa-plus hours-detail"></i>';
+
+
+			        $popcontent = '';
+			        foreach ($duree_exploded as $label => $hours)
+			        {
+			            $popcontent.= dol_escape_htmltag('<br>'.$label.' : '.$hours, 1);
+			        }
+			        $plus = ' <span data-toggle="popover" title="Détail des heures" data-content="'.$popcontent.'"><i class="fa fa-plus hours-detail"></i></span>';
+			        $plus.= '<span style="display:none;">';
+
+			        $plus.='</span>';
+			    }
+			}
+			else
+			{
+			    $plus = '';
+			}
+			$out.= ' <td class="text-center" data-order="'.$duree_declared.'">'.$duree_declared.$plus.'</td>';
 			$solde = $item->duree_session - $duree_declared;
 			$out.= ' <td class="text-center" data-order="'.$solde.'">'.$solde.'</td>';
 			$statut = Agsession::getStaticLibStatut($item->status, 0);
@@ -142,6 +193,8 @@ function getPageViewSessionListExternalAccess()
 								"aTargets": [-1]
 							}]
 						});
+                        /* on réaffecte event js on mouseenter pour hacker datatable */
+                        $(document).on("mouseenter", \'[data-toggle="popover"]\', function(e){$(this).popover({html : true});});
 					});
 			   </script>';
 	}
@@ -156,56 +209,85 @@ function getPageViewSessionListExternalAccess()
 	return $out;
 }
 
+/**
+ * Génère les écrans liés à une session
+ *
+ * route => agefodd_session_card
+ *
+ * @param Agsession $agsession
+ * @param Teacher $trainer
+ * @return string
+ */
 function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 {
-	global $db,$langs;
-	
+	global $db,$langs, $user;
+
 	$context = Context::getInstance();
-	
+	if (!validateFormateur($context)) return '';
+
+	$tab = GETPOST('tab');
 	$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
 	$agf_calendrier_formateur->fetchAllBy(array('trainer.rowid'=>$trainer->id, 'sf.fk_session'=>$agsession->id), '');
-	
+
 	$out = '';
 	$out.= '<section id="section-session-card" class="py-5"><div class="container">';
-	
-	$out.= getEaNavbar($context->getRootUrl('agefodd_session_list', '&save_lastsearch_values=1'), $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0'));
-	
+
+	$url_add = '';
+	if (!empty($user->rights->agefodd->external_trainer_write)) $url_add = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0');
+
+	$out.= getEaNavbar($context->getRootUrl('agefodd_session_list', '&save_lastsearch_values=1'), $url_add);
+
 	$out.= '
 		<blockquote class="blockquote">
 			<p>'.$agsession->ref.'</p>
+			<p>'.$agsession->trainer_ext_information.'</p>
 		</blockquote>
 		<ul class="nav nav-tabs mb-3" id="section-session-card-calendrier-formateur-tab" role="tablist">
 			<li class="nav-item">
-				<a class="nav-link active" id="calendrier-info-tab" data-toggle="tab" href="#nav-calendrier-info" role="tab" aria-controls="calendrier-info" aria-selected="true">Créneaux</a>
+				<a class="nav-link'.((empty($tab) || $tab == 'calendrier-info-tab') ? ' active' : '').'" id="calendrier-info-tab" data-toggle="tab" href="#nav-calendrier-info" role="tab" aria-controls="calendrier-info" aria-selected="'.((empty($tab) || $tab == 'calendrier-info-tab') ? 'true' : 'false').'">Créneaux</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" id="calendrier-summary-tab" data-toggle="tab" href="#nav-calendrier-summary" role="tab" aria-controls="calendrier-summary" aria-selected="false">Récapitulatif</a>
+				<a class="nav-link'.(($tab == 'calendrier-summary-tab') ? ' active' : '').'" id="calendrier-summary-tab" data-toggle="tab" href="#nav-calendrier-summary" role="tab" aria-controls="calendrier-summary" aria-selected="'.(($tab == 'calendrier-summary-tab') ? 'true' : 'false').'">Récapitulatif</a>
+			</li>
+            <li class="nav-item">
+				<a class="nav-link'.(($tab == 'session-files-tab') ? ' active' : '').'" id="session-files-tab" data-toggle="tab" href="#nav-session-files" role="tab" aria-controls="session-files" aria-selected="'.(($tab == 'session-files-tab') ? 'true' : 'false').'">Fichiers joints</a>
 			</li>
 		</ul>
 	';
-	
+
 	$out.= '
 		<div class="tab-content" id="section-session-card-calendrier-formateur-tab-tabContent">
-			<div class="tab-pane fade show active" id="nav-calendrier-info" role="tabpanel" aria-labelledby="nav-calendrier-info-tab">'.getPageViewSessionCardExternalAccess_creneaux($agsession, $trainer, $agf_calendrier_formateur).'</div>
-			<div class="tab-pane fade" id="nav-calendrier-summary" role="tabpanel" aria-labelledby="nav-calendrier-summary-tab">'.getPageViewSessionCardExternalAccess_summary($agsession, $trainer, $agf_calendrier_formateur).'</div>
+			<div class="tab-pane fade'.((empty($tab) || $tab == 'calendrier-info-tab') ? ' show active' : '').'" id="nav-calendrier-info" role="tabpanel" aria-labelledby="nav-calendrier-info-tab">'.getPageViewSessionCardExternalAccess_creneaux($agsession, $trainer, $agf_calendrier_formateur).'</div>
+			<div class="tab-pane fade'.(($tab == 'calendrier-summary-tab') ? ' show active' : '').'" id="nav-calendrier-summary" role="tabpanel" aria-labelledby="nav-calendrier-summary-tab">'.getPageViewSessionCardExternalAccess_summary($agsession, $trainer, $agf_calendrier_formateur).'</div>
+            <div class="tab-pane fade'.(($tab == 'session-files-tab') ? ' show active' : '').'" id="nav-session-files" role="tabpanel" aria-labelledby="nav-session-files-tab">'.getPageViewSessionCardExternalAccess_files($agsession, $trainer).'</div>
 		</div>
 	';
-	
-	
-	
+
+
+
 	$out.= '</div></section>';
 
-	
-	
+
+
 	return $out;
 }
 
+/**
+ * Affiche les créneaux du calendrier formateur
+ *
+ * @param Agsession $agsession
+ * @param Teacher $trainer
+ * @param Teacher_calendar $agf_calendrier_formateur
+ * @return string
+ */
 function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &$agf_calendrier_formateur)
 {
-	global $langs;
-	
+	global $langs, $user;
+
 	$context = Context::getInstance();
-	
+
+	if (!validateFormateur($context)) return '';
+
 	$out = '';
 	$out.= '<table id="session-list" class="table table-striped w-100" >';
 
@@ -226,22 +308,22 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 	foreach ($agf_calendrier_formateur->lines as &$item)
 	{
 		$TCalendrier = _getCalendrierFromCalendrierFormateur($item, true, true);
-		if (is_string($TCalendrier)) 
+		if (is_string($TCalendrier))
 		{
 			$context->setError($langs->trans('Agf_EA_error_sql'));
 			$TCalendrier = array();
 		}
 		if (!empty($TCalendrier)) $agf_calendrier = $TCalendrier[0];
 		else $agf_calendrier = null;
-		
+
 		$url = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$item->id);
-		
+
 		$out.= '<tr>';
 		// TODO replace $item->id by $item->ref when merge master
 		$out.= ' <td class="text-center"><a href="'.$url.'&action=view">'.$item->id.'</a></td>';
 		$date_session = dol_print_date($item->date_session, '%d/%m/%Y');
 		$out.= ' <td data-order="'.$item->date_session.'" data-search="'.$date_session.'" >'.$date_session.'</td>';
-		
+
 		$heured = dol_print_date($item->heured, '%H:%M');
 		$out.= ' <td data-order="'.$heured.'" data-search="'.$heured.'" >'.$heured.'</td>';
 		$heuref = dol_print_date($item->heuref, '%H:%M');
@@ -251,27 +333,45 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 		if ($item->status == Agefoddsessionformateurcalendrier::STATUS_DRAFT) $statut = $langs->trans('AgfStatusCalendar_previsionnel');
 		else $statut = Agefoddsessionformateurcalendrier::getStaticLibStatut($item->status, 0);
 		$out.= ' <td class="text-center" data-order="'.$statut.'" data-search="'.$statut.'" >'.$statut.'</td>';
-		
+
 		$calendrier_type_label = !empty($agf_calendrier) ? $agf_calendrier->calendrier_type_label : '';
 		$out.= ' <td class="text-center" data-order="'.$calendrier_type_label.'" data-search="'.$calendrier_type_label.'" >'.$calendrier_type_label.'</td>';
 
-		$edit = '<a href="'.$url.'"><i class="fa fa-edit"></a></i>';
-		$delete = '<i class="fa fa-trash" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)"></i>';
-		$out.= ' <td class="text-center" >'.$edit.' '.$delete.'</td>';
+		//$edit = '<a href="'.$url.'"><i class="fa fa-edit"></a></i>';
+		$delete = '<i class="fa fa-trash" ></i>  Supprimer';
+		$out.= ' <td class="text-center" >';
+
+		$out.= '<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+		<a  class="btn btn-xs btn-secondary" href="'.$url.'"><i class="fa fa-edit"></i></a>
+
+		<div class="btn-group" role="group">
+		<button id="btnGroupDrop1" type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+		<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+        <a  class="dropdown-item" href="'.$url.'"><i class="fa fa-edit"> Editer</i></a>';
+
+		if ((empty($agf_calendrier) || empty($agf_calendrier->billed)) && $user->rights->agefodd->external_trainer_write)
+		  $out.= '<button type="button" class="dropdown-item" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)" >'.$delete.' </button>';
+
+		$out.= '
+		</div>
+		</div>
+		</div>
+		</td>';
 
 		$out.= '</tr>';
-		
+
+
 //		var_dump($item);break;
 	}
-	
+
 	$out.= '</tbody>';
 	$out.= '</table>';
-	
+
 	$body = $langs->trans('Agf_EA_DeleteClandrierFormateurBody');
 	$body.= '<input type="hidden" name="sessid" value="'.$agsession->id.'" />';
 	$body.= '<input type="hidden" name="fk_agefodd_session_formateur_calendrier" value="" />';
 	$out.= getEaModalConfirm('session-card-delete-time-slot', $langs->trans('Agf_EA_DeleteClandrierFormateurTitle'), $body, $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id), 'deleteCalendrierFormateur');
-	
+
 	$out.= '<script type="text/javascript" >
 				$(document).ready(function(){
 					$("#session-list").DataTable({
@@ -291,36 +391,50 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 					});
 				});
 		   </script>';
-	
+
 	return $out;
 }
 
 function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$agf_calendrier_formateur)
 {
 	global $langs,$db;
-	
+
+	$context = Context::getInstance();
+	if (!validateFormateur($context)) return '';
+
 	$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
 	$agefodd_sesscalendar->fetch_all($agsession->id);
 	$stagiaires = new Agefodd_session_stagiaire($db);
 	$stagiaires->fetch_stagiaire_per_session($agsession->id);
-	
+
+	$nbstag = count($stagiaires->lines);
+
 	$date_deb = dol_print_date($agsession->dated, 'daytext');
 	$date_fin = dol_print_date($agsession->datef, 'daytext');
 	$duree_scheduled = 0;
+	$duree_scheduled_total = 0;
 	$duree_presence_max_comptabilise = 0;
 	$duree_presence_comptabilise = 0;
 	$duree_presence_comptabilise_cancel = 0;
 	$duree_presence_draft = 0;
 
+	// somme des heures programmées pour le formateur excluant les horaires annulés et les heures de type "plateforme"
 	foreach ($agf_calendrier_formateur->lines as &$line)
 	{
+	    $TCal = _getCalendrierFromCalendrierFormateur($line, true, true);
+	    if ((int)$line->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED || $TCal[0]->calendrier_type == 'AGF_TYPE_PLATF') continue;
 		$duree_scheduled += ($line->heuref - $line->heured) / 60 / 60;
 	}
-	
+
 	foreach ($agefodd_sesscalendar->lines as &$agf_calendrier)
 	{
 		/** @var Agefodd_sesscalendar $agf_calendrier */
-		list($duree_declared, $duree_max) = $agf_calendrier->getSumDureePresence();
+	    $tmparr = $agf_calendrier->getSumDureePresence();
+	    $duree_declared = $tmparr[0];
+	    $duree_max = $tmparr[1];
+
+	    if ((int)$agf_calendrier->status !== Agefodd_sesscalendar::STATUS_CANCELED) $duree_scheduled_total += ($agf_calendrier->heuref - $agf_calendrier->heured)/3600;
+
 		if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CONFIRMED)
 		{
 			$duree_presence_comptabilise += $duree_declared;
@@ -328,7 +442,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 		}
 		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CANCELED)
 		{
-			$duree_presence_comptabilise_cancel += $duree_declared;
+			$duree_presence_comptabilise_cancel += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
 			$duree_presence_max_comptabilise += $duree_max;
 		}
 		else $duree_presence_draft += $duree_declared;
@@ -337,7 +451,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	$total_duree_comptabilise = $duree_presence_comptabilise+$duree_presence_comptabilise_cancel;
 	if ($total_duree_comptabilise > 0) $tx_assi = $duree_presence_comptabilise * 100 / $duree_presence_max_comptabilise;
 	else $tx_assi = 0;
-	
+
 	$out = '';
 
 	$out.= '
@@ -349,15 +463,19 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-7 px-0" for="AgfSessionSummaryTotalHours">'.$langs->trans('AgfSessionSummaryTotalHours').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', price($agsession->duree_session, 0, '', 1, -1, 2)).'</span>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', price($agsession->duree_session * $nbstag, 0, '', 1, -1, 2)).'</span>
+							</div>
+                            <div class="form-group">
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfSessionSummaryTotalScheduled').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfHours', price($duree_scheduled_total, 0, '', 1, -1, 2)).'</span>
 							</div>
 							<div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfSessionSummaryTotalScheduled').'</label>
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfSessionSummaryTotalScheduledTrainer').'</label>
 								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfHours', price($duree_scheduled, 0, '', 1, -1, 2)).'</span>
 							</div>
 							<div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfSessionSummaryTotalLeft').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfHours', price($agsession->duree_session-$duree_scheduled, 0, '', 1, -1, 2)).'</span>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfHours', price($duree_scheduled_total - ($agsession->duree_session * $nbstag), 0, '', 1, -1, 2)).'</span>
 							</div>
 						</div>
 
@@ -386,52 +504,196 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 					</div>
 				</div>
 			</div>
-			
+
 			<h5>'.$langs->trans('AgfStagiaireList').'</h5>
 			<div class="panel panel-default">
 				<div class="panel-body py-0">';
-	
+
 	$out.= '<ul class="list-group list-group-flush my-0">';
 	foreach ($stagiaires->lines as &$stagiaire)
 	{
-		if ($stagiaire->id <= 0) continue;	
+		if ($stagiaire->id <= 0) continue;
 		$out.= '<li class="list-group-item"><i class="fa fa-'.(in_array($stagiaire->civilite, array('MME', 'MLE')) ? 'female' : 'male').'"></i><span class="ml-2">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</span></li>';
 	}
 	$out.= '</ul>';
-	
+
 	$out.= '
 				</div>
 			</div>
 		</div>
 
 	';
-	
+
 	return $out;
 }
 
+function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
+{
+    global $langs, $db, $conf, $user;
+    $context = Context::getInstance();
+    if (!validateFormateur($context)) return '';
 
+    $upload_dir = $conf->agefodd->dir_output;
+    $filearray=dol_dir_list($upload_dir,"files",0,'','',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
+
+    $files = array();
+    if (!empty($filearray)){
+        $TCommonModels = array(
+//             "conseils",
+            "fiche_presence",
+            "fiche_presence_direct",
+            "fiche_presence_empty",
+            "fiche_presence_landscape",
+            "fiche_presence_trainee",
+            "fiche_presence_trainee_direct",
+//             "fiche_evaluation",
+//             "fiche_remise_eval",
+            "chevalet",
+//             "attestationendtraining_empty"
+        );
+
+        $TTrad = array(
+            "fiche_presence" => "AgfFichePresence",
+            "fiche_presence_direct" => "AgfFichePresenceDirect",
+            "fiche_presence_empty" => "AgfFichePresenceEmpty",
+            "fiche_presence_landscape" => "AgfFichePresenceTraineeLandscape",
+            "fiche_presence_trainee" => "AgfFichePresenceTrainee",
+            "fiche_presence_trainee_direct" => "AgfFichePresenceTraineeDirect",
+            "chevalet" => "AgfChevalet",
+            "mission_trainer" => "AgfTrainerMissionLetter",
+            "contrat_trainer" => "AgfContratTrainer"
+        );
+
+        foreach ($filearray as $file) {
+            $mod = substr($file['name'], 0, strrpos($file['name'], '_'));
+            if(in_array($mod, $TCommonModels) && preg_match("/^".$mod."_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $agsession->id) $files[$file['name']] = $langs->transnoentitiesnoconv($TTrad[$mod]);
+
+            if((preg_match("/^mission_trainer_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $trainer->agefodd_session_formateur->id)
+                || (preg_match("/^contrat_trainer_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $trainer->agefodd_session_formateur->id)
+                )
+            {
+                $files[$file['name']] = $langs->trans($TTrad[$mod]);
+            }
+        }
+    }
+
+    $out = '';
+    $out.= '
+		<div class="container px-0">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="row clearfix">
+						<div class="col-md-6">
+                            <h5>Liste des fichiers générés pour cette session</h5>
+                            <br>';
+    if (empty($user->rights->agefodd->external_trainer_download)){
+        $out.='<div class="alert alert-secondary" role="alert">
+				Vous n\'avez pas le droit nécessaire au téléchargement de fichiers
+			</div>';
+    }
+    if (count($files))
+    {
+        foreach ($files as $file => $type)
+        {
+            $out.= "<p>";
+            $legende = $langs->trans("AgfDocOpen");
+            $dowloadUrl = $context->getRootUrl().'script/interface.php?action=downloadSessionFile&file='.$file;
+            $downloadLink = '<a class="btn btn-xs btn-primary" href="'.$dowloadUrl.'&amp;forcedownload=1" target="_blank" ><i class="fa fa-download"></i> '.$langs->trans('Download').'</a>';
+            if (!empty($user->rights->agefodd->external_trainer_download)) $out.= $downloadLink;
+            $out.= '&nbsp;&nbsp;'.$type;
+            $out.= "</p>";
+
+        }
+    }
+    else
+    {
+        $out.= "<p>";
+        $out.= "Aucun fichier disponible pour le moment";
+        $out.= "</p>";
+    }
+	$out.= '
+						</div>
+
+						<div class="col-md-6">
+                            <h5>Déposer un fichier pour cette session</h5><br>';
+	dol_include_once('/core/class/html.formfile.class.php');
+	$formfile = new FormFile($db);
+
+	if (empty($user->rights->agefodd->external_trainer_upload)){
+	    $out.='<div class="alert alert-secondary" role="alert">
+				Vous n\'avez pas le droit nécessaire au dépot de fichiers
+			</div>';
+	}
+	// Show upload form (document)
+	ob_start();
+	$formfile->form_attach_new_file(
+	    $_SERVER["PHP_SELF"].'?controller=agefodd_session_card&action=uploadfile&sessid='.$agsession->id.'&tab=session-files-tab',
+	    'none',
+	    0,
+	    0,
+	    $user->rights->agefodd->external_trainer_upload,
+	    $conf->browser->layout == 'phone' ? 40 : 60,
+	    $agsession,
+	    '',
+	    1,
+	    '',
+	    0
+	    );
+	$out.= ob_get_clean();
+	$out.= '				<h5>Liste des fichiers déposés pour cette session</h5><br>';
+	$upload_dir = $conf->agefodd->dir_output . "/" .$agsession->id;
+	$filearray=dol_dir_list($upload_dir,"files",0,'','',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
+
+	if(count($filearray))
+	{
+	    foreach ($filearray as $file)
+	    {
+	        $out.="<p>";
+	        $out.= $file['name'];
+	        $out.= "</p>";
+	    }
+	}
+	else
+	{
+	    $out.= "<p>";
+	    $out.= "Aucun fichier déposé pour le moment";
+	    $out.= "</p>";
+	}
+
+	$out.=			    '</div>
+					</div>
+				</div>
+			</div>';
+
+    return $out;
+}
 
 
 function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
 {
 	global $db,$langs;
-	
+
 	dol_include_once('/agefodd/class/html.formagefodd.class.php');
 	$formAgefodd = new FormAgefodd($db);
-	
+
 	$context = Context::getInstance();
-	
+	if (!validateFormateur($context)) return '';
+
+	$billed = $agf_calendrier->billed;
+
+	if ($billed) $action = 'view';
+
 	if ($action != 'view')
 	{
 		if (!empty($agf_calendrier_formateur->id)) $action = 'update';
 		else $action = 'add';
 	}
-	
+
 	$out = '';
 	$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
 	$out.= getEaNavbar($context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id.'&save_lastsearch_values=1'));
-	
-	if ($action != 'view') 
+
+	if ($action != 'view')
 	{
 		$out.= '
 			<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">
@@ -441,10 +703,20 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				<input type="hidden" name="slotid" value="'.$agf_calendrier_formateur->id.'" />
 				<input type="hidden" name="controller" value="'.$context->controller.'" />';
 	}
-	
+
 	$calendrier_type = !empty($agf_calendrier->calendrier_type) ? $agf_calendrier->calendrier_type : '';
 	$out.= '
-			<h4>'.$langs->trans('AgfExternalAccessSessionCardCreneau').'</h4>
+			<h4>'.$langs->trans('AgfExternalAccessSessionCardCreneau').'</h4>';
+
+	if ($billed)
+	{
+	    $out.= '
+			<div class="alert alert-secondary" role="alert">
+				'.$langs->trans('AgfExternalAccessSessionCardBilled').'
+			</div>';
+	}
+
+	$out.='
 			<div class="form-group">
 				<label for="heured">Date</label>
 				<input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="date_session" required name="date_session" value="'.(($action == 'update' || $action == 'view') ? date('Y-m-d', $agf_calendrier_formateur->date_session) : date('Y-m-d')).'">
@@ -457,24 +729,50 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			</div>
 			<div class="form-group">
 				<label for="status">Status</label>
-				<select '.($action == 'view' ? 'disabled' : '').' class="form-control" id="status" name="status">
+				<select '.($action == 'view' ? 'disabled' : '').' class="form-control" id="status" name="status" >
 					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_DRAFT ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_DRAFT.'">'.$langs->trans('AgfStatusCalendar_previsionnel').'</option>
 					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, 0).'</option>
+                    <option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_MISSING.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_MISSING, 0).'</option>
 					<option '.($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED ? 'selected' : '').' value="'.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'">'.Agefoddsessionformateurcalendrier::getStaticLibStatut(Agefoddsessionformateurcalendrier::STATUS_CANCELED, 0).'</option>
 				</select>
+
 			</div>
 			<div class="form-group">
 				<label for="status">Type</label>
-				'.$formAgefodd->select_calendrier_type($calendrier_type, 'code_c_session_calendrier_type', true, '', 'form-control').'
+				'.$formAgefodd->select_calendrier_type($calendrier_type, 'code_c_session_calendrier_type', true, ($action == 'view' ? 'disabled' : ''), 'form-control').'
 			</div>
+
+			<script>
+			$( document ).ready(function() {
+				if($("#status").val() == \''.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'\')
+				{
+					$("#code_c_session_calendrier_type").prop(\'required\',true);
+				} else {
+					$("#code_c_session_calendrier_type").prop(\'required\',false);
+				}
+				$("#status").change(function() {
+
+				   	var formStatus = $(this).val();
+
+					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'\')
+					{
+						$("#code_c_session_calendrier_type").prop(\'required\',true);
+					} else {
+						$("#code_c_session_calendrier_type").prop(\'required\',false);
+					}
+
+				});
+			});
+
+			</script>
 			';
-	
+
 	$stagiaires = new Agefodd_session_stagiaire($db);
 	$stagiaires->fetch_stagiaire_per_session($agsession->id);
 	if (!empty($stagiaires->lines))
 	{
 		$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur, true, true);
-		if (is_string($TCalendrier)) 
+		if (is_string($TCalendrier))
 		{
 			$context->setError($langs->trans('Agf_EA_error_sql'));
 			$TCalendrier = array();
@@ -494,30 +792,57 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		foreach ($stagiaires->lines as &$stagiaire)
 		{
 			if ($stagiaire->id <= 0)	continue;
-			
+
 			$secondes = 0;
-			if (!empty($TCalendrier)) 
+			if (!empty($TCalendrier))
 			{
 				$result = $agfssh->fetch_by_session($agsession->id, $stagiaire->id, $TCalendrier[0]->id);
 				$secondes = $agfssh->heures * 60 * 60;
 			}
-			
+
 			$out.= '
 				<div class="form-group">
 					<label for="stagiaire_'.$stagiaire->id.'">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</label>
-					<input '.($action == 'view' ? 'readonly' : '').' type="time" step="900" max="12:00" class="form-control" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.(!empty($secondes) ? convertSecondToTime($secondes) : '00:00').'" />
+					<input '.($action == 'view' || $agf_calendrier_formateur->date_session > dol_now() ? 'readonly' : '').' type="time" step="900" class="form-control" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.(!empty($secondes) ? convertSecondToTime($secondes) : '00:00').'" />
 				</div>';
 		}
 	}
-	
-	if ($action != 'view') 
+
+	if ($action != 'view')
 	{
 		$out.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />
 			</form>';
 	}
-	
-	
+
+
 	$out.= '</div></section>';
-	
+
 	return $out;
 }
+
+function validateFormateur($context)
+{
+    global $conf, $user, $langs;
+
+    $errors = array();
+
+    // si l'accés formateur n'est pas activé ont rejette
+    if (empty($conf->global->AGF_EA_TRAINER_ENABLED))
+    {
+        $errors[] = $context->setError($langs->trans('AgfErrorAccessTrainerNotActivated'));
+    }
+
+    // si l'utilisateur n'a pas le droit de lecture externe
+    if(empty($user->rights->agefodd->external_trainer_read))
+    {
+        $errors[] = $context->setError($langs->trans('AgfErrorRightsNotValide'));
+    }
+
+    if (count($errors))
+    {
+        $context->setError($errors);
+        return false;
+    }
+    else return true;
+}
+

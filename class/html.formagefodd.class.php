@@ -2017,7 +2017,7 @@ class FormAgefodd extends Form
 	public function select_calendrier_type($selected = '', $htmlname = 'code_c_session_calendrier_type', $emptyvalue = true, $moreattr = '', $more_class = '') {
 		global $conf;
 
-		$out = '<select class="flat select_calendrier_type ' . $more_class . '" name="' . $htmlname . '" ' . $moreattr . '>';
+		$out = '<select class="flat select_calendrier_type ' . $more_class . '" name="' . $htmlname . '" id="' . $htmlname . '" ' . $moreattr . '>';
 		if ($emptyvalue)
 			$out .= '<option value=""></options>';
 
@@ -2035,6 +2035,26 @@ class FormAgefodd extends Form
 		$out .= '</select>';
 
 		return $out;
+	}
+
+	/**
+	 *
+	 * @global type $conf
+	 * @param string $selected
+	 * @param string $htmlname
+	 * @param bool $emptyvalue
+	 * @return string
+	 */
+	public function select_calendrier_status($selected = '', $htmlname = 'calendar_status') {
+		global $conf, $langs;
+		dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+		$TStatus = array(
+				Agefodd_sesscalendar::STATUS_DRAFT => $langs->trans('AgfStatusCalendar_previsionnel'),
+				Agefodd_sesscalendar::STATUS_CONFIRMED => $langs->trans('AgfStatusCalendar_confirmed'),
+				Agefodd_sesscalendar::STATUS_MISSING => $langs->trans('AgfStatusCalendar_missing'),
+				Agefodd_sesscalendar::STATUS_CANCELED => $langs->trans('AgfStatusCalendar_canceled')
+		);
+		return $this->selectarray($htmlname, $TStatus, $selected);
 	}
 
 	/**

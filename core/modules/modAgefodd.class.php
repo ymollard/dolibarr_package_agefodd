@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.3.6';
+		$this->version = '4.3.7';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -84,6 +84,7 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/report/bpf",
 				"/agefodd/report/ca",
 		        "/agefodd/report/bycust/",
+		        "/agefodd/report/calendarbycust/",
 				"/agefodd/background"
 		);
 		$r = 0;
@@ -109,11 +110,14 @@ class modAgefodd extends DolibarrModules
 						'invoicesuppliercard',
 						'admin',
 						'emailtemplates',
+				        'externalaccesspage',
+				        'externalaccessinterface',
 						'upgrade',
 						'contactcard'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
-				'models' => 1
+				'models' => 1,
+		        'css' => array('/agefodd/css/agefodd.css'),
 		);
 
 		// Dependencies
@@ -675,6 +679,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
+		$r ++;
+		$this->const[$r][0] = "AGF_HELP_LINK";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'http://wiki.atm-consulting.fr/index.php/Agefodd_V2/Documentation_utilisateur';
+		$this->const[$r][3] = 'help wikipage';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = ( object ) array();
@@ -690,7 +702,8 @@ class modAgefodd extends DolibarrModules
 						MAIN_DB_PREFIX . "agefodd_certificate_type",
 						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type",
 						MAIN_DB_PREFIX . "agefodd_formateur_category_dict",
-						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf"
+						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf",
+						MAIN_DB_PREFIX . "c_agefodd_session_calendrier_type"
 				),
 				'tablib' => array(
 						"AgfTraineeType",
@@ -698,7 +711,8 @@ class modAgefodd extends DolibarrModules
 						"AgfCertificateType",
 						"AgfTrainingCategTbl",
 						"AgfTrainerCategoryDict",
-						"AgfTrainingCategTblBPF"
+						"AgfTrainingCategTblBPF",
+						"AgfTypeTime"
 				),
 				'tabsql' => array(
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as f',
@@ -706,7 +720,8 @@ class modAgefodd extends DolibarrModules
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_certificate_type as f',
 						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f',
 						'SELECT f.rowid as rowid, f.code, f.label, f.description, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_category_dict as f',
-						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f'
+						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f',
+						'SELECT f.rowid as rowid, f.code, f.label, f.active FROM ' . MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type as f'
 				),
 				'tabsqlsort' => array(
 						'sort ASC',
@@ -714,7 +729,8 @@ class modAgefodd extends DolibarrModules
 						'sort ASC',
 						'sort ASC',
 						'code ASC',
-						'sort ASC'
+						'sort ASC',
+						'code ASC'
 				),
 				'tabfield' => array(
 						"intitule,sort",
@@ -722,7 +738,8 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label"
 				),
 				'tabfieldvalue' => array(
 						"intitule,sort",
@@ -730,7 +747,8 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label"
 				),
 				'tabfieldinsert' => array(
 						"intitule,sort",
@@ -738,9 +756,11 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label"
 				),
 				'tabrowid' => array(
+						"rowid",
 						"rowid",
 						"rowid",
 						"rowid",
@@ -749,6 +769,7 @@ class modAgefodd extends DolibarrModules
 						"rowid"
 				),
 				'tabcond' => array(
+						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
@@ -965,6 +986,7 @@ class modAgefodd extends DolibarrModules
 				's.but' => "AgfCatalogDetail",
 				's.programme' => "AgfCatalogDetail",
 				's.pedago_usage' => "AgfCatalogDetail",
+				's.note2' => "AgfCatalogDetail",
 				's.sanction' => "AgfCatalogDetail",
 				's.prerequis' => "AgfCatalogDetail",
 				's.fk_product' => "AgfCatalogDetail",
@@ -991,6 +1013,7 @@ class modAgefodd extends DolibarrModules
 				's.but' => "AgfBut",
 				's.programme' => "AgfProgramme",
 				's.pedago_usage' => "AgfPedagoUsage",
+				's.note2' => "AgfEquiNeeded",
 				's.sanction' => "AgfSanction",
 				's.prerequis' => "AgfPrerequis",
 				's.fk_product' => "AgfProductServiceLinked",
@@ -1056,6 +1079,7 @@ class modAgefodd extends DolibarrModules
 				's.but' => "But",
 				's.programme' => "programe",
 				's.pedago_usage' => "Methode pédagogique",
+				's.note2' => "Equipement necessaires",
 				's.sanction' => "Diplome",
 				's.prerequis' => "Savoir lire et écrire",
 				's.fk_product' => "PRD01",
@@ -1658,6 +1682,37 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'session';
 		$this->rights[$r][5] = 'trainer';
+
+		if ($conf->externalaccess->enabled)
+		{
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerRead';
+		    $this->rights[$r][2] = 'r';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_read';
+
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerWrite';
+		    $this->rights[$r][2] = 'w';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_write';
+
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerDownload';
+		    $this->rights[$r][2] = 'r';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_download';
+
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerUpload';
+		    $this->rights[$r][2] = 'w';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_upload';
+		}
 
 		// Main menu entries
 		$this->menus = array();
@@ -2333,6 +2388,20 @@ class modAgefodd extends DolibarrModules
 				'perms' => '$user->rights->agefodd->report',
 				'target' => '',
 				'user' => 0
+		);
+
+		$r ++;
+		$this->menu [$r] = array (
+		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+		    'type' => 'left',
+		    'titre' => 'AgfMenuReportCalendarByCustomer',
+		    'url' => '/agefodd/report/report_calendar_by_customer.php',
+		    'langs' => 'agefodd@agefodd',
+		    'position' => 900 + $r,
+		    'enabled' => '$user->rights->agefodd->report',
+		    'perms' => '$user->rights->agefodd->report',
+		    'target' => '',
+		    'user' => 0
 		);
 
 		$r ++;

@@ -48,7 +48,7 @@ if (! $user->rights->agefodd->lire) {
 
 $langs->load('agefodd@agefodd');
 
-llxHeader('', $langs->trans('AgefoddShort'));
+llxHeader('', $langs->trans('AgefoddShort'),$conf->global->AGF_HELP_LINK);
 
 print_barre_liste($langs->trans("AgfBilanGlobal"),0,'','', '', '', '', 0);
 

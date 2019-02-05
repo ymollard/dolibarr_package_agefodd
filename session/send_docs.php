@@ -149,7 +149,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 			$subject = GETPOST('subject');
 			// Initialisation donnees
 			$contactstatic = new Contact($db);
-			$contactstatic->fetch($send_contact_id);
+			if(strpos($send_contact_id, '_third') === false) $contactstatic->fetch($send_contact_id);
 
 			if ($models == 'fiche_pedago') {
 				if (empty($subject))
@@ -316,7 +316,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					$error = 0;
 					$socid_action = ($contactstatic->socid > 0 ? $contactstatic->socid : ($socid > 0 ? $socid : $object->fk_soc));
 					$object->socid = $socid_action;
-					$object->sendtoid = $send_contact_id;
+					if(strpos($send_contact_id, '_third') === false) $object->sendtoid = $send_contact_id;
 					$object->actiontypecode = $actiontypecode;
 					$object->actionmsg = $actionmsg;
 					$object->actionmsg2 = $actionmsg2;
@@ -426,7 +426,7 @@ if (! empty($id)) {
 	// Display consult
 	$head = session_prepare_head($agf);
 
-	dol_fiche_head($head, 'document', $langs->trans("AgfSessionDetail"), 0, 'generic');
+	dol_fiche_head($head, 'send_docs', $langs->trans("AgfSessionDetail"), 0, 'generic');
 
 	dol_agefodd_banner_tab($agf, 'id');
 	print '<div class="underbanner clearboth"></div>';
@@ -444,9 +444,9 @@ if (! empty($id)) {
 		/*
 		 * Formulaire d'envoi des documents
 		 */
+		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_presence_empty' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc' || $action == 'presend_attestationendtraining' || $action == 'presend_attestationpresencetraining') {
 
-		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_presence_empty' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc' || $action == 'presend_attestationendtraining') {
-		    $mode = GETPOST("mode");
+			$mode = GETPOST("mode");
 
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_' . $agf->id . '.pdf';
@@ -479,6 +479,8 @@ if (! empty($id)) {
 				$filename = 'mission_trainer_' . $sessiontrainerid . '.pdf';
 			} elseif ($action == 'presend_attestationendtraining') {
 				$filename = 'attestationendtraining_' . $agf->id . '_' . $socid . '.pdf';
+			} elseif ($action == 'presend_attestationpresencetraining') {
+			    $filename = 'attestationpresencetraining_' . $agf->id . '_' . $socid . '.pdf';
 			}
 
 			if ($filename) {
@@ -924,12 +926,20 @@ if (! empty($id)) {
 							$file_array[]=$file;
 						}
 					}
+				} elseif ($action == 'presend_attestationpresencetraining') {
+
+				    $filename = 'attestationpresencetraining_' . $agf->id . '_' . $socid . '.pdf';
+				    $file = $conf->agefodd->dir_output . '/' . $filename;
+				    if (file_exists($file)) {
+				        $formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+				        $file_array[]=$file;
+				    }
 				} else {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 					$file_array[]=$file;
 				}
 			}
-			else 
+			else
 			{
 			    $newfilearray = $formmail->get_attached_files();
 			    if (!empty($newfilearray['paths']))
@@ -959,9 +969,22 @@ if (! empty($id)) {
 
 			$formmail->withdeliveryreceipt = 1;
 			$formmail->withdeliveryreceiptreadonly = 0;
-			$formmail->withcancel = 1;
+//			$formmail->withcancel = 1;
 
 			$withtocompanyname = array();
+
+			$withto = array();
+			$withtoname = array();
+
+			if(!empty($socid))
+			{
+				$client = new Societe($db);
+				if ($client->fetch($socid) > 0 && !empty($client->email))
+				{
+					$withto[$client->id . '_third'] = $client->name . ' - ' . $client->email;
+					$withtoname[$client->id] = $client->name;
+				}
+			}
 
 			/*--------------------------------------------------------------
 			 *
@@ -977,8 +1000,6 @@ if (! empty($id)) {
 				// Feuille de présence peut être aux formateurs
 				$agftrainersess = new Agefodd_session_formateur($db);
 				$num = $agftrainersess->fetch_formateur_per_session($id);
-				$withto = array();
-				$withtoname = array();
 
 				if ($num > 0) {
 					foreach ( $agftrainersess->lines as $formateur ) {
@@ -1053,7 +1074,6 @@ if (! empty($id)) {
 					}
 				}
 
-				$formmail->withto = $withto;
 				$formmail->withtofree = 1;
 				$formmail->withfile = 2;
 			} elseif ($action == 'presend_presence_direct') {
@@ -1066,7 +1086,7 @@ if (! empty($id)) {
 				// Feuille de présence peut être aux formateurs
 				$agftrainersess = new Agefodd_session_formateur($db);
 				$num = $agftrainersess->fetch_formateur_per_session($id);
-				$withto = array();
+
 				if ($num > 0) {
 					foreach ( $agftrainersess->lines as $formateur ) {
 						if ($formateur->email != '')
@@ -1140,7 +1160,6 @@ if (! empty($id)) {
 					}
 				}
 
-				$formmail->withto = $withto;
 				$formmail->withtofree = 1;
 				$formmail->withfile = 2;
 			} elseif ($action == 'presend_presence_empty') {
@@ -1152,8 +1171,7 @@ if (! empty($id)) {
 				// Feuille de présence peut être aux formateurs
 				$agftrainersess = new Agefodd_session_formateur($db);
 				$num = $agftrainersess->fetch_formateur_per_session($id);
-				$withto = array();
-				$withtoname = array();
+
 				if ($num > 0) {
 					foreach ( $agftrainersess->lines as $formateur ) {
 						if ($formateur->email != '')
@@ -1227,7 +1245,6 @@ if (! empty($id)) {
 					}
 				}
 
-				$formmail->withto = $withto;
 				$formmail->withtofree = 1;
 				$formmail->withfile = 2;
 			} elseif ($action == 'presend_pedago') {
@@ -1235,8 +1252,7 @@ if (! empty($id)) {
 				// Feuille de présence peut être aux formateurs
 				$agftrainersess = new Agefodd_session_formateur($db);
 				$num = $agftrainersess->fetch_formateur_per_session($id);
-				$withto = array();
-				$withtoname = array();
+
 				if ($num > 0) {
 					foreach ( $agftrainersess->lines as $formateur ) {
 						if ($formateur->email != '')
@@ -1299,9 +1315,6 @@ if (! empty($id)) {
 					$withtoname[$agf_trainer->fk_socpeople] = $agf_trainer->lastname . ' ' . $agf_trainer->name;
 				}
 
-				if (! empty($withto)) {
-					$formmail->withto = $withto;
-				}
 				$formmail->withtofree = 1;
 				$formmail->withfile = 2;
 			} elseif ($action == 'presend_trainer_doc') {
@@ -1311,9 +1324,6 @@ if (! empty($id)) {
 				$formmail->param['models'] = 'trainer_doc';
 				$formmail->param['pre_action'] = 'presend_trainer_doc';
 				$formmail->param['sessiontrainerid'] = $sessiontrainerid;
-
-				$withto = array();
-				$withtoname = array();
 
 				if (empty($sessiontrainerid)) {
 					// No trainer send in parameters send to all trainer
@@ -1343,9 +1353,6 @@ if (! empty($id)) {
 					}
 				}
 
-				if (! empty($withto)) {
-					$formmail->withto = $withto;
-				}
 				$formmail->withtofree = 1;
 				$formmail->withfile = 2;
 			} elseif ($action == 'presend_convention') {
@@ -1370,9 +1377,6 @@ if (! empty($id)) {
 
 				$formmail->param['models'] = 'convention';
 				$formmail->param['pre_action'] = 'presend_convention';
-
-				$withto = array();
-				$withtoname = array();
 
 				// Convention peut être envoyé à l'opca ou au commanditaire
 
@@ -1457,15 +1461,9 @@ if (! empty($id)) {
 					}
 				}
 
-				if (! empty($withto)) {
-					$formmail->withto = $withto;
-				}
 				$formmail->withtofree = 1;
 				$formmail->withfile = 2;
 			} elseif ($action == 'presend_attestation') {
-
-				$withto = array();
-				$withtoname = array();
 
 				$formmail->withtopic = $langs->trans('AgfSendAttestation', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendAttestationBody', '__FORMINTITULE__');
@@ -1566,13 +1564,8 @@ if (! empty($id)) {
 					}
 				}
 
-				if (! empty($withto)) {
-					$formmail->withto = $withto;
-				}
 				$formmail->withtofree = 1;
 			} elseif ($action == "presend_cloture") {
-				$withto = array();
-				$withtoname = array();
 
 				$formmail->withtopic = $langs->trans('AgfSendDossierCloture', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendDossierClotureBody', '__FORMINTITULE__');
@@ -1663,9 +1656,7 @@ if (! empty($id)) {
 						}
 					}
 				}
-				if (! empty($withto)) {
-					$formmail->withto = $withto;
-				}
+
 				$formmail->withtofree = 1;
 			} elseif ($action == "presend_convocation") {
 
@@ -1673,9 +1664,6 @@ if (! empty($id)) {
 				$formmail->withbody = $langs->trans('AgfSendConvocationBody', '__FORMINTITULE__');
 				$formmail->param['models'] = 'convocation';
 				$formmail->param['pre_action'] = 'presend_convocation';
-
-				$withto = array();
-				$withtoname = array();
 
 				// Envoi de fichier libre
 				$formmail->withfile = 2;
@@ -1715,13 +1703,6 @@ if (! empty($id)) {
 							$style_mesg = 'warnings';
 						}
 					}
-				}
-
-				if(!empty($socid)) {
-					$client = new Societe($db);
-					$client->fetch($socid);
-	                                $withto[$client->id . '_third'] = $client->name . ' - ' . $client->email;
-        	                        $withtoname[$client->id] = $client->name;
 				}
 
 				// Trainee List
@@ -1768,14 +1749,8 @@ if (! empty($id)) {
 					}
 				}
 
-				if (! empty($withto)) {
-					$formmail->withto = $withto;
-				}
 				$formmail->withtofree = 1;
 			} elseif ($action == "presend_conseils") {
-
-				$withto = array();
-				$withtoname = array();
 
 				$formmail->withtopic = $langs->trans('AgfSendConseil', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendConseilBody', '__FORMINTITULE__');
@@ -1826,14 +1801,8 @@ if (! empty($id)) {
 					}
 				}
 
-				if (! empty($withto)) {
-					$formmail->withto = $withto;
-				}
 				$formmail->withtofree = 1;
 			} elseif ($action == "presend_accueil") {
-
-				$withto = array();
-				$withtoname = array();
 
 				$formmail->withtopic = $langs->trans('AgfSendCourrierAcceuil', '__FORMINTITULE__');
 				$formmail->withbody = $langs->trans('AgfSendCourrierAcceuilBody', '__FORMINTITULE__');
@@ -1886,20 +1855,24 @@ if (! empty($id)) {
 					}
 				}
 
-				if (! empty($withto)) {
-					$formmail->withto = $withto;
-				}
 				$formmail->withtofree = 1;
-			} elseif ($action == 'presend_attestationendtraining') {
+			} elseif ($action == 'presend_attestationendtraining' || $action == 'presend_attestationpresencetraining') {
 
-				$withto = array();
-				$withtoname = array();
+				if ($action == 'presend_attestationendtraining') {
+				    $formmail->withtopic = $langs->trans('AgfSendAttestation', '__FORMINTITULE__');
+				    $formmail->withbody = $langs->trans('AgfSendAttestationBody', '__FORMINTITULE__');
 
-				$formmail->withtopic = $langs->trans('AgfSendAttestation', '__FORMINTITULE__');
-				$formmail->withbody = $langs->trans('AgfSendAttestationBody', '__FORMINTITULE__');
-				$formmail->param['models'] = 'attestationendtraining';
-				$formmail->param['pre_action'] = 'presend_attestationendtraining';
+    				$formmail->param['models'] = 'attestationendtraining';
+    				$formmail->param['pre_action'] = 'presend_attestationendtraining';
 
+				} elseif ($action == 'presend_attestationpresencetraining') {
+				    $formmail->withtopic = $langs->trans('AgfSendAttestationPresence', '__FORMINTITULE__');
+				    $formmail->withbody = $langs->trans('AgfSendAttestationPresenceBody', '__FORMINTITULE__');
+
+				    $formmail->param['models'] = 'attestationpresencetraining';
+				    $formmail->param['pre_action'] = 'presend_attestationpresencetraining';
+
+				}
 				// Attestation peut être envoyé à l'opca ou au commanditaire if inter-entreprise
 				if ($agf->type_session && $socid) {
 					$agf_opca = new Agefodd_opca($db);
@@ -1994,10 +1967,12 @@ if (! empty($id)) {
 					}
 				}
 
-				if (! empty($withto)) {
-					$formmail->withto = $withto;
-				}
 				$formmail->withtofree = 1;
+			}
+
+			if (! empty($withto))
+			{
+				$formmail->withto = $withto;
 			}
 
 			$formmail->withdeliveryreceipt = 1;
@@ -2043,7 +2018,7 @@ if (! empty($id)) {
 			$formmail->param['action'] = 'send';
 			$formmail->param['models_id'] = GETPOST('modelmailselected');
 			$formmail->param['id'] = $agf->id;
-			$formmail->param['returnurl'] = $_SERVER["PHP_SELF"] . '?id=' . $agf->id;
+			$formmail->param['returnurl'] = $_SERVER["PHP_SELF"]. '?id=' . $agf->id;
 
 			if ($action == 'presend_pedago') {
 				print_fiche_titre($langs->trans('AgfSendDocuments') . ' ' . $langs->trans('AgfFichePedagogique'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
@@ -2072,9 +2047,13 @@ if (! empty($id)) {
 				print_fiche_titre($langs->trans('AgfSendDocuments') . ' ' . $langs->trans('AgfTrainerMissionLetter'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
 			} elseif ($action == 'presend_attestationendtraining') {
 				print_fiche_titre($langs->trans('AgfSendDocuments') . ' ' . $langs->trans('AgfSendAttestation'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
+			} elseif ($action == 'presend_attestationpresencetraining') {
+			    print_fiche_titre($langs->trans('AgfSendDocuments') . ' ' . $langs->trans('AgfSendAttestationPresence'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
 			}
-
 			$formmail->param['fileinit'] = $file_array;
+
+			unset($_GET['mode']);//c'est checké dans la fonction show_form, ça vide les fichiers si ça vaut init
+			unset($_POST['modelmailselected']);
 			$formmail->show_form();
 
 			if (! empty($mesg)) {
@@ -2125,6 +2104,7 @@ if (! empty($id)) {
 					document_send_line($langs->trans("AgfConvention"), "convention", $agf->lines[$i]->socid);
 					document_send_line($langs->trans("AgfAttestationEndTraining"), "attestationendtraining", $agf->lines[$i]->socid);
 					document_send_line($langs->trans("AgfSendAttestation"), "attestation", $agf->lines[$i]->socid);
+					document_send_line($langs->trans("AgfSendAttestationPresence"), "attestationpresencetraining", $agf->lines[$i]->socid);
 					document_send_line($langs->trans("AgfCourrierAcceuil"), "accueil", $agf->lines[$i]->socid);
 					document_send_line($langs->trans("AgfCourrierCloture"), "cloture", $agf->lines[$i]->socid);
 
@@ -2153,8 +2133,18 @@ if (! empty($id)) {
 		}
 
 
+		if ($action != 'view_actioncomm') {
+		    print '<div class="tabsAction">';
+			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=view_actioncomm&id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
+			print '</div>';
+		}
 
-
+		if ($action == 'view_actioncomm') {
+			// List of actions on element
+			include_once (DOL_DOCUMENT_ROOT . '/core/class/html.formactions.class.php');
+			$formactions = new FormAgefodd($db);
+			$somethingshown = $formactions->showactions($agf, 'agefodd_agsession', $socid);
+		}
 	} elseif ($result==0) {
 	    print '<div style="text-align:center"><br>'.$langs->trans('AgfThirdparyMandatory').'</div>';
 	} else {

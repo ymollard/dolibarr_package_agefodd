@@ -505,7 +505,16 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$art1 .= "\n" . $langs->trans('AgfTrainingTrainer') . ' : ' . implode(', ', $TTrainer) . "\n";
 	}
 
-	$art1 .= "\n" . $langs->trans('AgfConvArt1_13') . "\n" . "\n";
+	$art1 .= "\n" . $langs->trans('AgfConvArt1_13');
+
+	if ($conf->global->AGF_CONV_ADD_SANCTION) {
+		$training = new Formation($db);
+		$training->fetch($agf->formid);
+		if (!empty($training->sanction)) {
+			$art1 .=  "\n".$training->sanction;
+		}
+	}
+	$art1 .= "\n" . "\n";
 
 	$art1 .= $langs->trans('AgfConvArt1_14') . ' Nb_participants ';
 	$art1 .= $langs->trans('AgfConvArt1_17') . "\n" . "\n";

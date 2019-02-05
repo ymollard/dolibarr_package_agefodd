@@ -414,6 +414,7 @@ $(document).ready(function() {
         
 	initEventFormFields = function(start, end, event) {
 		is_past = moment().unix() > end.unix(); // event dans le passé, il faut donc rendre non éditable certains champs
+		is_futur = moment().unix() < start.unix();
 		
 		fullcalendarscheduler_div.find('input[name^=TFormateurId]').prop('checked', false);
 		fullcalendarscheduler_div.find('select[name^=TFormateurHeured]').val(start.format('HH:mm'));
@@ -421,9 +422,11 @@ $(document).ready(function() {
 			
 		if (typeof event !== 'undefined')
 		{
+			//console.log(event);
+			
 			// Init inputs
 			fullcalendarscheduler_div.find('[name=calendrier_type]').val(event.calendrier_type);
-			
+			fullcalendarscheduler_div.find('[name=calendrier_status]').val(event.calendrier_status);
 			if (typeof event.TFormateur !== 'undefined')
 			{
 				for (let i in event.TFormateur)
@@ -435,6 +438,7 @@ $(document).ready(function() {
 			}
 
 			fullcalendarscheduler_div.find('input[name^="TRealHour"]').val(0);
+			if (is_futur) fullcalendarscheduler_div.find('input[name^="TRealHour"]').prop('disabled', true);
 			if (typeof event.TRealHour !== 'undefined')
 			{
 				for (let fk_stagiaire in event.TRealHour)
@@ -449,6 +453,10 @@ $(document).ready(function() {
 			var duration;
 			if (is_past) duration = end.diff(start) / 1000 / 60 / 60; //  /1000 pour avoir des secondes; /60 pour avoir des minutes; /60 pour avoir des heures
 			else duration = '';
+			
+			if (is_futur) fullcalendarscheduler_div.find('input[name^="TRealHour"]').prop('disabled', true);
+			else fullcalendarscheduler_div.find('input[name^="TRealHour"]').prop('disabled', false);
+			
 			fullcalendarscheduler_div.find('.type_hour').val(duration);
 		}
 		

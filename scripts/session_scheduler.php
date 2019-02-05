@@ -80,7 +80,7 @@ switch ($put) {
 	case 'createOrUpdateCalendrier':
 		$time_start = dol_mktime(GETPOST('date_starthour'), GETPOST('date_startmin'), 0, GETPOST('date_startmonth'), GETPOST('date_startday'), GETPOST('date_startyear'));
 		$time_end = dol_mktime(GETPOST('date_endhour'), GETPOST('date_endmin'), 0, GETPOST('date_endmonth'), GETPOST('date_endday'), GETPOST('date_endyear'));
-		_createOrUpdateCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('fk_agefodd_session', 'int'), GETPOST('TFormateurId', 'array'), GETPOST('TRealHour', 'array'), GETPOST('calendrier_type'), $time_start, $time_end, GETPOST('TFormateurHeured'), GETPOST('TFormateurHeuref'));
+		_createOrUpdateCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('fk_agefodd_session', 'int'), GETPOST('TFormateurId', 'array'), GETPOST('TRealHour', 'array'), GETPOST('calendrier_type'), $time_start, $time_end, GETPOST('TFormateurHeured'), GETPOST('TFormateurHeuref'), GETPOST('calendrier_status'));
 		echo json_encode( $response );
 		break;
 }
@@ -281,7 +281,7 @@ function _updateTimeSlotCalendrier($fk_agefodd_session_calendrier, $date_start, 
 	}
 }
 
-function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_session, $TFormateurId, $TRealHour, $calendrier_type, $time_start, $time_end, $TFormateurHeured, $TFormateurHeuref)
+function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_session, $TFormateurId, $TRealHour, $calendrier_type, $time_start, $time_end, $TFormateurHeured, $TFormateurHeuref, $calendrier_status)
 {
 	global $db, $user, $response, $conf;
 	$agf_calendrier = new Agefodd_sesscalendar($db);
@@ -295,6 +295,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 	$agf_calendrier->heured = $time_start;
 	$agf_calendrier->heuref = $time_end;
 	$agf_calendrier->calendrier_type = $calendrier_type;
+	$agf_calendrier->status = $calendrier_status;
 //	$agf_calendrier->status = 0;
 
 	if (!empty($agf_calendrier->id))
@@ -433,6 +434,7 @@ function _formatEventAsArray(Agefodd_sesscalendar &$agf_calendrier, $now)
 		,'fk_agefodd_session' => $agf_calendrier->sessid
 		,'calendrier_type' => !empty($agf_calendrier->calendrier_type) ? $agf_calendrier->calendrier_type : ''
 		,'calendrier_type_label' => !empty($agf_calendrier->calendrier_type_label) ? $agf_calendrier->calendrier_type_label : ''
+	    ,'calendrier_status' => !empty($agf_calendrier->status) ? $agf_calendrier->status : 0
 		,'startEditable' => $agf_calendrier->heuref < $now ? false : true // si la date de fin est dans le passé, alors plus le droit de déplcer l'event
 //				,'color'=>'#ccc' // background
 		,'TRealHour' => $TRealHour

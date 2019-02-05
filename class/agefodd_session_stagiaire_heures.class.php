@@ -386,8 +386,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 * Retourne tous les créneaux horaire de la session indiquée d'un stagiaire
 	 *
 	 * @param int $id session
-	 * @param int $trainee
-	 * @param int $calendar
+	 * @param int $traineeinsession
+	 * 
 	 */
 	public function fetch_all_by_session($id, $trainee)
 	{
