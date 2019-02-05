@@ -434,15 +434,19 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '<td>';
 
 	$agf_static = new Agefodd_stagiaire($db);
-	$agf_static->fetch_all('DESC', 's.rowid', '', 0);
-	$exclude_array = array ();
-	if (is_array($agf_static->lines) && count($agf_static->lines) > 0) {
-		foreach ( $agf_static->lines as $line ) {
-			if (! empty($line->fk_socpeople)) {
-				$exclude_array[] = $line->fk_socpeople;
-			}
-		}
+	//$agf_static->fetch_all('DESC', 's.rowid', '', 0);
+	$exclude_array = $agf_static->fetch_all_id_by('fk_socpeople');
+	if (is_array($exclude_array))
+	{
+		unset($exclude_array['']);
+		unset($exclude_array[0]);
+		$exclude_array = array_keys($exclude_array);
 	}
+	else
+	{
+		$exclude_array = array();
+	}
+	
 	$formAgefodd->select_contacts_custom(0, '', 'contact', 1, $exclude_array, '', 1, '', 1);
 	print '</td></tr>';
 
