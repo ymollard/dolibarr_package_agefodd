@@ -1265,7 +1265,7 @@ class modAgefodd extends DolibarrModules
 				'sta.date_birth' => "Date",
 		);
 		$this->export_entities_array[$r] = array(
-				's.rowid' => "Id",
+				's.rowid' => "AgfSessionDetail",
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfSessionDetail',
 				's.dated' => 'AgfSessionDetail',
 				's.datef' => 'AgfSessionDetail',
