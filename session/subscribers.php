@@ -93,11 +93,41 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 		if ($agfsta->update($user) > 0) {
 
 			if (! empty($conf->global->AGF_USE_REAL_HOURS) && $agfsta->status_in_session !== 4) {
-
+			    
 				$agfssh = new Agefoddsessionstagiaireheures($db);
-				$agfssh->fetch_all_by_session(GETPOST('sessid', 'int'), GETPOST('stagerowid', 'int'));
+				$agfssh->fetch_all_by_session(GETPOST('sessid', 'int'), GETPOST('modstagid', 'int'));
 				foreach ( $agfssh->lines as $heures ) {
-					$heures->delete($user);
+				    if ($agfsta->status_in_session == 3 )
+				    {
+				        
+				        $TCal = array();
+				        if (!in_array($heures->fk_calendrier, $TCal))
+				        {
+				            $cal = new Agefodd_sesscalendar($db);
+				            $cal->fetch($heures->fk_calendrier);
+				            
+				            $TCal[$heures->fk_calendrier] = ($cal->heuref - $cal->heured) / 3600;
+				        }
+				        
+				        if (floatval($heures->heures) !== $TCal[$heures->fk_calendrier])
+				        {
+    				        $new_heures = new Agefoddsessionstagiaireheures($db);
+    				        
+    				        $new_heures->fk_stagiaire = $heures->fk_stagiaire;
+    				        $new_heures->nom_stagiaire = $heures->nom_stagiaire;
+    				        $new_heures->fk_user_author = $heures->fk_user_author;
+    				        $new_heures->fk_calendrier = $heures->fk_calendrier;
+    				        $new_heures->fk_session = $heures->fk_session;
+    				        $new_heures->heures = $TCal[$heures->fk_calendrier];
+    				        $new_heures->datec = $heures->datec;
+    				        
+    				        $res = $new_heures->create($user);
+    				        
+    				        if ($res) $heures->delete($user);
+    				        else setEventMessage($langs->trans('ErrUpdateHeures'), 'errors');
+				        }
+				    }
+					else $heures->delete($user);
 				}
 			}
 
@@ -394,9 +424,10 @@ if ($action == 'updatetraineestatus') {
 	if ($result < 0) {
 		setEventMessage($agf->error, 'errors');
 	} else {
+	    $statusinsession = GETPOST('statusinsession', 'int');
 		$stagiaires = new Agefodd_session_stagiaire($db);
 		$stagiaires->fk_session_agefodd = $agf->id;
-		$result = $stagiaires->update_status_by_soc($user, 1, 0, GETPOST('statusinsession', 'int'));
+		$result = $stagiaires->update_status_by_soc($user, 1, 0, $statusinsession);
 		if ($result < 0) {
 			setEventMessage($stagiaires->error, 'errors');
 		} else {
@@ -405,8 +436,39 @@ if ($action == 'updatetraineestatus') {
 				foreach ( $stagiaires->lines as $trainee ) {
 					$heures = new Agefoddsessionstagiaireheures($db);
 					$heures->fetch_all_by_session($agf->id, $trainee->id);
-					foreach ( $heures->lines as $creneaux ) {
-						$creneaux->delete($user);
+					if (in_array($statusinsession, array(5,6))) // non-présent ou annulé
+					{
+    					foreach ( $heures->lines as $creneaux ) {
+    						$creneaux->delete($user);
+    					}
+					}
+					elseif ($statusinsession == 3) // présent
+					{
+					    foreach ( $heures->lines as $creneaux ) {
+					        $TCal = array();
+					        if (!in_array($creneaux->fk_calendrier, $TCal))
+					        {
+					            $cal = new Agefodd_sesscalendar($db);
+					            $cal->fetch($creneaux->fk_calendrier);
+					            
+					            $TCal[$creneaux->fk_calendrier] = ($cal->heuref - $cal->heured) / 3600;
+					        }
+					        
+					        $new_heures = new Agefoddsessionstagiaireheures($db);
+					        
+					        $new_heures->fk_stagiaire = $creneaux->fk_stagiaire;
+					        $new_heures->nom_stagiaire = $creneaux->nom_stagiaire;
+					        $new_heures->fk_user_author = $creneaux->fk_user_author;
+					        $new_heures->fk_calendrier = $creneaux->fk_calendrier;
+					        $new_heures->fk_session = $creneaux->fk_session;
+					        $new_heures->heures = $TCal[$creneaux->fk_calendrier];
+					        $new_heures->datec = $creneaux->datec;
+					        
+					        $res = $new_heures->create($user);
+					        
+					        if ($res) $creneaux->delete($user);
+					        else setEventMessage($langs->trans('ErrUpdateHeures'), 'errors');
+					    }
 					}
 				}
 			}
@@ -607,6 +669,7 @@ if (! empty($id)) {
             						$val = $agfssh->heures;
             					} else {
             					    $val = $defaultvalue;
+            					    $warning = true;
             					}
         					} else {
         					    $val = 0;
@@ -615,7 +678,7 @@ if (! empty($id)) {
     					    $val = 0;
     					}
 
-    					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value="' . $val . '" data-default="'.(($calendrier->lines[$j]->date_session < dol_now()) ? $defaultvalue : 0).'" '.(($calendrier->lines[$j]->date_session < dol_now()) ? '' : 'disabled').'></td>';
+    					print '<td align="center"><input name="realhours[' . $stagiaires->lines[$i]->id . '][' . $calendrier->lines[$j]->id . ']" type="text" size="5" value="' . $val . '" data-default="'.(($calendrier->lines[$j]->date_session < dol_now()) ? $defaultvalue : 0).'" '.(($calendrier->lines[$j]->date_session < dol_now()) ? '' : 'disabled').'>' . ($warning ? img_warning($langs->trans('AgfWarningTheoreticalValue')) : '') . '</td>';
     				}
 				} else {
 				    print '<td align="center">'. (($i == 0) ? $langs->trans("AgfNoCalendar") : '') .'</td>';

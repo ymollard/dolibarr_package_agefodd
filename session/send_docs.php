@@ -149,7 +149,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 			$subject = GETPOST('subject');
 			// Initialisation donnees
 			$contactstatic = new Contact($db);
-			$contactstatic->fetch($send_contact_id);
+			if(strpos($send_contact_id, '_third') === false) $contactstatic->fetch($send_contact_id);
 
 			if ($models == 'fiche_pedago') {
 				if (empty($subject))
@@ -316,7 +316,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					$error = 0;
 					$socid_action = ($contactstatic->socid > 0 ? $contactstatic->socid : ($socid > 0 ? $socid : $object->fk_soc));
 					$object->socid = $socid_action;
-					$object->sendtoid = $send_contact_id;
+					if(strpos($send_contact_id, '_third') === false) $object->sendtoid = $send_contact_id;
 					$object->actiontypecode = $actiontypecode;
 					$object->actionmsg = $actionmsg;
 					$object->actionmsg2 = $actionmsg2;
