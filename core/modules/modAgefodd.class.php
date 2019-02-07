@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.3.7';
+		$this->version = '4.3.8';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -1288,7 +1288,7 @@ class modAgefodd extends DolibarrModules
 				'sta.date_birth' => "Date",
 		);
 		$this->export_entities_array[$r] = array(
-				's.rowid' => "Id",
+				's.rowid' => "AgfSessionDetail",
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfSessionDetail',
 				's.dated' => 'AgfSessionDetail',
 				's.datef' => 'AgfSessionDetail',

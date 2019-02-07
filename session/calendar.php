@@ -302,6 +302,13 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 
 			$agf->sessid = GETPOST('sessid', 'int');
 			$agf->date_session = dol_mktime(0, 0, 0, GETPOST('datenewmonth', 'int'), GETPOST('datenewday', 'int'), GETPOST('datenewyear', 'int'));
+
+            		if(empty($agf->date_session))
+            		{
+                		$error_message = $langs->trans('AgfNoDateSessionFound');
+                		$error++;
+            		}
+
 			$agf->calendrier_type = GETPOST('calendrier_type');
 			// From calendar selection
 			$heure_tmp_arr = array();
@@ -318,7 +325,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 				$agf->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, GETPOST('datenewmonth', 'int'), GETPOST('datenewday', 'int'), GETPOST('datenewyear', 'int'));
 			}
 
-			$result = $agf->create($user);
+			if (!$error) $result = $agf->create($user);
 			if ($result < 0) {
 				$error ++;
 				$error_message = $agf->error;
@@ -817,10 +824,10 @@ if ($id) {
 			$form->select_date($agf->dated, 'datenew', '', '', '', 'newperiod');
 			print '</td>';
 			print '<td>';
-			print $formAgefodd->select_time('08:00', 'datenewd');
+			print $formAgefodd->select_time('08:00', 'datenewd', 1, false);
 			print '</td>';
 			print '<td>';
-			print $formAgefodd->select_time('18:00', 'datenewf');
+			print $formAgefodd->select_time('18:00', 'datenewf', 1, false);
 			print '</td>';
 			print '<td>'.$formAgefodd->select_calendrier_type('', 'calendrier_type').'</td>';
 			print '</tr>' . "\n";
