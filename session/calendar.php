@@ -824,10 +824,10 @@ if ($id) {
 			$form->select_date($agf->dated, 'datenew', '', '', '', 'newperiod');
 			print '</td>';
 			print '<td>';
-			print $formAgefodd->select_time('08:00', 'datenewd');
+			print $formAgefodd->select_time('08:00', 'datenewd', 1, false);
 			print '</td>';
 			print '<td>';
-			print $formAgefodd->select_time('18:00', 'datenewf');
+			print $formAgefodd->select_time('18:00', 'datenewf', 1, false);
 			print '</td>';
 			print '<td>'.$formAgefodd->select_calendrier_type('', 'calendrier_type').'</td>';
 			print '</tr>' . "\n";
