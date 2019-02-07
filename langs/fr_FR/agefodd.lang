@@ -1424,3 +1424,4 @@ AgfModels=Modéle de documents
 AgfSelectDocEditModel=Quel modèle de documents voulez vous utiliser ?
 AgfDocModelStandard = Modèle standard
 AgfWarningTheoreticalValue=Attention : valeur théorique non sauvegardée et ni pris en compte dans le total
+AgfNoDateSessionFound=Aucune date saisie

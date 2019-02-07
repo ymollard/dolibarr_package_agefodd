@@ -219,9 +219,16 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 		} else {
 
 			$agf = new Agefodd_sesscalendar($db);
+            $error = 0;
 
 			$agf->sessid = GETPOST('sessid', 'int');
 			$agf->date_session = dol_mktime(0, 0, 0, GETPOST('datenewmonth', 'int'), GETPOST('datenewday', 'int'), GETPOST('datenewyear', 'int'));
+
+            if(empty($agf->date_session))
+            {
+                $error_message = $langs->trans('AgfNoDateSessionFound');
+                $error++;
+            }
 
 			// From calendar selection
 			$heure_tmp_arr = array();
@@ -238,7 +245,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 				$agf->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, GETPOST('datenewmonth', 'int'), GETPOST('datenewday', 'int'), GETPOST('datenewyear', 'int'));
 			}
 
-			$result = $agf->create($user);
+			if (!$error) $result = $agf->create($user);
 			if ($result < 0) {
 				$error ++;
 				$error_message = $agf->error;
