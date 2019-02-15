@@ -156,7 +156,7 @@ if ($result > 0 && ! empty($user->id)) {
 	}
 	
 	//PAs maison mére si pas fille
-	$sql = "UPDATE " . MAIN_DB_PREFIX . "societe_extrafields SET ts_maison=NULL ";
+	/*$sql = "UPDATE " . MAIN_DB_PREFIX . "societe_extrafields SET ts_maison=NULL ";
 	$sql .= " WHERE fk_object  NOT IN (SELECT DISTINCT parent FROM " . MAIN_DB_PREFIX . "societe WHERE parent IS NOT NULL)";
 	
 	dol_syslog('/agefodd/scripts/update_customer_status.php:PAs maison mére si pas fille: sql='.$sql,LOG_DEBUG);
@@ -166,7 +166,7 @@ if ($result > 0 && ! empty($user->id)) {
 	} else {
 		print '/agefodd/scripts/update_customer_status.php:PAs maison mére si pas fille: sql='.$sql;
 		print - 1 . $db->lasterror();
-	}
+	}*/
 	
 	//cocher de manière automatique "Contact principal" quand un contact est demandeur.
 	$sql = "UPDATE " . MAIN_DB_PREFIX . "socpeople_extrafields SET ct_principal=1 ";
