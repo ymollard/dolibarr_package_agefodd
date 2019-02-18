@@ -287,9 +287,8 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 
 		$agf->fk_formation_catalogue = GETPOST('formation', 'int');
 
-		$agf->dated = dol_mktime(0, 0, 0, GETPOST('dadmonth', 'int'), GETPOST('dadday', 'int'), GETPOST('dadyear', 'int'));
-		$agf->datef = dol_mktime(0, 0, 0, GETPOST('dafmonth', 'int'), GETPOST('dafday', 'int'), GETPOST('dafyear', 'int'));
-
+		$agf->dated = dol_mktime(12, 0, 0, GETPOST('dadmonth', 'int'), GETPOST('dadday', 'int'), GETPOST('dadyear', 'int'));
+		$agf->datef = dol_mktime(12, 0, 0, GETPOST('dafmonth', 'int'), GETPOST('dafday', 'int'), GETPOST('dafyear', 'int'));
 		if ($agf->dated > $agf->datef) {
 			$error ++;
 			setEventMessage($langs->trans('AgfSessionDateErrors'), 'errors');
@@ -312,9 +311,9 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			$agf->sell_price_planned = GETPOST('sellprice', 'alpha');
 		}
 
-		$agf->date_res_site = dol_mktime(0, 0, 0, GETPOST('res_sitemonth', 'int'), GETPOST('res_siteday', 'int'), GETPOST('res_siteyear', 'int'));
-		$agf->date_res_trainer = dol_mktime(0, 0, 0, GETPOST('res_trainmonth', 'int'), GETPOST('res_trainday', 'int'), GETPOST('res_trainyear', 'int'));
-		$agf->date_res_confirm_site = dol_mktime(0, 0, 0, GETPOST('res_siteconfirmmonth', 'int'), GETPOST('res_siteconfirmday', 'int'), GETPOST('res_siteconfirmyear', 'int'));
+		$agf->date_res_site = dol_mktime(12, 0, 0, GETPOST('res_sitemonth', 'int'), GETPOST('res_siteday', 'int'), GETPOST('res_siteyear', 'int'));
+		$agf->date_res_trainer = dol_mktime(12, 0, 0, GETPOST('res_trainmonth', 'int'), GETPOST('res_trainday', 'int'), GETPOST('res_trainyear', 'int'));
+		$agf->date_res_confirm_site = dol_mktime(12, 0, 0, GETPOST('res_siteconfirmmonth', 'int'), GETPOST('res_siteconfirmday', 'int'), GETPOST('res_siteconfirmyear', 'int'));
 
 		$fk_soc = GETPOST('fk_soc', 'int');
 		$fk_soc_requester = GETPOST('fk_soc_requester', 'int');
@@ -437,8 +436,8 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		$agf->status = GETPOST('session_status', 'int');
 
 		$agf->fk_soc = GETPOST('fk_soc', 'int');
-		$agf->dated = dol_mktime(0, 0, 0, GETPOST('dadmonth', 'int'), GETPOST('dadday', 'int'), GETPOST('dadyear', 'int'));
-		$agf->datef = dol_mktime(0, 0, 0, GETPOST('dafmonth', 'int'), GETPOST('dafday', 'int'), GETPOST('dafyear', 'int'));
+		$agf->dated = dol_mktime(12, 0, 0, GETPOST('dadmonth', 'int'), GETPOST('dadday', 'int'), GETPOST('dadyear', 'int'));
+		$agf->datef = dol_mktime(12, 0, 0, GETPOST('dafmonth', 'int'), GETPOST('dafday', 'int'), GETPOST('dafyear', 'int'));
 
 		if ($agf->dated > $agf->datef) {
 			$error ++;
