@@ -237,8 +237,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 					$result = $socstatic->create($user);
 
 					if (! $result >= 0) {
-						$error = $socstatic->error;
-						$errors = $socstatic->errors;
+						setEventMessages($socstatic->error, $socstatic->errors,'errors');
 					}
 
 					$agf->socid = $socstatic->id;
@@ -268,8 +267,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 
 					$result = $contact->create($user);
 					if (! $result >= 0) {
-						$error = $contact->error;
-						$errors = $contact->errors;
+						setEventMessages($contact->error, $contact->errors,'errors');
 					}
 					$agf->fk_socpeople = $contact->id;
 				}
