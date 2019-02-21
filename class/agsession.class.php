@@ -3649,7 +3649,7 @@ class Agsession extends CommonObject
 				}
 				print dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour');
 
-				if (($calendrier->lines[$i]->date_session < $this->dated) || ($calendrier->lines[$i]->date_session > $this->datef))
+				if ((empty($this->dated) || $calendrier->lines[$i]->date_session < strtotime(date('Y-m-d', $this->dated).' 00:00:00')) || (empty($this->datef) || $calendrier->lines[$i]->date_session > strtotime(date('Y-m-d', $this->datef).' 00:00:00')))
 					$alertday = true;
 				if ($i == $blocNumber - 1)
 					print '</td></tr>';
