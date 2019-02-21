@@ -1433,7 +1433,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 									print '<table class="nobordernopadding">';
 
 									for($j = 0; $j < $blocNumber; $j ++) {
-										if (($trainer_calendar->lines[$j]->date_session < $agf->dated) || ($trainer_calendar->lines[$j]->date_session > $agf->datef)) {
+										if ((empty($this->dated) || $trainer_calendar->lines[$j]->date_session < strtotime(date('Y-m-d', $agf->dated).' 00:00:00')) || (empty($this->datef) || $trainer_calendar->lines[$j]->date_session > strtotime(date('Y-m-d', $agf->datef).' 00:00:00'))) {
 											$alertday = true;
 										}
 
