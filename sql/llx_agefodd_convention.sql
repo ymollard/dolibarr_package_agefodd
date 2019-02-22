@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_convention (
   element_type	varchar(50) DEFAULT NULL,
   fk_element	integer  DEFAULT NULL,
   model_doc	varchar(200) DEFAULT NULL,
+  doc_lang varchar(6) DEFAULT NULL,
   intro1 text NOT NULL,
   intro2 text NOT NULL,
   art1 text NOT NULL,

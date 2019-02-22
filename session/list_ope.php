@@ -64,6 +64,7 @@ $site_view = GETPOST('site_view', 'int');
 $search_sale = GETPOST('search_sale', 'int');
 $search_id = GETPOST('search_id', 'int');
 $search_soc_requester = GETPOST('search_soc_requester', 'alpha');
+$search_alert = GETPOST('search_alert', 'alpha');
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
@@ -78,6 +79,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_type_session = "";
 	$search_id = '';
 	$search_soc_requester = '';
+	$search_alert='';
 }
 
 $filter = array ();
@@ -128,6 +130,10 @@ if ($search_type_session != '' && $search_type_session != - 1) {
 if (! empty($search_id)) {
 	$filter ['s.rowid'] = $search_id;
 	$option .= '&search_id=' . $search_id;
+}
+if (! empty($search_alert)) {
+	$filter ['alert'] = $search_alert;
+	$option .= '&search_alert=' . $search_alert;
 }
 if (!empty($limit)) {
 	$option .= '&limit=' . $limit;
@@ -235,9 +241,10 @@ if ($resql != - 1) {
 	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfTypeRequester"), $_SERVER ['PHP_SELF'], "sorequester.nom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfAlertLevel0Short"), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfAlertLevel1Short"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfAlertLevel2Short"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfAlertDay"), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfYDaysBeforeAlert"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfXDaysBeforeAlert"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfZDaysBeforeAlert"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfAlertLevel3Short"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
@@ -277,6 +284,8 @@ if ($resql != - 1) {
 	print '</td>';
 
 	// task
+	print '<td class="liste_titre">';
+	print '</td>';
 	print '<td class="liste_titre">';
 	print '</td>';
 	print '<td class="liste_titre">';
@@ -360,6 +369,7 @@ if ($resql != - 1) {
 			print '<td>' . $line->task0 . '</td>';
 			print '<td>' . $line->task1 . '</td>';
 			print '<td>' . $line->task2 . '</td>';
+			print '<td>' . $line->morethanzday . '</td>';
 			print '<td>' . $line->task3 . '</td>';
 
 			print '<td>' . $line->nb_stagiaire . '</td>';

@@ -1,0 +1,1 @@
+ALTER TABLE llx_agefodd_convention ADD COLUMN doc_lang varchar(6) DEFAULT NULL AFTER model_doc;

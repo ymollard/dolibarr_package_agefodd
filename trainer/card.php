@@ -266,7 +266,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			$head = trainer_prepare_head($agf);
 
 			dol_fiche_head($head, 'card', $langs->trans("AgfTeacher"), 0, 'user');
-			
+
 			dol_agefodd_banner_tab($agf, 'id');
 			print '<div class="underbanner clearboth"></div>';
 
@@ -442,7 +442,7 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $actio
             $href = dol_buildpath('/user/fiche.php?id='.$agf->fk_user, 1).'&action=edit';
         }
     }
-    
+
 	if ($user->rights->agefodd->creer) {
 	    print '<a class="butAction" href="' . $href . '">' . $langs->trans('Modify') . '</a>';
 		print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
@@ -451,7 +451,7 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $actio
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
 	}
 
-	if ($user->rights->agefodd->modifier) {
+	if ($user->rights->agefodd->modifier && ! $user->rights->agefodd->session->trainer) {
 		if ($agf->archive == 0) {
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=archive&id=' . $id . '">' . $langs->trans('AgfArchiver') . '</a>';
 		} else {

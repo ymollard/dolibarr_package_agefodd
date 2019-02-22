@@ -197,7 +197,11 @@ if ($resql>=0) {
 	print '</td>';
 
 	print '<td class="liste_titre">';
-	// print $formAgefodd->
+	// trainee
+	print '</td>';
+
+	print '<td class="liste_titre">';
+	// trainee email
 	print '</td>';
 
 	print '<td class="liste_titre">' . $langs->trans('From') . ' ';
@@ -242,6 +246,7 @@ if ($resql>=0) {
 	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfParticipant"), $_SERVEUR ['PHP_SELF'], "sta.nom", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Email"), $_SERVEUR ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfCertifCode"), $_SERVEUR ['PHP_SELF'], 'certif.certif_code', '', $arg_url, '', $sortfield, $sortorder);
@@ -305,6 +310,7 @@ if ($resql>=0) {
 		print '<td>' . $line->fromref . '</td>';
 		print '<td>' . $line->fromrefinterne . '</td>';
 		print '<td><a href="' . dol_buildpath('/agefodd/trainee/session.php', 1) . '?id=' . $line->trainee_id . '">' . $line->trainee_name . ' ' . $line->trainee_firstname . '</a></td>';
+		print '<td>' . dol_print_email($line->trainee_mail).'</td>';
 		print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
 		print '<td>' . dol_print_date($line->datef, 'daytext') . '</td>';
 		print '<td>' . $line->certif_code . '</td>';

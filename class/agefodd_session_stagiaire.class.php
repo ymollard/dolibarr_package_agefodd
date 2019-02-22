@@ -42,7 +42,30 @@ class Agefodd_session_stagiaire extends CommonObject {
 	public $fk_socpeople_sign;
 	public $fk_soc_link;
 	public $fk_soc_requester;
+	
+	/**
+	 * 0 => TraineeSessionStatusProspect (Prospect)
+	 * 1 => TraineeSessionStatusVerbalAgreement (Accord verbal)
+	 * 2 => TraineeSessionStatusConfirm (Confirmé)
+	 * 3 => TraineeSessionStatusPresent (Présent)
+	 * 4 => TraineeSessionStatusPartPresent (Partiellement présent)
+	 * 5 => TraineeSessionStatusNotPresent (Non présent)
+	 * 6 => TraineeSessionStatusCancelled (Annulé)
+	 * 7 => TraineeSessionStatusExcuse (Excusé)
+	 * 
+	 * @var integer
+	 */
 	public $status_in_session;
+	
+	const STATUS_IN_SESSION_PROSPECT = 0;
+	const STATUS_IN_SESSION_VERBAL_AGREEMENT = 1;
+	const STATUS_IN_SESSION_CONFIRMED = 2;
+	const STATUS_IN_SESSION_TOTALLY_PRESENT = 3;
+	const STATUS_IN_SESSION_PARTIALLY_PRESENT = 4;
+	const STATUS_IN_SESSION_NOT_PRESENT = 5;
+	const STATUS_IN_SESSION_CANCELED = 6;
+	const STATUS_IN_SESSION_EXCUSED = 7;
+	
 	public $labelstatut;
 	public $labelstatut_short;
 	public $fk_user_author = '';
@@ -673,15 +696,14 @@ class Agefodd_session_stagiaire extends CommonObject {
 		if (! $error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_session_stagiaire");
 			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
 
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
+				if (! $notrigger)
+				{
+					// Call trigger
+					$result=$this->call_trigger('AGF_SESSION_STA_CREATE',$user);
+					if ($result < 0) { $error++; }
+					// End call triggers
+				}
 			}
 
 			// Recalculate number of trainee in session

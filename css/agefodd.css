@@ -35,3 +35,75 @@
 	padding: 0;;
 	margin: 0;
 }
+
+.agefodd-progress-group{
+
+box-sizing: border-box ;
+color: rgb(51, 51, 51) ;
+display: inline-block ;
+font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif ;
+font-size: 14px ;
+font-weight: 400 ;
+height: 30px ;
+width:12em;
+line-height: 20px ;
+text-size-adjust: 100% ;
+-webkit-tap-highlight-color: rgba(0, 0, 0, 0) ;
+}
+
+.agefodd-progress-group .agefodd-progress-text {
+   font-weight: 600;
+}
+
+.agefodd-progress-group .agefodd-progress-number {
+   float: right;
+}
+
+.agefodd-progress {
+   height: 20px;
+   overflow: hidden;
+   background-color: #d7d7d7;
+   border-radius: 4px;
+   -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+   box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+}
+
+.agefodd-progress.sm, .agefodd-progress-sm, .agefodd-progress.sm .agefodd-progress-bar, .agefodd-progress-sm .agefodd-progress-bar {
+   border-radius: 1px;
+}
+.agefodd-progress.sm, .agefodd-progress-sm {
+   height: 10px;
+}
+.agefodd-progress, .agefodd-progress>.agefodd-progress-bar, .agefodd-progress .agefodd-progress-bar, .agefodd-progress>.agefodd-progress-bar .agefodd-progress-bar {
+   border-radius: 1px;
+}
+.agefodd-progress, .agefodd-progress>.agefodd-progress-bar {
+   -webkit-box-shadow: none;
+   box-shadow: none;
+}
+
+.agefodd-progress, .agefodd-progress>.agefodd-progress-bar, .agefodd-progress .agefodd-progress-bar, .agefodd-progress>.agefodd-progress-bar .agefodd-progress-bar {
+   border-radius: 1px;
+}
+.agefodd-progress, .agefodd-progress>.agefodd-progress-bar {
+   -webkit-box-shadow: none;
+   box-shadow: none;
+}
+.agefodd-progress-bar-aqua, .agefodd-progress-bar-info {
+   background-color: #00c0ef;
+}
+.agefodd-progress-bar {
+   float: left;
+   width: 0;
+   height: 100%;
+   font-size: 12px;
+   line-height: 20px;
+   color: #fff;
+   text-align: center;
+   background-color: #4e9a06;
+   -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+   box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+   -webkit-transition: width .6s ease;
+   -o-transition: width .6s ease;
+   transition: width .6s ease;
+}

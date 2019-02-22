@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.3.7';
+		$this->version = '4.3.8';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -82,6 +82,9 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/trainee",
 				"/agefodd/report",
 				"/agefodd/report/bpf",
+				"/agefodd/report/ca",
+		        "/agefodd/report/bycust/",
+		        "/agefodd/report/calendarbycust/",
 				"/agefodd/background"
 		);
 		$r = 0;
@@ -107,11 +110,14 @@ class modAgefodd extends DolibarrModules
 						'invoicesuppliercard',
 						'admin',
 						'emailtemplates',
+				        'externalaccesspage',
+				        'externalaccessinterface',
 						'upgrade',
 						'contactcard'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
-				'models' => 1
+				'models' => 1,
+		        'css' => array('/agefodd/css/agefodd.css'),
 		);
 
 		// Dependencies
@@ -133,7 +139,7 @@ class modAgefodd extends DolibarrModules
 				3
 		);
 		$this->need_dolibarr_version = array(
-				4,
+				7,
 				0
 		);
 		$this->langfiles = array(
@@ -673,6 +679,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][4] = 0;
 		$this->const[$r][5] = 0;
 
+		$r ++;
+		$this->const[$r][0] = "AGF_HELP_LINK";
+		$this->const[$r][1] = "chaine";
+		$this->const[$r][2] = 'http://wiki.atm-consulting.fr/index.php/Agefodd_V2/Documentation_utilisateur';
+		$this->const[$r][3] = 'help wikipage';
+		$this->const[$r][4] = 0;
+		$this->const[$r][5] = 0;
+
 		// Setup $conf environement Dolibarr variable
 		if (! isset($conf->agefodd->enabled)) {
 			$conf->agefodd = ( object ) array();
@@ -688,7 +702,8 @@ class modAgefodd extends DolibarrModules
 						MAIN_DB_PREFIX . "agefodd_certificate_type",
 						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type",
 						MAIN_DB_PREFIX . "agefodd_formateur_category_dict",
-						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf"
+						MAIN_DB_PREFIX . "agefodd_formation_catalogue_type_bpf",
+						MAIN_DB_PREFIX . "c_agefodd_session_calendrier_type"
 				),
 				'tablib' => array(
 						"AgfTraineeType",
@@ -696,7 +711,8 @@ class modAgefodd extends DolibarrModules
 						"AgfCertificateType",
 						"AgfTrainingCategTbl",
 						"AgfTrainerCategoryDict",
-						"AgfTrainingCategTblBPF"
+						"AgfTrainingCategTblBPF",
+						"AgfTypeTime"
 				),
 				'tabsql' => array(
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_type as f',
@@ -704,7 +720,8 @@ class modAgefodd extends DolibarrModules
 						'SELECT f.rowid as rowid, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_certificate_type as f',
 						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type as f',
 						'SELECT f.rowid as rowid, f.code, f.label, f.description, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formateur_category_dict as f',
-						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f'
+						'SELECT f.rowid as rowid, f.code, f.intitule, f.sort, f.active FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_type_bpf as f',
+						'SELECT f.rowid as rowid, f.code, f.label, f.active FROM ' . MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type as f'
 				),
 				'tabsqlsort' => array(
 						'sort ASC',
@@ -712,7 +729,8 @@ class modAgefodd extends DolibarrModules
 						'sort ASC',
 						'sort ASC',
 						'code ASC',
-						'sort ASC'
+						'sort ASC',
+						'code ASC'
 				),
 				'tabfield' => array(
 						"intitule,sort",
@@ -720,7 +738,8 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label"
 				),
 				'tabfieldvalue' => array(
 						"intitule,sort",
@@ -728,7 +747,8 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label"
 				),
 				'tabfieldinsert' => array(
 						"intitule,sort",
@@ -736,9 +756,11 @@ class modAgefodd extends DolibarrModules
 						"intitule,sort",
 						"code,intitule,sort",
 						"code,label,description",
-						"code,intitule,sort"
+						"code,intitule,sort",
+						"code,label"
 				),
 				'tabrowid' => array(
+						"rowid",
 						"rowid",
 						"rowid",
 						"rowid",
@@ -747,6 +769,7 @@ class modAgefodd extends DolibarrModules
 						"rowid"
 				),
 				'tabcond' => array(
+						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
 						'$conf->agefodd->enabled',
@@ -1374,8 +1397,8 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_contact as sesscontact ON sesscontact.fk_session_agefodd = s.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_contact as agfcontact ON agfcontact.rowid = sesscontact.fk_agefodd_contact';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as contactsession ON contactsession.rowid = agfcontact.fk_socpeople';
-		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as extrasession ON extrasession.fk_object = s.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_extrafields as extratrainee ON extratrainee.fk_object = sta.rowid';
+		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields as extrasession ON extrasession.fk_object = s.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as sosta ON sosta.rowid = sta.fk_soc';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as presta ON s.fk_socpeople_presta = presta.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socpresta ON socpresta.rowid = presta.fk_soc';
@@ -1514,44 +1537,44 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][1] = 'Voir les sessions';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'lire';
-		$r ++;
 
+		$r ++;
 		$this->rights[$r][0] = 103002;
 		$this->rights[$r][1] = 'Modifier les sessions';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'modifier';
-		$r ++;
 
+		$r ++;
 		$this->rights[$r][0] = 103003;
 		$this->rights[$r][1] = 'Creer les sessions';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'creer';
-		$r ++;
 
+		$r ++;
 		$this->rights[$r][0] = 103004;
 		$this->rights[$r][1] = 'Suppression des sessions';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'supprimer';
-		$r ++;
 
+		$r ++;
 		$this->rights[$r][0] = 103005;
 		$this->rights[$r][1] = 'Voir stats';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'viewstats';
-		$r ++;
 
+		$r ++;
 		$this->rights[$r][0] = 103006;
 		$this->rights[$r][1] = 'export';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'export';
-		$r ++;
 
+		$r ++;
 		$this->rights[$r][0] = 103007;
 		$this->rights[$r][1] = 'agenda';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'agenda';
-		$r ++;
 
+		$r ++;
 		$this->rights[$r][0] = 103008;
 		$this->rights[$r][1] = 'agendatrainer';
 		$this->rights[$r][3] = 0;
@@ -1645,12 +1668,51 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][4] = 'admin';
 
 		$r ++;
-		$this->rights [$r] [0] = $this->numero.$r;
-		$this->rights [$r] [1] = 'Voir agenda par lieu';
-		$this->rights [$r] [2] = 'r';
-		$this->rights [$r] [3] = 0;
-		$this->rights [$r] [4] = 'agendalocation';
-		$this->rights [$r] [5] = 'all';
+		$this->rights[$r][0] = $this->numero + $r;
+		$this->rights[$r][1] = 'See location agenda';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'agendalocation';
+		$this->rights[$r][5] = 'all';
+
+		$r ++;
+		$this->rights[$r][0] = $this->numero + $r;
+		$this->rights[$r][1] = 'trainermode';
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 0;
+		$this->rights[$r][4] = 'session';
+		$this->rights[$r][5] = 'trainer';
+
+		if ($conf->externalaccess->enabled)
+		{
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerRead';
+		    $this->rights[$r][2] = 'r';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_read';
+
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerWrite';
+		    $this->rights[$r][2] = 'w';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_write';
+
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerDownload';
+		    $this->rights[$r][2] = 'r';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_download';
+
+		    $r ++;
+		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][1] = 'AgfEATrainerUpload';
+		    $this->rights[$r][2] = 'w';
+		    $this->rights[$r][3] = 0;
+		    $this->rights[$r][4] = 'external_trainer_upload';
+		}
 
 		// Main menu entries
 		$this->menus = array();
@@ -1739,7 +1801,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/training/list.php?arch=1',
 				'langs' => 'agefodd@agefodd',
 				'position' => 100 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1853,7 +1915,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/session/list.php?search_session_status=6&leftmenu=AgfMenuSessList',
 				'langs' => 'agefodd@agefodd',
 				'position' => 200 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1881,7 +1943,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/session/list_ope.php?leftmenu=AgfMenuSessList',
 				'langs' => 'agefodd@agefodd',
 				'position' => 200 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1910,7 +1972,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/session/archive_year.php?leftmenu=AgfMenuSessTools',
 				'langs' => 'agefodd@agefodd',
 				'position' => 200 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1924,7 +1986,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/session/archive_year.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 200 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -1938,7 +2000,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/session/stats/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 200 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->viewstats',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->viewstats && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->viewstats',
 				'target' => '',
 				'user' => 0
@@ -2051,7 +2113,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/site/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 400 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -2065,7 +2127,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/site/card.php?action=create',
 				'langs' => 'agefodd@agefodd',
 				'position' => 400 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -2079,7 +2141,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/site/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 400 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -2094,7 +2156,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/trainer/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 500 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -2108,7 +2170,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/trainer/card.php?action=create',
 				'langs' => 'agefodd@agefodd',
 				'position' => 500 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -2122,7 +2184,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/trainer/list.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 500 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->lire && empty($user->rights->agefodd->session->trainer)',
 				'perms' => '$user->rights->agefodd->lire',
 				'target' => '',
 				'user' => 0
@@ -2208,7 +2270,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/agenda/pertrainer.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 700 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->agenda',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->agenda && ! $user->rights->agefodd->session->trainer',
 				'perms' => '$user->rights->agefodd->agenda',
 				'target' => '',
 				'user' => 0
@@ -2315,6 +2377,48 @@ class modAgefodd extends DolibarrModules
 		);
 
 		$r ++;
+		$this->menu [$r] = array (
+				'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+				'type' => 'left',
+				'titre' => 'AgfMenuReportByCustomer',
+				'url' => '/agefodd/report/report_by_customer.php',
+				'langs' => 'agefodd@agefodd',
+				'position' => 900 + $r,
+				'enabled' => '$user->rights->agefodd->report',
+				'perms' => '$user->rights->agefodd->report',
+				'target' => '',
+				'user' => 0
+		);
+
+		$r ++;
+		$this->menu [$r] = array (
+		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+		    'type' => 'left',
+		    'titre' => 'AgfMenuReportCalendarByCustomer',
+		    'url' => '/agefodd/report/report_calendar_by_customer.php',
+		    'langs' => 'agefodd@agefodd',
+		    'position' => 900 + $r,
+		    'enabled' => '$user->rights->agefodd->report',
+		    'perms' => '$user->rights->agefodd->report',
+		    'target' => '',
+		    'user' => 0
+		);
+
+		$r ++;
+		$this->menu [$r] = array (
+		    'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+		    'type' => 'left',
+		    'titre' => 'AgfMenuReportCA',
+		    'url' => '/agefodd/report/report_ca.php',
+		    'langs' => 'agefodd@agefodd',
+		    'position' => 900 + $r,
+		    'enabled' => '$user->rights->agefodd->report',
+		    'perms' => '$user->rights->agefodd->report',
+		    'target' => '',
+		    'user' => 0
+		);
+
+		$r ++;
 		$this->menu[$r] = array(
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
@@ -2342,6 +2446,7 @@ class modAgefodd extends DolibarrModules
 				'target' => '',
 				'user' => 0
 		);
+
 	}
 
 	/**
@@ -2377,6 +2482,18 @@ class modAgefodd extends DolibarrModules
 
 		$return_init = $this->_init($sql);
 		$result = $result_table && $result_pgsql && $return_init;
+
+		//Remove trainer mod permission for user admin
+		foreach ( $conf->file->dol_document_root as $dirroot ) {
+			$dir = $dirroot . '/agefodd/sql/';
+
+			$handle = @opendir($dir);
+			// Dir may not exists
+			if (is_resource($handle)) {
+				$result_cleanright = run_sql($dir . 'clean_admin_right.sql', 1, '', 1);
+			}
+		}
+		$reult = $result && $result_cleanright;
 
 		if (! $result) {
 			setEventMessage('Problem during Migration, please contact your administrator', 'errors');
@@ -2516,8 +2633,8 @@ class modAgefodd extends DolibarrModules
 					closedir($handle);
 				}
 
-				if (!empty($filetorun) && is_array($filetorun) && count($filetorun)>0)
-				{
+				if (!empty($filetorun) && is_array($filetorun) && count($filetorun)>0) {
+
 					//Sort file array to be sure data is upgrade script are executed in correct order
 					ksort($filetorun);
 					$update_refsession_done = false;
@@ -2585,6 +2702,24 @@ class modAgefodd extends DolibarrModules
 		}
 
 		$db->commit();
+	}
+	function change_order_supplier_type()
+	{
+		global $db, $user;
+		dol_include_once('/user/class/user.class.php');
+		dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+		$sql = "SELECT rowid FROM ".MAIN_DB_PREFIX."agefodd_session_element WHERE element_type = 'order_supplier' ORDER BY rowid";
+		$resql = $db->query($sql);
+		if(!empty($resql))
+		{
+			while ($obj = $db->fetch_object($resql))
+			{
+				$ags = new Agefodd_session_element($db);
+				$ags->fetch($obj->rowid);
+				$ags->element_type='order_supplier_trainer';
+				$ags->update($user);
+			}
+		}
 	}
 
 }

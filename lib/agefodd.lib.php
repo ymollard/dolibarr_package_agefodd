@@ -29,6 +29,7 @@ dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
 dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue_modules.class.php');
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 
 $langs->load('agefodd@agefodd');
 
@@ -154,6 +155,14 @@ function session_prepare_head($object, $showconv = 0) {
 	$head [$h] [2] = 'calendar';
 	$h ++;
 
+	if (!empty($conf->fullcalendarscheduler->enabled))
+	{
+		$head [$h] [0] = dol_buildpath('/agefodd/session/scheduler.php', 1) . '?id=' . $id;
+		$head [$h] [1] = $langs->trans("AgfScheduler");
+		$head [$h] [2] = 'scheduler';
+		$h ++;
+	}
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");
 
@@ -191,30 +200,36 @@ function session_prepare_head($object, $showconv = 0) {
 	$h++;*/
 	// TODO fiche de presence
 
-	$head [$h] [0] = dol_buildpath('/agefodd/session/administrative.php', 1) . '?id=' . $id;
-	$head [$h] [1] = $langs->trans("AgfAdmSuivi");
-	$head [$h] [2] = 'administrative';
-	$h ++;
+	if (! $user->rights->agefodd->session->trainer){
+		$head [$h] [0] = dol_buildpath('/agefodd/session/administrative.php', 1) . '?id=' . $id;
+		$head [$h] [1] = $langs->trans("AgfAdmSuivi");
+		$head [$h] [2] = 'administrative';
+		$h ++;
+	}
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/document.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfLinkedDocuments");
 	$head [$h] [2] = 'document';
 	$h ++;
 
-	$head [$h] [0] = dol_buildpath('/agefodd/session/document_trainee.php', 1) . '?id=' . $id;
-	$head [$h] [1] = $langs->trans("AgfLinkedDocumentsByTrainee");
-	$head [$h] [2] = 'document_trainee';
-	$h ++;
+	if (! $user->rights->agefodd->session->trainer){
+		$head [$h] [0] = dol_buildpath('/agefodd/session/document_trainee.php', 1) . '?id=' . $id;
+		$head [$h] [1] = $langs->trans("AgfLinkedDocumentsByTrainee");
+		$head [$h] [2] = 'document_trainee';
+		$h ++;
+	}
 
-	$head [$h] [0] = dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id;
-	$head[$h][1].= $langs->trans("Events");
-    if (! empty($conf->agenda->enabled) && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read) ))
-    {
-        $head[$h][1].= '/';
-        $head[$h][1].= $langs->trans("Agenda");
-    }
-	$head [$h] [2] = 'agenda';
-	$h ++;
+	if (! $user->rights->agefodd->session->trainer){
+		$head [$h] [0] = dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id;
+		$head[$h][1].= $langs->trans("Events");
+	    if (! empty($conf->agenda->enabled) && (!empty($user->rights->agenda->myactions->read) || !empty($user->rights->agenda->allactions->read) ))
+	    {
+	        $head[$h][1].= '/';
+	        $head[$h][1].= $langs->trans("Agenda");
+	    }
+		$head [$h] [2] = 'agenda';
+		$h ++;
+	}
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/document_files.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("Documents");
@@ -230,7 +245,7 @@ function session_prepare_head($object, $showconv = 0) {
 		$h ++;
 	}
 
-	if (! empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
+	if (! empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT) && (! $user->rights->agefodd->session->trainer)) {
 
 		$head [$h] [0] = dol_buildpath('/agefodd/session/cost.php', 1) . '?id=' . $id;
 		$head [$h] [1] = $langs->trans("AgfCostManagement");
@@ -542,6 +557,13 @@ function agefodd_admin_prepare_head() {
 		$head [$h] [2] = 'catbpf';
 		$h ++;
 	}
+	if (!empty($conf->externalaccess->enabled))
+	{
+	    $head [$h] [0] = dol_buildpath("/agefodd/admin/admin_external.php", 1);
+	    $head [$h] [1] = $langs->trans("AgfExternalAccess");
+	    $head [$h] [2] = 'external';
+	    $h ++;
+	}
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/about.php", 1);
 	$head [$h] [1] = $langs->trans("About");
@@ -685,6 +707,35 @@ function agf_report_by_customer_prepare_head() {
     complete_head_from_modules($conf,$langs,$object,$head,$h,'AgfMenuReportByCustomer');
 
     complete_head_from_modules($conf,$langs,$object,$head,$h,'AgfMenuReportByCustomer','remove');
+
+    return $head;
+}
+
+function agf_report_calendar_by_customer_prepare_head() {
+    global $langs, $conf, $user;
+
+    $h = 0;
+    $head = array ();
+
+    $head[$h][0] = dol_buildpath("/agefodd/report/report_calendar_by_customer.php", 1);
+    $head[$h][1] = $langs->trans("AgfMenuReportCalendarByCustomer");
+    $head[$h][2] = 'AgfMenuReportCalendarByCustomer';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/agefodd/report/report_calendar_by_customer_help.php", 1);
+    $head[$h][1] = $langs->trans("Help");
+    $head[$h][2] = 'help';
+    $h++;
+
+    $object=new stdClass();
+
+    // Show more tabs from modules
+    // Entries must be declared in modules descriptor with line
+    // $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
+    // $this->tabs = array('entity:-tabname);   												to remove a tab
+    complete_head_from_modules($conf,$langs,$object,$head,$h,'AgfMenuReportCalendarByCustomer');
+
+    complete_head_from_modules($conf,$langs,$object,$head,$h,'AgfMenuReportCalendarByCustomer','remove');
 
     return $head;
 }
@@ -1845,7 +1896,19 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         $result = $sess_adm->fetch_all($object->id);
 
         if ($result > 0) $morehtmlstatus.=$formAgefodd->level_graph(ebi_get_adm_lastFinishLevel($object->id), ebi_get_level_number($object->id), $langs->trans("AgfAdmLevel"));
-        $morehtmlstatus.= $langs->trans("AgfFormTypeSession") . ' : ' . ($object->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')).'</div>';
+        if (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION))
+        {
+            $billed = Agefodd_sesscalendar::countBilledshedule($object->id);
+            $total = Agefodd_sesscalendar::countTotalshedule($object->id);
+
+            if (empty($total)) $roundedBilled = 0;
+            else $roundedBilled = round($billed*100/$total);
+
+            $morehtmlstatus.= displayProgress($roundedBilled, $langs->trans('AgfSheduleBillingState'). " : ", $billed."/".$total, '9em');
+        }
+        if (! $user->rights->agefodd->session->trainer) {
+        	$morehtmlstatus.= $langs->trans("AgfFormTypeSession") . ' : ' . ($object->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra'))."<br>";
+        }
         if (!empty($object->fk_product)) {
         	dol_include_once('/product/class/product.class.php');
         	$prod=new Product($db);
@@ -1853,8 +1916,8 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         	if ($result>0) {
         		$morehtmlstatus.=$langs->trans('AgfProductServiceLinked').' : '.$prod->getNomUrl(1);
         	}
-
         }
+        $morehtmlstatus.='</div>';
 
     } elseif ($object->table_element == 'agefodd_place'){
 
@@ -1889,7 +1952,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
             $morehtmlref .= '<br>' . $langs->trans("Customer") . ' : ' .$soc->getNomUrl(1);
         }
 
-        if (!empty($object->placeid)){
+        if (!empty($object->placeid) && (! $user->rights->agefodd->session->trainer)){
             $morehtmlref .= '<br>'. $langs->trans("AgfLieu") . ' : ';
             $morehtmlref .= '<a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $object->placeid . '">' . $object->placecode . '</a>';
         }
@@ -1979,4 +2042,63 @@ function calcul_margin_percent($cashed_cost,$spend_cost)
 	{
 		return "n/a";
 	}
+}
+
+
+function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $strict=true, $return_error=false)
+{
+	global $db;
+
+	$TRes = array();
+	if (empty($agf_calendrier_formateur->id)) return $TRes;
+
+	$sql = 'SELECT c.rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier c';
+//	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
+	$sql.= ' WHERE c.fk_agefodd_session = '.$agf_calendrier_formateur->sessid;
+	if ($strict)
+	{
+		$sql.= ' AND c.heured = \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heured).'\'';
+		$sql.= ' AND c.heuref = \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heuref).'\'';
+	}
+	else
+	{
+		$sql.= ' AND c.heured <= \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heuref).'\'';
+		$sql.= ' AND c.heuref >= \''.date('Y-m-d H:i:s', $agf_calendrier_formateur->heured).'\'';
+	}
+
+	$resql = $db->query($sql);
+	if ($resql)
+	{
+		while ($obj = $db->fetch_object($resql))
+		{
+			$agf_calendrier = new Agefodd_sesscalendar($db);
+			$agf_calendrier->fetch($obj->rowid);
+			$TRes[] = $agf_calendrier;
+		}
+	}
+	else
+	{
+		if ($return_error) return $db->lasterror();
+
+		exit($db->lasterror());
+	}
+
+	return $TRes;
+}
+
+function displayProgress($percentProgress = 0, $title = '', $insideDisplay = "", $width="")
+{
+    $out = '';
+
+    if (!empty($title)) $out.= $title;
+
+    $out.= '<div class="agefodd-progress-group"';
+    if (!empty($width)) $out.=' style="width:'.$width.';"';
+    $out.='>
+           <div class="agefodd-progress">
+             <div class="agefodd-progress-bar" style="width: '.$percentProgress.'%">'.(!empty($insideDisplay) ? $insideDisplay : '').'</div>
+           </div>
+         </div><br/>';
+
+    return $out;
 }

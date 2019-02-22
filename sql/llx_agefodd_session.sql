@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   status integer DEFAULT NULL,
   duree_session real NOT NULL DEFAULT 0,
   intitule_custo varchar(100) DEFAULT NULL,
+  trainer_ext_information text DEFAULT NULL,
   import_key varchar(36) DEFAULT NULL,
   ref_ext varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB;

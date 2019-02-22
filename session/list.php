@@ -41,6 +41,7 @@ require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -301,7 +302,8 @@ $arrayfields = array(
 		),
 		's.nb_stagiaire' => array(
 				'label' => "AgfNbreParticipants",
-				'checked' => 1
+				'checked' => 1,
+				'enabled' => (! $user->rights->agefodd->session->trainer)
 		),
 		's.duree_session' => array(
 				'label' => "AgfDuree",
@@ -309,7 +311,8 @@ $arrayfields = array(
 		),
 		's.notes' => array(
 				'label' => "AgfNote",
-				'checked' => 1
+				'checked' => 1,
+				'enabled' => (! $user->rights->agefodd->session->trainer)
 		),
 		's.fk_socpeople_presta' => array(
 				'label' => 'AgfTypePresta',
@@ -331,6 +334,11 @@ $arrayfields = array(
 				'checked' => 1,
 				'enabled' => (! $user->rights->agefodd->session->trainer)
 		),
+        'AgfSheduleBillingState' => array(
+                'label' => "AgfSheduleBillingState",
+                'checked' => 1,
+                'enabled' => (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION))
+        ),
 		's.fk_product' => array(
 				'label' => "AgfProductServiceLinked",
 				'checked' => 0,
@@ -852,6 +860,9 @@ if ($resql != - 1) {
 	if (array_key_exists('AgfListParticipantsStatus', $arrayfields) && ! empty($arrayfields['AgfListParticipantsStatus']['checked'])) {
 		print '<td class="liste_titre"></td>';
 	}
+	if (array_key_exists('AgfSheduleBillingState', $arrayfields) && ! empty($arrayfields['AgfSheduleBillingState']['checked'])) {
+	    print '<td class="liste_titre"></td>';
+	}
 	if (array_key_exists('s.fk_product', $arrayfields) && ! empty($arrayfields['s.fk_product']['checked'])) {
 		print '<td class="liste_titre">';
 		print $form->select_produits($search_product, 'search_product', '', 10000);
@@ -1004,6 +1015,9 @@ if ($resql != - 1) {
 	}
 	if (array_key_exists('AgfListParticipantsStatus', $arrayfields) && ! empty($arrayfields['AgfListParticipantsStatus']['checked'])) {
 		print_liste_field_titre($langs->trans("AgfListParticipantsStatus"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	}
+	if (array_key_exists('AgfSheduleBillingState', $arrayfields) && ! empty($arrayfields['AgfSheduleBillingState']['checked'])) {
+	    print_liste_field_titre($langs->trans("AgfSheduleBillingState"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.fk_product', $arrayfields) && ! empty($arrayfields['s.fk_product']['checked'])) {
 		print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
@@ -1253,6 +1267,18 @@ if ($resql != - 1) {
 				print '<td ' . $styleminstatus . '>' . $line->nb_prospect . '/' . $line->nb_confirm . '/' . $line->nb_cancelled . '</td>';
 			}
 
+			if (array_key_exists('AgfSheduleBillingState', $arrayfields) && ! empty($arrayfields['AgfSheduleBillingState']['checked'])) {
+			    
+			    $billed = Agefodd_sesscalendar::countBilledshedule($line->id);
+			    $total = Agefodd_sesscalendar::countTotalshedule($line->id);
+			    
+			    if (empty($total)) $roundedBilled = 0;
+			    else $roundedBilled = round($billed*100/$total);
+			    
+			    print '<td>';
+			    print displayProgress($roundedBilled, '', $billed."/".$total, '6em');
+			    print '</td>';
+			}
 			if (array_key_exists('s.fk_product', $arrayfields) && ! empty($arrayfields['s.fk_product']['checked'])) {
 				if (! empty($line->fk_product)) {
 					$product = new Product($db);
@@ -1405,6 +1431,9 @@ if ($resql != - 1) {
 			if (array_key_exists('AgfListParticipantsStatus', $arrayfields) && ! empty($arrayfields['AgfListParticipantsStatus']['checked'])) {
 				print '<td></td>';
 			}
+			if (array_key_exists('AgfSheduleBillingState', $arrayfields) && ! empty($arrayfields['AgfSheduleBillingState']['checked'])) {
+			    print '<td></td>';
+			}
 			if (array_key_exists('s.fk_product', $arrayfields) && ! empty($arrayfields['s.fk_product']['checked'])) {
 				print '<td></td>';
 			}
@@ -1518,6 +1547,9 @@ if ($resql != - 1) {
 	}
 	if (array_key_exists('AgfListParticipantsStatus', $arrayfields) && ! empty($arrayfields['AgfListParticipantsStatus']['checked'])) {
 		print '<td></td>';
+	}
+	if (array_key_exists('AgfSheduleBillingState', $arrayfields) && ! empty($arrayfields['AgfSheduleBillingState']['checked'])) {
+	    print '<td></td>';
 	}
 	if (array_key_exists('s.fk_product', $arrayfields) && ! empty($arrayfields['s.fk_product']['checked'])) {
 		print '<td></td>';
