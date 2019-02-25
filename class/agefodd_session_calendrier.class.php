@@ -195,7 +195,8 @@ class Agefodd_sesscalendar {
 		dol_syslog(get_class($this) . "::fetch_by_action", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($this->db->num_rows($resql)) {
+			$num = $this->db->num_rows($resql);
+			if ($num > 0) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
 				$this->date_session = $this->db->jdate($obj->date_session);
@@ -206,7 +207,8 @@ class Agefodd_sesscalendar {
 			}
 			$this->db->free($resql);
 
-			return 1;
+			if ($num > 0) return 1;
+			else return 0;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_by_action " . $this->error, LOG_ERR);
