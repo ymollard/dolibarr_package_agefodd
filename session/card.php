@@ -277,10 +277,15 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 				setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("AgfSessionContact")), 'errors');
 			}
 		}
+		$training_id = GETPOST('formation', 'int');
+		if (($training_id == - 1) || (empty($training_id))) {
+			$error ++;
+			setEventMessage($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("AgfFormIntitule")), 'errors');
+		}
 
-		if ($agf->fk_formation_catalogue != GETPOST('formation', 'int')) {
+		if ($agf->fk_formation_catalogue != $training_id) {
 			$training_session = new Formation($db);
-			$result = $training_session->fetch(GETPOST('formation', 'int'));
+			$result = $training_session->fetch($training_id);
 			if ($result > 0) {
 				$agf->nb_subscribe_min = $training_session->nb_subscribe_min;
 				$agf->duree_session = $training_session->duree;
@@ -294,7 +299,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			$agf->intitule_custo = GETPOST('intitule_custo', 'alpha');
 		}
 
-		$agf->fk_formation_catalogue = GETPOST('formation', 'int');
+		$agf->fk_formation_catalogue = $training_id;
 
 		$agf->dated = dol_mktime(12, 0, 0, GETPOST('dadmonth', 'int'), GETPOST('dadday', 'int'), GETPOST('dadyear', 'int'));
 		$agf->datef = dol_mktime(12, 0, 0, GETPOST('dafmonth', 'int'), GETPOST('dafday', 'int'), GETPOST('dafyear', 'int'));
