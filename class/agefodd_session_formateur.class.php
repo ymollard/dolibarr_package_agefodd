@@ -162,10 +162,11 @@ class Agefodd_session_formateur {
 		$sql .= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql .= " f.fk_socpeople,";
 		$sql .= " sp.lastname, sp.firstname";
-		$sql .= " u.lastname as ulastname, u.firstname as ufirstname";
+		$sql .= " ,u.lastname as ulastname, u.firstname as ufirstname";
 		$sql .= " ,sf.trainer_status";
 		$sql .= " ,sf.fk_agefodd_formateur_type as trainer_type";
 		$sql .= " ,st.intitule as trainertypelabel";
+		$sql .= " ,f.type_trainer";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " ON sf.fk_agefodd_formateur = f.rowid";
@@ -185,10 +186,10 @@ class Agefodd_session_formateur {
 				$this->id = $obj->rowid;
 				$this->sessid = $obj->fk_session;
 				$this->formid = $obj->fk_agefodd_formateur;
-				if ($obj->trainer_type=='socpeople') {
+				if ($obj->type_trainer=='socpeople') {
 					$this->lastname = $obj->lastname;
 					$this->firstname = $obj->firstname;
-				} elseif ($obj->trainer_type=='user') {
+				} elseif ($obj->type_trainer=='user') {
 					$this->lastname = $obj->ulastname;
 					$this->firstname = $obj->ufirstname;
 				}

@@ -157,9 +157,8 @@ class Agsession extends CommonObject
 			$this->status = trim($this->status);
 		if (empty($this->status))
 			$this->status = $conf->global->AGF_DEFAULT_SESSION_STATUS;
-
-		if (!empty($this->$trainer_ext_information))
-			$this->$trainer_ext_information = trim($trainer_ext_information);
+		if (!empty($this->trainer_ext_information))
+			$this->trainer_ext_information = trim($this->trainer_ext_information);
 
 			// Check parameters
 			// Put here code to add control on parameters values
@@ -5238,7 +5237,7 @@ class Agsession extends CommonObject
 		// Chargement des participants
 		if(empty($this->TStagiairesSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-			$stagiaires = new Agefodd_session_stagiaire($db);
+			$stagiaires = new Agefodd_session_stagiaire($this->db);
 			$stagiaires->fetch_stagiaire_per_session($this->id);
 			$this->TStagiairesSession = $stagiaires->lines;
 		}
@@ -5375,7 +5374,7 @@ class Agsession extends CommonObject
 
 		if(empty($this->TStagiairesSessionSoc)) {
 			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-			$stagiaires = new Agefodd_session_stagiaire($db);
+			$stagiaires = new Agefodd_session_stagiaire($this->db);
 			$stagiaires->fetch_stagiaire_per_session($this->id,$socid);
 			$this->TStagiairesSessionSoc = $stagiaires->lines;
 		}
@@ -5395,7 +5394,7 @@ class Agsession extends CommonObject
 		} else {
 			$this->signataire_intra ='';
 		}
-		$stagiaires = new Agefodd_session_stagiaire($db);
+		$stagiaires = new Agefodd_session_stagiaire($this->db);
 		$result=$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
 		if ($result<0) {
 			setEventMessage($stagiaires->error,'errors');
@@ -5405,7 +5404,7 @@ class Agsession extends CommonObject
 
 				foreach ($stagiaires->lines as $line) {
 					if (!empty($line->fk_socpeople_sign)) {
-						$socpsign=new Contact($db);
+						$socpsign=new Contact($this->db);
 						$socpsign->fetch($line->fk_socpeople_sign);
 						$this->signataire_inter_array[$line->fk_socpeople_sign]= $socpsign->getFullName($langs).' ';
 					}
@@ -5422,7 +5421,7 @@ class Agsession extends CommonObject
 
 		if(empty($this->TStagiairesSessionSocMore)) {
 			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-			$stagiaires = new Agefodd_session_stagiaire($db);
+			$stagiaires = new Agefodd_session_stagiaire($this->db);
 			$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
 			$this->TStagiairesSessionSocMore = $stagiaires->lines;
 		}
@@ -5431,7 +5430,7 @@ class Agsession extends CommonObject
 		$TdatesText=array();
 		if(empty($this->THorairesSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
-			$calendrier = new Agefodd_sesscalendar($db);
+			$calendrier = new Agefodd_sesscalendar($this->db);
 			$calendrier->fetch_all($this->id);
 			$this->THorairesSession = $calendrier->lines;
 			if (is_array($calendrier->lines) && count($calendrier->lines)>0) {
@@ -5463,7 +5462,7 @@ class Agsession extends CommonObject
 		$trainerarray=array();
 		if(empty($this->TFormateursSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
-			$formateurs = new Agefodd_session_formateur($db);
+			$formateurs = new Agefodd_session_formateur($this->db);
 			$nbform = $formateurs->fetch_formateur_per_session($this->id);
 			$this->TFormateursSession = $formateurs->lines;
 			if (is_array($formateurs->lines) && count($formateurs->lines)>0) {
@@ -5476,14 +5475,14 @@ class Agsession extends CommonObject
 
 		if(empty($this->lieu)) {
 			dol_include_once('/agefodd/class/agefodd_place.class.php');
-			$agf_place= new Agefodd_place($db);
+			$agf_place= new Agefodd_place($this->db);
 			$agf_place->fetch($this->placeid);
 			$this->lieu = $agf_place;
 		}
 
 		if(empty($this->formation)){
 		    dol_include_once('agefodd/class/agefodd_formation_catalogue.class.php');
-		    $formation = new Formation($db);
+		    $formation = new Formation($this->db);
 		    $formation->fetch($this->fk_formation_catalogue);
 		    $formation->fetch_objpeda_per_formation($this->fk_formation_catalogue);
 		    $this->formation = $formation;
@@ -5504,11 +5503,13 @@ class Agsession extends CommonObject
 			$this->trainer_datetextline='';
 			$this->TFormateursSessionCal=array();
 			$trainercalarray=array();
-		    dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+			dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 		    dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 
 			$agf_session_trainer = new Agefodd_session_formateur($this->db);
-			$formateurs_cal = new Agefoddsessionformateurcalendrier($db);
+			$formateurs_cal = new Agefoddsessionformateurcalendrier($this->db);
+			$formateur = new Agefodd_teacher($this->db);
 
 			$agf_session_trainer->fetch($id_trainer);
 
@@ -5538,7 +5539,7 @@ class Agsession extends CommonObject
 			}
 
 			$this->formateur_session = $agf_session_trainer;
-			$formateurs->fetch($agf_session_trainer->formid);
+			$formateur->fetch($agf_session_trainer->formid);
 			$this->formateur_session_societe = $formateurs->thirdparty;
 		}
 
