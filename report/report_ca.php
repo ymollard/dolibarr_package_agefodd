@@ -169,6 +169,8 @@ if ($action == 'builddoc') {
 	$action = '';
 }
 
+$report = new ReportCA($db, $langs);
+
 $head = agf_revenue_report_prepare_head(http_build_query($_REQUEST));
 dol_fiche_head($head, 'card', $langs->trans("AgfMenuReportCA"), 0, 'bill');
 
@@ -194,7 +196,7 @@ print '</tr>';
 print '<tr>';
 print '<td>' . $langs->trans('AgfReportCAInvoiceAccountingDate').'</td>';
 print '<td>';
-print $form->selectarray('search_accounting_date', ReportCA::T_ACCOUNTING_DATE_CHOICES, $search_accounting_date, 0, 0, 0, '', 1);
+print $form->selectarray('search_accounting_date', $report->T_ACCOUNTING_DATE_CHOICES, $search_accounting_date, 0, 0, 0, '', 1);
 print '</td>';
 print '</tr>';
 

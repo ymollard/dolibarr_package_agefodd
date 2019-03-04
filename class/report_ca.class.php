@@ -38,7 +38,7 @@ class ReportCA extends AgefoddExportExcel {
 	private $year_to_report_array = array ();
 
 	public $status_array = array();
-	const T_ACCOUNTING_DATE_CHOICES = array(
+	public $T_ACCOUNTING_DATE_CHOICES = array(
 		'invoice' => 'DateInvoice'
 		, 'session_start' => 'AgfDateSessionStart'
 		, 'session_end' => 'AgfDateSessionEnd'
@@ -178,7 +178,7 @@ class ReportCA extends AgefoddExportExcel {
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'accounting_date') {
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfReportCAInvoiceAccountingDate'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities(self::T_ACCOUNTING_DATE_CHOICES[$value]));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities($this->T_ACCOUNTING_DATE_CHOICES[$value]));
 							$this->row[$keysheet] ++;
 						}
 					}
@@ -204,7 +204,7 @@ class ReportCA extends AgefoddExportExcel {
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
 				if ($key == 'accounting_date') {
-					$str_sub_name .= str_replace(' ', '', ucwords($this->outputlangs->transnoentities(self::T_ACCOUNTING_DATE_CHOICES[$value])));
+					$str_sub_name .= str_replace(' ', '', ucwords($this->outputlangs->transnoentities($this->T_ACCOUNTING_DATE_CHOICES[$value])));
 				}
 				if ($key == 'startyear') {
 					$str_sub_name .= $this->outputlangs->transnoentities('Year');
