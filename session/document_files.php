@@ -78,7 +78,18 @@ if ($result < 0) {
 } else {
 	$upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
 }
+//Rename training program file with trim whitespace to be enable to move it as training program pdf
+// do_move user rename php function thaht do not work with white space in name
+if (GETPOST('sendit','alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC) && ! empty($_FILES))
+{
+	if (is_array($_FILES['userfile']['name'])) $userfiles=$_FILES['userfile']['name'];
+	else $userfiles=array($_FILES['userfile']['name']);
 
+	foreach($userfiles as $key => $userfile)
+	{
+		$_FILES['userfile']['name'][$key]=preg_replace('/\s+/', '_', dol_sanitizeFileName($userfile));;
+	}
+}
 $parameters = array('id'=>$id, 'upload_dir'=>$upload_dir);
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0)
