@@ -3519,8 +3519,10 @@ class Agsession extends CommonObject
 		print '<tr class="order_intituleCusto"><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
 		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/training/card.php', 1) . '?id=' . $this->fk_formation_catalogue . '">' . $this->intitule_custo . '</a></td></tr>';
 
-		print '<tr class="order_formRef"><td>' . $langs->trans("AgfFormRef") . '</td>';
-		print '<td colspan="'.$colspan.'">' . $this->formref . '</td></tr>';
+		if (! $user->rights->agefodd->session->trainer){
+			print '<tr class="order_formRef"><td>' . $langs->trans("AgfFormRef") . '</td>';
+			print '<td colspan="'.$colspan.'">' . $this->formref . '</td></tr>';
+		}
 
 		// Type de la session
 		if (! $user->rights->agefodd->session->trainer){

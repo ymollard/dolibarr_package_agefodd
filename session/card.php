@@ -1778,7 +1778,9 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 		if ($user->rights->agefodd->creer) {
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=clone&id=' . $id . '">' . $langs->trans('ToClone') . '</a>';
 		}
-		print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
+		if (! $user->rights->agefodd->session->trainer) {
+			print '<a class="butAction" href="' . dol_buildpath('/agefodd/session/history.php', 1) . '?id=' . $id . '">' . $langs->trans('AgfViewActioncomm') . '</a>';
+		}
 	}
 }
 
