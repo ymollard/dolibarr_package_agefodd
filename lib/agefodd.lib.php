@@ -185,14 +185,16 @@ function session_prepare_head($object, $showconv = 0) {
 		$h ++;
 	}
 
-	$head [$h] [0] = dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&id=' . $id;
-	$head [$h] [1] = $langs->trans("AgfFormateur");
+	if (! $user->rights->agefodd->session->trainer){
+		$head [$h] [0] = dol_buildpath('/agefodd/session/trainer.php', 1) . '?action=edit&id=' . $id;
+		$head [$h] [1] = $langs->trans("AgfFormateur");
 
-	$formateurs = new Agefodd_session_formateur($db);
-	$badgenbform = $formateurs->fetch_formateur_per_session($id);
-	if (!empty($badgenbform)) $head [$h] [1] .= " <span class='badge'>" . $badgenbform."</span>";
-	$head [$h] [2] = 'trainers';
-	$h ++;
+		$formateurs = new Agefodd_session_formateur($db);
+		$badgenbform = $formateurs->fetch_formateur_per_session($id);
+		if (!empty($badgenbform)) $head [$h] [1] .= " <span class='badge'>" . $badgenbform."</span>";
+		$head [$h] [2] = 'trainers';
+		$h ++;
+	}
 
 	/*$head[$h][0] = DOL_URL_ROOT.'/agefodd/s_fpresence.php?id='.$object->id;
 	 $head[$h][1] = $langs->trans("AgfFichePresence");
