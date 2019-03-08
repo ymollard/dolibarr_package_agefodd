@@ -3761,7 +3761,7 @@ class Agsession extends CommonObject
 					print dol_print_date($line_cal->heured, 'hour') . ' - ' . dol_print_date($line_cal->heuref, 'hour');
 				}
 
-				if (($line_cal->date_session < $this->dated) || ($line_cal->date_session > $this->datef)) {
+				if ((unixtojd($line_cal->date_session) < unixtojd($this->dated)) || (unixtojd($line_cal->date_session) > unixtojd($this->datef))) { // Il faut comparer sur le jour pas sur l'heure.
 					$alertday = true;
 				}
 
