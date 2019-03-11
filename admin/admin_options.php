@@ -1213,6 +1213,14 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDoNotAutoLinkCommande") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_NOT_AUTO_LINK_COMMANDE');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfMergeAdviseAndConvoc") . '</td>';
 print '<td align="left">';
 print ajax_constantonoff('AGF_MERGE_ADVISE_AND_CONVOC');
