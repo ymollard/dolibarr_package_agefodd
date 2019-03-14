@@ -719,7 +719,7 @@ if (! empty($id)) {
 
 			print '</tr>' . "\n";
 
-			if ($calendrier->fetch_all($calendrier->id) > 0) {
+			if ($calendrier->fetch_all($calendrier->sessid) > 0) {
 				print '<tr class="">' . "\n";
 				$colspan = 3; // name / status / actions
 				if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA))
