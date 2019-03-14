@@ -394,6 +394,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 							} else {
 								$line->date_birth = $this->db->jdate($obj->date_birth);
 							}
+							$line->datebirthformated = dol_print_date($line->date_birth,'%y.%m.%d');
 
 							$line->type = $obj->type;
 							$line->fk_socpeople_sign = $obj->fk_socpeople_sign;
