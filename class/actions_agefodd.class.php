@@ -1033,12 +1033,14 @@ class ActionsAgefodd
 		$TContext = explode(':', $parameters['context']);
 		if(in_array('agendaexport', $TContext)){
 			$sql = '';
-			if(!empty($parameters['filters']['agftraineeid']) ){
+			$agftraineeid = GETPOST('agftraineeid',"int");
+			if(!empty($agftraineeid)){
 				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_calendrier agf_sc ON (a.rowid = agf_sc.fk_actioncomm) ';
 				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire agf_ss ON (agf_ss.fk_session_agefodd = agf_sc.fk_agefodd_session) ';
 			}
 
-			$this->resPrint = $sql;
+			$this->resprints = $sql;
+			return 1;
 		}
 	}
 
@@ -1053,11 +1055,12 @@ class ActionsAgefodd
 		$TContext = explode(':', $parameters['context']);
 		if(in_array('agendaexport', $TContext)){
 			$sql = '';
-			if(!empty($parameters['filters']['agftraineeid']) ){
-				$sql.= ' AND agf_ss.fk_stagiaire = '.intval($parameters['filters']['agftraineeid']) ;
+			$agftraineeid = GETPOST('agftraineeid',"int");
+			if(!empty($agftraineeid)){
+				$sql.= ' AND agf_ss.fk_stagiaire = '.intval($agftraineeid) ;
 			}
-
-			$this->resPrint = $sql;
+			$this->resprints = $sql;
+			return 1;
 		}
 	}
 }
