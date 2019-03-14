@@ -113,6 +113,7 @@ class modAgefodd extends DolibarrModules
 				        'externalaccesspage',
 				        'externalaccessinterface',
 						'upgrade',
+						'agendaexport',
 						'contactcard'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
