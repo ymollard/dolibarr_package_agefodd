@@ -1034,10 +1034,19 @@ class ActionsAgefodd
 		if(in_array('agendaexport', $TContext)){
 			$sql = '';
 			$agftraineeid = GETPOST('agftraineeid',"int");
+			$agftrainerid = GETPOST('agftrainerid',"int");
+
 			if(!empty($agftraineeid)){
+				// agenda pour le stagiaire
 				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_calendrier agf_sc ON (a.id = agf_sc.fk_actioncomm) ';
 				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire agf_ss ON (agf_ss.fk_session_agefodd = agf_sc.fk_agefodd_session) ';
 			}
+			elseif(!empty($agftrainerid)){
+				// agenda pour le formateur
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_calendrier agf_sc ON (a.id = agf_sc.fk_actioncomm) ';
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur agf_sf ON (agf_sf.fk_session = agf_sc.fk_agefodd_session) ';
+			}
+
 			$this->resprints = $sql;
 			return 1;
 		}
@@ -1055,9 +1064,14 @@ class ActionsAgefodd
 		if(in_array('agendaexport', $TContext)){
 			$sql = '';
 			$agftraineeid = GETPOST('agftraineeid',"int");
+			$agftrainerid = GETPOST('agftrainerid',"int");
 			if(!empty($agftraineeid)){
 				$sql.= ' AND agf_ss.fk_stagiaire = '.intval($agftraineeid) ;
 			}
+			elseif(!empty($agftrainerid)){
+				$sql.= ' AND agf_sf.fk_agefodd_formateur = '.intval($agftrainerid) ;
+			}
+
 			$this->resprints = $sql;
 			return 1;
 		}

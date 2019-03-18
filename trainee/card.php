@@ -71,6 +71,11 @@ if ($reshook < 0)
 //Select mail models is same action as presend
 if (GETPOST('modelselected')) $action = 'presend';
 
+// Cansel action
+if (isset($_POST['cancel'])) $action = '';
+
+
+
 /*
  * Actions delete
 */
@@ -644,7 +649,7 @@ elseif (!empty($id) && $action == 'send')
 		$trigger_name = 'AGFTRAINEE_SENTBYMAIL';
 		$autocopy = 'MAIN_MAIL_AUTOCOPY_AGFTRAINEE_TO';
 		$trackid = 'agftrainee' . $object->id;
-		include DOL_DOCUMENT_ROOT . '/core/actions_sendmails.inc.php';
+		include __DIR__.'/../actions_sendmails.inc.php';
 	}
 
 }
@@ -924,7 +929,7 @@ if ($id) {
 	$diroutput = $conf->agefodd->multidir_output[$agf->entity];
 	$trackid = 'agftrainee' . $agf->id;
 
-	include __DIR__ . '/card_presend.tpl.php';
+	include __DIR__ . '/../tpl/card_presend.tpl.php';
 }
 
 llxFooter();
