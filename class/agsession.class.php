@@ -4874,8 +4874,8 @@ class Agsession extends CommonObject
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as agcal ON ag.rowid=agcal.fk_agefodd_session";
 				$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as agf_status ON (ag.status = agf_status.rowid  AND agf_status.code<>\'NOT\')';
 				$sql .= " WHERE ag.fk_session_place=" . $this->fk_session_place;
-				$sql .= " AND (ag.dated BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
-				$sql .= " AND (ag.datef BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
+				$sql .= " AND ((ag.datef >= '" . $this->db->idate($date_data['dated']) . "') ";
+				$sql .= " AND (ag.dated <= '" . $this->db->idate($date_data['datef']) . "') )";
 
 				dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
