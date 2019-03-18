@@ -1035,10 +1035,9 @@ class ActionsAgefodd
 			$sql = '';
 			$agftraineeid = GETPOST('agftraineeid',"int");
 			if(!empty($agftraineeid)){
-				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_calendrier agf_sc ON (a.rowid = agf_sc.fk_actioncomm) ';
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_calendrier agf_sc ON (a.id = agf_sc.fk_actioncomm) ';
 				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire agf_ss ON (agf_ss.fk_session_agefodd = agf_sc.fk_agefodd_session) ';
 			}
-
 			$this->resprints = $sql;
 			return 1;
 		}
