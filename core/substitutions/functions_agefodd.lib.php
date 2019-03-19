@@ -24,10 +24,26 @@
 
 
 function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$object,$parameters) {
+	global $conf;
 	$outputlangs->trans('agefood@agefodd');
 	$substitutionarray=array_merge($substitutionarray, array(
 			'__FORMINTITULE__' => $outputlangs->trans('AgfFormIntitule').' '.$outputlangs->trans('OnlyOnTrainingMail'),
 			'__FORMDATESESSION__' => $outputlangs->trans('AgfPDFFichePres7bis').' '.$outputlangs->trans('OnlyOnTrainingMail'),
+			'__AGENDATOKEN__' => $conf->global->MAIN_AGENDA_XCAL_EXPORTKEY,
 	));
+
+	// Add ICS link replacement to mails
+	$downloadIcsLink = dol_buildpath('agenda/agendaexport.php', 1).'?format=ical&type=event&exportkey='.$conf->global->MAIN_AGENDA_XCAL_EXPORTKEY;
+
+	if(!empty($object) && $object->element == 'agefodd_formateur')
+	{
+		$substitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$object->id;
+	}
+	elseif(!empty($object) && get_class ($object) == "Agefodd_stagiaire")
+	{
+		$substitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$object->id;
+	}
+
+
 	return $substitutionarray;
 }
