@@ -723,6 +723,7 @@ class ActionsAgefodd
 		$this->results['convocation_trainee'] = $langs->trans('AgfMailToSendConventionParticipants');
 		$this->results['attestationendtraining_trainee'] = $langs->trans('AgfMailToSendAttestationEndTrainingParticipants');
 		$this->results['agf_trainee'] = $langs->trans('AgfMailToSendTrainee');
+		$this->results['agf_trainer'] = $langs->trans('AgfMailToSendTrainer');
 
 		return 0;
 	}
