@@ -126,6 +126,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= ",entity";
 		$sql .= ",date_birth";
 		$sql .= ",place_birth";
+		$sql .= ",disable_auto_mail";
 		$sql .= ") VALUES (";
 
 		$sql .= " " . (isset($this->nom) ? "'" . $this->nom . "'" : "null") . ", ";
@@ -144,7 +145,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->date_birth) || dol_strlen($this->date_birth) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_birth) . "'") . ", ";
 		$sql .= " " . (isset($this->place_birth) ? "'" . $this->place_birth . "'" : "null"). ", ";
-		$sql .= " " . (isset($this->disable_auto_mail) ? intval($this->place_birth) : 0 );
+		$sql .= " " . (isset($this->disable_auto_mail) ? intval($this->disable_auto_mail) : 0 );
 		$sql .= ")";
 
 		if (! $error) {
@@ -563,6 +564,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " fk_socpeople=" . (isset($this->fk_socpeople) ? $this->fk_socpeople : "null") . ", ";
 		$sql .= " date_birth=" . (! isset($this->date_birth) || dol_strlen($this->date_birth) == 0 ? "null" : "'" . $this->db->idate($this->date_birth) . "'");
 		$sql .= " ,place_birth=" . (isset($this->place_birth) ? "'" . $this->place_birth . "'" : "null");
+		$sql .= " ,disable_auto_mail=" . (isset($this->disable_auto_mail) ? "'" . $this->disable_auto_mail . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 
 		$this->db->begin();
