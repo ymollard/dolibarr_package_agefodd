@@ -145,7 +145,6 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " " . (! isset($this->date_birth) || dol_strlen($this->date_birth) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_birth) . "'") . ", ";
 		$sql .= " " . (isset($this->place_birth) ? "'" . $this->place_birth . "'" : "null"). ", ";
 		$sql .= " " . (isset($this->disable_auto_mail) ? intval($this->place_birth) : 0 );
-		disable_auto_mail
 		$sql .= ")";
 
 		if (! $error) {
