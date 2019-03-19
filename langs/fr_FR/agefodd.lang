@@ -1328,6 +1328,7 @@ AgfMailToSendAttestationParticipants=Module formation - Pour l'envoi de l'attest
 AgfMailToSendConventionParticipants=Module formation - Pour l'envoi des convocations par participant
 AgfMailToSendAttestationEndTrainingParticipants=Module formation - Pour l'envoi des attestations de fin de formation par participant
 AgfMailToSendTrainee=Module formation - Pour l'envoi de mail aux participants
+AgfMailToSendTrainer=Module formation - Pour l'envoi de mail aux formateurs
 AgfConvArt9_1=En application de l’artcicle L.6353-1 du Code du travail, une attestation mentionnant les objectifs, la nature et la durée de l’action sera remise au stagiaire à l’issue de la formation. 
 AgfConvArt9_2=De plus, les moyens permettant de suivre l’exécution de l’action sont les suivants : les feuilles de présence signées par le stagiaire et le(s) formateur(s), ainsi que le livret de progression pédagogique par stagiaire.
 AgfPDFConv28=Sanction de la formation
