@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_stagiaire (
   mail varchar(100) default NULL,
   date_birth datetime default NULL,
   place_birth varchar(100) default NULL,
+  disable_auto_mail integer NOT NULL DEFAULT 0,
   note text,
   import_key varchar(14)
 ) ENGINE=InnoDB;
