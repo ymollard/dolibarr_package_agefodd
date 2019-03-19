@@ -33,7 +33,7 @@ function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$obj
 	));
 
 	// Add ICS link replacement to mails
-	$downloadIcsLink = dol_buildpath('agenda/agendaexport.php', 1).'?format=ical&type=event&exportkey='.$conf->global->MAIN_AGENDA_XCAL_EXPORTKEY;
+	$downloadIcsLink = dol_buildpath('agenda/agendaexport.php', 2).'?format=ical&type=event&exportkey='.$conf->global->MAIN_AGENDA_XCAL_EXPORTKEY;
 
 	if(!empty($object) && $object->element == 'agefodd_formateur')
 	{
