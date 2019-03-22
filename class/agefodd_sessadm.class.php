@@ -275,8 +275,8 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
 		$sql .= ',s.fk_user_mod,s.trigger_name';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_training_admlevel as t ON s.fk_agefodd_session_admlevel=t.rowid";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_admlevel as l ON t.fk_agefodd_training_admlevel=l.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_training_admlevel as t ON s.fk_agefodd_session_admlevel=t.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_admlevel as l ON t.fk_agefodd_training_admlevel=l.rowid";
 		$sql .= " WHERE s.fk_agefodd_session = " . $sess_id;
 		$sql .= " ORDER BY s.indice";
 
