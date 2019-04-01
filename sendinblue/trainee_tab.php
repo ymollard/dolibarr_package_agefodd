@@ -130,7 +130,7 @@ $countrynotdefined=$langs->trans("ErrorSetACountryFirst").' ('.$langs->trans("Se
 
 $head = trainee_prepare_head($object);
 
-$title = $langs->trans("Contacts");
+$title = $langs->trans("AgfStagiaireDetail");
 dol_fiche_head($head, 'seninblue', $title, 0, 'contact');
 
 
@@ -142,82 +142,88 @@ dol_fiche_head($head, 'seninblue', $title, 0, 'contact');
 //find is email is in the list
 if($conf->global->SENDINBLUE_API_KEY){
 
-	$result = $sendinblue->getListForEmail($object->mail);
-	if ($result<0) {
-		setEventMessage($sendinblue->error,'errors');
-	}
-	$list_subcribed_id=array();
-	if (is_array($sendinblue->listlist_lines) && count($sendinblue->listlist_lines)>0) {
-		foreach ($sendinblue->listlist_lines as $listsubcribed) {
-			$list_subcribed_id[]=$listsubcribed;
-		}
-	}
+
+    if(empty($object->mail)){
+        print '<div class="info" >'.$langs->trans('AgfNeedEmail').'</div>';
+    }
+    else{
+
+        $result = $sendinblue->getListForEmail($object->mail);
+        if ($result<0) {
+            setEventMessage($sendinblue->error,'errors');
+        }
+        $list_subcribed_id=array();
+        if (is_array($sendinblue->listlist_lines) && count($sendinblue->listlist_lines)>0) {
+            foreach ($sendinblue->listlist_lines as $listsubcribed) {
+                $list_subcribed_id[]=$listsubcribed;
+            }
+        }
 
 
-	$result=$sendinblue->getListDestinaries();
-	if ($result<0) {
-		setEventMessage($sendinblue->error,'errors');
-	}
+        $result=$sendinblue->getListDestinaries();
+        if ($result<0) {
+            setEventMessage($sendinblue->error,'errors');
+        }
 
-	if (is_array($sendinblue->listdest_lines) && count($sendinblue->listdest_lines)>0) {
-		print load_fiche_titre($langs->trans("SendinBlueDestList"),'','');
+        if (is_array($sendinblue->listdest_lines) && count($sendinblue->listdest_lines)>0) {
+            print load_fiche_titre($langs->trans("SendinBlueDestList"),'','');
 
-		print '<link rel="stylesheet" href="'.dol_buildpath('seninblue/script/style.css',1).'" />';
-		print '<table class="border" width="100%">';
-		print '<tr class="liste_titre">';
-		print '<td>'.$langs->trans('SendinBlueListName').'</td>';
-		print '<td>'.$langs->trans('SendinBlueContactIsList').'</td>';
-		print '<td>'.$langs->trans('SendinBlueSubscribersState').'</td>';
-		print '</tr>';
+            print '<link rel="stylesheet" href="'.dol_buildpath('seninblue/script/style.css',1).'" />';
+            print '<table class="border" width="100%">';
+            print '<tr class="liste_titre">';
+            print '<td>'.$langs->trans('SendinBlueListName').'</td>';
+            print '<td>'.$langs->trans('SendinBlueContactIsList').'</td>';
+            print '<td>'.$langs->trans('SendinBlueSubscribersState').'</td>';
+            print '</tr>';
 
-		foreach($sendinblue->listdest_lines['data'] as $line) {
-			//Si le contact n'a pas d'email
+            foreach($sendinblue->listdest_lines['data'] as $line) {
+                //Si le contact n'a pas d'email
 
-			if($object->mail == null){
-				$var=!$var;
-				print "<tr " . $bc[$var] . ">";
-				print '<td width="20%"><a target="_blanck" href="https://my.sendinblue.com/users/list/id/'.$line['id'].'">'.$line['name'].'</a></td>';
-				print '<td>';
+                if($object->mail == null){
+                    $var=!$var;
+                    print "<tr " . $bc[$var] . ">";
+                    print '<td width="20%"><a target="_blanck" href="https://my.sendinblue.com/users/list/id/'.$line['id'].'">'.$line['name'].'</a></td>';
+                    print '<td>';
 
-				print '<link rel="stylesheet" href="../script/style.css" />';
-				print "<div style='position:relative;' >";
-				print "<div class='sendinblue_grise'></div>";
-				print img_picto($langs->trans("Enabled"),'switch_off');
-				print "</div>";
-
-
-				print "</td>\n";
-				print '<td>';
+                    print '<link rel="stylesheet" href="../script/style.css" />';
+                    print "<div style='position:relative;' >";
+                    print "<div class='sendinblue_grise'></div>";
+                    print img_picto($langs->trans("Enabled"),'switch_off');
+                    print "</div>";
 
 
-				print $langs->trans("NoEmail");
-
-				print "</td>\n";
-
-				print '</tr>';
-			}
+                    print "</td>\n";
+                    print '<td>';
 
 
-			//Récupération du statut
-			else if($object->mail != null){
-				$var=!$var;
-				//var_dump($line);exit;
-				$emails = array(array('email' => $object->mail));
-				if(!in_array($line['id'],$list_subcribed_id)){
-					//$result = $sendinblue->sendinblue->get('lists/'.$line['id'].'/members/'.$sendinblue->sendinblue->subscriberHash($object->mail));
-					$statut = 'cleaned';
-				}else {
-					$statut = 'subscribed';
-				}
+                    print $langs->trans("NoEmail");
 
-				print "<tr " . $bc[$var] . ">";
-				print '<td width="20%"><a target="_blanck" href="https://my.sendinblue.com/users/list/id/'.$line['id'].'">'.$line['name'].'</a></td>';
-				print '<td>';
-				if ($statut == 'subscribed') {
-					print '<a href="'.$_SERVER['PHP_SELF'].'?action=unsubscribe&id='.$object->id.'&listid='.$line['id'].'">';
-					print img_picto($langs->trans("Disabled"),'switch_on');
-					print '</a>';
-				}  /*else if($sendinblue->isUnsubscribed($line['id'], $object->mail) || $object->status == 0){
+                    print "</td>\n";
+
+                    print '</tr>';
+                }
+
+
+                //Récupération du statut
+                else if($object->mail != null){
+                    $var=!$var;
+                    //var_dump($line);exit;
+                    $emails = array(array('email' => $object->mail));
+                    if(!in_array($line['id'],$list_subcribed_id)){
+                        //$result = $sendinblue->sendinblue->get('lists/'.$line['id'].'/members/'.$sendinblue->sendinblue->subscriberHash($object->mail));
+                        $statut = 'cleaned';
+                    }else {
+                        $statut = 'subscribed';
+                    }
+
+                    print "<tr " . $bc[$var] . ">";
+                    print '<td width="20%"><a target="_blanck" href="https://my.sendinblue.com/users/list/id/'.$line['id'].'">'.$line['name'].'</a></td>';
+                    print '<td>';
+                    if ($statut == 'subscribed') {
+                        print '<a href="'.$_SERVER['PHP_SELF'].'?action=unsubscribe&id='.$object->id.'&listid='.$line['id'].'">';
+                        print img_picto($langs->trans("Disabled"),'switch_on');
+                        print '</a>';
+                    }  /*else if($sendinblue->isUnsubscribed($line['id'], $object->mail) || $object->status == 0){
 					var_dump(array($line['id'], $object->mail, $object->status));
 					print "<div style='position:relative;' >";
 					print "<div class='sendinblue_grise'></div>";
@@ -225,41 +231,38 @@ if($conf->global->SENDINBLUE_API_KEY){
 					$statut='unsubscribed';
 					print "</div>";
 				}*/ else {
-					print '<a href="'.$_SERVER['PHP_SELF'].'?action=subscribe&id='.$object->id.'&listid='.$line['id'].'">';
-					print img_picto($langs->trans("Enabled"),'switch_off');
-					print '</a>';
-				}
-				print "</td>\n";
-				print '<td>';
+                        print '<a href="'.$_SERVER['PHP_SELF'].'?action=subscribe&id='.$object->id.'&listid='.$line['id'].'">';
+                        print img_picto($langs->trans("Enabled"),'switch_off');
+                        print '</a>';
+                    }
+                    print "</td>\n";
+                    print '<td>';
 
-				if($statut != null){
-					print $langs->trans("SendinBlueStatus".$statut);
-				}
-				print "</td>\n";
-				print '</tr>';
+                    if($statut != null){
+                        print $langs->trans("SendinBlueStatus".$statut);
+                    }
+                    print "</td>\n";
+                    print '</tr>';
 
-			}
-			print "</td>\n";
+                }
+                print "</td>\n";
 
-			print '</tr>';
-		}
-		print '</table>';
-	}
+                print '</tr>';
+            }
+            print '</table>';
+        }
 
-	/*
-     * SendinBlue Campagin Actvites
-     */
+        /*
+         * SendinBlue Campagin Actvites
+         */
 
-	$result=$sendinblue->getEmailcontactActivites($object->mail);
+        $result=$sendinblue->getEmailcontactActivites($object->mail);
 
-	if ($result<0) {
-		setEventMessage($sendinblue->error,'errors');
-	}
-	$sendinbluestatic= new DolSendinBlue($db);
-
-
-
-
+        if ($result<0) {
+            setEventMessage($sendinblue->error,'errors');
+        }
+        $sendinbluestatic= new DolSendinBlue($db);
+    }
 }else{
 	setEventMessage($langs->trans('InvalidAPIKey'),'errors');
 }
