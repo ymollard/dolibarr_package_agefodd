@@ -1514,3 +1514,4 @@ AgfWarningTheoreticalValue=Attention : valeur théorique non sauvegardée et ni 
 AgfNoDateSessionFound=Aucune date saisie
 AgfSendAgendaMail=Envoi de mail de rappel
 AgfSendAgendaMailHelp=Cette option utilise une tâche issue des travaux planifiés pour fonctionner correctement, reportez vous à "Agefodd send mail"
+AgfDownloadIcsLink=Lien de téléchargement de l'agenda au format ICS : compatible participant et formateur Agefodd
