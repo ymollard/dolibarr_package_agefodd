@@ -60,8 +60,14 @@ if ($formid == - 1) {
 }
 
 $calendrier = new Agefodd_sesscalendar($db);
-if (! empty($id))
-	$calendrier->fetch($id);
+if (! empty($id)) {
+	$result = $calendrier->fetch_all($id);
+	if ($result<0) {
+		setEventMessages(null,$calendrier->errors,'errors');
+
+	}
+}
+
 
 $delete_calsel = GETPOST('deletecalsel_x', 'alpha');
 if (! empty($delete_calsel)) {
@@ -603,7 +609,32 @@ if (! empty($id)) {
 									$platform_time = false;
 									if (is_array($agf_session_cal->lines) && count($agf_session_cal->lines) > 0) {
 										foreach ( $agf_session_cal->lines as $line_cal ) {
-											if ($line_cal->calendrier_type == 'AGF_TYPE_PLATF' && (($trainer_calendar->lines[$j]->heured <= $line_cal->heured && $trainer_calendar->lines[$j]->heuref >= $line_cal->heuref) || ($trainer_calendar->lines[$j]->heured >= $line_cal->heured && $trainer_calendar->lines[$j]->heuref <= $line_cal->heuref) || ($trainer_calendar->lines[$j]->heured <= $line_cal->heured && $trainer_calendar->lines[$j]->heuref <= $line_cal->heuref && $trainer_calendar->lines[$j]->heuref > $line_cal->heured) || ($trainer_calendar->lines[$j]->heured >= $line_cal->heured && $trainer_calendar->lines[$j]->heuref >= $line_cal->heuref && $trainer_calendar->lines[$j]->heured < $line_cal->heuref))) {
+											if (
+												$line_cal->calendrier_type == 'AGF_TYPE_PLATF' &&
+												(
+													(
+														$trainer_calendar->lines[$j]->heured <= $line_cal->heured &&
+														$trainer_calendar->lines[$j]->heuref >= $line_cal->heuref
+													)
+													||
+													(
+														$trainer_calendar->lines[$j]->heured >= $line_cal->heured &&
+														$trainer_calendar->lines[$j]->heuref <= $line_cal->heuref
+													)
+													||
+													(
+														$trainer_calendar->lines[$j]->heured <= $line_cal->heured &&
+														$trainer_calendar->lines[$j]->heuref <= $line_cal->heuref &&
+														$trainer_calendar->lines[$j]->heuref > $line_cal->heured
+													)
+													||
+													(
+														$trainer_calendar->lines[$j]->heured >= $line_cal->heured &&
+														$trainer_calendar->lines[$j]->heuref >= $line_cal->heuref &&
+														$trainer_calendar->lines[$j]->heured < $line_cal->heuref
+													)
+												)
+											) {
 												$platform_time = true;
 												break;
 											}
@@ -718,8 +749,7 @@ if (! empty($id)) {
 			print '</td>' . "\n";
 
 			print '</tr>' . "\n";
-
-			if ($calendrier->fetch_all($calendrier->id) > 0) {
+			if ($calendrier->fetch_all($id) > 0) {
 				print '<tr class="">' . "\n";
 				$colspan = 3; // name / status / actions
 				if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA))
@@ -741,6 +771,8 @@ if (! empty($id)) {
 				print '</td>' . "\n";
 
 				print '</tr>' . "\n";
+			} else {
+				setEventMessages(null, $calendrier->errors,'errors');
 			}
 		}
 
@@ -757,6 +789,12 @@ if (! empty($id)) {
 			print '<th class="liste_titre temps_total">&nbsp;</th>' . "\n";
 		}
 		print '</tr>';
+
+		$agf_session_cal = new Agefodd_sesscalendar($db);
+		$result = $agf_session_cal->fetch_all($agf->id);
+		if ($result < 0) {
+			setEventMessages(null, $agf_session_cal->errors, 'errors');
+		}
 
 		$formateurs = new Agefodd_session_formateur($db);
 		$nbform = $formateurs->fetch_formateur_per_session($agf->id);
@@ -797,9 +835,46 @@ if (! empty($id)) {
 					if ($result < 0) {
 						setEventMessage($trainer_calendar->error, 'errors');
 					}
+
 					$totaltime = 0;
 					foreach ( $trainer_calendar->lines as $line_trainer_calendar ) {
-						$totaltime += $line_trainer_calendar->heuref - $line_trainer_calendar->heured;
+						// Find if time is solo plateform for trainee
+						$platform_time = false;
+						if ($result > 0 && is_array($agf_session_cal->lines) && count($agf_session_cal->lines) > 0) {
+							foreach ( $agf_session_cal->lines as $line_cal ) {
+								if (
+									$line_cal->calendrier_type == 'AGF_TYPE_PLATF' &&
+									(
+										(
+											$line_trainer_calendar->heured <= $line_cal->heured &&
+											$line_trainer_calendar->heuref >= $line_cal->heuref
+										)
+										||
+										(
+											$line_trainer_calendar->heured >= $line_cal->heured &&
+											$line_trainer_calendar->heuref <= $line_cal->heuref
+										)
+										||
+										(
+											$line_trainer_calendar->heured <= $line_cal->heured &&
+											$line_trainer_calendar->heuref <= $line_cal->heuref &&
+											$line_trainer_calendar->heuref > $line_cal->heured
+										)
+										||
+										(
+											$line_trainer_calendar->heured >= $line_cal->heured &&
+											$line_trainer_calendar->heuref >= $line_cal->heuref &&
+											$line_trainer_calendar->heured < $line_cal->heuref
+										)
+									)
+								) {
+									$platform_time = true;
+									break;
+								}
+							}
+						}
+
+						if (!$platform_time) $totaltime += $line_trainer_calendar->heuref - $line_trainer_calendar->heured;
 					}
 					$min = floor($totaltime / 60);
 					$rmin = sprintf("%02d", $min % 60);

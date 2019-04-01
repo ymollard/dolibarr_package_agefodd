@@ -433,7 +433,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	    $duree_declared = $tmparr[0];
 	    $duree_max = $tmparr[1];
 
-	    if ((int)$agf_calendrier->status !== Agefodd_sesscalendar::STATUS_CANCELED) $duree_scheduled_total += ($agf_calendrier->heuref - $agf_calendrier->heured)/3600;
+	    if ((int)$agf_calendrier->status !== Agefodd_sesscalendar::STATUS_CANCELED && $agf_calendrier->calendrier_type !== 'AGF_TYPE_PLATF') $duree_scheduled_total += ($agf_calendrier->heuref - $agf_calendrier->heured)/3600;
 
 		if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CONFIRMED)
 		{
