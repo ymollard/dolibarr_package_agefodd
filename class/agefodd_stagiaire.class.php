@@ -53,6 +53,7 @@ class Agefodd_stagiaire extends CommonObject {
 	public $soctown;
 	public $fk_socpeople;
 	public $lines = array ();
+	public $disable_auto_mail;
 
 	/**
 	 * Constructor
@@ -125,6 +126,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= ",entity";
 		$sql .= ",date_birth";
 		$sql .= ",place_birth";
+		$sql .= ",disable_auto_mail";
 		$sql .= ") VALUES (";
 
 		$sql .= " " . (isset($this->nom) ? "'" . $this->nom . "'" : "null") . ", ";
@@ -142,7 +144,8 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " " . (isset($this->fk_socpeople) ? $this->db->escape($this->fk_socpeople) : "null") . ", ";
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->date_birth) || dol_strlen($this->date_birth) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_birth) . "'") . ", ";
-		$sql .= " " . (isset($this->place_birth) ? "'" . $this->place_birth . "'" : "null");
+		$sql .= " " . (isset($this->place_birth) ? "'" . $this->place_birth . "'" : "null"). ", ";
+		$sql .= " " . (isset($this->disable_auto_mail) ? intval($this->disable_auto_mail) : 0 );
 		$sql .= ")";
 
 		if (! $error) {
@@ -201,7 +204,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilite_code,";
 		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
-		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
+		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth, s.disable_auto_mail";
 		$sql .= " ,so.address as socaddr, so.zip as soczip, so.town as soctown";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
@@ -260,6 +263,7 @@ class Agefodd_stagiaire extends CommonObject {
 				$this->socaddr = $obj->socaddr;
 				$this->soczip = $obj->soczip;
 				$this->soctown = $obj->soctown;
+				$this->disable_auto_mail = $obj->disable_auto_mail;
 			} else {
 			    return 0;
 			}
@@ -306,7 +310,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilitecode,";
 		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
-		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
+		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth, s.disable_auto_mail";
 		foreach ($array_options_keys as $key)
 		{
 			$sql.= ',ef.'.$key;
@@ -420,6 +424,8 @@ class Agefodd_stagiaire extends CommonObject {
 						$line->date_birth = $this->db->jdate($obj->date_birth);
 						$line->place_birth = $obj->place_birth;
 					}
+
+					$line->disable_auto_mail = $obj->disable_auto_mail;
 
 					if (count($extralabels) > 0) {
 						$statictrainee=new self($this->db);
@@ -558,6 +564,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " fk_socpeople=" . (isset($this->fk_socpeople) ? $this->fk_socpeople : "null") . ", ";
 		$sql .= " date_birth=" . (! isset($this->date_birth) || dol_strlen($this->date_birth) == 0 ? "null" : "'" . $this->db->idate($this->date_birth) . "'");
 		$sql .= " ,place_birth=" . (isset($this->place_birth) ? "'" . $this->place_birth . "'" : "null");
+		$sql .= " ,disable_auto_mail=" . (isset($this->disable_auto_mail) ? "'" . $this->disable_auto_mail . "'" : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 
 		$this->db->begin();
