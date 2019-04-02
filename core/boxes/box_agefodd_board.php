@@ -43,10 +43,12 @@ class box_agefodd_board extends ModeleBoxes {
 	 * Constructor
 	 */
 	function __construct() {
-		global $langs;
+		global $langs,$user;
 		$langs->load("boxes");
 
 		$this->boxlabel = $langs->transnoentitiesnoconv("AgefoddShort").'-'.$langs->transnoentitiesnoconv("AgfIndexBoard");
+
+		$this->hidden=! ($user->rights->agefodd->lire);
 	}
 
 	/**
