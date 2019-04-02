@@ -372,6 +372,22 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 	}
 }
 
+
+if (!empty($id) && $action == 'send')
+{
+    $object = new Agefodd_stagiaire($db);
+    $result = $object->fetch($id);
+    if($result>0){
+        // Actions to send emails
+        $actiontypecode = 'AC_OTH_AUTO';
+        $trigger_name = 'AGFTRAINEE_SENTBYMAIL';
+        $autocopy = 'MAIN_MAIL_AUTOCOPY_AGFTRAINEE_TO';
+        $trackid = 'agftrainee' . $object->id;
+        include __DIR__.'/../actions_sendmails.inc.php';
+    }
+
+}
+
 /*
  * View
 */
@@ -663,20 +679,6 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</td></tr>';
 	print '</table>';
 	print '</form>';
-}
-elseif (!empty($id) && $action == 'send')
-{
-	$object = new Agefodd_stagiaire($db);
-	$result = $object->fetch($id);
-	if($result>0){
-		// Actions to send emails
-		$actiontypecode = 'AC_OTH_AUTO';
-		$trigger_name = 'AGFTRAINEE_SENTBYMAIL';
-		$autocopy = 'MAIN_MAIL_AUTOCOPY_AGFTRAINEE_TO';
-		$trackid = 'agftrainee' . $object->id;
-		include __DIR__.'/../actions_sendmails.inc.php';
-	}
-
 }
 else
 {
