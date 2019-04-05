@@ -223,7 +223,7 @@ if ($action == 'setvarother') {
         	        $sqlIsHidden = " list=0,ishidden=1 ";
                 }
                 else{
-                    $sqlIsHidden = " list=-1 ";
+                    $sqlIsHidden = " list=0 ";
                 }
 
         		$sql='UPDATE '.MAIN_DB_PREFIX.'extrafields SET '.$sqlIsHidden.' WHERE name =\'agf_site\' AND  elementtype=\'actioncomm\' AND entity='.$conf->entity;
