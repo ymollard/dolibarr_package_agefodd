@@ -45,9 +45,9 @@ $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 
 $invoice_dt_st = dol_mktime(0, 0, 0, GETPOST('invoice_dt_stmonth', 'int'), GETPOST('invoice_dt_stday', 'int'), GETPOST('invoice_dt_styear', 'int'));
-$invoice_dt_end = dol_mktime(0, 0, 0, GETPOST('invoice_dt_endmonth', 'int'), GETPOST('invoice_dt_endday', 'int'), GETPOST('invoice_dt_endyear', 'int'));
+$invoice_dt_end = dol_mktime(23, 59, 59, GETPOST('invoice_dt_endmonth', 'int'), GETPOST('invoice_dt_endday', 'int'), GETPOST('invoice_dt_endyear', 'int'));
 $session_dt_st = dol_mktime(0, 0, 0, GETPOST('session_dt_stmonth', 'int'), GETPOST('session_dt_stday', 'int'), GETPOST('session_dt_styear', 'int'));
-$session_dt_end = dol_mktime(0, 0, 0, GETPOST('session_dt_endmonth', 'int'), GETPOST('session_dt_endday', 'int'), GETPOST('session_dt_endyear', 'int'));
+$session_dt_end = dol_mktime(23, 59, 59, GETPOST('session_dt_endmonth', 'int'), GETPOST('session_dt_endday', 'int'), GETPOST('session_dt_endyear', 'int'));
 
 $search_sale = GETPOST('search_sale', 'int');
 $ts_logistique = GETPOST('options_ts_logistique', 'int');
