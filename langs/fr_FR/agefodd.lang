@@ -55,6 +55,10 @@ AgfConfirmDeleteOps=ATTENTION : Les sessions liées à cette formation ne seront
 AgfConfirmDeleteSession=ATTENTION : Les évemenents de l'agenda liés à cette session ne seront plus accessibles. Souhaitez-vous vraiment supprimer cette session ?
 AgfConfirmDeleteAction=Souhaitez-vous vraiment supprimer cette action ?
 AgfConfirmDeleteTrainee=Souhaitez-vous vraiment supprimer ce participant ?
+AgfSendEmailTrainee=Formation
+AgfSendEmailTrainer=Formation
+PredefinedMailContentAgf_trainee=Bonjour<br/>__SIGNATURE__
+PredefinedMailContentAgf_trainer=Bonjour<br/>__SIGNATURE__
 AgfConfirmDeleteTeacher=Souhaitez-vous vraiment supprimer ce formateur ?
 AgfNoObj=Aucun objectif pédagogique défini
 AgfNewObjAdd=Ajouter un nouvel objectif pédagogique
@@ -1323,6 +1327,8 @@ AgfMailToSendAttestationEndTraining=Module formation - Pour l'envoi des attestat
 AgfMailToSendAttestationParticipants=Module formation - Pour l'envoi de l'attestation de formation par participant
 AgfMailToSendConventionParticipants=Module formation - Pour l'envoi des convocations par participant
 AgfMailToSendAttestationEndTrainingParticipants=Module formation - Pour l'envoi des attestations de fin de formation par participant
+AgfMailToSendTrainee=Module formation - Pour l'envoi de mail aux participants
+AgfMailToSendTrainer=Module formation - Pour l'envoi de mail aux formateurs
 AgfConvArt9_1=En application de l’artcicle L.6353-1 du Code du travail, une attestation mentionnant les objectifs, la nature et la durée de l’action sera remise au stagiaire à l’issue de la formation. 
 AgfConvArt9_2=De plus, les moyens permettant de suivre l’exécution de l’action sont les suivants : les feuilles de présence signées par le stagiaire et le(s) formateur(s), ainsi que le livret de progression pédagogique par stagiaire.
 AgfPDFConv28=Sanction de la formation
@@ -1506,3 +1512,11 @@ AgfSelectDocEditModel=Quel modèle de documents voulez vous utiliser ?
 AgfDocModelStandard = Modèle standard
 AgfWarningTheoreticalValue=Attention : valeur théorique non sauvegardée et ni pris en compte dans le total
 AgfNoDateSessionFound=Aucune date saisie
+
+AgfSendAgendaMail=Envoi de mail de rappel
+AgfSendAgendaMailHelp=Cette option utilise une tâche issue des travaux planifiés pour fonctionner correctement, reportez vous à "Agefodd send mail"
+AgfDownloadIcsLink=Lien de téléchargement de l'agenda au format ICS : compatible participant et formateur Agefodd
+AgfNeedEmail=Ce participant n'a pas d'email.
+
+AgfUseTrainingProgramModule=Utiliser les module dans les programme de formation (expérimental)
+

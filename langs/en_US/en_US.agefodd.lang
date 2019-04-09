@@ -863,3 +863,4 @@ AgfCreateInvoiceOPCAFromSession=Create Invoice from proposal
 AgfCreateInvoiceFromPropalOrder=From proposal or Order
 AgfFromScratchInvoice=Create Invoice just with product link to session
 AgfOnlySession=Display only sessions
+AgfUseTrainingProgramModule=USe modules into training program (experimental)

@@ -65,12 +65,12 @@ require DOL_DOCUMENT_ROOT . '/core/actions_extrafields.inc.php';
 llxHeader('', $langs->trans("AgefoddSetupDesc"));
 
 $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">' . $langs->trans("BackToModuleList") . '</a>';
-print_fiche_titre($langs->trans("AgefoddSetupDesc"), $linkback, 'setup');
+print  load_fiche_titre($langs->trans("AgefoddSetupDesc"), $linkback, 'setup');
 print "<br>\n";
 
 $head = agefodd_admin_prepare_head();
 
-dol_fiche_head($head, 'attributetraining', $langs->trans("AgefoddSetupDesc"));
+dol_fiche_head($head, 'attributetraining', $langs->trans("Module103000Name"), 0, "agefodd@agefodd");
 
 print $langs->trans("DefineHereComplementaryAttributes", $langs->transnoentitiesnoconv("AgfFormationList")) . '<br>' . "\n";
 print '<br>';

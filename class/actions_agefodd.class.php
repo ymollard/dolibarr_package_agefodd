@@ -722,6 +722,8 @@ class ActionsAgefodd
 		$this->results['attestation_trainee'] = $langs->trans('AgfMailToSendAttestationParticipants');
 		$this->results['convocation_trainee'] = $langs->trans('AgfMailToSendConventionParticipants');
 		$this->results['attestationendtraining_trainee'] = $langs->trans('AgfMailToSendAttestationEndTrainingParticipants');
+		$this->results['agf_trainee'] = $langs->trans('AgfMailToSendTrainee');
+		$this->results['agf_trainer'] = $langs->trans('AgfMailToSendTrainer');
 
 		return 0;
 	}
@@ -1019,5 +1021,59 @@ class ActionsAgefodd
 	    $forceDownload = GETPOST('forcedownload','int');
 	    
 	    downloadFile($filename, $forceDownload);
+	}
+
+	/**
+	 * @param $parameters
+	 * @param $object
+	 * @param $action
+	 * @param HookManager $hookmanager
+	 */
+	function printFieldListFrom($parameters, &$object, &$action, HookManager $hookmanager)
+	{
+		$TContext = explode(':', $parameters['context']);
+		if(in_array('agendaexport', $TContext)){
+			$sql = '';
+			$agftraineeid = GETPOST('agftraineeid',"int");
+			$agftrainerid = GETPOST('agftrainerid',"int");
+
+			if(!empty($agftraineeid)){
+				// agenda pour le stagiaire
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_calendrier agf_sc ON (a.id = agf_sc.fk_actioncomm) ';
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire agf_ss ON (agf_ss.fk_session_agefodd = agf_sc.fk_agefodd_session) ';
+			}
+			elseif(!empty($agftrainerid)){
+				// agenda pour le formateur
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier agf_sfc ON (a.id = agf_sfc.fk_actioncomm) ';
+			}
+
+			$this->resprints = $sql;
+			return 1;
+		}
+	}
+
+	/**
+	 * @param $parameters
+	 * @param $object
+	 * @param $action
+	 * @param HookManager $hookmanager
+	 */
+	function printFieldListWhere($parameters, &$object, &$action, HookManager $hookmanager)
+	{
+		$TContext = explode(':', $parameters['context']);
+		if(in_array('agendaexport', $TContext)){
+			$sql = '';
+			$agftraineeid = GETPOST('agftraineeid',"int");
+			$agftrainerid = GETPOST('agftrainerid',"int");
+			if(!empty($agftraineeid)){
+				$sql.= ' AND agf_ss.fk_stagiaire = '.intval($agftraineeid) ;
+			}
+			elseif(!empty($agftrainerid)){
+				$sql.= ' AND agf_sfc.fk_agefodd_session_formateur = '.intval($agftrainerid) ;
+			}
+
+			$this->resprints = $sql;
+			return 1;
+		}
 	}
 }
