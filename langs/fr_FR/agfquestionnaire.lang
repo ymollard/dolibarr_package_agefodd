@@ -1,0 +1,10 @@
+agfQuestionnaireLinkAdded=Lien avec le questionnaire ajouté
+agfQuestionnaireLinkAddError=Une erreur est survenue lors de l'ajout du lien avec le questionnaire
+LinkedQuestionnaire=Questionnaires liés
+SessionIdUnknow=Id de session inconnus
+agfQuestSendShort=Envoyer
+agfQuestSendShortHelp=permet d'envoyer le questionnaire aux participants
+agfQuestUnlinkShort=Dé-lier
+agfQuestUnlinkShortHelp=Permet de séparer le le questionnaire de cette session
+agfQuestionnaireLinkRemoved=Questionnaire dé-lié
+agfQuestionnaireLinkRemoveError=Une erreur est survenue lors du retrait du lien avec le questionnaire

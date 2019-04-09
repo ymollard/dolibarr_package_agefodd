@@ -260,6 +260,15 @@ function session_prepare_head($object, $showconv = 0) {
 	$head [$h] [2] = 'info';
 	$h ++;
 
+
+    if(!empty($conf->questionnaire->enabled)){
+        $langs->load("questionnaire@questionnaire");
+        $head [$h] [0] = dol_buildpath('/agefodd/session/questionnaire.php', 1) . '?id=' . $id;
+        $head [$h] [1] = $langs->trans("Questionnaire");
+        $head [$h] [2] = 'survey';
+        $h ++;
+    }
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_session');
 
 	return $head;
