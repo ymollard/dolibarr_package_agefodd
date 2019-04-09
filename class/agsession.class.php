@@ -449,7 +449,7 @@ class Agsession extends CommonObject
 	 * @return int id of clone
 	 */
 	public function createFromClone($fromid) {
-		global $user, $langs;
+		global $user, $conf;
 
 		$error = 0;
 
@@ -1901,19 +1901,6 @@ class Agsession extends CommonObject
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
-		if (! $error) {
-			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
-			}
-		}
 
 		if (! $error) {
 			if (! empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
@@ -1969,6 +1956,13 @@ class Agsession extends CommonObject
 					$error ++;
 					$this->errors[] = "Error " . $this->db->lasterror();
 				}
+			}
+		}
+
+		if (! $error) {
+			if (! $notrigger) {
+				$result=$this->call_trigger('AGF_SESSION_UPDATE',$user);
+				if ($result < 0) { $error++; }
 			}
 		}
 
@@ -2347,7 +2341,7 @@ class Agsession extends CommonObject
 	 * @return string translated description
 	 */
 	public function getToolTip($type) {
-		global $conf;
+		global $langs;
 
 		$langs->load("admin");
 
@@ -2355,7 +2349,7 @@ class Agsession extends CommonObject
 		if (type == 'training') {
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
-			$agf_training = new Formation($db);
+			$agf_training = new Formation($this->db);
 			$agf_training->fetch($this->formid);
 			$s = $agf_training->getToolTip();
 		}
@@ -3681,13 +3675,13 @@ class Agsession extends CommonObject
 		print '</td>';
 		print '<td colspan="'.$colspan.'">';
 		if ($action=='editsession_status') {
-			print '<script type="text/javascript">
-						jQuery(document).ready(function () {
-							jQuery(function() {' . "\n";
-			print '				 $(\'html, body\').animate({scrollTop: $("#session_status").offset().top-20}, 500,\'easeInOutCubic\');';
-			print '			});
-					});
-					</script> ';
+			print '<script type="text/javascript">'. "\n";
+			print '			jQuery(document).ready(function () {'. "\n";
+			print '				jQuery(function() {' . "\n";
+			print '				 $(\'html, body\').animate({scrollTop: $("#session_status").offset().top-20}, 500,\'easeInOutCubic\');'. "\n";
+			print '			});'. "\n";
+			print '		});'. "\n";
+			print '</script> '. "\n";
 			require_once ('../class/html.formagefodd.class.php');
 			$formAgefodd = new FormAgefodd($this->db);
 			print '<form method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$this->id.'">';
@@ -3740,6 +3734,7 @@ class Agsession extends CommonObject
 			print '<td  width="20%" valign="top" style="border-bottom:0px;">' . $langs->trans("AgfCalendrier") . '</td>';
 			$old_date = 0;
 			$duree = 0;
+			$i=0;
 			foreach($calendrier->lines as $line_cal) {
 
 			    if ($line_cal->status == Agefodd_sesscalendar::STATUS_CANCELED) continue; // ne pas prendre en compte les créneaux annulés
@@ -3995,7 +3990,7 @@ class Agsession extends CommonObject
 					$error ++;
 				}
 
-				$order->lines[0] = new OrderLine($db);
+				$order->lines[0] = new OrderLine($this->db);
 				$order->lines[0]->fk_product = $this->fk_product;
 
 				if (! empty($this->intitule_custo)) {
@@ -4163,7 +4158,7 @@ class Agsession extends CommonObject
 							$order_line->desc .= $this->avgpricedesc;
 							$result = $order_line->update(1);
 							if ($result < 0) {
-								$this->errors[] = $propal_line->error;
+								$this->errors[] = $order_line->error;
 								$error ++;
 							}
 						}
@@ -4267,7 +4262,7 @@ class Agsession extends CommonObject
 				return - 1;
 			}
 
-			$propal->lines[0] = new PropaleLigne($db);
+			$propal->lines[0] = new PropaleLigne($this->db);
 			$propal->lines[0]->fk_product = $this->fk_product;
 
 			if (! empty($this->intitule_custo)) {
@@ -4301,6 +4296,7 @@ class Agsession extends CommonObject
 			$session_trainee = new Agefodd_session_stagiaire($this->db);
 			$session_trainee->fetch_stagiaire_per_session($this->id, $socid, 1);
 			if (count($session_trainee->lines) > 0) {
+				$desc_trainee='';
 				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 					$desc_trainee .= "\n";
 					$nbtrainee = 0;
