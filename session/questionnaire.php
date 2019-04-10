@@ -38,8 +38,12 @@ require_once ('../lib/agefodd.lib.php');
 dol_include_once('questionnaire/class/questionnaire.class.php');
 require_once ('../lib/agf_questionnaire.lib.php');
 
+dol_include_once('/questionnaire/class/invitation.class.php');
 
 $ret = $langs->loadLangs(array("questionnaire@questionnaire", "agfquestionnaire@agefodd"));
+dol_include_once('/user/class/usergroup.class.php');
+dol_include_once('/societe/class/societe.class.php');
+dol_include_once('/contact/class/contact.class.php');
 
 
 
@@ -142,8 +146,8 @@ $other_amount .= '/' . $langs->trans('AgfInvoiceAmountWaiting') . ' ' . $agf_fac
 $other_amount .= '/' . $langs->trans('AgfInvoiceAmountPayed') . ' ' . $agf_fact->invoice_payed_amount . ' ' . $langs->trans('Currency' . $conf->currency) . ')';
 
 dol_agefodd_banner_tab($agf, 'id');
-print '<div class="underbanner clearboth"></div>';
 
+print '</div>';
 
 
 $form = new Form($db);
@@ -211,14 +215,18 @@ if($objQuestionnaire->fetch($idQuestionnaire) < 1){
             <?php } ?>
 
         </div>
+
+        <div class="agf_list_wrap" >
+            <?php printRenderQuestionnaireGuestsList($objQuestionnaire, $agf); ?>
+        </div>
+
     <?php } ?>
     </div>
 </div>
 
 
 <?php
-print '</div>';
-print '</div>';
 
+print '</div>';
 llxFooter();
 $db->close();

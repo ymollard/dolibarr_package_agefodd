@@ -8,3 +8,4 @@ agfQuestUnlinkShort=Dé-lier
 agfQuestUnlinkShortHelp=Permet de séparer le le questionnaire de cette session
 agfQuestionnaireLinkRemoved=Questionnaire dé-lié
 agfQuestionnaireLinkRemoveError=Une erreur est survenue lors du retrait du lien avec le questionnaire
+QuestionnaireAnswerList=Liste des réponses
