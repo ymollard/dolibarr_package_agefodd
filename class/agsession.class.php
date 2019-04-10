@@ -5443,7 +5443,7 @@ class Agsession extends CommonObject
 								$line->heuref, 'hour', 'tzserver', $langs);
 					} else {
 						$this->dthour_text .= ', ';
-						$this->dthour_text .= dol_print_date($line->heured, 'hour', 'tzserver', $langs) . ' - ' . dol_print_date($line->heuref, 'hour', 'tzserver', $langs);
+						$this->dthour_text .= dol_print_date($line->heured, 'hour', 'tzserver', $langs) . ' '.$langs->trans('AgfPDFConvocation5').' '. dol_print_date($line->heuref, 'hour', 'tzserver', $langs);
 					}
 					$old_date = $line->date_session;
 				}
