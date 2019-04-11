@@ -423,7 +423,7 @@ class AgefoddExportExcel {
 	 *
 	 * @return int if KO, >0 if OK
 	 */
-	public function write_line($array_line = array(),$sheetkey) {
+	public function write_line($array_line = array(), $sheetkey = 0, $fill = '') {
 		$styleArray = array (
 				'borders' => array (
 						'top' => array (
@@ -434,6 +434,15 @@ class AgefoddExportExcel {
 						)
 				)
 		);
+		if(! empty($fill))
+		{
+			$styleArray['fill'] = array(
+				'type' => PHPExcel_Style_Fill::FILL_SOLID,
+				'color' => array (
+					'rgb' => $fill
+				)
+			);
+		}
 		try {
 			$this->workbook->setActiveSheetIndex($sheetkey);
 			foreach ( $array_line as $col => $value ) {
@@ -524,7 +533,7 @@ class AgefoddExportExcel {
 				}
 
 				if (!empty($freezepan)){
-					$this->workbook->getActiveSheet()->freezePaneByColumnAndRow(PHPExcel_Cell::stringFromColumnIndex($max_value_key),$this->rowheader[$keysheet]+1);
+					$this->workbook->getActiveSheet()->freezePaneByColumnAndRow($max_value_key, $this->rowheader[$keysheet]+1);
 				}
 
 				$this->workbook->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
