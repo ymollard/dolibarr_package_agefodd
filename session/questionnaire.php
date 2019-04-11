@@ -276,20 +276,61 @@ if($objQuestionnaire->fetch($idQuestionnaire) < 1){
         <div class="agf_list_wrap" >
             <?php
 
-
             if ($massaction == "addInvitations" && !empty($confirmmassaction) && !empty($idQuestionnaire) )
             {
                 if(!empty($user->rights->agefodd->questionnaire->send))
                 {
-                    var_dump($_POST);
+                    $form = new Form($db);
+                    $url = $_SERVER['PHP_SELF'].'?id='.$agf->id.'&idQuestionnaire='.$objQuestionnaire->id.'&amp;action=prepareAddInvitations';
 
-                    $action = 'view';
+                    $toselect = GETPOST('toselect', 'array');
+                    $formToSelectFields = '';
+                    if(!empty($toselect))
+                    {
+                        foreach ($toselect as $sessioncontactId)
+                        {
+                            $formToSelectFields .= '<input type="hidden" name="toselect[]" value="'.$sessioncontactId.'" />';
+                        }
+                    }
+
+                    $formSelectDate =  $form->select_date(dol_now()+ (60*60*24*3 ), 'date_limite', 0, 0, 0, '', 1, 0, 1);
+
+                    print '<div id="addInvitations-dialog" style="display: none" >';
+                    print '<form action="'.$url.'" method="POST" >';
+                    print '<input type="hidden" name="action" value="addInvitations" />';
+                    print $formSelectDate;
+                    print $formToSelectFields;
+                    print '</form></div>';
+                    print '<script>
+                      $( function() {
+                       $( "#addInvitations-dialog" ).dialog({
+                            autoOpen: true,
+                            modal: true,
+                            title: "'.$langs->transnoentities('questionnaire_date_limite_reponse').'",
+                            buttons:{
+                                    "createInvite" : {
+                                        text: "'.$langs->trans('Confirm').'",
+                                        click: function() {
+                                            $( "#addInvitations-dialog form" ).submit();
+                                        }
+                                    },
+                                    "cancel" : {
+                                        text: "'.$langs->trans('Cancel').'",
+                                        click: function() {
+                                            $( this ).dialog( "close" );
+                                        }
+                                    }
+                                },
+                        });
+                      } );
+                      </script>';
                 }
                 else{
                     setEventMessage($langs->trans('agfNotEnoughRight'));
                 }
             }
-            elseif($action=='prepareAddInvitations'){
+
+            if($action=='prepareAddInvitations'){
                 _printRenderQuestionnaireParticipantsList($objQuestionnaire, $agf);
             }
             else{
