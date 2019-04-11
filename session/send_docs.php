@@ -285,7 +285,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					$actionmsg .= $message;
 				}
 				$actionmsg2 = $langs->trans('ActionACCUEIL_SENTBYMAIL');
-			} elseif ($models == 'attestationendtraining') {
+			} elseif ($models == 'attestationendtraining' || $models == 'attestationpresencetraining') {
 				if (empty($subject))
 					$langs->transnoentities('AgfAttestation') . ' ' . $object->ref;
 				$actiontypecode = 'AC_AGF_ATTES';

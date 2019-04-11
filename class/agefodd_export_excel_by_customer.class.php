@@ -44,7 +44,7 @@ class AgefoddExportExcelByCustomer {
 	var $subject;
 	var $description;
 	var $keywords;
-	private $error;
+	public $error;
 	public $outputlangs;
 	protected $array_column_header = array ();
 	public $rowheader;

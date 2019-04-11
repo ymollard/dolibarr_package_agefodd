@@ -1536,6 +1536,7 @@ function fetch_financial_c($filter = array()) {
 					'checkOPCA' => 0,
 					'checkPV' => 1,
 					'datefac'=>1,
+					'checkaltfin'=>1
 			),
 			array(
 					'idtypesta' => 14,
@@ -2249,6 +2250,9 @@ function fetch_financial_d($filter = array()) {
 			            " . MAIN_DB_PREFIX . "facture AS factin ON ";
 			      if (empty($data['checkPV'])) {
 			      	$sqlrest .= " factin.fk_soc = sta.fk_soc AND ";
+			      }
+			      if (array_key_exists('checkaltfin',$data) && !empty($data['checkaltfin'])) {
+					$sqlrest .= " factin.fk_soc = ss.fk_soc_link AND ";
 			      }
 			      $sqlrest .= " factin.rowid=se.fk_element))";
 			} elseif (!empty($data['checkOPCA'])) {
