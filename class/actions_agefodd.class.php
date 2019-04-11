@@ -474,6 +474,9 @@ class ActionsAgefodd
 			$result = $agfsess->fetch_element_by_id($object->id, $element_type);
 			if ($result >= 0) {
 
+                // Keep old objects linked
+                $this->results = $parameters['linkedobjects'];
+
 				foreach ( $agfsess->lines as $key => $session ) {
 					$sessiondetail = new Agsession($object->db);
 					$result = $sessiondetail->fetch($session->fk_session_agefodd);
