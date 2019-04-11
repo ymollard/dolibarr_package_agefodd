@@ -125,6 +125,7 @@ AgfAdmVar=Administration des variables du module
 AgfAdmLevel=État d'avancement
 AgfNotImplemented=Cette fonction n'est pas encore implémentée mais devrait l'être très prochainement.
 AgfLinkedDocuments=Documents liés
+agfQuestionnaireTabTitle=Evaluation de la session
 AgfSendDocuments=Envoi documents
 AgfSendDocumentTitle=Envoi des documents
 AgfLimitDate=Date limite

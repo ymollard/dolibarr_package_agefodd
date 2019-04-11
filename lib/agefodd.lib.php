@@ -264,7 +264,7 @@ function session_prepare_head($object, $showconv = 0) {
     if(!empty($conf->questionnaire->enabled)){
         $langs->load("questionnaire@questionnaire");
         $head [$h] [0] = dol_buildpath('/agefodd/session/questionnaire.php', 1) . '?id=' . $id;
-        $head [$h] [1] = $langs->trans("Questionnaire");
+        $head [$h] [1] = $langs->trans("agfQuestionnaireTabTitle");
         $head [$h] [2] = 'survey';
         $h ++;
     }
