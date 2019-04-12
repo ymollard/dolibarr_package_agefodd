@@ -277,7 +277,7 @@ if($objQuestionnaire->fetch($idQuestionnaire) < 1){
             <?php } ?>
 
             <?php if(!empty($user->rights->agefodd->questionnaire->send)){ ?>
-                <a class="agf_btn agf_btn-app pull-right classfortooltip" href="<?php print dol_buildpath('/agefodd/session/questionnaire.php', 1).'?id='.$agf->id.'&amp;questionnaire='.$linkedQuestionnnaire->id.'&amp;action=prepareAddInvitations'; ?>" title="<?php print $langs->trans('agfQuestSendShortHelp'); ?>" >
+                <a class="agf_btn agf_btn-app pull-right classfortooltip" href="<?php print dol_buildpath('/agefodd/session/questionnaire.php', 1).'?id='.$agf->id.'&amp;idQuestionnaire='.$linkedQuestionnnaire->id.'&amp;action=prepareAddInvitations'; ?>" title="<?php print $langs->trans('agfQuestSendShortHelp'); ?>" >
                     <i class="fa fa-send"></i>
                     <?php print $langs->trans('agfQuestSendShort'); ?>
                 </a>
@@ -391,7 +391,7 @@ function _printRenderQuestionnaireParticipantsList(Questionnaire $object, Agsess
     $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire s";
     $sql .= " JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire stag ON (stag.rowid = s.fk_stagiaire ) ";
     $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "quest_invitation_user iu ON (iu.fk_element = s.rowid AND iu.type_element = 'agefodd_stagiaire' ) ";
-    $sql .= " WHERE s.rowid= " . $session->id;
+    $sql .= " WHERE s.fk_session_agefodd = " . $session->id;
 
     $trainneeCardUrl = dol_buildpath('agefodd/trainee/card.php',1).'?id=@fk_stagiaire@';
     $trainneeCardLink = '<a href="'.$trainneeCardUrl.'" >@val@</a>';
