@@ -152,8 +152,11 @@ elseif ($action == "addInvitations" && !empty($idQuestionnaire) )
             elseif(($addRes == 2 || $addRes < 0) && !empty($addLog)){
                 foreach ($addLog as $id => $log)
                 {
-                    if(!$log['status']){
+                    if($log['status'] < 0){
                         setEventMessage($log['msg'], 'errors');
+                    }
+                    elseif($log['status'] && !empty($log['msg'])){
+                        setEventMessage($log['msg']);
                     }
                 }
             }
@@ -161,7 +164,6 @@ elseif ($action == "addInvitations" && !empty($idQuestionnaire) )
         else{
             setEventMessage($langs->trans('agfQuestionnaireNotFound'), 'errors');
         }
-
 
         $action = 'prepareAddInvitations';
     }
@@ -391,12 +393,19 @@ function _printRenderQuestionnaireParticipantsList(Questionnaire $object, Agsess
     $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "quest_invitation_user iu ON (iu.fk_element = s.rowid AND iu.type_element = 'agefodd_stagiaire' ) ";
     $sql .= " WHERE s.rowid= " . $session->id;
 
+    $trainneeCardUrl = dol_buildpath('agefodd/trainee/card.php',1).'?id=@fk_stagiaire@';
+    $trainneeCardLink = '<a href="'.$trainneeCardUrl.'" >@val@</a>';
 
     $param = array(
             'view_type' => 'list'
     ,'limit'=>array('nbLine' => 500)
     ,'subQuery' => array()
-    ,'link' => array()
+    ,'link' => array(
+            'rowid' =>  $trainneeCardLink
+            ,'prenom' =>  $trainneeCardLink
+            ,'nom' =>  $trainneeCardLink
+            ,'mail' =>  $trainneeCardLink
+        )
     ,'type' => array()
     ,'search' => array()
     ,'translate' => array()
@@ -406,7 +415,7 @@ function _printRenderQuestionnaireParticipantsList(Questionnaire $object, Agsess
                     'addInvitations'  => $langs->trans('AgfQuestionnaireInvite')
             )
         )
-        //,'hide'=> array('rowid')
+    ,'hide'=> array('rowid')
     ,'title'=>array(
             'rowid' => $langs->trans('Id')
          ,'prenom' => $langs->trans('Firstname')
@@ -454,16 +463,9 @@ function _printRenderQuestionnaireGuestsList(Questionnaire $object, Agsession $s
 
     $param = array(
         'view_type' => 'list' // default = [list], [raw], [chart]
-    ,'limit'=>array(
-            'nbLine' => 500
-        )
+    ,'limit'=>array('nbLine' => 500)
     ,'subQuery' => array()
-    ,'link' => array(
-            /*   'date_limite_reponse' => $linkToAnswer
-           ,'date_validation' => $linkToAnswer
-           , 'status' => $linkToAnswer
-           , 'email' => $linkToAnswer*/
-        )
+    ,'link' => array()
     ,'type' => array(
             'date_limite_reponse' => 'date' // [datetime], [hour], [money], [number], [integer]
         ,'date_validation' => 'date'
