@@ -591,7 +591,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 	include_once DOL_DOCUMENT_ROOT .'/cron/class/cronjob.class.php';
 	$status=3; // 3 is not a status so we select all
-	$filter = array(
+	$filtercron = array(
 		'jobtype' => 'method',
 		'classesname' => 'agefodd/cron/cron.php',
 		'objectname' => 'cron_agefodd',
@@ -599,7 +599,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		'methodename' => 'sendAgendaToTrainee',
 	);
 	$cronJob = new Cronjob($db);
-	$cronJob->fetch_all('DESC', 't.rowid',0, 0, $status, $filter);
+	$cronJob->fetch_all('DESC', 't.rowid',0, 0, $status, $filtercron);
 	if(!empty($cronJob->lines))
 	{
 		print '<tr><td>' . $form->textwithtooltip( $langs->trans("AgfSendAgendaMail") ,$langs->trans("AgfSendAgendaMailHelp"),2,1,img_help(1,'')). '</td>';
@@ -630,8 +630,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	}
 
 	$agf = new Agsession($db);
-
 	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter);
+	if ($resql<0) {
+		setEventMessages(null,$agf->errors,'errors');
+	}
 	$sessions = array ();
 	foreach ( $agf->lines as $line ) {
 		$sessions[$line->rowid] = $line->ref_interne . ' - ' . $line->intitule . ' - ' . dol_print_date($line->dated, 'daytext');
