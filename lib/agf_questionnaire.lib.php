@@ -233,3 +233,93 @@ function agfGetLinkAnswersStatut($status)
 
     return $q->LibStatut($status, 6);
 }
+
+/**
+ * @param Questionnaire $questionnaire
+ * @param array $trainnees
+ * @param User $user
+ * return int 0 nothing, 1 all success, 2 success with erros , -1 full erors
+ */
+function addInvitationsTrainnee(Questionnaire &$questionnaire, $trainnees = array(), $date_limite_reponse, User $user, &$logs = array())
+{
+
+    global $db, $langs;
+
+    if(empty($trainnees)){
+        return 0;
+    }
+    $logs = array(); // reset logs
+
+    list($alreadyInvitedFKElements, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedElements();
+
+    $successCount = 0;
+    $errorsCount = 0;
+
+    if (is_array($trainnees) && !empty($trainnees));
+    {
+        foreach ($trainnees as $id)
+        {
+            $logs[$id]['status'] = -1; // set error by default
+            $logs[$id]['mesg'] = '';
+
+            if (empty($alreadyInvitedFKElements['agefodd_stagiaire'])
+                || (is_array($alreadyInvitedFKElements['agefodd_stagiaire']) && !in_array($id, $alreadyInvitedFKElements['agefodd_stagiaire']) )
+                )
+            {
+                $stagiaire = new Agefodd_stagiaire($db);
+                if($stagiaire->fetch($id) > 0 )
+                {
+                    $email = $stagiaire->mail;
+
+                    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+
+                        $invitation_user = new InvitationUser($db);
+                        $invitation_user->fk_questionnaire = $questionnaire->id;
+                        $invitation_user->date_limite_reponse = $date_limite_reponse;
+                        $invitation_user->fk_usergroup = 0;
+                        $invitation_user->email = $email;
+                        $invitation_user->fk_element = $id;
+                        $invitation_user->type_element = 'agefodd_stagiaire';
+                        $invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16)); // When we'll pass to php7 use random_bytes
+                        $res = $invitation_user->save();
+                        if($res){
+                            $logs[$id]['status'] = 1;
+                            $successCount++;
+                        }
+                        else{
+                            $logs[$id]['msg'] = $langs->trans('InvitationSaveError').' | code: '.$res;
+                            $errorsCount++;
+                        }
+                    }
+                    else{
+                        $logs[$id]['msg'] = $langs->trans('TrainneeEmailNotFoundOrInvalid');
+                        $errorsCount++;
+                    }
+
+                }
+                else{
+                    $logs[$id]['msg'] = $langs->trans('SessionTrainneeNotFound');
+                    $errorsCount++;
+                }
+            }
+            else
+            {
+                $logs[$id]['status'] = 0;
+            }
+        }
+    }
+
+    if(count($logs) === $successCount && empty($errorsCount)){
+        return 1;
+    }
+    elseif(empty($successCount) && !empty($errorsCount)){
+        return -1;
+    }
+    elseif(empty($successCount) && empty($errorsCount)){
+        return 0;
+    }
+    else{
+        return 2;
+    }
+
+}

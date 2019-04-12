@@ -35,6 +35,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 require_once ('../class/agsession.class.php');
 require_once ('../class/agefodd_session_formateur.class.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
+require_once ('../class/agefodd_stagiaire.class.php');
 require_once ('../class/agefodd_session_element.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../lib/agefodd.lib.php');
@@ -132,26 +133,42 @@ elseif ($action == "addInvitations" && !empty($idQuestionnaire) )
 {
     if(!empty($user->rights->agefodd->questionnaire->send))
     {
-        // Enregistrement des données dans les tables invitation et invitation_user
-        $invitation = new InvitationUser($db);
-        $invitation->fk_questionnaire = $idQuestionnaire;
-        $invitation->date_limite_reponse = strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day);
-        if(!empty($fk_invitation)){
-            $invitation->load($fk_invitation);
-            $invitation->date_limite_reponse = strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day);
-            if(!empty($emails))$invitation->email = $emails;
-            $invitation->save();
-        }else {
-            $invitation->addInvitationsUser($groups, $users, $emails);
+        $objQuestionnaire = new Questionnaire($db);
+        if($objQuestionnaire->fetch($idQuestionnaire) > 0){
+            $toselect = GETPOST('toselect', 'array');
+            // Enregistrement des données dans les tables invitation et invitation_user
+            $date_limite_reponse = strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day);
+            $addRes = addInvitationsTrainnee($objQuestionnaire, $toselect, $date_limite_reponse, $user, $addLog);
+
+            if($addRes == 1){
+                setEventMessage($langs->trans('agfInvitationsAdded'));
+            }
+            elseif(empty($addRes)){
+                setEventMessage($langs->trans('agfInvitationNotingToDo'), 'warnings');
+            }
+            elseif($addRes < 0 && empty($addLog)){
+                setEventMessage($langs->trans('agfInvitationErrors'), 'errors');
+            }
+            elseif(($addRes == 2 || $addRes < 0) && !empty($addLog)){
+                foreach ($addLog as $id => $log)
+                {
+                    if(!$log['status']){
+                        setEventMessage($log['msg'], 'errors');
+                    }
+                }
+            }
+        }
+        else{
+            setEventMessage($langs->trans('agfQuestionnaireNotFound'), 'errors');
         }
 
-        $action = 'view';
+
+        $action = 'prepareAddInvitations';
     }
     else{
         setEventMessage($langs->trans('agfNotEnoughRight'));
     }
 }
-
 
 
 
@@ -281,7 +298,7 @@ if($objQuestionnaire->fetch($idQuestionnaire) < 1){
                 if(!empty($user->rights->agefodd->questionnaire->send))
                 {
                     $form = new Form($db);
-                    $url = $_SERVER['PHP_SELF'].'?id='.$agf->id.'&idQuestionnaire='.$objQuestionnaire->id.'&amp;action=prepareAddInvitations';
+                    $url = $_SERVER['PHP_SELF'].'?id='.$agf->id.'&idQuestionnaire='.$objQuestionnaire->id;
 
                     $toselect = GETPOST('toselect', 'array');
                     $formToSelectFields = '';
@@ -371,7 +388,7 @@ function _printRenderQuestionnaireParticipantsList(Questionnaire $object, Agsess
     $sql .= " s.fk_stagiaire rowid, s.fk_stagiaire,  s.status_in_session, iu.rowid invitation_id, stag.nom, stag.prenom, stag.civilite, stag.fk_soc, stag.mail";
     $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire s";
     $sql .= " JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire stag ON (stag.rowid = s.fk_stagiaire ) ";
-    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "quest_invitation_user iu ON (iu.fk_element = s.rowid AND iu.type_element = 'agfsessionsta' ) ";
+    $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "quest_invitation_user iu ON (iu.fk_element = s.rowid AND iu.type_element = 'agefodd_stagiaire' ) ";
     $sql .= " WHERE s.rowid= " . $session->id;
 
 
