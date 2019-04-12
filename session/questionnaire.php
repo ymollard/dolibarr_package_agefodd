@@ -261,7 +261,10 @@ if($objQuestionnaire->fetch($idQuestionnaire) < 1){
     </div>
     <div class="agf_col-10">
     <?php if(empty($objQuestionnaire)) {
-
+        if(empty($linkedList))
+        {
+            print '<div class="info" >'.$langs->trans('AgfToStartLinkYourFirstQuestionnaire').'</div>';
+        }
     }
     else{ ?>
 

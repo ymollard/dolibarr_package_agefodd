@@ -20,3 +20,4 @@ agfQuestionnaireNotFound=Questionnaire non trouvé
 agfNotEnoughRight=Droit utilisateur insufisant
 agfInvitationsAdded=Invitations créées
 ValidationDate=Date de validation réponses
+AgfToStartLinkYourFirstQuestionnaire=Pour commencer vous devez lier un questionnaire à cette session
