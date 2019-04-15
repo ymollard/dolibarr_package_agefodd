@@ -91,6 +91,17 @@ foreach($TFilters as $filterKey)
 print '</table>';
 
 
+
+
+
+print '<h2>' . $langs->trans('AgfReportCommercialHelpDifferenceWithSessionList') . '</h2>';
+
+print '<ul>';
+print '<li>'  . $langs->trans('AgfReportCommercialHelpDifferenceNoLink') .  ' </li>';
+print '<li>' .  $langs->trans('AgfReportCommercialHelpDifferenceOPCAAndEmployer') . '</li>';
+print '</ul>';
+
+
 print '<h2>' . $langs->trans('AgfReportCommercialHelpReportStructure') . '</h2>';
 
 $imghelp = '<img src="' . dol_buildpath('/agefodd/img/report_commercial_help.png', 1) . '"/>';

@@ -330,12 +330,9 @@ class ReportCommercial extends AgefoddExportExcel
 		if ($result < 0) {
 			return $result;
 		}
-		/*$result = $this->write_title();
-		if ($result < 0) {
-			return $result;
-		}*/
 
-		// Contruct header (column name) with year array fill in fetch_ca method
+
+		// Construct header (column name) with year array fill in fetch_ca method
 		$array_column_header = array ();
 		if (count($this->year_to_report_array) > 0) {
 
@@ -434,7 +431,7 @@ class ReportCommercial extends AgefoddExportExcel
 			return $result;
 		}
 
-		$this->close_file();
+		$this->close_file(0, 0, 0);
 		return count($this->year_to_report_array);
 	}
 
