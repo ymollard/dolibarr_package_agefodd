@@ -420,6 +420,20 @@ class Agefodd_convention {
 		}
 	}
 
+	public static function nl2br($string)
+    {
+        // is HTML
+        if ($string !== strip_tags($string))
+        {
+            // alors ceci provient d'un WYSIWYG, les sauts de ligne dans un WYSIWYG applique un "<br />" ainsi qu'un "\n"
+            return str_replace("\n", '', $string);
+        }
+        else
+        {
+            return nl2br($string);
+        }
+    }
+
 	/**
 	 * Load order lines object in memory from database
 	 *
@@ -461,7 +475,8 @@ class Agefodd_convention {
 					if ($result < 0) {
 						dol_syslog(get_class($this) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR);
 					}
-					$line->description = $prod_static->ref . ' ' . $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br($obj->description);
+
+					$line->description = $prod_static->ref . ' ' . self::nl2br($prod_static->description) . '<BR>' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
 				} else {
 					$line->description = $obj->description;
 				}
@@ -528,7 +543,8 @@ class Agefodd_convention {
 					if ($result < 0) {
 						dol_syslog(get_class($this) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR);
 					}
-					$line->description = $prod_static->ref . ' ' . $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br($obj->description);
+
+					$line->description = $prod_static->ref . ' ' . self::nl2br($prod_static->description) . '<BR>' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
 				} else {
 					$line->description = $obj->description;
 				}
@@ -597,11 +613,11 @@ class Agefodd_convention {
 					}
 					// $line->description = $prod_static->description . '<BR>' . $prod_static->label . '<BR>' . nl2br ( $obj->description );
 					if (! empty($obj->label) && $obj->label != $prod_static->label) {
-						$line->description = $obj->label . '<BR>' . nl2br($obj->description);
+						$line->description = $obj->label . '<BR>' . self::nl2br($obj->description);
 					} elseif (strpos($obj->description, $prod_static->label) !== false) {
-						$line->description = nl2br($obj->description);
+						$line->description = self::nl2br($obj->description);
 					} else {
-						$line->description = $prod_static->label . '<BR>' . nl2br($obj->description);
+						$line->description = $prod_static->label . '<BR>' . self::nl2br($obj->description);
 					}
 				} else {
 					$line->description = $obj->description;
