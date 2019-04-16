@@ -69,13 +69,13 @@ INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, pos
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030004, 'AC_AGF_PEDAG', 'agefodd', 'Send Fiche pédagogique by mail', 'agefodd', 1, NULL, 40);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030005, 'AC_AGF_PRES', 'agefodd', 'Send Fiche présence by mail', 'agefodd', 1, NULL, 50);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030006, 'AC_AGF_ATTES', 'agefodd', 'Send attestation by mail', 'agefodd', 1, NULL, 60);
-INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030006, 'AC_AGF_ATTEP', 'agefodd', 'Send attestation présence by mail', 'agefodd', 1, NULL, 60);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030007, 'AC_AGF_CLOT', 'agefodd', 'Send dossier cloture by mail', 'agefodd', 1, NULL, 70);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030008, 'AC_AGF_CONSE', 'agefodd', 'Send Advise document by mail', 'agefodd', 1, NULL, 80);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030009, 'AC_AGF_ACCUE', 'agefodd', 'Send welcome document by mail', 'agefodd', 1, NULL, 90);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030010, 'AC_AGF_SESST', 'agefodd', 'Link to Training for trainer', 'agefodd', 1, NULL, 15);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030011, 'AC_AGF_MISTR', 'agefodd', 'Send mission trainer', 'agefodd', 1, NULL, 100);
 INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030012, 'AC_AGF_DOCTR', 'agefodd', 'Send doc trainer', 'agefodd', 1, NULL, 100);
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1030013, 'AC_AGF_ATTEP', 'agefodd', 'Send attestation présence by mail', 'agefodd', 1, NULL, 60);
 
 INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES (1, 1, 1, '09:00', '12:00', 1, '2013-10-13 19:23:12', 1, '2013-10-13 17:23:12');
 INSERT INTO llx_agefodd_calendrier (rowid, entity, day_session, heured, heuref, fk_user_author, datec, fk_user_mod, tms) VALUES(2, 1, 1, '14:00', '18:00', 1, '2013-10-13 19:23:25', 1, '2013-10-13 17:23:25');
