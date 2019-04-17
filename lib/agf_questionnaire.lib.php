@@ -74,6 +74,7 @@ function getQuestionnaireGuestsList($object, $return = 'array')
     global $db;
 
     $sql = 'SELECT DISTINCT 
+            iu.rowid as rowid,
             iu.fk_element as id_element,
             iu.ref, 
             iu.sent, 

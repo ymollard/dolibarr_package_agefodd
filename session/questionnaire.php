@@ -39,10 +39,14 @@ require_once ('../class/agefodd_stagiaire.class.php');
 require_once ('../class/agefodd_session_element.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../lib/agefodd.lib.php');
-dol_include_once('questionnaire/class/questionnaire.class.php');
+dol_include_once('/questionnaire/class/invitation.class.php');
+dol_include_once('/questionnaire/class/questionnaire.class.php');
+dol_include_once('/questionnaire/class/question.class.php');
+dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 require_once ('../lib/agf_questionnaire.lib.php');
 
-dol_include_once('/questionnaire/class/invitation.class.php');
+
+
 
 $ret = $langs->loadLangs(array("questionnaire@questionnaire", "agfquestionnaire@agefodd"));
 dol_include_once('/user/class/usergroup.class.php');
@@ -67,6 +71,7 @@ $date_limite_month = GETPOST('date_limitemonth');
 $date_limite_day = GETPOST('date_limiteday');
 $massaction = GETPOST('massaction', 'alpha');
 $confirmmassaction = GETPOST('confirmmassaction', 'alpha');
+$toselect = GETPOST('toselect', 'array');
 
 
 if(empty($id)){
@@ -90,8 +95,68 @@ if ($id) {
 /*
 * Actions
 */
+$hookmanager->initHooks(array('questionnaireinvitationcard', 'globalcard', 'agefoddquestionnaireinvitationcard'));
+
+$parameters = array('id' => $id, 'ref' => $ref, 'mode' => $mode);
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some
+if ($reshook < 0)
+    setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
+if (GETPOST('cancel', 'alpha'))
+{
+    $action = 'list';
+    $massaction = '';
+}
+if (!GETPOST('confirmmassaction', 'alpha') && $massaction != 'presend' && $massaction != 'confirm_presend')
+{
+    $massaction = '';
+}
+
+$arrayofselected = is_array($toselect) ? $toselect : array();
+
+if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
+{
+    $langs->load('mails');
+    $invuser = new InvitationUser($db);
 
 
+    $objQuestionnaire = new Questionnaire($db);
+    if($objQuestionnaire->fetch($idQuestionnaire) > 0) {
+
+        foreach ($arrayofselected as $inv_selected) {
+
+
+            $invuser->load($inv_selected);
+
+            $subject = $langs->transnoentitiesnoconv('MailSubjQuest', $objQuestionnaire->title);
+
+            $content = prepareMailContent($invuser, $id);
+            include_once DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php';
+
+            $mailfile = new CMailFile($subject, $invuser->email, $conf->email_from, $content);
+            if (!$mailfile->sendfile()) {
+                setEventMessages($langs->transnoentities($langs->trans("ErrorFailedToSendMail", $conf->email_from, $invuser->email) . '. ' . $mailfile->error), null, 'errors');
+            } else {
+                $invuser->sent = 1;
+                $invuser->date_envoi = dol_now();
+                $invuser->update($user);
+                setEventMessages($langs->trans("MailSuccessfulySent", $conf->email_from, $invuser->email), null, 'mesgs');
+            }
+        }
+    }
+}elseif($massaction == 'delete' && !empty($arrayofselected)){
+
+    $objQuestionnaire = new Questionnaire($db);
+    if($objQuestionnaire->fetch($idQuestionnaire) > 0) {
+
+        foreach ($arrayofselected as $inv_selected) {
+            $invitation = new InvitationUser($db);
+            $invitation->load($inv_selected);
+            $invitation->delete($user);
+            $objQuestionnaire->deleteAllAnswersUser($inv_selected);
+        }
+    }
+}
 
 
 if($action == 'linkquestionnaire')
@@ -280,10 +345,17 @@ if($objQuestionnaire->fetch($idQuestionnaire) < 1){
             <?php } ?>
 
             <?php if(!empty($user->rights->agefodd->questionnaire->send)){ ?>
-                <a class="agf_btn agf_btn-app pull-right classfortooltip" href="<?php print dol_buildpath('/agefodd/session/questionnaire.php', 1).'?id='.$agf->id.'&amp;idQuestionnaire='.$linkedQuestionnnaire->id.'&amp;action=prepareAddInvitations'; ?>" title="<?php print $langs->trans('agfQuestSendShortHelp'); ?>" >
-                    <i class="fa fa-send"></i>
-                    <?php print $langs->trans('agfQuestSendShort'); ?>
-                </a>
+                <?php if( $action == 'prepareAddInvitations'){ ?>
+                    <a class="agf_btn agf_btn-app pull-right classfortooltip" href="<?php print dol_buildpath('/agefodd/session/questionnaire.php', 1).'?id='.$agf->id.'&amp;idQuestionnaire='.$linkedQuestionnnaire->id; ?>" title="<?php print $langs->trans('agfQuestAnswerShortHelp'); ?>" >
+                        <i class="fa fa-reply-all"></i>
+                        <?php print $langs->trans('agfQuestAnswerShort'); ?>
+                    </a>
+                <?php }else{ ?>
+                    <a class="agf_btn agf_btn-app pull-right classfortooltip" href="<?php print dol_buildpath('/agefodd/session/questionnaire.php', 1).'?id='.$agf->id.'&amp;idQuestionnaire='.$linkedQuestionnnaire->id.'&amp;action=prepareAddInvitations'; ?>" title="<?php print $langs->trans('agfQuestSendShortHelp'); ?>" >
+                        <i class="fa fa-plus-circle"></i>
+                        <?php print $langs->trans('agfQuestSendShort'); ?>
+                    </a>
+                <?php } ?>
             <?php } ?>
 
             <?php if(!empty($user->rights->agefodd->questionnaire->link)){ ?>
@@ -394,7 +466,7 @@ function _printRenderQuestionnaireParticipantsList(Questionnaire $object, Agsess
     $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire s";
     $sql .= " JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire stag ON (stag.rowid = s.fk_stagiaire ) ";
     $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "quest_invitation_user iu ON (iu.fk_element = s.rowid AND iu.type_element = 'agefodd_stagiaire' ) ";
-    $sql .= " WHERE s.fk_session_agefodd = " . $session->id;
+    $sql .= " WHERE s.fk_session_agefodd = " . $session->id .' AND iu.rowid IS NULL ';
 
     $trainneeCardUrl = dol_buildpath('agefodd/trainee/card.php',1).'?id=@fk_stagiaire@';
     $trainneeCardLink = '<a href="'.$trainneeCardUrl.'" >@val@</a>';
@@ -491,7 +563,12 @@ function _printRenderQuestionnaireGuestsList(Questionnaire $object, Agsession $s
         ,'noheader' => 1
         ,'messageNothing' => $langs->trans('Nothing')
         ,'picto_search' => img_picto('','search.png', '', 0)
+        ,'massactions'=>array(
+                'send' => $langs->trans("SendByMail"),
+                'delete'=>$langs->trans("Delete"),
+            )
         )
+    ,'hide'=> array('rowid')
     ,'title'=>array(
             'ref' => $langs->trans('Ref')
         ,'date_limite_reponse' => $langs->trans('questionnaire_date_limite_reponse')
@@ -503,6 +580,7 @@ function _printRenderQuestionnaireGuestsList(Questionnaire $object, Agsession $s
         , 'fk_element' => $langs->trans('Element')
         , 'fk_usergroup' => $langs->trans('Group')
         , 'link_invit' => $langs->trans('LinkInvit')
+        ,'selectedfields' => ''
         )
     ,'eval'=>array(
             'sent' => 'InvitationUser::LibStatut(intval("@sent@"), 6)'
