@@ -5561,6 +5561,7 @@ class Agsession extends CommonObject
 		if(!empty($socid)) {
 			$document_thirdparty = new Societe($db);
 			$document_thirdparty->fetch($socid);
+			$document_thirdparty->address = nl2br($document_thirdparty->address);
 			$this->document_societe= $document_thirdparty;
 		}
 
