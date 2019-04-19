@@ -1158,3 +1158,4 @@ AgfHeuresDeclareesEclateesParType=Explode declared hours by type in ATM external
 AgfManageSessionCalendarFacturation=Manage billing status on session calendar
 AgfSheduleBillingState=Billing state of schedules
 AgfTrainerExternalMessage=Information portail
+AgfUseTrainingProgramModule=USe modules into training program (experimental)

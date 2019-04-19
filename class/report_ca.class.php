@@ -692,6 +692,7 @@ class ReportCA extends AgefoddExportExcel {
 
 				$sql .= " WHERE YEAR(".$accounting_date.")=" . $year_todo;
 				$sql .= " AND MONTH(".$accounting_date.")=" . $month_todo;
+				// Statut = validate | closed
 				$sql .= " AND f.fk_statut IN (1,2)";
 				if (! empty($conf->global->FACTURE_DEPOSITS_ARE_JUST_PAYMENTS))
 					$sql .= " AND f.type IN (0,1,2)";

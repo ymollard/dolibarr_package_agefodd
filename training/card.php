@@ -1050,7 +1050,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 					print '</td></tr>';
 				}
 
-				if (is_file($conf->agefodd->dir_output . '/fiche_pedago_modules_' . $id . '.pdf')) {
+				if (is_file($conf->agefodd->dir_output . '/fiche_pedago_modules_' . $id . '.pdf') && (!empty($conf->global->AGF_USE_TRAINING_MODULE))) {
 					$legende = $langs->trans("AgfDocOpen");
 					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogiqueModule") . '</td><td> ';
 					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_modules_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
@@ -1117,7 +1117,9 @@ if ($action != 'create' && $action != 'edit') {
 
 	if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
 		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=fichepeda&id=' . $id . '">' . $langs->trans('AgfPrintFichePedago') . '</a>';
-		print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=fichepedamodule&id=' . $id . '">' . $langs->trans('AgfPrintFichePedagoModules') . '</a>';
+		if (!empty($conf->global->AGF_USE_TRAINING_MODULE)) {
+			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=fichepedamodule&id=' . $id . '">' . $langs->trans('AgfPrintFichePedagoModules') . '</a>';
+		}
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfPrintFichePedago') . '</a>';
 	}

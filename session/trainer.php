@@ -135,7 +135,7 @@ if ($action == 'edit' && $user->rights->agefodd->modifier) {
 					$agefodd_sesscalendar->fetch($fk_agefodd_session_calendrier);
 
 					$agf_cal = new Agefoddsessionformateurcalendrier($db);
-					$agf_cal->sessid = $calendrier->id;
+					$agf_cal->sessid = $agf->sessid;
 					$agf_cal->fk_agefodd_session_formateur = $agf->id;
 					$agf_cal->trainer_cost = 0; // price2num(GETPOST('trainer_cost', 'alpha'), 'MU');
 					$agf_cal->date_session = $agefodd_sesscalendar->date_session;

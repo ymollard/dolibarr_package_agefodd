@@ -218,9 +218,25 @@ if ($action == 'setvarother') {
         	$error ++;
         }  else {
         	if (empty($usesiteinagenda)) {
-        		$sql='UPDATE '.MAIN_DB_PREFIX.'extrafields SET list=0,ishidden=1 WHERE name =\'agf_site\' AND  elementtype=\'actioncomm\' AND entity='.$conf->entity;
+
+        	    if(floatval(DOL_VERSION) < 9 ){
+        	        $sqlIsHidden = " list=0,ishidden=1 ";
+                }
+                else{
+                    $sqlIsHidden = " list=0 ";
+                }
+
+        		$sql='UPDATE '.MAIN_DB_PREFIX.'extrafields SET '.$sqlIsHidden.' WHERE name =\'agf_site\' AND  elementtype=\'actioncomm\' AND entity='.$conf->entity;
         	} else {
-        		$sql='UPDATE '.MAIN_DB_PREFIX.'extrafields SET list=1,ishidden=0 WHERE name =\'agf_site\' AND  elementtype=\'actioncomm\' AND entity='.$conf->entity;
+
+                if(floatval(DOL_VERSION) < 9 ){
+                    $sqlIsHidden = " list=1,ishidden=0 ";
+                }
+                else{
+                    $sqlIsHidden = " list=1 ";
+                }
+
+        		$sql='UPDATE '.MAIN_DB_PREFIX.'extrafields SET '.$sqlIsHidden.' WHERE name =\'agf_site\' AND  elementtype=\'actioncomm\' AND entity='.$conf->entity;
         	}
         	$resUpdate = $db->query($sql);
         	if(! $resUpdate) {
@@ -1244,6 +1260,14 @@ $var=!$var;
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfManageSessionCalendarFacturation") . '</td>';
 print '<td align="left">';
 print ajax_constantonoff('AGF_MANAGE_SESSION_CALENDAR_FACTURATION');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfUseTrainingProgramModule") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_USE_TRAINING_MODULE');
 print '</td>';
 print '<td></td>';
 print '</tr>';
