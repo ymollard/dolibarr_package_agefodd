@@ -112,6 +112,8 @@ class pdf_convention extends ModelePDFAgefodd
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
 
+		$outputlangs->load('agefodd@agefodd');
+
 		if (! is_object($agf)) {
 			$id = $agf;
 			// On récupere le contenu de la convention
@@ -949,6 +951,7 @@ class pdf_convention extends ModelePDFAgefodd
 		global $conf, $langs;
 
 		$outputlangs->load("main");
+		$outputlangs->load("agefodd@agefodd");
 
 		pdf_pagehead($pdf, $outputlangs, $pdf->page_hauteur);
 	}
@@ -962,6 +965,8 @@ class pdf_convention extends ModelePDFAgefodd
 	 */
 	function _pagefoot(&$pdf, $object, $outputlangs) {
 		global $conf, $langs, $mysoc;
+
+		$outputlangs->load("agefodd@agefodd");
 
 		$pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
