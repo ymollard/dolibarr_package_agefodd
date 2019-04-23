@@ -121,6 +121,8 @@ if ($object->id) {
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->creer);
 	$param = '&id=' . $object->id;
+	//Avoid bug with Jquery multiselect form
+	$conf->global->MAIN_USE_JQUERY_FILEUPLOAD=0;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 
 
