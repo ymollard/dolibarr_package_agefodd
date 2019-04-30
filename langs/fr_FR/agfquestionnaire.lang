@@ -1,4 +1,5 @@
 agfQuestionnaireLinkAdded=Lien avec le questionnaire ajouté
+agfQuestionnaireLink=Lien avec le questionnaire
 agfQuestionnaireLinkAddError=Une erreur est survenue lors de l'ajout du lien avec le questionnaire
 LinkedQuestionnaire=Questionnaires liés
 SessionIdUnknow=Id de session inconnus
