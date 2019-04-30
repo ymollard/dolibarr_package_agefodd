@@ -251,7 +251,10 @@ function addInvitationsTrainnee(Questionnaire &$questionnaire, $trainnees = arra
     }
     $logs = array(); // reset logs
 
-    list($alreadyInvitedFKElements, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedElements();
+    $TAlreadyInvitedElements = $questionnaire->getAlreadyInvitedElements();
+    $alreadyInvitedFKElements = $TAlreadyInvitedElements[0];
+    $alreadyInvitedEmails = $TAlreadyInvitedElements[1];
+
 
     $successCount = 0;
     $errorsCount = 0;

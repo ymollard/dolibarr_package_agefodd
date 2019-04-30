@@ -186,7 +186,7 @@ elseif($action == 'unlink')
             setEventMessage($langs->trans('agfQuestionnaireLinkRemoved'));
         }
         else{
-            setEventMessage($langs->trans('agfQuestionnaireLinkRemoveError'));
+            setEventMessage($langs->trans('agfQuestionnaireLinkRemoveError'), 'errors');
         }
 
         header('Location: '.dol_buildpath('/agefodd/session/questionnaire.php', 1).'?id='.$agf->id);
@@ -233,7 +233,7 @@ elseif ($action == "addInvitations" && !empty($idQuestionnaire) )
         $action = 'prepareAddInvitations';
     }
     else{
-        setEventMessage($langs->trans('agfNotEnoughRight'));
+        setEventMessage($langs->trans('agfNotEnoughRight'), 'warnings');
     }
 }
 
@@ -420,7 +420,7 @@ if($objQuestionnaire->fetch($idQuestionnaire) < 1){
                       </script>';
                 }
                 else{
-                    setEventMessage($langs->trans('agfNotEnoughRight'));
+                    setEventMessage($langs->trans('agfNotEnoughRight'), 'warnings');
                 }
             }
 
