@@ -594,7 +594,9 @@ if (! empty($id)) {
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfBeforeTraining") . '</td></tr>' . "\n";
 		document_line($langs->trans("AgfFichePedagogique"), 'fiche_pedago');
 		if (! $user->rights->agefodd->session->trainer) {
-			document_line($langs->trans("AgfFichePedagogiqueModule"), 'fiche_pedago_modules');
+			if (!empty($conf->global->AGF_USE_TRAINING_MODULE)) {
+				document_line($langs->trans("AgfFichePedagogiqueModule"), 'fiche_pedago_modules');
+			}
 			if (empty($conf->global->AGF_MERGE_ADVISE_AND_CONVOC)) {
 				document_line($langs->trans("AgfConseilsPratique"), 'conseils');
 			}
