@@ -1699,7 +1699,7 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'trainer';
 
 		$r ++;
-        if ($conf->externalaccess->enabled) {
+        if (!empty($conf->externalaccess->enabled)) {
             $this->rights[$r][0] = $this->numero + $r;
             $this->rights[$r][1] = 'AgfEATrainerRead';
             $this->rights[$r][2] = 'r';
@@ -1708,7 +1708,7 @@ class modAgefodd extends DolibarrModules
         }
 
         $r ++;
-        if ($conf->externalaccess->enabled) {
+        if (!empty($conf->externalaccess->enabled)) {
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerWrite';
 		    $this->rights[$r][2] = 'w';
@@ -1717,7 +1717,7 @@ class modAgefodd extends DolibarrModules
         }
 
         $r ++;
-        if ($conf->externalaccess->enabled) {
+        if (!empty($conf->externalaccess->enabled)) {
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerDownload';
 		    $this->rights[$r][2] = 'r';
@@ -1726,7 +1726,7 @@ class modAgefodd extends DolibarrModules
         }
 
         $r ++;
-        if ($conf->externalaccess->enabled) {
+        if (!empty($conf->externalaccess->enabled)) {
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerUpload';
 		    $this->rights[$r][2] = 'w';
