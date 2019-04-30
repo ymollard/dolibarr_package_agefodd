@@ -536,7 +536,7 @@ function _printRenderQuestionnaireGuestsList(Questionnaire $object, Agsession $s
     $TStatus = InvitationUser::$TStatus;
     //unset($TStatus[InvitationUser::STATUS_DRAFT]);
 
-    $param = array(
+    $listViewConfig = array(
         'view_type' => 'list' // default = [list], [raw], [chart]
     ,'limit'=>array('nbLine' => 500)
     ,'subQuery' => array()
@@ -593,10 +593,21 @@ function _printRenderQuestionnaireGuestsList(Questionnaire $object, Agsession $s
     );
 
     if(!empty($url)) {
-        $param['list']['param_url'] = 'id='.$session->id.'&idQuestionnaire='.$object->id;
+        $listViewConfig['list']['param_url'] = 'id='.$session->id.'&idQuestionnaire='.$object->id;
     }
 
-    echo $r->render($sql, $param);
+    // Change view from hooks
+    $parameters=array(  'listViewConfig' => $listViewConfig);
+
+    $reshook=$hookmanager->executeHooks('listViewConfig',$parameters,$r);    // Note that $action and $object may have been modified by hook
+    if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+    if ($reshook>0)
+    {
+        $listViewConfig = $hookmanager->resArray;
+    }
+
+
+    echo $r->render($sql, $listViewConfig);
 
     print '<div id="jquery-questionnaire-dialog-box" ></div>';
 
