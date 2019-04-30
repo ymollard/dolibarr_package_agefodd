@@ -1698,36 +1698,59 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][4] = 'session';
 		$this->rights[$r][5] = 'trainer';
 
-		if ($conf->externalaccess->enabled)
-		{
-		    $r ++;
-		    $this->rights[$r][0] = $this->numero + $r;
-		    $this->rights[$r][1] = 'AgfEATrainerRead';
-		    $this->rights[$r][2] = 'r';
-		    $this->rights[$r][3] = 0;
-		    $this->rights[$r][4] = 'external_trainer_read';
+		$r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+            $this->rights[$r][0] = $this->numero + $r;
+            $this->rights[$r][1] = 'AgfEATrainerRead';
+            $this->rights[$r][2] = 'r';
+            $this->rights[$r][3] = 0;
+            $this->rights[$r][4] = 'external_trainer_read';
+        }
 
-		    $r ++;
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerWrite';
 		    $this->rights[$r][2] = 'w';
 		    $this->rights[$r][3] = 0;
 		    $this->rights[$r][4] = 'external_trainer_write';
+        }
 
-		    $r ++;
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerDownload';
 		    $this->rights[$r][2] = 'r';
 		    $this->rights[$r][3] = 0;
 		    $this->rights[$r][4] = 'external_trainer_download';
+        }
 
-		    $r ++;
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerUpload';
 		    $this->rights[$r][2] = 'w';
 		    $this->rights[$r][3] = 0;
 		    $this->rights[$r][4] = 'external_trainer_upload';
 		}
+
+        $r ++;
+        if (!empty($conf->questionnaire->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;    // Permission id (must not be already used)
+            $this->rights[$r][1] = 'AgfQuestionnaireLinkRight';    // Permission label
+            $this->rights[$r][3] = 0;                    // Permission by default for new user (0/1)
+            $this->rights[$r][4] = 'questionnaire';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+            $this->rights[$r][5] = 'link';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        }
+
+        $r ++;
+        if (!empty($conf->questionnaire->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
+            $this->rights[$r][1] = 'AgfQuestionnaireSendRight';	// Permission label
+            $this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
+            $this->rights[$r][4] = 'questionnaire';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+            $this->rights[$r][5] = 'send';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        }
 
 		// Main menu entries
 		$this->menus = array();
