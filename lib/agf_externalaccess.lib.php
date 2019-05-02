@@ -840,7 +840,8 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
         'agsession' =>& $agsession,
         'trainer' =>& $trainer,
         'agf_calendrier' => $agf_calendrier,
-        'action' => $action
+        'action' => $action,
+        'agf_calendrier_formateur' => $agf_calendrier_formateur
     );
     $reshook=$hookmanager->executeHooks('agf_getPageViewSessionCardCalendrierFormateurExternalAccess', $parameters, $agf_calendrier_formateur);
 
@@ -864,7 +865,8 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
         'agsession' =>& $agsession,
         'trainer' =>& $trainer,
         'agf_calendrier' => $agf_calendrier,
-        'action' => $action
+        'action' => $action,
+        'agf_calendrier_formateur' => $agf_calendrier_formateur
     );
     $reshook=$hookmanager->executeHooks('ExternalAccess_addMoreActionsButtons', $parameters, $agf_calendrier_formateur);
 
@@ -884,6 +886,30 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
     }
 
     $out.= '</div>';
+
+
+
+    $parameters=array(
+        'agsession' =>& $agsession,
+        'trainer' =>& $trainer,
+        'agf_calendrier' => $agf_calendrier,
+        'action' => $action,
+        'agf_calendrier_formateur' => $agf_calendrier_formateur
+    );
+    $reshook=$hookmanager->executeHooks('agf_getPageViewSessionCardCalendrierFormateurExternalAccess_afterForm', $parameters, $agf_calendrier_formateur);
+
+    if (!empty($reshook)){
+        // override full output
+        $out = $hookmanager->resPrint;
+    }
+    else{
+        $out.= $hookmanager->resPrint;
+    }
+
+
+
+
+
     $out.= '</section>';
 
 	return $out;
