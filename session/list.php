@@ -523,6 +523,7 @@ $agf = new Agsession($db);
 
 // Count total nb of records
 $nbtotalofrecords = 0;
+$nbtotalofstagiaire= 0;
 
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter, $user);
@@ -535,6 +536,8 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 		$total_percentmargin = 0;
 		foreach ( $agf->lines as $line ) {
 			if ($line->rowid != $oldid) {
+                $nbtotalofstagiaire+= $line->nb_stagiaire;
+
 				$total_sellprice += $line->sell_price;
 				$total_costtrainer += $line->cost_trainer;
 				$total_costother += $line->cost_other;
@@ -563,6 +566,17 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 			$total_percentmargin = 'n/a';
 		}
 	}
+	else
+    {
+        $oldid = 0;
+        array_map(function ($line) use (&$nbtotalofstagiaire, &$oldid) {
+            if ($line->rowid != $oldid)
+            {
+                $nbtotalofstagiaire += $line->nb_stagiaire;
+            }
+            $oldid = $line->rowid;
+        }, $agf->lines);
+    }
 }
 $resql = $agf->fetch_all($sortorder, $sortfield, $limit, $offset, $filter, $user, array_keys($extrafields->attribute_label));
 
@@ -601,6 +615,11 @@ if ($resql != - 1) {
 
 	$massactionbutton = $formAgefodd->selectMassSessionsAction();
 
+    if ($nbtotalofstagiaire > 0)
+    {
+        if ($nbtotalofstagiaire === 1) $title.= ' '.$langs->trans('SessionOneParticipant');
+        else $title.= ' '.$langs->trans('SessionMoreThanOneParticipants', $nbtotalofstagiaire);
+    }
 	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$morefilter = '';
@@ -889,7 +908,7 @@ if ($resql != - 1) {
 	print "</tr>\n";
 
 	$propal_total_ht = $pv_total_ht = $invoice_total_ht = 0;
-
+    $total_nb_stagiaire = 0;
 	$var = true;
 	$oldid = 0;
 	foreach ( $agf->lines as $line ) {
@@ -1027,6 +1046,7 @@ if ($resql != - 1) {
 				}
 			}
 
+            $total_nb_stagiaire+=$line->nb_stagiaire;
 			if (! empty($arrayfields['s.nb_stagiaire']['checked']))
 				print '<td>' . $line->nb_stagiaire . '</td>';
 
@@ -1245,7 +1265,7 @@ if ($resql != - 1) {
 				print '<td nowrap="nowrap">' . price($total_margin, 0, '', 1, - 1, - 1, 'auto') . '(' . $total_percentmargin . ')' . '</td>';
 		}
 		if (! empty($arrayfields['s.nb_stagiaire']['checked']))
-			print '<td></td>';
+			print '<td>'.$total_nb_stagiaire.'</td>';
 		if (! empty($arrayfields['s.fk_socpeople_presta']['checked']))
 			print '<td></td>';
 		if (! empty($arrayfields['s.fk_soc_employer']['checked']))
@@ -1270,6 +1290,60 @@ if ($resql != - 1) {
 		print '<td>&nbsp;</td>';
 		print "</tr>\n";
 	}
+	else
+    {
+        print '<tr class="liste_total" name="margininfototal" >';
+        print '<td>' . $langs->trans('Total') . '</td>';
+        if (! empty($arrayfields['s.rowid']['checked']) && ! empty($arrayfields['s.ref']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['so.nom']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['f.rowid']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['c.intitule']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['c.ref']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['c.ref_interne']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['s.type_session']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['s.dated']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['s.datef']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['dicstatus.intitule']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['p.ref_interne']['checked']))
+            print '<td></td>';
+
+
+        if (! empty($arrayfields['s.nb_stagiaire']['checked']))
+            print '<td>'.$total_nb_stagiaire.'</td>';
+        if (! empty($arrayfields['s.fk_socpeople_presta']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['s.fk_soc_employer']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['s.fk_soc_requester']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['AgfListParticipantsStatus']['checked']))
+            print '<td></td>';
+        if (! empty($arrayfields['s.fk_product']['checked']))
+            print '<td></td>';
+
+        // Extra fields
+        if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
+            foreach ( $extrafields->attribute_label as $key => $val ) {
+                if (! empty($arrayfields["ef." . $key]['checked'])) {
+                    print '<td></td>';
+                }
+            }
+        }
+
+        // Action column
+        print '<td>&nbsp;</td>';
+        print "</tr>\n";
+    }
 	print "</table>";
 	print "</div>";
 } else {
