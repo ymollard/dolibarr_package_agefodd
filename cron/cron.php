@@ -1,6 +1,7 @@
 <?php
 dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 
 
 class cron_agefodd
@@ -21,8 +22,11 @@ class cron_agefodd
 	}
 
 
-	public function sendAgendaToTrainee()
+	public function sendAgendaToTrainee($fk_mailModel = 0, $days = 1)
 	{
+        $message = '';
+
+        $days = intval($days);
 
         /* # Status
          *  1 Envisagée
@@ -35,7 +39,7 @@ class cron_agefodd
         // GET SESSION AT DAY-1
         $sql = "SELECT rowid ";
         $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session s ";
-        $sql.= " WHERE s.dated >=  CURDATE() + INTERVAL 1 DAY AND s.dated <  CURDATE() + INTERVAL 2 DAY ";
+        $sql.= " WHERE s.dated >=  CURDATE() + INTERVAL ".$days." DAY AND s.dated <  CURDATE() + INTERVAL ".($days+1)." DAY ";
         $sql.= " AND   s.status = 2 ";
 
         $resql = $this->db->query($sql);
@@ -56,23 +60,29 @@ class cron_agefodd
 
                     $sql = "SELECT rowid ";
                     $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ss ";
-                    $sql.= " WHERE  ss.fk_session_agefodd = ".$agsession->id;
+                    $sql.= " WHERE  ss.fk_session_agefodd = ".$agsession->id . ' AND status_in_session IN (1) ' ;
 
                     $resqlStag = $this->db->query($sql);
 
                     if (!empty($resqlStag) && $this->db->num_rows($resqlStag) > 0) {
                         while ($objStag = $this->db->fetch_object($resqlStag)){
                             $agsessionTrainee = new Agefodd_session_stagiaire($this->db);
-                            if($agsessionTrainee->fetch($objStag->rowid))
+                            if($agsessionTrainee->fetch($objStag->rowid) > 0)
                             {
                                 $agsessionTrainee->fetch_optionals();
-                                var_dump($agsessionTrainee->array_options, $agsessionTrainee);
-                                if(!empty($agsessionTrainee->array_options['bcls_disablemailsession'])){
-                                    continue;
-                                }
-                                else{
+
+                                $stagiaire = new Agefodd_stagiaire($this->db);
+                                if($stagiaire->fetch($agsessionTrainee->fk_stagiaire) > 0)
+                                {
+                                    if(!empty($stagiaire->disable_auto_mail)){
+                                        continue;
+                                    }
+                                    else{
+                                        // PREPARE EMAIL
 
 
+
+                                    }
                                 }
                             }
                         }
@@ -80,6 +90,7 @@ class cron_agefodd
                     else{
                         // nothing to send
                         if (empty($resql)) dol_print_error($this->db);
+
                     }
 
                 }
@@ -87,10 +98,10 @@ class cron_agefodd
         }
         else{
             if (empty($resql)) dol_print_error($this->db);
-            return 'nothing to do';
+            $message.=  'nothing to do';
         }
 
-
+        return $message;
 	}
 
 }
