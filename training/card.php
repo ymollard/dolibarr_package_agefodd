@@ -61,7 +61,7 @@ $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
 
 
 // Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
-$hookmanager->initHooks(array('trainincard','globalcard'));
+$hookmanager->initHooks(array('agftrainingcard','globalcard'));
 
 
 $parameters=array('id'=>$id, 'objcanvas'=>$objcanvas);
