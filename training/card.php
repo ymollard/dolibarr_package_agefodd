@@ -59,6 +59,18 @@ $agf = new Formation($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
 
+
+// Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
+$hookmanager->initHooks(array('agftrainingcard','globalcard'));
+
+
+$parameters=array('id'=>$id, 'objcanvas'=>$objcanvas);
+$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
+if (empty($reshook)){
+
+
 /*
  * Actions delete
  */
@@ -279,26 +291,26 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
  */
 if ($action == "ajax_obj_update" && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
     $newObjectifs = GETPOST('pedago');
-    
+
     $agf_peda = new Formation($db);
     $result_peda = $agf_peda->fetch_objpeda_per_formation($id);
-    
+
     foreach ($agf_peda->lines as $line){
         $agf_peda->remove_objpeda($line->id);
     }
     if (!empty($newObjectifs)){
         foreach ($newObjectifs as $objectif){
             //$agf = new Formation($db);
-            
+
             $agf_peda->intitule = $objectif['intitule'];
             $agf_peda->priorite = (int) $objectif['priorite'];
             $agf_peda->fk_formation_catalogue = $id;
-            
+
             $result = $agf_peda->create_objpeda($user);
-            
+
         }
     }
-    
+
 }
 
 /*
@@ -379,10 +391,10 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 if ($action == 'fichepeda' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	// Define output language
 	$agf->fetch($id);
-	
+
 	$result = $agf->generatePDAByLink();
-	
-	
+
+
 	if($result <= 0){
 		$outputlangs = $langs;
 		$newlang = GETPOST('lang_id', 'alpha');
@@ -410,7 +422,7 @@ if ($action == 'fichepeda' && $user->rights->agefodd->agefodd_formation_catalogu
 				}
 			}
 		}
-	
+
 		$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, 0);
 	}
 	if ($result > 0) {
@@ -459,7 +471,7 @@ if ($action == 'fichepedamodule' && $user->rights->agefodd->agefodd_formation_ca
 		setEventMessage($agf->error, 'errors');
 	}
 }
-
+}
 /*
  * View
  */
@@ -1073,6 +1085,10 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
  */
 
 print '<div class="tabsAction">';
+$parameters=array();
+$reshook=$hookmanager->executeHooks('addMoreActionsButtons',$parameters,$agf,$action);    // Note that $action and $object may have been modified by hook
+if (empty($reshook)){
+
 
 if ($action != 'create' && $action != 'edit') {
 	if ($user->rights->agefodd->agefodd_formation_catalogue->creer) {
@@ -1113,6 +1129,8 @@ if ($action != 'create' && $action != 'edit') {
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfPrintFichePedago') . '</a>';
 	}
+}
+
 }
 
 print '</div>';
