@@ -1027,6 +1027,7 @@ class ReportBPF extends AgefoddExportExcel
 		$sql .= " WHERE statime.heured >= '" . $this->db->idate($filter['search_date_start']) . "' AND statime.heuref <= '" . $this->db->idate($filter['search_date_end']) . "'";
 		$sql .= " AND sess.status IN (5,6)";
 		$sql .= " AND sess.fk_socpeople_presta IS NOT NULL";
+		$sql .= " AND sess.fk_socpeople_presta > 0";
 		$sql .= " AND sess.fk_soc_employer IS NULL";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__. ' '.$key, LOG_DEBUG);
