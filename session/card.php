@@ -61,6 +61,19 @@ $agf = new Agsession($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
 
+
+// Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
+$hookmanager->initHooks(array('agfsessioncard','globalcard'));
+
+
+$parameters=array('id'=>$id);
+$reshook=$hookmanager->executeHooks('doActions',$parameters,$agf,$action);     // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
+if (empty($reshook)){
+
+
+
 /*
  * Actions delete session
  */
@@ -555,7 +568,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				$error ++;
 			}
 		}
-		
+
 		if ($error == 0 && !empty($fk_order)) {
 		    dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 		    $agf_elem = new Agefodd_session_element($db);
@@ -563,9 +576,9 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		    $agf_elem->fk_session_agefodd =  $agf->id;
 		    $agf_elem->fk_soc = $custid;
 		    $agf_elem->element_type = 'order';
-		    
+
 		    $result = $agf_elem->create($user);
-		    
+
 		    if ($result < 0) {
 		        setEventMessage($agf_elem->error, 'errors');
 		        $error ++;
@@ -655,6 +668,8 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 		}
 	}
 	// }
+}
+
 }
 
 /*
@@ -1634,6 +1649,10 @@ printSessionFieldsWithCustomOrder();
  */
 
 print '<div class="tabsAction">';
+$parameters=array();
+$reshook=$hookmanager->executeHooks('addMoreActionsButtons',$parameters,$agf,$action);    // Note that $action and $object may have been modified by hook
+if (empty($reshook)){
+
 
 if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 	if ($user->rights->agefodd->modifier) {
@@ -1679,6 +1698,7 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 	}
 }
 
+}
 print '</div>';
 
 llxFooter();
