@@ -45,6 +45,8 @@ class ReportCommercial extends AgefoddExportExcel
 		, 'session_end' => 'AgfDateSessionEnd'
 	);
 
+	public $subro_extrafield_exists = false;
+
 	/**
 	 * Constructor
 	 *
@@ -72,6 +74,13 @@ class ReportCommercial extends AgefoddExportExcel
 
 		$this->status_array=array(1=>$outputlangs->trans('BillShortStatusDraft'),2=>$outputlangs->trans('BillShortStatusPaid'), 3=>$outputlangs->trans('BillShortStatusNotPaid'));
 		$this->status_array_noentities=array(1=>$outputlangs->transnoentities('BillShortStatusDraft'),2=>$outputlangs->transnoentities('BillShortStatusPaid'), 3=>$outputlangs->transnoentities('BillShortStatusNotPaid'));
+
+		dol_include_once('/core/class/extrafields.class.php');
+
+		$extrafields = new ExtraFields($db);
+		$extralabels = $extrafields->fetch_name_optionals_label('agefodd_session');
+
+		$this->subro_extrafield_exists = in_array('use_subro_inter', array_keys($extralabels));
 
 		return parent::__construct($db, $array_column_header, $outputlangs, $sheet_array);
 	}
@@ -684,17 +693,30 @@ class ReportCommercial extends AgefoddExportExcel
 
 		$maxYear = $this->year_to_report_array[0];
 
+		/** @see ReportCommercial::get_ca_data_sql_query() */
 		$TTypesTodo = array();
 
 		if(! isset($filter['s.type_session']) || $filter['s.type_session'] == '0')
 		{
-			$TTypesTodo[] = 'intra';
+
+			if($this->subro_extrafield_exists)
+			{
+				$TTypesTodo[] = 'noopcaintranoextra';
+				$TTypesTodo[] = 'noopcaintraextra';
+				$TTypesTodo[] = 'opcaintranoextra';
+				$TTypesTodo[] = 'opcaintraextra';
+			}
+			else
+			{
+				$TTypesTodo[] = 'noopcaintra';
+				$TTypesTodo[] = 'opcaintra';
+			}
 		}
 
 		if(! isset($filter['s.type_session']) || $filter['s.type_session'] == '1')
 		{
-			$TTypesTodo[] = 'inter';
-			$TTypesTodo[] = 'interopca';
+			$TTypesTodo[] = 'noopcainter';
+			$TTypesTodo[] = 'opcainter';
 		}
 
 		foreach($TTypesTodo as $type)
@@ -723,6 +745,28 @@ class ReportCommercial extends AgefoddExportExcel
 	}
 
 
+	/**
+	 * Petit topo sur la façon dont j'ai géré la chose.
+	 *
+	 * Contrairement aux autres rapports existants, j'ai découpé la conception de ce rapport
+	 * selon tous les cas possibles que j'ai rencontrés, avec trois critères qui différencient les requêtes :
+	 * - Type de session (intra/inter)
+	 * - Subrogation ou non
+	 * - Extrafield "use_subro_inter", qui indique qu'une session intra gère la subrogation comme les inter
+	 *
+	 *
+	 * Cela donne les cas suivants :
+	 * - noopcainter        : sessions inter, sans subrogation
+	 * - opcainter          : sessions inter, avec subrogation (OPCA sur les participants)
+	 * - noopcaintra        : sessions intra, sans subrogation
+	 * - opcaintra          : sessions intra, avec subrogation (OPCA sur la session)
+	 * - noopcaintraextra   : sessions intra, sans subrogation, quand l'extrafield existe et est coché
+	 * - noopcaintranoextra : sessions intra, sans subrogation, quand l'extrafield existe et n'est pas coché
+	 * - opcaintraextra     : sessions intra, avec subrogation, quand l'extrafield existe et est coché (OPCA sur les participants)
+	 * - opcaintranoextra   : sessions intra, avec subrogation, quand l'extrafield existe et n'est pas soché (OPCA sur la session)
+	 *
+	 * MdLL - 10/05/2019
+	 */
 	public function get_ca_data_sql_query($type, $companyID, $filter)
 	{
 		global $conf;
@@ -744,10 +788,10 @@ class ReportCommercial extends AgefoddExportExcel
 
 		$multiplier = 1;
 
-		if($type == 'interopca')
+		if($type == 'opcainter' || $type == 'opcaintraextra')
 		{
 			$multiplier = '(
-				SELECT COUNT(IF(opca.fk_soc_trainee = ' . $companyID .', 1, NULL)) / COUNT(*)
+				SELECT COUNT(IF(opca.fk_soc_trainee = ' . $companyID . ', 1, NULL)) / COUNT(*)
 				FROM ' . MAIN_DB_PREFIX . 'facture f2
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f2.rowid AND se.element_type = "invoice")
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = se.fk_session_agefodd)
@@ -759,11 +803,63 @@ class ReportCommercial extends AgefoddExportExcel
 			)';
 		}
 
-		$sql = 'SELECT YEAR(' . $dateField . ') AS year, MONTH(' . $dateField . ') AS month, COALESCE( ' . $multiplier . ' * SUM(fd.total_ht), 0) as total
+		if($type == 'opcaintranoextra')
+		{
+			$multiplier = '(
+				SELECT IF(COUNT(*) = 0, 1, COUNT(IF(ags.fk_soc = ' . $companyID . ', 1, NULL)) / COUNT(*))
+				FROM ' . MAIN_DB_PREFIX . 'facture f2
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f2.rowid AND se.element_type = "invoice")
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session s2 ON (s2.rowid = se.fk_session_agefodd)
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = se.fk_session_agefodd)
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
+				WHERE se.fk_session_agefodd = s.rowid
+				AND f.fk_soc = f2.fk_soc
+				AND f.fk_soc = s2.fk_soc_OPCA
+				AND s2.is_OPCA > 0
+				AND ass.status_in_session = 3
+			)';
+		}
+
+		if($type == 'noopcainter')
+		{
+			$multiplier = '(
+				SELECT COUNT(IF(ags.fk_soc = ' . $companyID . ', 1, NULL)) / COUNT(*)
+				FROM ' . MAIN_DB_PREFIX . 'facture f2
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f2.rowid AND se.element_type = "invoice")
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = se.fk_session_agefodd)
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
+				WHERE se.fk_session_agefodd = s.rowid
+				AND f.fk_soc = f2.fk_soc
+			)';
+		}
+
+		if($type == 'noopcaintra' || $type == 'noopcaintranoextra')
+		{
+			$multiplier = '(
+				SELECT IF(COUNT(*) = 0, 1, COUNT(IF(COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . ', 1, NULL)) / COUNT(*))
+				FROM ' . MAIN_DB_PREFIX . 'facture f2
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f2.rowid AND se.element_type = "invoice")
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session s2 ON (s2.rowid = se.fk_session_agefodd)
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = se.fk_session_agefodd)
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
+				WHERE s2.rowid = s.rowid
+				AND f.fk_soc = f2.fk_soc
+			)';
+		}
+
+		$sql = 'SELECT YEAR(' . $dateField . ') AS year, MONTH(' . $dateField . ') AS month, COALESCE( SUM(' . $multiplier . ' * fd.total_ht), 0) as total
 				FROM ' . MAIN_DB_PREFIX . 'facture f
 				INNER JOIN ' . MAIN_DB_PREFIX . 'facturedet fd ON (fd.fk_facture = f.rowid)
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f.rowid AND se.element_type = "invoice")
-				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session s ON (s.rowid = se.fk_session_agefodd)
+				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session s ON (s.rowid = se.fk_session_agefodd)';
+
+		if($this->subro_extrafield_exists)
+		{
+			$sql.= '
+				LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_extrafields sextra ON (sextra.fk_object = s.rowid)';
+		}
+
+		$sql.= '
 				WHERE f.fk_statut > 0
 				AND f.fk_statut < 3';
 
@@ -786,28 +882,40 @@ class ReportCommercial extends AgefoddExportExcel
 
 		switch ($type)
 		{
-			case 'intra':
+			case 'noopcaintra':
+
 				$sql.= '
 				AND s.type_session = 0
-				AND COALESCE(IF(s.fk_soc = 0, NULL, s.fk_soc), s.fk_soc_requester) = ' . $companyID;
+				AND s.rowid IN (
+					SELECT s2.rowid
+					FROM ' . MAIN_DB_PREFIX . 'agefodd_session s2
+					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
+					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
+					WHERE COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
+					AND COALESCE(IF(s2.fk_soc_OPCA < 0, 0, s2.fk_soc_OPCA), 0) = 0
+				)';
 
 				break;
 
-			case 'inter':
+			case 'noopcainter':
+
 				$sql.= '
-				AND f.fk_soc = ' . $companyID . '
+				AND s.type_session = 1
 				AND s.rowid IN (
 					SELECT s2.rowid
 					FROM ' . MAIN_DB_PREFIX . 'agefodd_session s2
 					INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
 					INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
-					WHERE ags.fk_soc = f.fk_soc                   
-					AND s2.type_session = 1
+					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca opca ON (opca.fk_session_trainee = ass.rowid AND opca.fk_soc_trainee = ags.fk_soc)
+					WHERE ags.fk_soc = ' . $companyID . '
+					AND COALESCE(IF(s2.fk_soc_OPCA < 0, 0, s2.fk_soc_OPCA), 0) = 0
+					AND COALESCE(opca.rowid, 0) = 0
 				)';
 
 				break;
 
-			case 'interopca':
+			case 'opcainter':
+
 				$sql.= '
 				AND s.rowid IN (
 					SELECT s2.rowid
@@ -818,6 +926,89 @@ class ReportCommercial extends AgefoddExportExcel
 					WHERE opca.fk_soc_OPCA = f.fk_soc
 					AND opca.fk_soc_OPCA != opca.fk_soc_trainee
 					AND s2.type_session = 1
+					AND opca.fk_soc_trainee = ' . $companyID . '
+				)';
+
+				break;
+
+			case 'opcaintra':
+
+				$sql.= '
+				AND s.rowid IN (
+					SELECT s2.rowid
+					FROM ' . MAIN_DB_PREFIX . 'agefodd_session s2
+					INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
+					INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
+					WHERE s2.fk_soc_OPCA = f.fk_soc
+					AND s2.type_session = 0
+					AND ags.fk_soc = ' . $companyID . '
+				)';
+
+				break;
+
+			case 'noopcaintranoextra':
+
+				$sql.= '
+				AND COALESCE(sextra.use_subro_inter, 0) = 0
+				AND s.type_session = 0
+				AND s.rowid IN (
+					SELECT s2.rowid
+					FROM ' . MAIN_DB_PREFIX . 'agefodd_session s2
+					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
+					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
+					WHERE COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
+					AND COALESCE(IF(s2.fk_soc_OPCA < 0, 0, s2.fk_soc_OPCA), 0) = 0
+					AND COALESCE(s2.is_OPCA, 0) = 0
+				)';
+
+				break;
+
+			case 'opcaintranoextra':
+
+				$sql.= '
+				AND COALESCE(sextra.use_subro_inter, 0) = 0
+				AND s.rowid IN (
+					SELECT s2.rowid
+					FROM ' . MAIN_DB_PREFIX . 'agefodd_session s2
+					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
+					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
+					WHERE s2.fk_soc_OPCA = f.fk_soc
+					AND s2.type_session = 0
+					AND COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
+				)';
+
+				break;
+
+			case 'noopcaintraextra':
+
+				$sql.= '
+				AND sextra.use_subro_inter > 0
+				AND s.rowid IN (
+					SELECT s2.rowid
+					FROM ' . MAIN_DB_PREFIX . 'agefodd_session s2
+					INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
+					INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
+					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca opca ON (opca.fk_session_trainee = ass.rowid AND opca.fk_soc_trainee = ags.fk_soc)
+					WHERE s2.type_session = 0
+
+					AND ags.fk_soc = ' . $companyID . '
+					AND f.fk_soc = ags.fk_soc
+				)';
+
+				break;
+
+			case 'opcaintraextra':
+				$sql.= '
+				AND sextra.use_subro_inter > 0
+				AND s.rowid IN (
+					SELECT s2.rowid
+					FROM ' . MAIN_DB_PREFIX . 'agefodd_session s2
+					INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
+					INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
+					INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca opca ON (opca.fk_session_trainee = ass.rowid AND opca.fk_soc_trainee = ags.fk_soc)
+					WHERE opca.fk_soc_OPCA = f.fk_soc
+					AND opca.fk_soc_OPCA != opca.fk_soc_trainee
+					AND s2.type_session = 0
 					AND opca.fk_soc_trainee = ' . $companyID . '
 				)';
 
