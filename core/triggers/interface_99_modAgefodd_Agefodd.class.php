@@ -612,35 +612,36 @@ class InterfaceAgefodd {
 		}elseif ($action == 'ORDER_CREATE') {
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
+			if (empty($conf->global->AGF_NOT_AUTO_LINK_COMMANDE)) {
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 
-			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+				$object->fetchObjectLinked();
 
-			$object->fetchObjectLinked();
+				foreach ( $object->linkedObjects as $objecttype => $objectslinked ) {
+					$objectlinked=reset($objectslinked);
+					if ($objectlinked->element == 'propal') {
 
-			foreach ( $object->linkedObjects as $objecttype => $objectslinked ) {
-				$objectlinked=reset($objectslinked);
-				if ($objectlinked->element == 'propal') {
+						$agf_fin = new Agefodd_session_element($this->db);
+						//If propal is link to session
+						$result = $agf_fin->fetch_element_by_id($objectlinked->id, 'propal');
 
-					$agf_fin = new Agefodd_session_element($this->db);
-					//If propal is link to session
-					$result = $agf_fin->fetch_element_by_id($objectlinked->id, 'propal');
-
-					if ($result < 0) {
-						$this->error = $agf_fin->error;
-						dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
-						return - 1;
-					} else {
-						if (is_array($agf_fin->lines) && count($agf_fin->lines)>0) {
-							$elment = reset($agf_fin->lines);
-							$agf_fin->fk_session_agefodd=$elment->fk_session_agefodd;
-							$agf_fin->fk_soc=$elment->socid;
-							$agf_fin->element_type='order';
-							$agf_fin->fk_element=$object->id;
-							$result=$agf_fin->create($user);
-							if ($result < 0) {
-								$this->error = $agf_fin->error;
-								dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
-								return - 1;
+						if ($result < 0) {
+							$this->error = $agf_fin->error;
+							dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
+							return - 1;
+						} else {
+							if (is_array($agf_fin->lines) && count($agf_fin->lines)>0) {
+								$elment = reset($agf_fin->lines);
+								$agf_fin->fk_session_agefodd=$elment->fk_session_agefodd;
+								$agf_fin->fk_soc=$elment->socid;
+								$agf_fin->element_type='order';
+								$agf_fin->fk_element=$object->id;
+								$result=$agf_fin->create($user);
+								if ($result < 0) {
+									$this->error = $agf_fin->error;
+									dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
+									return - 1;
+								}
 							}
 						}
 					}

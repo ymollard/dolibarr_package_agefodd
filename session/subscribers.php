@@ -828,7 +828,7 @@ if (! empty($id)) {
 						print '	<td>';
 						$htmlname_thirdparty='fksocOPCA';
 						print $form->select_company($agf_opca->fk_soc_OPCA, $htmlname_thirdparty, '(s.client IN (1,2))', 'SelectThirdParty', 1, 0);
-						$events[]=array('method' => 'getContacts', 'url' => dol_buildpath('/core/ajax/contacts.php',1), 'htmlname' => 'fksocpeopleOPCA', 'params' => array('add-customer-contact' => 'disabled'));
+						$events[]=array('showempty' => 1, 'method' => 'getContacts', 'url' => dol_buildpath('/core/ajax/contacts.php',1), 'htmlname' => 'fksocpeopleOPCA', 'params' => array('add-customer-contact' => 'disabled'));
 						//Select contact regarding comapny
 						if (count($events))
 						{
@@ -859,7 +859,8 @@ if (! empty($id)) {
 											{
 												action: method,
 												id: id,
-												htmlname: htmlname
+												htmlname: htmlname,
+												showempty: showempty
 											},
 											function(response) {
 												if (response != null)

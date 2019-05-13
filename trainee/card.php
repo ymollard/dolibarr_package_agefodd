@@ -488,7 +488,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</td>';
 	print '	</tr>';
 	print '<tr class="select_thirdparty_block"><td class="fieldrequired">' . $langs->trans("Company") . '</td><td colspan="3">';
-if (!empty($conf->global->AGEFODD_USE_SELECT_WITH_AJAX)) print $form->select_company(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
+	if (!empty($conf->global->AGEFODD_USE_SELECT_WITH_AJAX)) print $form->select_company(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
 	else print $form->select_thirdparty_list(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
 	print '</td></tr>';
 

@@ -43,10 +43,12 @@ class box_agefodd_stats extends ModeleBoxes {
 	 * Constructor
 	 */
 	function __construct() {
-		global $langs;
+		global $langs,$user;
 		$langs->load("boxes");
 
 		$this->boxlabel = $langs->transnoentitiesnoconv("AgefoddShort").'-'.$langs->transnoentitiesnoconv("AgfIndexStatistique");
+
+		$this->hidden=! ($user->rights->agefodd->lire);
 	}
 
 	/**

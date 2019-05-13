@@ -467,6 +467,7 @@ if ($result >= 0) {
 			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
+			print '<td></td>';
 			print '<td>';
 			$trainer = new Agefodd_teacher($db);
 			if (! empty($line->trainerrowid)) {

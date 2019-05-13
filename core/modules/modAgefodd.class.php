@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.3.8';
+		$this->version = '4.3.11';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -125,7 +125,6 @@ class modAgefodd extends DolibarrModules
 		$this->depends = array(
 				'modSociete',
 				'modPropale',
-				'modComptabilite',
 				'modFacture',
 				'modBanque',
 				'modFournisseur',
@@ -1525,10 +1524,14 @@ class modAgefodd extends DolibarrModules
 
 		// Add here list of php file(s) stored in core/boxes that contains class to show a box.
 		// Example:
-		// $this->boxes[$r][1] = "myboxa.php";
-		// $r++;
-		// $this->boxes[$r][1] = "myboxb.php";
-		// $r++;
+		$this->boxes[$r][1] = "box_agefodd_board.php";
+		$r++;
+		$this->boxes[$r][1] = "box_agefodd_lastsession.php";
+		$r++;
+		$this->boxes[$r][1] = "box_agefodd_preferedtraining.php";
+		$r++;
+		$this->boxes[$r][1] = "box_agefodd_stats.php";
+
 
 		// Permissions
 		$this->rights = array();
@@ -1684,30 +1687,35 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][4] = 'session';
 		$this->rights[$r][5] = 'trainer';
 
-		if ($conf->externalaccess->enabled)
-		{
-		    $r ++;
-		    $this->rights[$r][0] = $this->numero + $r;
-		    $this->rights[$r][1] = 'AgfEATrainerRead';
-		    $this->rights[$r][2] = 'r';
-		    $this->rights[$r][3] = 0;
-		    $this->rights[$r][4] = 'external_trainer_read';
+		$r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+            $this->rights[$r][0] = $this->numero + $r;
+            $this->rights[$r][1] = 'AgfEATrainerRead';
+            $this->rights[$r][2] = 'r';
+            $this->rights[$r][3] = 0;
+            $this->rights[$r][4] = 'external_trainer_read';
+        }
 
-		    $r ++;
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerWrite';
 		    $this->rights[$r][2] = 'w';
 		    $this->rights[$r][3] = 0;
 		    $this->rights[$r][4] = 'external_trainer_write';
+        }
 
-		    $r ++;
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerDownload';
 		    $this->rights[$r][2] = 'r';
 		    $this->rights[$r][3] = 0;
 		    $this->rights[$r][4] = 'external_trainer_download';
+        }
 
-		    $r ++;
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
 		    $this->rights[$r][0] = $this->numero + $r;
 		    $this->rights[$r][1] = 'AgfEATrainerUpload';
 		    $this->rights[$r][2] = 'w';

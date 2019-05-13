@@ -181,6 +181,7 @@ class Agefodd_sesscalendar extends CommonObject{
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}

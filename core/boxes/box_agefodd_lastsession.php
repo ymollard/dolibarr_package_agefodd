@@ -43,10 +43,12 @@ class box_agefodd_lastsession extends ModeleBoxes {
 	 * Constructor
 	 */
 	function __construct() {
-		global $langs;
+		global $langs,$user;
 		$langs->load("boxes");
 
 		$this->boxlabel = $langs->transnoentitiesnoconv("AgefoddShort").'-'.$langs->transnoentitiesnoconv("AgfIndex5sess");
+
+		$this->hidden=! ($user->rights->agefodd->lire);
 	}
 
 	/**
@@ -87,11 +89,13 @@ class box_agefodd_lastsession extends ModeleBoxes {
 						'url' => (dol_buildpath('/agefodd/session/card.php', 1) . '?id='.$line->id.'&mainmenu=agefodd'),
 						'text' => dol_trunc($line->intitule, 50)
 				);
-				$ilya = (num_between_day($line->datef, dol_now(), 0));
-				$this->info_box_contents[$key][2] = array(
-						'td' => 'align="left"',
-						'text' => $langs->trans("AgfThereIsDay", $ilya)
-				);
+				if (!empty($line->datef)) {
+					$ilya = (num_between_day($line->datef, dol_now(), 0));
+					$this->info_box_contents[$key][2] = array(
+							'td' => 'align="left"',
+							'text' => $langs->trans("AgfThereIsDay", $ilya)
+					);
+				}
 			}
 		}
 	}

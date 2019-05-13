@@ -449,7 +449,7 @@ class Agsession extends CommonObject
 	 * @return int id of clone
 	 */
 	public function createFromClone($fromid) {
-		global $user, $langs;
+		global $user, $conf;
 
 		$error = 0;
 
@@ -1901,19 +1901,6 @@ class Agsession extends CommonObject
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
-		if (! $error) {
-			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
-			}
-		}
 
 		if (! $error) {
 			if (! empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
@@ -1969,6 +1956,13 @@ class Agsession extends CommonObject
 					$error ++;
 					$this->errors[] = "Error " . $this->db->lasterror();
 				}
+			}
+		}
+
+		if (! $error) {
+			if (! $notrigger) {
+				$result=$this->call_trigger('AGF_SESSION_UPDATE',$user);
+				if ($result < 0) { $error++; }
 			}
 		}
 
@@ -2347,7 +2341,7 @@ class Agsession extends CommonObject
 	 * @return string translated description
 	 */
 	public function getToolTip($type) {
-		global $conf;
+		global $langs;
 
 		$langs->load("admin");
 
@@ -2355,7 +2349,7 @@ class Agsession extends CommonObject
 		if (type == 'training') {
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
-			$agf_training = new Formation($db);
+			$agf_training = new Formation($this->db);
 			$agf_training->fetch($this->formid);
 			$s = $agf_training->getToolTip();
 		}
@@ -3681,13 +3675,13 @@ class Agsession extends CommonObject
 		print '</td>';
 		print '<td colspan="'.$colspan.'">';
 		if ($action=='editsession_status') {
-			print '<script type="text/javascript">
-						jQuery(document).ready(function () {
-							jQuery(function() {' . "\n";
-			print '				 $(\'html, body\').animate({scrollTop: $("#session_status").offset().top-20}, 500,\'easeInOutCubic\');';
-			print '			});
-					});
-					</script> ';
+			print '<script type="text/javascript">'. "\n";
+			print '			jQuery(document).ready(function () {'. "\n";
+			print '				jQuery(function() {' . "\n";
+			print '				 $(\'html, body\').animate({scrollTop: $("#session_status").offset().top-20}, 500,\'easeInOutCubic\');'. "\n";
+			print '			});'. "\n";
+			print '		});'. "\n";
+			print '</script> '. "\n";
 			require_once ('../class/html.formagefodd.class.php');
 			$formAgefodd = new FormAgefodd($this->db);
 			print '<form method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$this->id.'">';
@@ -3740,6 +3734,7 @@ class Agsession extends CommonObject
 			print '<td  width="20%" valign="top" style="border-bottom:0px;">' . $langs->trans("AgfCalendrier") . '</td>';
 			$old_date = 0;
 			$duree = 0;
+			$i=0;
 			foreach($calendrier->lines as $line_cal) {
 
 			    if ($line_cal->status == Agefodd_sesscalendar::STATUS_CANCELED) continue; // ne pas prendre en compte les créneaux annulés
@@ -3761,7 +3756,7 @@ class Agsession extends CommonObject
 					print dol_print_date($line_cal->heured, 'hour') . ' - ' . dol_print_date($line_cal->heuref, 'hour');
 				}
 
-				if (($line_cal->date_session < $this->dated) || ($line_cal->date_session > $this->datef)) {
+				if ((unixtojd($line_cal->date_session) < unixtojd($this->dated)) || (unixtojd($line_cal->date_session) > unixtojd($this->datef))) { // Il faut comparer sur le jour pas sur l'heure.
 					$alertday = true;
 				}
 
@@ -3995,7 +3990,7 @@ class Agsession extends CommonObject
 					$error ++;
 				}
 
-				$order->lines[0] = new OrderLine($db);
+				$order->lines[0] = new OrderLine($this->db);
 				$order->lines[0]->fk_product = $this->fk_product;
 
 				if (! empty($this->intitule_custo)) {
@@ -4163,7 +4158,7 @@ class Agsession extends CommonObject
 							$order_line->desc .= $this->avgpricedesc;
 							$result = $order_line->update(1);
 							if ($result < 0) {
-								$this->errors[] = $propal_line->error;
+								$this->errors[] = $order_line->error;
 								$error ++;
 							}
 						}
@@ -4267,7 +4262,7 @@ class Agsession extends CommonObject
 				return - 1;
 			}
 
-			$propal->lines[0] = new PropaleLigne($db);
+			$propal->lines[0] = new PropaleLigne($this->db);
 			$propal->lines[0]->fk_product = $this->fk_product;
 
 			if (! empty($this->intitule_custo)) {
@@ -4301,6 +4296,7 @@ class Agsession extends CommonObject
 			$session_trainee = new Agefodd_session_stagiaire($this->db);
 			$session_trainee->fetch_stagiaire_per_session($this->id, $socid, 1);
 			if (count($session_trainee->lines) > 0) {
+				$desc_trainee='';
 				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 					$desc_trainee .= "\n";
 					$nbtrainee = 0;
@@ -5099,8 +5095,8 @@ class Agsession extends CommonObject
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as agcal ON ag.rowid=agcal.fk_agefodd_session";
 				$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as agf_status ON (ag.status = agf_status.rowid  AND agf_status.code<>\'NOT\')';
 				$sql .= " WHERE ag.fk_session_place=" . $this->fk_session_place;
-				$sql .= " AND (ag.dated BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
-				$sql .= " AND (ag.datef BETWEEN '" . $this->db->idate($date_data['dated']) . "' AND '" . $this->db->idate($date_data['datef']) . "') ";
+				$sql .= " AND ((ag.datef >= '" . $this->db->idate($date_data['dated']) . "') ";
+				$sql .= " AND (ag.dated <= '" . $this->db->idate($date_data['datef']) . "') )";
 
 				dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
@@ -5447,7 +5443,7 @@ class Agsession extends CommonObject
 								$line->heuref, 'hour', 'tzserver', $langs);
 					} else {
 						$this->dthour_text .= ', ';
-						$this->dthour_text .= dol_print_date($line->heured, 'hour', 'tzserver', $langs) . ' - ' . dol_print_date($line->heuref, 'hour', 'tzserver', $langs);
+						$this->dthour_text .= dol_print_date($line->heured, 'hour', 'tzserver', $langs) . ' '.$langs->trans('AgfPDFConvocation5').' '. dol_print_date($line->heuref, 'hour', 'tzserver', $langs);
 					}
 					$old_date = $line->date_session;
 				}
@@ -5555,12 +5551,66 @@ class Agsession extends CommonObject
 			    $trainee = new Agefodd_stagiaire($db);
 			    $trainee->fetch($trainee_session->fk_stagiaire);
 			    $this->stagiaire = $trainee;
+			    
+			    /***************Gestion des heures du participant sur la session (Pour les documents par participant)**************/
+					
+				dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
+				dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
+		    	
+		    	if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar')) {
+		    		
+					$agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
+					$agefoddsessionstagiaireheures->fetch_all_by_session($this->id, $trainee->id);
+					
+					if(!empty($agefoddsessionstagiaireheures->lines)) {
+						$hPresenceTotal = 0;
+						foreach ($agefoddsessionstagiaireheures->lines as $heures) {
+							
+							$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
+							if($agefodd_sesscalendar->fetch($heures->fk_calendrier)>0) {
+								
+								if(!empty($heures->heures)) {
+									// start by converting to seconds
+									$seconds = floor($heures->heures * 3600);
+									// we're given hours, so let's get those the easy way
+									$hours = floor($heures->heures);
+									// since we've "calculated" hours, let's remove them from the seconds variable
+									$seconds -= $hours * 3600;
+									// calculate minutes left
+									$minutes = floor($seconds / 60);
+		    						
+									$hPresenceTotal+= $heures->heures;
+		    						
+									$this->stagiaire_presence_bloc.= (!empty($this->stagiaire_presence_bloc)?', ':'');
+									
+									// return the time formatted HH:MM
+									$this->stagiaire_presence_bloc.= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u",$minutes).')';
+								}
+							}
+						}
+						
+						// TOTAL DES HEURES PASSEES
+						// start by converting to seconds
+						$seconds = floor($hPresenceTotal * 3600);
+						// we're given hours, so let's get those the easy way
+						$hours = floor($hPresenceTotal);
+						// since we've "calculated" hours, let's remove them from the seconds variable
+						$seconds -= $hours * 3600;
+						// calculate minutes left
+						$minutes = floor($seconds / 60);
+						$this->stagiaire_presence_total= $hours."H".sprintf("%02u",$minutes);
+		    			
+					}
+				}
+			 	/******************************************************************************************************************/
+			    
 		    }
 		}
 
 		if(!empty($socid)) {
 			$document_thirdparty = new Societe($db);
 			$document_thirdparty->fetch($socid);
+			$document_thirdparty->address = nl2br($document_thirdparty->address);
 			$this->document_societe= $document_thirdparty;
 		}
 

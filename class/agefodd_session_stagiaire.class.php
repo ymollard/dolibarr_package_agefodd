@@ -289,6 +289,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				} else {
 					$line->date_birth = $this->db->jdate($obj->date_birth);
 				}
+				$line->datebirthformated = dol_print_date($line->date_birth,'%y.%m.%d');
 
 				$line->type = $obj->type;
 				$line->fk_socpeople_sign = $obj->fk_socpeople_sign;
@@ -393,6 +394,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 							} else {
 								$line->date_birth = $this->db->jdate($obj->date_birth);
 							}
+							$line->datebirthformated = dol_print_date($line->date_birth,'%y.%m.%d');
 
 							$line->type = $obj->type;
 							$line->fk_socpeople_sign = $obj->fk_socpeople_sign;
@@ -1130,6 +1132,7 @@ class AgfTraineeSessionLine extends CommonObject {
 	public $fk_soc_requester;
 	public $fk_socpeople_sign;
 	public $hour_foad;
+	public $datebirthformated;
 	public function __construct() {
 		return 1;
 	}

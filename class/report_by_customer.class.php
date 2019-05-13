@@ -296,7 +296,44 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 			return $result;
 		}
 
+        /**
+         * @var array $array_sub_total
+         *
+         * [1] = not used
+         * [2] = not used
+         * [3] = not used
+         * [4] = not used
+         * [5] = not used
+         * [6] = not used
+         * [7] = not used
+         * [8] = not used
+         * [9] = total durée session ( += $line->duree_session )
+         * [10] = not used
+         * [11] = nombre de participant ( count($traineelist) )
+         * [12] = not used
+         * [13] = not used
+         * [14] = not used
+         * [15] = not used
+         * [16] = not used
+         * [17] = not used
+         * [18] = total HT des lignes de facture ( += $invoice_lines->total_ht )
+         * [19] = somme des charges ( += $result => $result = $session_elem_fin_frais->get_charges_amount(...) )
+         * [20] = total HT des factures ( += $facture->total_ht )
+         * [21] = total TTC des factures ( += $facture->total_ttc )
+         * [22] = not used
+         * [23] = not used
+         */
 		$array_sub_total = array ();
+
+        /** @var array $array_total
+         *
+         * [9] = total durée session
+         * [11] = total nombre de participant
+         * [18] = total HT des lignes de facture
+         * [19] = somme des charges
+         * [20] = total HT des factures
+         * [21] = total TTC des factures
+         */
 		$array_total = array ();
 
 		$session = new Agsession($this->db);

@@ -60,8 +60,14 @@ if ($formid == - 1) {
 }
 
 $calendrier = new Agefodd_sesscalendar($db);
-if (! empty($id))
-	$calendrier->fetch($id);
+if (! empty($id)) {
+	$result = $calendrier->fetch_all($id);
+	if ($result<0) {
+		setEventMessages(null,$calendrier->errors,'errors');
+
+	}
+}
+
 
 $delete_calsel = GETPOST('deletecalsel_x', 'alpha');
 if (! empty($delete_calsel)) {
@@ -129,7 +135,7 @@ if ($action == 'edit' && $user->rights->agefodd->modifier) {
 					$agefodd_sesscalendar->fetch($fk_agefodd_session_calendrier);
 
 					$agf_cal = new Agefoddsessionformateurcalendrier($db);
-					$agf_cal->sessid = $calendrier->id;
+					$agf_cal->sessid = $agf->sessid;
 					$agf_cal->fk_agefodd_session_formateur = $agf->id;
 					$agf_cal->trainer_cost = 0; // price2num(GETPOST('trainer_cost', 'alpha'), 'MU');
 					$agf_cal->date_session = $agefodd_sesscalendar->date_session;
@@ -718,8 +724,7 @@ if (! empty($id)) {
 			print '</td>' . "\n";
 
 			print '</tr>' . "\n";
-
-			if ($calendrier->fetch_all($calendrier->id) > 0) {
+			if ($calendrier->fetch_all($id) > 0) {
 				print '<tr class="">' . "\n";
 				$colspan = 3; // name / status / actions
 				if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA))
@@ -741,6 +746,8 @@ if (! empty($id)) {
 				print '</td>' . "\n";
 
 				print '</tr>' . "\n";
+			} else {
+				setEventMessages(null, $calendrier->errors,'errors');
 			}
 		}
 

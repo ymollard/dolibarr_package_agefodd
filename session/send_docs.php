@@ -285,7 +285,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					$actionmsg .= $message;
 				}
 				$actionmsg2 = $langs->trans('ActionACCUEIL_SENTBYMAIL');
-			} elseif ($models == 'attestationendtraining') {
+			} elseif ($models == 'attestationendtraining' || $models == 'attestationpresencetraining') {
 				if (empty($subject))
 					$langs->transnoentities('AgfAttestation') . ' ' . $object->ref;
 				$actiontypecode = 'AC_AGF_ATTES';
@@ -508,11 +508,13 @@ if (! empty($id)) {
 							$file_array[]=$file;
 						}
 					}
-					$filename = 'conseils_' . $agf->id . '.pdf';
-					$file = $conf->agefodd->dir_output . '/' . $filename;
-					if (file_exists($file)) {
-						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
-						$file_array[]=$file;
+					if (empty($conf->global->AGF_MERGE_ADVISE_AND_CONVOC)) {
+						$filename = 'conseils_' . $agf->id . '.pdf';
+						$file = $conf->agefodd->dir_output . '/' . $filename;
+						if (file_exists($file)) {
+							$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+							$file_array[] = $file;
+						}
 					}
 
 					$filename = 'fiche_presence_' . $agf->id . '.pdf';
