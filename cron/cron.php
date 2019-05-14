@@ -109,6 +109,7 @@ class cron_agefodd
                                         complete_substitutions_array($substitutionarray, $langs, $agsession);
 
 
+
                                         $thisSubstitutionarray = $substitutionarray;
 
                                         $thisSubstitutionarray['__agfsendall_nom__'] = $stagiaire->nom;
@@ -116,6 +117,17 @@ class cron_agefodd
                                         $thisSubstitutionarray['__agfsendall_civilite__'] = $stagiaire->civilite;
                                         $thisSubstitutionarray['__agfsendall_socname__'] = $stagiaire->socname;
                                         $thisSubstitutionarray['__agfsendall_email__'] = $stagiaire->email;
+
+                                        // Tableau des substitutions
+                                        if (! empty($agsession->intitule_custo)) {
+                                            $thisSubstitutionarray['__FORMINTITULE__'] = $agsession->intitule_custo;
+                                        } else {
+                                            $thisSubstitutionarray['__FORMINTITULE__'] = $agsession->formintitule;
+                                        }
+
+                                        $date_conv = $agsession->libSessionDate('daytext');
+                                        $thisSubstitutionarray['__FORMDATESESSION__'] = $date_conv;
+
 
                                         $sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
                                         $sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
