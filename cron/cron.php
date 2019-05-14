@@ -26,9 +26,14 @@ class cron_agefodd
 	public function sendAgendaToTrainee($fk_mailModel = 0, $days = 1)
 	{
         global $conf, $langs, $user;
+        require_once (DOL_DOCUMENT_ROOT .'/core/class/CMailFile.class.php');
         $message = '';
 
         $days = intval($days);
+
+        if(empty($fk_mailModel) && !empty($conf->global->AGF_SENDAGENDATOTRAINEE_DEFAULT_MAILMODEL)) {
+            $fk_mailModel = $conf->global->AGF_SENDAGENDATOTRAINEE_DEFAULT_MAILMODEL;
+        }
 
         $mailTpl = agf_getMailTemplate($fk_mailModel);
         if($mailTpl < 1){
@@ -56,24 +61,23 @@ class cron_agefodd
 
         $sended = 0;
         $errors = 0;
+        $disabledMContact = 0;
 
 
-        if (!empty($resql) && $this->db->num_rows($resql) > 0) {
-            while ($obj = $this->db->fetch_object($resql)){
+        if (!empty($resql) && $this->db->num_rows($resql) > 0)
+        {
+            while ($obj = $this->db->fetch_object($resql))
+            {
                 $agsession = new Agsession($this->db);
                 if($agsession->fetch($obj->rowid))
                 {
                     $agsession->fetch_optionals();
 
                     // GET TRAINEES
-                    // var_dump($agsession);
-                    // $agsession->intitule_custo
-                    // $agsession->formintitule
-                    // $agsession->ref
 
                     $sql = "SELECT rowid ";
                     $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ss ";
-                    $sql.= " WHERE  ss.fk_session_agefodd = ".$agsession->id . ' AND status_in_session IN (1) ' ;
+                    $sql.= " WHERE  ss.fk_session_agefodd = ".$agsession->id . ' AND status_in_session IN (2) ' ;
 
                     $resqlStag = $this->db->query($sql);
 
@@ -88,6 +92,7 @@ class cron_agefodd
                                 if($stagiaire->fetch($agsessionTrainee->fk_stagiaire) > 0)
                                 {
                                     if(!empty($stagiaire->disable_auto_mail)){
+                                        $disabledMContact ++;
                                         continue;
                                     }
                                     else{
@@ -132,23 +137,34 @@ class cron_agefodd
 
                                     }
                                 }
+                                else{
+                                    $message.='error fetch stagiaire';
+                                }
+                            }
+                            else{
+                                $message.='error fetch agsessionTrainee';
                             }
                         }
                     }
                     else{
                         // nothing to send
                         if (empty($resql)) dol_print_error($this->db);
-
+                        $message.='No email to send ';
                     }
 
                 }
+                else{
+                    $message.='error fetch agefodd';
+                }
             }
 
-            $message.=  $langs->trans('Sended').' : '.$sended.' | '.$langs->trans('bcls_sendEmailError').' : '.$errors;
+            $message.= ' | ' . $langs->trans('Sended').' : '.$sended;
+            $message.= ' | ' . $langs->trans('agfcron_sendEmailError').' : '.$errors;
+            $message.= ' | disabled contact : '.$disabledMContact;
         }
         else{
             if (empty($resql)) dol_print_error($this->db);
-            $message.=  $langs->trans('AgfNoEmailToSend');
+            $message.=  $langs->trans('AgfNoSessionToSend');
         }
 
         return $message;

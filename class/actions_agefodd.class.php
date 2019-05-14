@@ -724,6 +724,7 @@ class ActionsAgefodd
 		$this->results['attestationendtraining_trainee'] = $langs->trans('AgfMailToSendAttestationEndTrainingParticipants');
 		$this->results['agf_trainee'] = $langs->trans('AgfMailToSendTrainee');
 		$this->results['agf_trainer'] = $langs->trans('AgfMailToSendTrainer');
+        $this->results['cron_session'] = $langs->trans('AgfMailToSendCronSession');
 
 		return 0;
 	}
