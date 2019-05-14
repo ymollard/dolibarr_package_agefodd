@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.3.10';
+		$this->version = '4.3.11';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -85,6 +85,7 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/report/ca",
 		        "/agefodd/report/bycust/",
 		        "/agefodd/report/calendarbycust/",
+		        "/agefodd/report/commercial",
 				"/agefodd/background"
 		);
 		$r = 0;
@@ -2453,6 +2454,21 @@ class modAgefodd extends DolibarrModules
 		    'perms' => '$user->rights->agefodd->report',
 		    'target' => '',
 		    'user' => 0
+		);
+
+		$r ++;
+		$this->menu [$r] = array (
+			'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+			'type' => 'left',
+			'titre' => 'AgfMenuReportCommercial',
+			'leftmenu' => 'AgfMenuReportCommercial',
+			'url' => '/agefodd/report/report_commercial.php',
+			'langs' => 'agefodd@agefodd',
+			'position' => 900 + $r,
+			'enabled' => '$user->rights->agefodd->report',
+			'perms' => '$user->rights->agefodd->report',
+			'target' => '',
+			'user' => 0
 		);
 
 		$r ++;
