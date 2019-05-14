@@ -85,6 +85,7 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/report/ca",
 		        "/agefodd/report/bycust/",
 		        "/agefodd/report/calendarbycust/",
+		        "/agefodd/report/commercial",
 				"/agefodd/background"
 		);
 		$r = 0;
@@ -2453,6 +2454,21 @@ class modAgefodd extends DolibarrModules
 		    'perms' => '$user->rights->agefodd->report',
 		    'target' => '',
 		    'user' => 0
+		);
+
+		$r ++;
+		$this->menu [$r] = array (
+			'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+			'type' => 'left',
+			'titre' => 'AgfMenuReportCommercial',
+			'leftmenu' => 'AgfMenuReportCommercial',
+			'url' => '/agefodd/report/report_commercial.php',
+			'langs' => 'agefodd@agefodd',
+			'position' => 900 + $r,
+			'enabled' => '$user->rights->agefodd->report',
+			'perms' => '$user->rights->agefodd->report',
+			'target' => '',
+			'user' => 0
 		);
 
 		$r ++;
