@@ -68,6 +68,17 @@ if ($reshook < 0)
 	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 
+//Select mail models is same action as presend
+if (GETPOST('modelselected')) $action = 'presend';
+
+// Cansel action
+if (isset($_POST['cancel'])) $action = '';
+
+
+$form = new Form($db);
+$formcompany = new FormCompany($db);
+$formAgefodd = new FormAgefodd($db);
+
 /*
  * Actions delete
 */
@@ -118,6 +129,8 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			$agf->tel2 = GETPOST('tel2', 'alpha');
 			$agf->mail = GETPOST('mail', 'alpha');
 			$agf->note = GETPOST('note', 'alpha');
+			$agf->disable_auto_mail = GETPOST('disable_auto_mail', 'int');
+
 			$agf->date_birth = dol_mktime(0, 0, 0, GETPOST('datebirthmonth', 'int'), GETPOST('datebirthday', 'int'), GETPOST('datebirthyear', 'int'));
 			if (! empty($fk_socpeople))
 				$agf->fk_socpeople = $fk_socpeople;
@@ -220,6 +233,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				$agf->note = $note;
 				$agf->date_birth = $date_birth;
 				$agf->place_birth = $place_birth;
+				$agf->disable_auto_mail = GETPOST('disable_auto_mail', 'int');
 
 				// Création tiers demandé
 				if ($create_thirdparty > 0) {
@@ -358,20 +372,27 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 	}
 }
 
+
+if (!empty($id) && $action == 'send')
+{
+    $object = new Agefodd_stagiaire($db);
+    $result = $object->fetch($id);
+    if($result>0){
+        // Actions to send emails
+        $actiontypecode = 'AC_OTH_AUTO';
+        $trigger_name = 'AGFTRAINEE_SENTBYMAIL';
+        $autocopy = 'MAIN_MAIL_AUTOCOPY_AGFTRAINEE_TO';
+        $trackid = 'agftrainee' . $object->id;
+        include __DIR__.'/../actions_sendmails.inc.php';
+    }
+
+}
+
 /*
  * View
 */
-$title = ($action == 'nfcontact' || $action == 'create' ? $langs->trans("AgfMenuActStagiaireNew") : $langs->trans("AgfStagiaireDetail"));
-
-$form = new Form($db);
-$formcompany = new FormCompany($db);
-$formAgefodd = new FormAgefodd($db);
-
-/*
- * Action create
-*/
 if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
-    llxHeader('', $title);
+	llxHeader('', $title);
 	print "\n" . '<script type="text/javascript">
 		$(document).ready(function () {
 			$("input[type=radio][name=create_thirdparty]").change(function() {
@@ -442,6 +463,8 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '<table class="border" width="100%">';
 
 	if (! $user->rights->agefodd->session->trainer) {
+
+		$formAgefodd = new FormAgefodd($db);
 		print '<tr><td width="20%">' . $langs->trans("AgfContactImportAsStagiaire") . '</td>';
 		print '<td>';
 
@@ -460,7 +483,6 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		$formAgefodd->select_contacts_custom(0, '', 'contact', 1, $exclude_array, '', 1, '', 1);
 		print '</td></tr>';
 	}
-
 	print '</table>';
 	print '</div>';
 
@@ -503,15 +525,15 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	// Zip / Town
 	print '<tr class="create_thirdparty_block"><td>' . $langs->trans('Zip') . '</td><td>';
 	print $formcompany->select_ziptown($object->zip, 'zipcode', array (
-			'town',
-			'selectcountry_id',
-			'departement_id'
+		'town',
+		'selectcountry_id',
+		'departement_id'
 	), 6);
 	print '</td><td>' . $langs->trans('Town') . '</td><td>';
 	print $formcompany->select_ziptown($object->town, 'town', array (
-			'zipcode',
-			'selectcountry_id',
-			'departement_id'
+		'zipcode',
+		'selectcountry_id',
+		'departement_id'
 	));
 	print '</td></tr>';
 
@@ -567,6 +589,24 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '<tr id="tr_note"><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td colspan="3"><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
 
+	include_once DOL_DOCUMENT_ROOT .'/cron/class/cronjob.class.php';
+	$status=3; // 3 is not a status so we select all
+	$filtercron = array(
+		'jobtype' => 'method',
+		'classesname' => 'agefodd/cron/cron.php',
+		'objectname' => 'cron_agefodd',
+		'module_name' => 'agefodd',
+		'methodename' => 'sendAgendaToTrainee',
+	);
+	$cronJob = new Cronjob($db);
+	$cronJob->fetch_all('DESC', 't.rowid',0, 0, $status, $filtercron);
+	if(!empty($cronJob->lines))
+	{
+		print '<tr><td>' . $form->textwithtooltip( $langs->trans("AgfSendAgendaMail") ,$langs->trans("AgfSendAgendaMailHelp"),2,1,img_help(1,'')). '</td>';
+		$statutarray=array('0' => $langs->trans("Yes"), '1' => $langs->trans("No"));
+		$postDisable_auto_mail = GETPOST('disable_auto_mail');
+		print '<td>' . $form->selectarray('disable_auto_mail',$statutarray,!empty($postDisable_auto_mail)?$postDisable_auto_mail:'') . '</td></tr>';
+	}
 
 	if (! empty($extrafields->attribute_label)) {
 		print $agf->showOptionals($extrafields, 'edit');
@@ -590,8 +630,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	}
 
 	$agf = new Agsession($db);
-
 	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter);
+	if ($resql<0) {
+		setEventMessages(null,$agf->errors,'errors');
+	}
 	$sessions = array ();
 	foreach ( $agf->lines as $line ) {
 		$sessions[$line->rowid] = $line->ref_interne . ' - ' . $line->intitule . ' - ' . dol_print_date($line->dated, 'daytext');
@@ -639,7 +681,9 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</td></tr>';
 	print '</table>';
 	print '</form>';
-} else {
+}
+else
+{
 	// Affichage de la fiche "stagiaire"
 	if ($id) {
 		$agf = new Agefodd_stagiaire($db);
@@ -648,8 +692,8 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		$head = trainee_prepare_head($agf);
 
 		if ($result > 0) {
-		    llxHeader('', $title);
-		    dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
+			llxHeader('', $title);
+			dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
 
 			// Affichage en mode "édition"
 			if ($action == 'edit') {
@@ -760,6 +804,28 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 					$notes = $langs->trans("AgfUndefinedNote");
 				print '<td><textarea name="note" rows="3" cols="0" class="flat" style="width:360px;">' . stripslashes($agf->note) . '</textarea></td></tr>';
 
+
+				include_once DOL_DOCUMENT_ROOT .'/cron/class/cronjob.class.php';
+				$status=3; // 3 is not a status so we select all
+				$filter = array(
+					'jobtype' => 'method',
+					'classesname' => 'agefodd/cron/cron.php',
+					'objectname' => 'cron_agefodd',
+					'module_name' => 'agefodd',
+					'methodename' => 'sendAgendaToTrainee',
+				);
+				$cronJob = new Cronjob($db);
+				$cronJob->fetch_all('DESC', 't.rowid',0, 0, $status, $filter);
+
+				if(!empty($cronJob->lines))
+				{
+					print '<tr><td>' . $form->textwithtooltip( $langs->trans("AgfSendAgendaMail") ,$langs->trans("AgfSendAgendaMailHelp"),2,1,img_help(1,'')). '</td>';
+					$statutarray=array('0' => $langs->trans("Yes"), '1' => $langs->trans("No"));
+					$postDisable_auto_mail = GETPOST('disable_auto_mail');
+					print '<td>' . $form->selectarray('disable_auto_mail',$statutarray,!empty($postDisable_auto_mail)?$postDisable_auto_mail:$agf->disable_auto_mail) . '</td></tr>';
+				}
+
+
 				if (! empty($extrafields->attribute_label)) {
 					print $agf->showOptionals($extrafields, 'edit');
 				}
@@ -781,8 +847,8 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 			} else {
 				// Display in "view" mode
 
-			    dol_agefodd_banner_tab($agf, 'id');
-			    print '<div class="underbanner clearboth"></div>';
+				dol_agefodd_banner_tab($agf, 'id');
+				print '<div class="underbanner clearboth"></div>';
 
 				/*
 				* Confirmation de la suppression
@@ -835,11 +901,29 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 					$notes = $langs->trans("AgfUndefinedNote");
 				print '<td>' . stripslashes($notes) . '</td></tr>';
 
+				include_once DOL_DOCUMENT_ROOT .'/cron/class/cronjob.class.php';
+				$status=3; // 3 is not a status so we select all
+				$filter = array(
+					'jobtype' => 'method',
+					'classesname' => 'agefodd/cron/cron.php',
+					'objectname' => 'cron_agefodd',
+					'module_name' => 'agefodd',
+					'methodename' => 'sendAgendaToTrainee',
+				);
+				$cronJob = new Cronjob($db);
+				$cronJob->fetch_all('DESC', 't.rowid',0, 0, $status, $filter);
+
+				if(!empty($cronJob->lines))
+				{
+					print '<tr><td>' . $form->textwithtooltip( $langs->trans("AgfSendAgendaMail") ,$langs->trans("AgfSendAgendaMailHelp"),2,1,img_help(1,'')). '</td>';
+					print '<td>' . (!empty($agf->disable_auto_mail)?$langs->trans("No"):$langs->trans("Yes")) . '</td></tr>';
+				}
+
 				if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
-				    require_once ('../class/agefodd_session_stagiaire_heures.class.php');
-				    $agfssh = new Agefoddsessionstagiaireheures($db);
-				    print '<tr><td>' . $langs->trans('AgfTraineeHours') . '</td>';
-				    print '<td>' . $agfssh->heures_stagiaire_totales($agf->id) . ' h</td></tr>';
+					require_once ('../class/agefodd_session_stagiaire_heures.class.php');
+					$agfssh = new Agefoddsessionstagiaireheures($db);
+					print '<tr><td>' . $langs->trans('AgfTraineeHours') . '</td>';
+					print '<td>' . $agfssh->heures_stagiaire_totales($agf->id) . ' h</td></tr>';
 				}
 
 				if (! empty($extrafields->attribute_label)) {
@@ -858,18 +942,29 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 			print '<div class="tabsAction">';
 
-			if ($action != 'create' && $action != 'edit' && $action != 'nfcontact') {
-			    if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
-			        print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
-			    } else {
-			        print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
-			    }
-			    if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
-			        print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
-			    } else {
-			        print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
-			    }
+			if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $action != 'presend') {
+
+				// Send
+				if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
+					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $agf->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a></div>';
+				} else {
+					print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('SendMail') . '</a></div>';
+				}
+
+				if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
+					print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
+				} else {
+					print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Modify') . '</a>';
+				}
+
+				if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
+					print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
+				} else {
+					print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
+				}
 			}
+
+
 
 		} else {
 			setEventMessage($agf->error, 'errors');
@@ -878,12 +973,30 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		}
 	}
 }
+$title = ($action == 'nfcontact' || $action == 'create' ? $langs->trans("AgfMenuActStagiaireNew") : $langs->trans("AgfStagiaireDetail"));
+
+
+/*
+ * Action create
+*/
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $agf, $action); // Note that $action and $object may have been modified by hook
 print $hookmanager->resPrint;
 
 print '</div>';
+
+
+if ($id) {
+
+	// Presend form
+	$modelmail = 'agf_trainee';
+	$defaulttopic = 'AgfSendEmailTrainee';
+	$diroutput = $conf->agefodd->multidir_output[$agf->entity];
+	$trackid = 'agftrainee' . $agf->id;
+
+	include __DIR__ . '/../tpl/card_presend.tpl.php';
+}
 
 llxFooter();
 $db->close();

@@ -262,6 +262,15 @@ function session_prepare_head($object, $showconv = 0) {
 	$head [$h] [2] = 'info';
 	$h ++;
 
+
+    if(!empty($conf->questionnaire->enabled)){
+        $langs->load("questionnaire@questionnaire");
+        $head [$h] [0] = dol_buildpath('/agefodd/session/questionnaire.php', 1) . '?id=' . $id;
+        $head [$h] [1] = $langs->trans("agfQuestionnaireTabTitle");
+        $head [$h] [2] = 'survey';
+        $h ++;
+    }
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_session');
 
 	return $head;
@@ -331,6 +340,14 @@ function trainee_prepare_head($object, $showcursus = 0) {
 	$head [$h] [1] = $langs->trans("Info");
 	$head [$h] [2] = 'info';
 	$h ++;
+
+	if(!empty($conf->sendinblue->enabled))
+	{
+		$head [$h] [0] = dol_buildpath('/agefodd/sendinblue/trainee_tab.php', 1) . '?id=' . $object->id;
+		$head [$h] [1] = $langs->trans("Sendinblue");
+		$head [$h] [2] = 'seninblue';
+		$h ++;
+	}
 
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_trainee');
 

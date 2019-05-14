@@ -2663,6 +2663,7 @@ class Agsession extends CommonObject
 			return $nbsess;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 			return - 1;
 		}
