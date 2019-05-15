@@ -49,7 +49,7 @@ llxHeader('', $langs->trans("AgfContactFiche"));
 $agf = new Agefodd_contact($db);
 $agf->info($id);
 
-$head = contact_prepare_head($agf);
+$head = agefodd_contact_prepare_head($agf);
 
 dol_fiche_head($head, 'info', $langs->trans("AgfContactFiche"), 0, 'user');
 

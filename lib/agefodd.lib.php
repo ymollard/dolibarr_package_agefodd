@@ -404,7 +404,8 @@ function trainer_prepare_head($object) {
  * @param object $object contact
  * @return array head table of tabs
  */
-function contact_prepare_head($object) {
+
+function agefodd_contact_prepare_head($object) {
 	global $langs, $conf, $user;
 
 	$h = 0;
