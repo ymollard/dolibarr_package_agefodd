@@ -179,7 +179,9 @@ class cron_agefodd
             $message.=  $langs->trans('AgfNoSessionToSend');
         }
 
-        return $message;
+		$this->output = $message;
+
+        return $errors;
 	}
 
 }
