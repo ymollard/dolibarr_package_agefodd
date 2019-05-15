@@ -161,7 +161,11 @@ class Agefodd_stagiaire extends CommonObject {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_stagiaire");
 			if (! $notrigger) {
 				 // Call triggers
-				 include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+                 if(is_file(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php")){
+                     include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+                 }else{ // For backward compatibility
+                     include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+                 }
 				 $interface=new Interfaces($this->db);
 				 $result=$interface->run_triggers('AGEFODD_STAGIAIRE_CREATE',$this,$user,$langs,$conf);
 				 if ($result < 0) { $error++; $this->errors=$interface->errors; }
@@ -575,7 +579,11 @@ class Agefodd_stagiaire extends CommonObject {
 		if (! $error) {
 			if (! $notrigger) {
 				 // Call triggers
-				 include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+                 if(is_file(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php")){
+                     include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+                 }else{ // For backward compatibility
+                     include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+                 }
 				 $interface=new Interfaces($this->db);
 				 $result=$interface->run_triggers('AGEFODD_STAGIAIRE_MODIFY',$this,$user,$langs,$conf);
 				 if ($result < 0) { $error++; $this->errors=$interface->errors; }
