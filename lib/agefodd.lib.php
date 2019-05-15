@@ -1949,7 +1949,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
         $morehtmlstatus.='<div align="right">'.$object->getLibStatut(1)."<br>";
 
-        require_once ('../class/agefodd_sessadm.class.php');
+        require_once (__DIR__.'/../class/agefodd_sessadm.class.php');
         $sess_adm = new Agefodd_sessadm($db);
         $result = $sess_adm->fetch_all($object->id);
 
