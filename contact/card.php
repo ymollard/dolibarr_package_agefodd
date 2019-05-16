@@ -162,7 +162,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$result = $agf->fetch($id, 'peopleid');
 
 		if ($result > 0) {
-			$head = contact_prepare_head($agf);
+			$head = agefodd_contact_prepare_head($agf);
 
 			dol_fiche_head($head, 'card', $langs->trans("AgfContactFiche"), 0, 'user');
 

@@ -404,7 +404,8 @@ function trainer_prepare_head($object) {
  * @param object $object contact
  * @return array head table of tabs
  */
-function contact_prepare_head($object) {
+
+function agefodd_contact_prepare_head($object) {
 	global $langs, $conf, $user;
 
 	$h = 0;
@@ -1948,7 +1949,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
         $morehtmlstatus.='<div align="right">'.$object->getLibStatut(1)."<br>";
 
-        require_once ('../class/agefodd_sessadm.class.php');
+        require_once (__DIR__.'/../class/agefodd_sessadm.class.php');
         $sess_adm = new Agefodd_sessadm($db);
         $result = $sess_adm->fetch_all($object->id);
 
