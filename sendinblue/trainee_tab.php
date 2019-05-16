@@ -133,7 +133,8 @@ $head = trainee_prepare_head($object);
 $title = $langs->trans("AgfStagiaireDetail");
 dol_fiche_head($head, 'seninblue', $title, 0, 'contact');
 
-
+dol_agefodd_banner_tab($object, 'id');
+print '<div class="underbanner clearboth"></div>';
 
 /*
  * SendinBlue list subscription

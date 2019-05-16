@@ -2159,3 +2159,110 @@ function displayProgress($percentProgress = 0, $title = '', $insideDisplay = "",
 
     return $out;
 }
+
+
+/**
+ * Check if string is a correct email address
+ * @param $email
+ * @return bool
+ */
+function agf_isEmail($email)
+{
+    return empty($email) OR preg_match('/^[a-z0-9!#$%&amp;\'*+\/=?^`{}|~_-]+[.a-z0-9!#$%&amp;\'*+\/=?^`{}|~_-]*@[a-z0-9]+[._a-z0-9-]*\.[a-z0-9]+$/ui', $email);
+}
+
+
+/**
+ * get template model of mail
+ * @param $id
+ * @return int|Object
+ */
+function agf_getMailTemplate($id)
+{
+    global $db;
+
+    $sql="SELECT rowid as rowid, label, type_template, private, position, topic, content_lines, content, active";
+    $sql.=" FROM ".MAIN_DB_PREFIX."c_email_templates";
+    $sql.=" WHERE entity IN (".getEntity('email_template').")";
+    $sql.=" AND rowid = ".intval($id);
+
+
+    $result=$db->query($sql);
+    if ($result)
+    {
+        $num = $db->num_rows($result);
+        if($num > 0)
+        {
+            return $db->fetch_object($result);
+        }
+    }
+    else{
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * Get all session contacts simple ex: for mailling
+ * @param Agsession $agsession
+ * @return array
+ */
+function get_agf_session_mails_infos(Agsession $agsession){
+    global $db;
+
+    if(empty($agsession->id))
+    {
+        return 0;
+    }
+
+    $emailInfos= array();
+
+    // Recupération des stagiaires
+    dol_include_once('agefodd/class/agefodd_session_stagiaire.class.php');
+
+    $session_stagiaire = new Agefodd_session_stagiaire($db);
+    $session_stagiaire->fetch_stagiaire_per_session($agsession->id);
+
+    if(!empty($session_stagiaire->lines)){
+        foreach($session_stagiaire->lines as $sessionLine){
+
+            $infos = new stdClass();
+            $infos->nom = $sessionLine->nom;
+            $infos->prenom = $sessionLine->prenom;
+            $infos->civilite= $sessionLine->civilitel;
+            $infos->socname = $sessionLine->socname;
+            $infos->email = $sessionLine->email;
+
+            $emailInfos[] = $infos;
+        }
+    }
+
+
+    // Recupération des stagiaires
+    dol_include_once('agefodd/class/agefodd_session_formateur.class.php');
+
+    $session_formateur = new Agefodd_session_formateur($db);
+    $session_formateur->fetch_formateur_per_session($agsession->id);
+
+    if(!empty($session_formateur->lines)){
+        foreach($session_formateur->lines as $sessionLine){
+
+
+            $infos = new stdClass();
+            $infos->nom = $sessionLine->name_user;
+            $infos->prenom = $sessionLine->firstname_user;
+            $infos->civilite= '';
+            $infos->socname = '';
+            $infos->email = $sessionLine->email;
+
+            $emailInfos[] = $infos;
+
+        }
+    }
+
+
+    return $emailInfos;
+
+}
