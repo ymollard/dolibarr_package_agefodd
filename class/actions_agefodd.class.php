@@ -1079,4 +1079,91 @@ class ActionsAgefodd
 			return 1;
 		}
 	}
+
+
+	function updateFullcalendarEvents($parameters, &$object, &$action, HookManager $hookmanager)
+	{
+		$TContexts = explode(':', $parameters['context']);
+
+		if(in_array('agenda', $TContexts))
+		{
+			global $langs;
+
+			$langs->load('agefodd@agefodd');
+
+			dol_include_once('/agefodd/class/agsession.class.php');
+			dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+
+			foreach($object as &$event)
+			{
+				if($event['object']->code != 'AC_AGF_SESS' && $event['object']->elementtype != 'agefodd_session')
+				{
+					continue;
+				}
+
+				$session = new Agsession($event['object']->db);
+				$session->fetch($event['object']->elementid);
+
+				if($session->id <= 0)
+				{
+					continue;
+				}
+
+				$formateurs = new Agefodd_session_formateur($session->db);
+				$nbform = $formateurs->fetch_formateur_per_session($session->id);
+
+				if($nbform > 0)
+				{
+					$event['title'] .= "\n\n" . $nbform  . ' ' . $langs->trans('AgfTrainingTrainer');
+
+					if($nbform == 1)
+					{
+						$event['title'] .= ' : ' . strtoupper($formateurs->lines[0]->lastname) . ' ' . ucfirst($formateurs->lines[0]->firstname);
+					}
+					else
+					{
+						$event['note'] .= '<br /><br />' . $langs->trans('AgfFormateur') . ' :';
+
+						for($i = 0; $i < $nbform; $i++)
+						{
+							$event['note'] .= '<br /><a href="' . dol_buildpath('/agefodd/trainer/card.php', 1) . '?id=' . $formateurs->lines[$i]->formid . '">';
+							$event['note'] .= img_object($langs->trans("ShowContact"), "contact") . ' ';
+							$event['note'] .= strtoupper($formateurs->lines[$i]->lastname) . ' ' . ucfirst($formateurs->lines[$i]->firstname) . '</a>';
+						}
+					}
+				}
+
+
+				$stagiaires = new Agefodd_session_stagiaire($session->db);
+				$resulttrainee = $stagiaires->fetch_stagiaire_per_session($session->id);
+
+
+				$nbstag = count($stagiaires->lines);
+
+				if ($nbstag > 0)
+				{
+					if($nbstag == 1)
+					{
+						$event['title'] .= "\n\n" . $nbstag . ' ' . $langs->trans('AgfParticipant');
+						$event['title'] .= ' : ' . strtoupper($stagiaires->lines[0]->nom) . ' ' . ucfirst($stagiaires->lines[0]->prenom);
+					}
+					else
+					{
+						$event['title'] .= "\n\n" . $nbstag . ' ' . $langs->trans('AgfParticipants');
+
+						$event['note'] .= '<br /><br />' . $langs->trans('AgfParticipants') . ' :';
+
+						for($i = 0; $i < $nbstag; $i++)
+						{
+							$event['note'] .= '<br /><a href="' . dol_buildpath('/agefodd/trainee/card.php', 1) . '?id=' . $stagiaires->lines[$i]->id . '">';
+							$event['note'] .= img_object($langs->trans("ShowContact"), "contact") . ' ';
+							$event['note'] .= strtoupper($stagiaires->lines[$i]->nom) . ' ' . ucfirst($stagiaires->lines[$i]->prenom) . '</a>';
+						}
+					}
+
+				}
+			}
+		}
+	}
 }
