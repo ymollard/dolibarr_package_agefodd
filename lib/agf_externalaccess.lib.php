@@ -24,7 +24,7 @@
  */
 function getMenuAgefoddExternalAccess()
 {
-	global $langs;
+	global $langs, $user;
 
 	$context = Context::getInstance();
 	$html = '<section id="agefodd">
@@ -42,6 +42,13 @@ function getMenuAgefoddExternalAccess()
 	$link = $context->getRootUrl('agefodd_session_list');
 	$html.= getService($langs->trans('AgfMenuSess'),'fa-hourglass',$link);
 	// TODO faire les getService() pour avoir accés à d'autres objets d'agefodd (pour plus tard)
+
+	if($user->rights->agefodd->external_trainer_agenda){
+		$link = $context->getRootUrl('agefodd_trainer_agenda');
+		$html.= getService($langs->trans('AgfMenuAgendaFormateur'),'fa-calendar',$link);
+	}
+
+
 
 	$html.= '</div>
 			</div>
@@ -941,3 +948,127 @@ function validateFormateur($context)
     else return true;
 }
 
+function getPageViewAgendaFormateurExternalAccess(){
+
+	global $conf;
+
+	$context = Context::getInstance();
+
+	$html = '<div class="container"><div class="container-fluid">';
+	$html.= '<div id="agf-agenda-formation" ></div>';
+	$html.= '</div></div>';
+
+	$html.= '<link href="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/core/main.css" rel="stylesheet">';
+	$html.= '<link href="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/daygrid/main.css" rel="stylesheet">';
+	$html.= '<link href="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/timegrid/main.css" rel="stylesheet"" />';
+	$html.= '<link href="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/list/main.css" rel="stylesheet"" />';
+
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/rrule/rrule.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/core/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/interaction/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/daygrid/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/timegrid/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/list/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/rrule/main.js"></script>';
+
+
+	$html.= '<script type="text/javascript">
+
+	fullcalendarscheduler_interface = "'.$context->getRootUrl().'script/interface.php";
+	fullcalendarscheduler_initialLangCode = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_LOCALE_LANG) ? $conf->global->FULLCALENDARSCHEDULER_LOCALE_LANG : 'fr').'";
+	fullcalendarscheduler_snapDuration = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_SNAP_DURATION) ? $conf->global->FULLCALENDARSCHEDULER_SNAP_DURATION : '00:15:00').'";
+	fullcalendarscheduler_aspectRatio = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_ASPECT_RATIO) ? $conf->global->FULLCALENDARSCHEDULER_ASPECT_RATIO : '1.6').'";
+	fullcalendarscheduler_minTime = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_MIN_TIME) ? $conf->global->FULLCALENDARSCHEDULER_MIN_TIME : '00:00').'";
+	fullcalendarscheduler_maxTime = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_MAX_TIME) ? $conf->global->FULLCALENDARSCHEDULER_MAX_TIME : '23:00').'";
+
+
+	fullcalendar_scheduler_resources_allowed = [];
+
+	fullcalendar_scheduler_businessHours_week_start = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_START) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_START : '08:00').'";
+	fullcalendar_scheduler_businessHours_week_end = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_END) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_END : '18:00').'";
+
+	fullcalendar_scheduler_businessHours_weekend_start = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START : '10:00').'";
+	fullcalendar_scheduler_businessHours_weekend_end = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END : '16:00').'";
+
+
+
+
+		document.addEventListener(\'DOMContentLoaded\', function() {
+    var calendarEl = document.getElementById(\'agf-agenda-formation\');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: [ \'interaction\', \'dayGrid\', \'timeGrid\', \'list\', \'rrule\' ],
+      defaultDate: \'2019-04-12\',
+      header: {
+        left: \'prev,next today\',
+        center: \'title\',
+        right: \'dayGridMonth,timeGridWeek,timeGridDay,listMonth\'
+      },
+      editable: true,
+      locale: fullcalendarscheduler_initialLangCode,
+      eventLimit: true, // allow "more" link when too many events
+      events: [
+        {
+          title: \'All Day Event\',
+          start: \'2019-04-01\'
+        },
+        {
+          title: \'Long Event\',
+          start: \'2019-04-07\',
+          end: \'2019-04-10\'
+        },
+        {
+          groupId: 999,
+          title: \'Repeating Event\',
+          start: \'2019-04-09T16:00:00\'
+        },
+        {
+          groupId: 999,
+          title: \'Repeating Event\',
+          start: \'2019-04-16T16:00:00\'
+        },
+        {
+          title: \'Conference\',
+          start: \'2019-04-11\',
+          end: \'2019-04-13\'
+        },
+        {
+          title: \'Meeting\',
+          start: \'2019-04-12T10:30:00\',
+          end: \'2019-04-12T12:30:00\'
+        },
+        {
+          title: \'Lunch\',
+          start: \'2019-04-12T12:00:00\'
+        },
+        {
+          title: \'Meeting\',
+          start: \'2019-04-12T14:30:00\'
+        },
+        {
+          title: \'Happy Hour\',
+          start: \'2019-04-12T17:30:00\'
+        },
+        {
+          title: \'Dinner\',
+          start: \'2019-04-12T20:00:00\'
+        },
+        {
+          title: \'Birthday Party\',
+          start: \'2019-04-13T07:00:00\'
+        },
+        {
+          title: \'Click for Google\',
+          url: \'http://google.com/\',
+          start: \'2019-04-28\'
+        }
+      ]
+    });
+
+    calendar.render();
+  });
+			 </script>';
+
+
+	return '<section >'.$html.'</section >';
+}

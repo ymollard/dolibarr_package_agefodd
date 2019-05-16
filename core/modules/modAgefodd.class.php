@@ -1698,6 +1698,8 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][4] = 'session';
 		$this->rights[$r][5] = 'trainer';
 
+		// External access rights for agefodd
+		// Note some external access rights for agefodd are after questionnaire rights
 		$r ++;
         if (!empty($conf->externalaccess->enabled)) {
             $this->rights[$r][0] = $this->numero + $r;
@@ -1734,23 +1736,36 @@ class modAgefodd extends DolibarrModules
 		    $this->rights[$r][4] = 'external_trainer_upload';
 		}
 
+        // Questionnaire rights for agefodd
         $r ++;
         if (!empty($conf->questionnaire->enabled)) {
-            $this->rights[$r][0] = $this->numero . $r;    // Permission id (must not be already used)
+            $this->rights[$r][0] = $this->numero . $r;   // Permission id (must not be already used)
             $this->rights[$r][1] = 'AgfQuestionnaireLinkRight';    // Permission label
             $this->rights[$r][3] = 0;                    // Permission by default for new user (0/1)
-            $this->rights[$r][4] = 'questionnaire';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-            $this->rights[$r][5] = 'link';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+            $this->rights[$r][4] = 'questionnaire';      // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+            $this->rights[$r][5] = 'link';               // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
         }
 
         $r ++;
-        if (!empty($conf->questionnaire->enabled)) {
+        if (!empty($conf->questionnaire->enabled)){
             $this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
             $this->rights[$r][1] = 'AgfQuestionnaireSendRight';	// Permission label
             $this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
-            $this->rights[$r][4] = 'questionnaire';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+            $this->rights[$r][4] = 'questionnaire';		// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
             $this->rights[$r][5] = 'send';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
         }
+
+		// MORE External access rights for agefodd
+
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+			$this->rights[$r][0] = $this->numero . $r;
+			$this->rights[$r][1] = 'AgfEATrainerAgenda';
+			$this->rights[$r][2] = 'w';
+			$this->rights[$r][3] = 0;
+			$this->rights[$r][4] = 'external_trainer_agenda';
+		}
+
 
 		// Main menu entries
 		$this->menus = array();

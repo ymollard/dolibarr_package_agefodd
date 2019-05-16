@@ -1471,10 +1471,14 @@ AgfEATrainerRead=Voir les infos liés au formateur dans l'accés externe
 AgfEATrainerWrite=Créer/modifier les infos liés au formateur dans l'accés externe
 AgfEATrainerDownload=Télécharger des documents (formateur) sur l'accés externe
 AgfEATrainerUpload=Déposer des documents (formateur) sur l'accés externe
+AgfEATrainerAgenda=Accès à l'agenda (formateur) sur l'accés externe
 AgfCoutFormationPlanned=Prix de vente planifié
 AgfCostOtherPlanned=Coût(s) autre(s) planifiés
 AgfCostTrainerPlanned=Coût formateur(s)/trice(s) planifié
 AgfMarginPlanned=Marge planifiée
+AgfMenuAgendaFormateur=Agenda formation
+AgfExternalAccess_PageTitle_Agenda=Agenda formations
+AgfExternalAccess_PageDesc_Agenda=Une vue globale de votre planning formateur
 
 Agf_fullcalendarscheduler_title_dialog_create_event=Création du créneau horaire
 Agf_fullcalendarscheduler_title_dialog_update_event=Modification du crénau horaire
