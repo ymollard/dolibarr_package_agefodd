@@ -503,7 +503,7 @@ class Agefodd_sesscalendar extends CommonObject{
 			$error ++;
 		}
 
-		$action->label = $session->formintitule . '(' . $session->formref . ')';
+		$action->label = $session->formintitule . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $session->ref;
 		$action->location = $session->placecode;
 		$action->datep = $this->heured;
 		$action->datef = $this->heuref;
@@ -569,7 +569,7 @@ class Agefodd_sesscalendar extends CommonObject{
 
 			if ($action->id == $this->fk_actioncomm) {
 
-				$action->label = $session->formintitule . '(' . $session->formref . ')';
+				$action->label = $session->formintitule . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $session->ref;
 				$action->location = $session->placecode;
 				$action->datep = $this->heured;
 				$action->datef = $this->heuref;
