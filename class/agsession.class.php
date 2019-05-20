@@ -5795,7 +5795,7 @@ class AgfInvoiceOrder
 	public $orderref;
 	public $propalref;
 	public $duree_session;
-	public $intitule_custom;
+	public $intitule_custo;
 	public $fourninvoiceref;
 	public function __construct() {
 		return 1;
@@ -5819,7 +5819,7 @@ class AgfSessionLine
 	public $dated;
 	public $datef;
 	public $intitule;
-	public $intitule_custom;
+	public $intitule_custo;
 	public $trainer_ext_information;
 	public $ref;
 	public $ref_interne;
@@ -5899,7 +5899,7 @@ class AgfSessionLineTask
 	public $dated;
 	public $datef;
 	public $intitule;
-	public $intitule_custom;
+	public $intitule_custo;
 	public $ref;
 	public $ref_interne;
 	public $color;
@@ -5953,7 +5953,7 @@ class AgfSessionLineSoc
 	public $status_in_session;
 	public $active;
 	public $duree_session;
-	public $intitule_custom;
+	public $intitule_custo;
 	public $sessionref;
 	public function __construct() {
 		return 1;
