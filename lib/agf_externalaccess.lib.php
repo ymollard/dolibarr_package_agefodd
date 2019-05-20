@@ -999,6 +999,7 @@ function getPageViewAgendaFormateurExternalAccess(){
     var calendar = new FullCalendar.Calendar(calendarEl, {
       plugins: [ \'interaction\', \'dayGrid\', \'timeGrid\', \'list\', \'rrule\' ],
       defaultDate: \'2019-04-12\',
+      snapDuration: fullcalendarscheduler_snapDuration,
       header: {
         left: \'prev,next today\',
         center: \'title\',
