@@ -223,6 +223,7 @@ AgfPeriodAdd=Ajouter un créneau horaire
 AgfPeriodDate=Date
 AgfPeriodTimeB=Heure de début
 AgfPeriodTimeE=Heure de fin
+endHour=Heure de fin
 AgfNotes=Commentaires
 AgfStagiaireModeFinancement=Formation financée
 AgfDeleteFormErr=Impossible de supprimer le formateur
