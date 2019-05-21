@@ -503,7 +503,19 @@ class Agefodd_sesscalendar extends CommonObject{
 			$error ++;
 		}
 
-		$action->label = $session->formintitule . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $session->ref;
+		$label = $session->intitule_custo;
+
+		if(empty($conf->global->MAIN_EXTRAFIELDS_DISABLED) && ! empty($conf->global->AGF_EXTRAFIELD_FOR_TRAINING_LABEL))
+		{
+			$fullExtrafieldKey = 'options_' . $conf->global->AGF_EXTRAFIELD_FOR_TRAINING_LABEL;
+
+			if(is_array($session->array_options) && array_key_exists($fullExtrafieldKey, $session->array_options) && ! empty($session->array_options[$fullExtrafieldKey]))
+			{
+				$label = $session->array_options[$fullExtrafieldKey];
+			}
+		}
+
+		$action->label = $label . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $session->ref;
 		$action->location = $session->placecode;
 		$action->datep = $this->heured;
 		$action->datef = $this->heuref;
@@ -568,8 +580,20 @@ class Agefodd_sesscalendar extends CommonObject{
 		if ($error == 0) {
 
 			if ($action->id == $this->fk_actioncomm) {
+				$label = $session->intitule_custo;
 
-				$action->label = $session->formintitule . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $session->ref;
+				if(empty($conf->global->MAIN_EXTRAFIELDS_DISABLED) && ! empty($conf->global->AGF_EXTRAFIELD_FOR_TRAINING_LABEL))
+				{
+					$fullExtrafieldKey = 'options_' . $conf->global->AGF_EXTRAFIELD_FOR_TRAINING_LABEL;
+
+					if(is_array($session->array_options) && array_key_exists($fullExtrafieldKey, $session->array_options) && ! empty($session->array_options[$fullExtrafieldKey]))
+					{
+						$label = $session->array_options[$fullExtrafieldKey];
+					}
+
+				}
+
+				$action->label = $label . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $session->ref;
 				$action->location = $session->placecode;
 				$action->datep = $this->heured;
 				$action->datef = $this->heuref;
