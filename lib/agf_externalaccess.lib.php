@@ -1109,6 +1109,7 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
           	$event->start	= date('c', $db->jdate($obj->heured));
 			$event->end		= date('c', $db->jdate($obj->heuref));
 
+			//...
 			$event->session_formateur_calendrier = new stdClass();
 			$event->session_formateur_calendrier->id = $obj->rowid;
 
