@@ -2016,6 +2016,24 @@ if (! empty($id)) {
 
 			$formmail->substit['__PERSONALIZED__'] = '';
 
+			$agf->fetchTrainers();
+			if(is_array($agf->TTrainer)){
+				$nbTrainers = count($agf->TTrainer);
+			}
+
+			$trainneExtrafields = new ExtraFields($db);
+			$trainneExtrafields->fetch_name_optionals_label('agefodd_session_formateur');
+
+			// I set empty trainers to allocate data replacement
+			$nbTrainers = $nbTrainers>10?$nbTrainers:10;
+			for ($i = 0; $i <= $nbTrainers; $i++)
+			{
+				//$agf->TTrainer[$i]->array_options
+			}
+
+				var_dump($trainneExtrafields->attributes['agefodd_session_formateur']);
+
+
 			// Tableau des parametres complementaires
 			$formmail->param['action'] = 'send';
 			$formmail->param['models_id'] = GETPOST('modelmailselected');

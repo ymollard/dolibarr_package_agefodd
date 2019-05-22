@@ -44,6 +44,9 @@ function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$obj
 		$substitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$object->id;
 	}
 
+	//if($object->element == 'agefodd' && $object->table_element == 'agefodd_stagiaire'){
+		var_dump($substitutionarray);//array_options
+	//}
 
 	return $substitutionarray;
 }
