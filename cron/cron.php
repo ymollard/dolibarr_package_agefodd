@@ -23,15 +23,19 @@ class cron_agefodd
 	}
 
 	//Si la date est dans le passé et que le statut est confirmé
-	public function autoStatusAgefoddCalendar($fk_newStatus = Agefodd_sesscalendar::STATUS_FINISH, $days = 1)
+	public function autoStatusAgefoddCalendar($fk_newStatus = Agefodd_sesscalendar::STATUS_FINISH, $days = 60)
 	{
-		global $db;
+		global $db, $user;
+
+		$errors = 0;
+		$updated = 0;
+		$message = '';
 
 		dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
 		// GET SESSION AT DAY-1
 		$sql = "SELECT rowid, fk_agefodd_session ";
 		$sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
-		$sql.= " WHERE sc.datef >=  CURDATE() - INTERVAL ".$days." DAY AND sc.datef < CURDATE() - INTERVAL ".($days+1)." DAY ";
+		$sql.= " WHERE sc.heuref >=  CURDATE() - INTERVAL ".$days." DAY AND sc.heuref < CURDATE() - INTERVAL ".($days+1)." DAY ";
 		$sql.= " AND   sc.status =  ".Agefodd_sesscalendar::STATUS_CONFIRMED;
 
 		$resql = $this->db->query($sql);
@@ -42,12 +46,21 @@ class cron_agefodd
 				if($sessionCal->fetch($obj->rowid)>0)
 				{
 					$sessionCal->status = $fk_newStatus;
+					if($sessionCal->update($user) > 0)
+					{
+						$updated++;
+					}
+					else
+					{
+						$errors++;
+					}
 				}
-
-
-
 			}
 		}
+
+		$this->output = 'errors: '.$errors.' | Updated: '.$updated;
+
+		return $errors;
 	}
 
 	public function sendAgendaToTrainee($fk_mailModel = 0, $days = 1)
@@ -75,7 +88,7 @@ class cron_agefodd
         // GET SESSION AT DAY-1
         $sql = "SELECT rowid, fk_agefodd_session, heured, heuref, date_session  ";
         $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
-        $sql.= " WHERE sc.dated >=  CURDATE() + INTERVAL ".$days." DAY AND sc.dated < CURDATE() + INTERVAL ".($days+1)." DAY ";
+        $sql.= " WHERE sc.heured >=  CURDATE() + INTERVAL ".$days." DAY AND sc.heured < CURDATE() + INTERVAL ".($days+1)." DAY ";
         $sql.= " AND   sc.status = 1 ";
 
         $resql = $this->db->query($sql);
