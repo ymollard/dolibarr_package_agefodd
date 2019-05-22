@@ -22,6 +22,33 @@ class cron_agefodd
 
 	}
 
+	//Si la date est dans le passé et que le statut est confirmé
+	public function autoStatusAgefoddCalendar($fk_newStatus = Agefodd_sesscalendar::STATUS_FINISH, $days = 1)
+	{
+		global $db;
+
+		dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
+		// GET SESSION AT DAY-1
+		$sql = "SELECT rowid, fk_agefodd_session ";
+		$sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
+		$sql.= " WHERE sc.datef >=  CURDATE() - INTERVAL ".$days." DAY AND sc.datef < CURDATE() - INTERVAL ".($days+1)." DAY ";
+		$sql.= " AND   sc.status =  ".Agefodd_sesscalendar::STATUS_CONFIRMED;
+
+		$resql = $this->db->query($sql);
+		if (!empty($resql) && $this->db->num_rows($resql) > 0) {
+			while ($obj = $this->db->fetch_object($resql)) {
+
+				$sessionCal = new Agefodd_sesscalendar($db);
+				if($sessionCal->fetch($obj->rowid)>0)
+				{
+					$sessionCal->status = $fk_newStatus;
+				}
+
+
+
+			}
+		}
+	}
 
 	public function sendAgendaToTrainee($fk_mailModel = 0, $days = 1)
 	{
@@ -42,18 +69,14 @@ class cron_agefodd
 
 
         /* # Status
-         *  1 Envisagée
-         *  2 Confirmée
-         *  6 En cours
-         *  5 Réalisée
-         *  3 Non réalisée
-         *  4 Archivée
+         *  0 prévi
+         *  1 Confirmée
          */
         // GET SESSION AT DAY-1
-        $sql = "SELECT rowid ";
-        $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session s ";
-        $sql.= " WHERE s.dated >=  CURDATE() + INTERVAL ".$days." DAY AND s.dated < CURDATE() + INTERVAL ".($days+1)." DAY ";
-        $sql.= " AND   s.status = 2 ";
+        $sql = "SELECT rowid, fk_agefodd_session, heured, heuref, date_session  ";
+        $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
+        $sql.= " WHERE sc.dated >=  CURDATE() + INTERVAL ".$days." DAY AND sc.dated < CURDATE() + INTERVAL ".($days+1)." DAY ";
+        $sql.= " AND   sc.status = 1 ";
 
         $resql = $this->db->query($sql);
 
@@ -69,12 +92,11 @@ class cron_agefodd
             while ($obj = $this->db->fetch_object($resql))
             {
                 $agsession = new Agsession($this->db);
-                if($agsession->fetch($obj->rowid))
+                if($agsession->fetch($obj->fk_agefodd_session))
                 {
                     $agsession->fetch_optionals();
 
                     // GET TRAINEES
-
                     $sql = "SELECT rowid ";
                     $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ss ";
                     $sql.= " WHERE  ss.fk_session_agefodd = ".$agsession->id . ' AND status_in_session IN (2) ' ;
