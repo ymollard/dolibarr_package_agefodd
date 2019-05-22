@@ -553,8 +553,11 @@ class ActionsAgefodd
 				$range_start 	= parseFullCalendarDateTime(GETPOST('start'),$timeZone);
 				$range_end 		= parseFullCalendarDateTime(GETPOST('end'),$timeZone);
 
+				$teacher = new Agefodd_teacher($db);
+				$teacher->fetchByUser($user);
 
-				print getAgefoddJsonAgendaFormateur($fk_formateur = 0, $range_start->getTimestamp(), $range_end->getTimestamp());
+
+				print getAgefoddJsonAgendaFormateur($teacher->id, $range_start->getTimestamp(), $range_end->getTimestamp());
 				exit;
 			}
 
