@@ -542,6 +542,22 @@ class ActionsAgefodd
 // 	            var_dump($file, $filename); exit;
 	            $this->_downloadSessionFile($filename);
 	        }
+
+			if ($action == "getSessionAgenda")
+			{
+				// Parse the start/end parameters.
+				// These are assumed to be ISO8601 strings with no time nor timeZone, like "2013-12-29".
+				// Since no timeZone will be present, they will parsed as UTC.
+
+				$timeZone 		= GETPOST('timeZone');
+				$range_start 	= parseFullCalendarDateTime(GETPOST('start'),$timeZone);
+				$range_end 		= parseFullCalendarDateTime(GETPOST('end'),$timeZone);
+
+
+				print getAgefoddJsonAgendaFormateur($fk_formateur = 0, $range_start->getTimestamp(), $range_end->getTimestamp());
+				exit;
+			}
+
 	    }
 	}
 	/**
