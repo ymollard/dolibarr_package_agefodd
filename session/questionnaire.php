@@ -251,7 +251,7 @@ if ($agf->type_session == 1) {
     $styledisplay = ' style="display:none" ';
 }
 
-dol_fiche_head($head, 'survey', $langs->trans("AgfSessionsurvey"), 0, 'survey');
+dol_fiche_head($head, 'survey', $langs->trans("AgfSessionDetail"), 0, 'calendarday');
 
 $agf_fact = new Agefodd_session_element($db);
 $agf_fact->fetch_by_session($agf->id);
