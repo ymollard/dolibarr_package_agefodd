@@ -30,6 +30,7 @@ function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$obj
 			'__FORMINTITULE__' => $outputlangs->trans('AgfFormIntitule').' '.$outputlangs->trans('OnlyOnTrainingMail'),
 			'__FORMDATESESSION__' => $outputlangs->trans('AgfPDFFichePres7bis').' '.$outputlangs->trans('OnlyOnTrainingMail'),
 			'__AGENDATOKEN__' => $conf->global->MAIN_AGENDA_XCAL_EXPORTKEY,
+			'__TRAINER_1_EXTRAFIELD_XXXX__' => $outputlangs->trans('OnlyOnSessionMail')
 	));
 
 	// Add ICS link replacement to mails
@@ -44,9 +45,7 @@ function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$obj
 		$substitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$object->id;
 	}
 
-	//if($object->element == 'agefodd' && $object->table_element == 'agefodd_stagiaire'){
-		var_dump($substitutionarray);//array_options
-	//}
+
 
 	return $substitutionarray;
 }
