@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.3.11';
+		$this->version = '4.4.0';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -85,9 +85,20 @@ class modAgefodd extends DolibarrModules
 				"/agefodd/report/ca",
 		        "/agefodd/report/bycust/",
 		        "/agefodd/report/calendarbycust/",
+		        "/agefodd/report/commercial",
 				"/agefodd/background"
 		);
 		$r = 0;
+
+		// Cronjobs (List of cron jobs entries to add when module is enabled)
+		// unit_frequency must be 60 for minute, 3600 for hour, 86400 for day, 604800 for week
+		$this->cronjobs = array(
+			0 => array('label' => 'CronTaskSendAgendaToTraineeLabel', 'jobtype' => 'method', 'class' => 'agefodd/cron/cron.php', 'objectname' => 'cron_agefodd', 'method' => 'sendAgendaToTrainee', 'parameters' => '', 'comment' => 'Send email to trainees', 'frequency' => 1, 'unitfrequency' => 86400, 'status' => 0, 'test' => true),
+			//1 => array('label' => 'DATAPOLICY Mailing', 'jobtype' => 'method', 'class' => '/datapolicy/class/datapolicyCron.class.php', 'objectname' => 'RgpdCron', 'method' => 'sendMailing', 'parameters' => '', 'comment' => 'Comment', 'frequency' => 1, 'unitfrequency' => 86400, 'status' => 0, 'test' => true)
+		);
+		// Example: $this->cronjobs=array(0=>array('label'=>'My label', 'jobtype'=>'method', 'class'=>'/dir/class/file.class.php', 'objectname'=>'MyClass', 'method'=>'myMethod', 'parameters'=>'param1, param2', 'comment'=>'Comment', 'frequency'=>2, 'unitfrequency'=>3600, 'status'=>0, 'test'=>true),
+		//                                1=>array('label'=>'My label', 'jobtype'=>'command', 'command'=>'', 'parameters'=>'param1, param2', 'comment'=>'Comment', 'frequency'=>1, 'unitfrequency'=>3600*24, 'status'=>0, 'test'=>true)
+		// );
 
 		// Relative path to module style sheet if exists. Example: '/mymodule/mycss.css'.
 		$this->style_sheet = '/agefodd/css/agefodd.css';
@@ -113,7 +124,9 @@ class modAgefodd extends DolibarrModules
 				        'externalaccesspage',
 				        'externalaccessinterface',
 						'upgrade',
-						'contactcard'
+						'agendaexport',
+						'contactcard',
+						'agenda'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
 				'models' => 1,
@@ -1722,6 +1735,24 @@ class modAgefodd extends DolibarrModules
 		    $this->rights[$r][4] = 'external_trainer_upload';
 		}
 
+        $r ++;
+        if (!empty($conf->questionnaire->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;    // Permission id (must not be already used)
+            $this->rights[$r][1] = 'AgfQuestionnaireLinkRight';    // Permission label
+            $this->rights[$r][3] = 0;                    // Permission by default for new user (0/1)
+            $this->rights[$r][4] = 'questionnaire';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+            $this->rights[$r][5] = 'link';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        }
+
+        $r ++;
+        if (!empty($conf->questionnaire->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
+            $this->rights[$r][1] = 'AgfQuestionnaireSendRight';	// Permission label
+            $this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
+            $this->rights[$r][4] = 'questionnaire';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+            $this->rights[$r][5] = 'send';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        }
+
 		// Main menu entries
 		$this->menus = array();
 		$r = 0;
@@ -2427,6 +2458,21 @@ class modAgefodd extends DolibarrModules
 		);
 
 		$r ++;
+		$this->menu [$r] = array (
+			'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+			'type' => 'left',
+			'titre' => 'AgfMenuReportCommercial',
+			'leftmenu' => 'AgfMenuReportCommercial',
+			'url' => '/agefodd/report/report_commercial.php',
+			'langs' => 'agefodd@agefodd',
+			'position' => 900 + $r,
+			'enabled' => '$user->rights->agefodd->report',
+			'perms' => '$user->rights->agefodd->report',
+			'target' => '',
+			'user' => 0
+		);
+
+		$r ++;
 		$this->menu[$r] = array(
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
@@ -2711,6 +2757,8 @@ class modAgefodd extends DolibarrModules
 
 		$db->commit();
 	}
+
+
 	function change_order_supplier_type()
 	{
 		global $db, $user;

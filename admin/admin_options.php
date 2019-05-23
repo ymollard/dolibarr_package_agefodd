@@ -34,6 +34,7 @@ require_once '../lib/agefodd.lib.php';
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once DOL_DOCUMENT_ROOT . "/core/lib/images.lib.php";
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
+require_once DOL_DOCUMENT_ROOT .'/core/class/html.formmail.class.php';
 
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
@@ -244,6 +245,12 @@ if ($action == 'setvarother') {
         	}
         }
 	}
+
+    $usesearch_cronmailmodel = GETPOST('AGF_SENDAGENDATOTRAINEE_DEFAULT_MAILMODEL', 'alpha');
+    $res = dolibarr_set_const($db, 'AGF_SENDAGENDATOTRAINEE_DEFAULT_MAILMODEL', $usesearch_cronmailmodel, 'chaine', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
+
 
     $fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
     $res = dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
@@ -1272,6 +1279,38 @@ print '</td>';
 print '<td></td>';
 print '</tr>';
 $var=!$var;
+
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfSendAgendaToTraineeDefaultMailModel") . '</td>';
+print '<td align="left">';
+
+$formMail = new FormMail($db);
+$models = $formMail->fetchAllEMailTemplate('cron_session', $user, $langs);
+
+if($models>0)
+{
+    foreach($formMail->lines_model as $line)
+    {
+        $langs->trans("members");
+        if (preg_match('/\((.*)\)/', $line->label, $reg)){
+            $modelmail_array[$line->id]=$langs->trans($reg[1]);		// langs->trans when label is __(xxx)__
+        }
+        else{
+            $modelmail_array[$line->id]=$line->label;
+        }
+        if ($line->lang) $modelmail_array[$line->id].=' ('.$line->lang.')';
+        if ($line->private) $modelmail_array[$line->id].=' - '.$langs->trans("Private");
+        //if ($line->fk_user != $user->id) $modelmail_array[$line->id].=' - '.$langs->trans("By").' ';
+    }
+}
+print $formMail->selectarray('AGF_SENDAGENDATOTRAINEE_DEFAULT_MAILMODEL', $modelmail_array, $conf->global->AGF_SENDAGENDATOTRAINEE_DEFAULT_MAILMODEL, 1);
+
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+
 
 print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
 

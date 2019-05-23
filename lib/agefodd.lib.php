@@ -262,6 +262,15 @@ function session_prepare_head($object, $showconv = 0) {
 	$head [$h] [2] = 'info';
 	$h ++;
 
+
+    if(!empty($conf->questionnaire->enabled)){
+        $langs->load("questionnaire@questionnaire");
+        $head [$h] [0] = dol_buildpath('/agefodd/session/questionnaire.php', 1) . '?id=' . $id;
+        $head [$h] [1] = $langs->trans("agfQuestionnaireTabTitle");
+        $head [$h] [2] = 'survey';
+        $h ++;
+    }
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_session');
 
 	return $head;
@@ -332,6 +341,14 @@ function trainee_prepare_head($object, $showcursus = 0) {
 	$head [$h] [2] = 'info';
 	$h ++;
 
+	if(!empty($conf->sendinblue->enabled))
+	{
+		$head [$h] [0] = dol_buildpath('/agefodd/sendinblue/trainee_tab.php', 1) . '?id=' . $object->id;
+		$head [$h] [1] = $langs->trans("Sendinblue");
+		$head [$h] [2] = 'seninblue';
+		$h ++;
+	}
+
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_trainee');
 
 	return $head;
@@ -387,7 +404,8 @@ function trainer_prepare_head($object) {
  * @param object $object contact
  * @return array head table of tabs
  */
-function contact_prepare_head($object) {
+
+function agefodd_contact_prepare_head($object) {
 	global $langs, $conf, $user;
 
 	$h = 0;
@@ -743,6 +761,42 @@ function agf_report_calendar_by_customer_prepare_head() {
 
     return $head;
 }
+
+
+/**
+ * Define head array for tabs of commercial report
+ *
+ * @return array Array of head
+ */
+function agf_commercial_report_prepare_head() {
+	global $langs, $conf, $user;
+
+	$h = 0;
+	$head = array ();
+
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_commercial.php", 1);
+	$head[$h][1] = $langs->trans("AgfMenuReport");
+	$head[$h][2] = 'card';
+	$h++;
+
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_commercial_help.php", 1);
+	$head[$h][1] = $langs->trans("Help");
+	$head[$h][2] = 'help';
+	$h++;
+
+	$object=new stdClass();
+
+	// Show more tabs from modules
+	// Entries must be declared in modules descriptor with line
+	// $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
+	// $this->tabs = array('entity:-tabname);   												to remove a tab
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_report_commercial');
+
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_report_commercial','remove');
+
+	return $head;
+}
+
 
 /**
  *  renvoi le nombre de fichiers joints
@@ -1895,7 +1949,7 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
         $morehtmlstatus.='<div align="right">'.$object->getLibStatut(1)."<br>";
 
-        require_once ('../class/agefodd_sessadm.class.php');
+        require_once (__DIR__.'/../class/agefodd_sessadm.class.php');
         $sess_adm = new Agefodd_sessadm($db);
         $result = $sess_adm->fetch_all($object->id);
 
@@ -2105,4 +2159,111 @@ function displayProgress($percentProgress = 0, $title = '', $insideDisplay = "",
          </div><br/>';
 
     return $out;
+}
+
+
+/**
+ * Check if string is a correct email address
+ * @param $email
+ * @return bool
+ */
+function agf_isEmail($email)
+{
+    return empty($email) OR preg_match('/^[a-z0-9!#$%&amp;\'*+\/=?^`{}|~_-]+[.a-z0-9!#$%&amp;\'*+\/=?^`{}|~_-]*@[a-z0-9]+[._a-z0-9-]*\.[a-z0-9]+$/ui', $email);
+}
+
+
+/**
+ * get template model of mail
+ * @param $id
+ * @return int|Object
+ */
+function agf_getMailTemplate($id)
+{
+    global $db;
+
+    $sql="SELECT rowid as rowid, label, type_template, private, position, topic, content_lines, content, active";
+    $sql.=" FROM ".MAIN_DB_PREFIX."c_email_templates";
+    $sql.=" WHERE entity IN (".getEntity('email_template').")";
+    $sql.=" AND rowid = ".intval($id);
+
+
+    $result=$db->query($sql);
+    if ($result)
+    {
+        $num = $db->num_rows($result);
+        if($num > 0)
+        {
+            return $db->fetch_object($result);
+        }
+    }
+    else{
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * Get all session contacts simple ex: for mailling
+ * @param Agsession $agsession
+ * @return array
+ */
+function get_agf_session_mails_infos(Agsession $agsession){
+    global $db;
+
+    if(empty($agsession->id))
+    {
+        return 0;
+    }
+
+    $emailInfos= array();
+
+    // Recupération des stagiaires
+    dol_include_once('agefodd/class/agefodd_session_stagiaire.class.php');
+
+    $session_stagiaire = new Agefodd_session_stagiaire($db);
+    $session_stagiaire->fetch_stagiaire_per_session($agsession->id);
+
+    if(!empty($session_stagiaire->lines)){
+        foreach($session_stagiaire->lines as $sessionLine){
+
+            $infos = new stdClass();
+            $infos->nom = $sessionLine->nom;
+            $infos->prenom = $sessionLine->prenom;
+            $infos->civilite= $sessionLine->civilitel;
+            $infos->socname = $sessionLine->socname;
+            $infos->email = $sessionLine->email;
+
+            $emailInfos[] = $infos;
+        }
+    }
+
+
+    // Recupération des stagiaires
+    dol_include_once('agefodd/class/agefodd_session_formateur.class.php');
+
+    $session_formateur = new Agefodd_session_formateur($db);
+    $session_formateur->fetch_formateur_per_session($agsession->id);
+
+    if(!empty($session_formateur->lines)){
+        foreach($session_formateur->lines as $sessionLine){
+
+
+            $infos = new stdClass();
+            $infos->nom = $sessionLine->name_user;
+            $infos->prenom = $sessionLine->firstname_user;
+            $infos->civilite= '';
+            $infos->socname = '';
+            $infos->email = $sessionLine->email;
+
+            $emailInfos[] = $infos;
+
+        }
+    }
+
+
+    return $emailInfos;
+
 }

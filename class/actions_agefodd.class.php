@@ -722,6 +722,9 @@ class ActionsAgefodd
 		$this->results['attestation_trainee'] = $langs->trans('AgfMailToSendAttestationParticipants');
 		$this->results['convocation_trainee'] = $langs->trans('AgfMailToSendConventionParticipants');
 		$this->results['attestationendtraining_trainee'] = $langs->trans('AgfMailToSendAttestationEndTrainingParticipants');
+		$this->results['agf_trainee'] = $langs->trans('AgfMailToSendTrainee');
+		$this->results['agf_trainer'] = $langs->trans('AgfMailToSendTrainer');
+        $this->results['cron_session'] = $langs->trans('AgfMailToSendCronSession');
 
 		return 0;
 	}
@@ -1022,5 +1025,146 @@ class ActionsAgefodd
 	    $forceDownload = GETPOST('forcedownload','int');
 	    
 	    downloadFile($filename, $forceDownload);
+	}
+
+	/**
+	 * @param $parameters
+	 * @param $object
+	 * @param $action
+	 * @param HookManager $hookmanager
+	 */
+	function printFieldListFrom($parameters, &$object, &$action, HookManager $hookmanager)
+	{
+		$TContext = explode(':', $parameters['context']);
+		if(in_array('agendaexport', $TContext)){
+			$sql = '';
+			$agftraineeid = GETPOST('agftraineeid',"int");
+			$agftrainerid = GETPOST('agftrainerid',"int");
+
+			if(!empty($agftraineeid)){
+				// agenda pour le stagiaire
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_calendrier agf_sc ON (a.id = agf_sc.fk_actioncomm) ';
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire agf_ss ON (agf_ss.fk_session_agefodd = agf_sc.fk_agefodd_session) ';
+			}
+			elseif(!empty($agftrainerid)){
+				// agenda pour le formateur
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier agf_sfc ON (a.id = agf_sfc.fk_actioncomm) ';
+			}
+
+			$this->resprints = $sql;
+			return 1;
+		}
+	}
+
+	/**
+	 * @param $parameters
+	 * @param $object
+	 * @param $action
+	 * @param HookManager $hookmanager
+	 */
+	function printFieldListWhere($parameters, &$object, &$action, HookManager $hookmanager)
+	{
+		$TContext = explode(':', $parameters['context']);
+		if(in_array('agendaexport', $TContext)){
+			$sql = '';
+			$agftraineeid = GETPOST('agftraineeid',"int");
+			$agftrainerid = GETPOST('agftrainerid',"int");
+			if(!empty($agftraineeid)){
+				$sql.= ' AND agf_ss.fk_stagiaire = '.intval($agftraineeid) ;
+			}
+			elseif(!empty($agftrainerid)){
+				$sql.= ' AND agf_sfc.fk_agefodd_session_formateur = '.intval($agftrainerid) ;
+			}
+
+			$this->resprints = $sql;
+			return 1;
+		}
+	}
+
+
+	function updateFullcalendarEvents($parameters, &$object, &$action, HookManager $hookmanager)
+	{
+		$TContexts = explode(':', $parameters['context']);
+
+		if(in_array('agenda', $TContexts))
+		{
+			global $langs;
+
+			$langs->load('agefodd@agefodd');
+
+			dol_include_once('/agefodd/class/agsession.class.php');
+			dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+			dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+
+			foreach($object as &$event)
+			{
+				if($event['object']->code != 'AC_AGF_SESS' && $event['object']->elementtype != 'agefodd_session')
+				{
+					continue;
+				}
+
+				$session = new Agsession($event['object']->db);
+				$session->fetch($event['object']->elementid);
+
+				if($session->id <= 0)
+				{
+					continue;
+				}
+
+				$formateurs = new Agefodd_session_formateur($session->db);
+				$nbform = $formateurs->fetch_formateur_per_session($session->id);
+
+				if($nbform > 0)
+				{
+					$event['title'] .= "\n\n" . $nbform  . ' ' . $langs->trans('AgfTrainingTrainer');
+
+					if($nbform == 1)
+					{
+						$event['title'] .= ' : ' . strtoupper($formateurs->lines[0]->lastname) . ' ' . ucfirst($formateurs->lines[0]->firstname);
+					}
+					else
+					{
+						$event['note'] .= '<br /><br />' . $langs->trans('AgfFormateur') . ' :';
+
+						for($i = 0; $i < $nbform; $i++)
+						{
+							$event['note'] .= '<br /><a href="' . dol_buildpath('/agefodd/trainer/card.php', 1) . '?id=' . $formateurs->lines[$i]->formid . '">';
+							$event['note'] .= img_object($langs->trans("ShowContact"), "contact") . ' ';
+							$event['note'] .= strtoupper($formateurs->lines[$i]->lastname) . ' ' . ucfirst($formateurs->lines[$i]->firstname) . '</a>';
+						}
+					}
+				}
+
+
+				$stagiaires = new Agefodd_session_stagiaire($session->db);
+				$resulttrainee = $stagiaires->fetch_stagiaire_per_session($session->id);
+
+
+				$nbstag = count($stagiaires->lines);
+
+				if ($nbstag > 0)
+				{
+					if($nbstag == 1)
+					{
+						$event['title'] .= "\n\n" . $nbstag . ' ' . $langs->trans('AgfParticipant');
+						$event['title'] .= ' : ' . strtoupper($stagiaires->lines[0]->nom) . ' ' . ucfirst($stagiaires->lines[0]->prenom);
+					}
+					else
+					{
+						$event['title'] .= "\n\n" . $nbstag . ' ' . $langs->trans('AgfParticipants');
+
+						$event['note'] .= '<br /><br />' . $langs->trans('AgfParticipants') . ' :';
+
+						for($i = 0; $i < $nbstag; $i++)
+						{
+							$event['note'] .= '<br /><a href="' . dol_buildpath('/agefodd/trainee/card.php', 1) . '?id=' . $stagiaires->lines[$i]->id . '">';
+							$event['note'] .= img_object($langs->trans("ShowContact"), "contact") . ' ';
+							$event['note'] .= strtoupper($stagiaires->lines[$i]->nom) . ' ' . ucfirst($stagiaires->lines[$i]->prenom) . '</a>';
+						}
+					}
+
+				}
+			}
+		}
 	}
 }

@@ -56,7 +56,7 @@ if ($res < 0) {
 $res = $object->fetch_optionals();
 
 // Show tabs
-$head = contact_prepare_head($object);
+$head = agefodd_contact_prepare_head($object);
 
 dol_fiche_head($head, 'tabAgefodd', $title, - 1, 'contact');
 
