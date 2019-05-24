@@ -1010,7 +1010,7 @@ function getPageViewAgendaFormateurExternalAccess(){
 			center: \'title\',
 			right: \'dayGridMonth,timeGridWeek,timeGridDay,listMonth\'
 		},
-		editable: true,
+		editable: false, // next step add rights and allow edition
 		locale: fullcalendarscheduler_initialLangCode,
 		eventLimit: true, // allow "more" link when too many events
 		eventRender: function(info) {
@@ -1088,7 +1088,7 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 	}
 
 	if(!empty($fk_formateur)){
-		$sql.= ' AND c.fk_agefodd_formateur = '.intval($fk_formateur);
+		$sql.= ' AND sf.fk_agefodd_formateur = '.intval($fk_formateur);
 	}
 
 
