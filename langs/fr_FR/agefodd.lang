@@ -1472,10 +1472,14 @@ AgfEATrainerRead=Voir les infos liés au formateur dans l'accés externe
 AgfEATrainerWrite=Créer/modifier les infos liés au formateur dans l'accés externe
 AgfEATrainerDownload=Télécharger des documents (formateur) sur l'accés externe
 AgfEATrainerUpload=Déposer des documents (formateur) sur l'accés externe
+AgfEATrainerAgenda=Accès à l'agenda (formateur) sur l'accés externe
 AgfCoutFormationPlanned=Prix de vente planifié
 AgfCostOtherPlanned=Coût(s) autre(s) planifiés
 AgfCostTrainerPlanned=Coût formateur(s)/trice(s) planifié
 AgfMarginPlanned=Marge planifiée
+AgfMenuAgendaFormateur=Agenda formation
+AgfExternalAccess_PageTitle_Agenda=Agenda formations
+AgfExternalAccess_PageDesc_Agenda=Une vue globale de votre planning formateur
 
 Agf_fullcalendarscheduler_title_dialog_create_event=Création du créneau horaire
 Agf_fullcalendarscheduler_title_dialog_update_event=Modification du crénau horaire
@@ -1489,6 +1493,7 @@ AgfStatusCalendar_previsionnel=Prévisionnel
 AgfStatusCalendar_confirmed=Confirmé
 AgfStatusCalendar_canceled=Annulé
 AgfStatusCalendar_missing=Absent
+AgfStatusCalendar_finish=Réalisé
 
 Agf_EA_DeleteClandrierFormateurTitle=Suppression d'un créneau horaire
 Agf_EA_DeleteClandrierFormateurBody=Êtes-vous sûr de vouloir supprimer ce créneau horaire ?<br /> <small>Ceci supprimera aussi les saisies de temps des participants</small>
@@ -1552,7 +1557,7 @@ AgfNoEmailToSend=Pas d'email à envoyer
 AgfNoSessionToSend=Pas de session confimé à envoyer
 AgfMailToSendCronSession=Module formation - Pour l'envoi des rappels par tâches planifiés
 AgfSendAgendaToTraineeDefaultMailModel=Model (par defaut) à utiliser lors de l'envoi des mails de rappel (tâche planifiée : Envoi de mail de rappel aux stagiaires)
-CronTaskSendAgendaToTraineeLabel=Envoi de mail de rappel aux stagiaires
+
 AgfSendAgendaMail=Envoi de mail de rappel
 AgfSendAgendaMailHelp=Cette option utilise une tâche issue des travaux planifiés pour fonctionner correctement, reportez vous à "Envoi de mail de rappel aux stagiaires"
 AgfDownloadIcsLink=Lien de téléchargement de l'agenda au format ICS : compatible participant et formateur Agefodd
@@ -1562,3 +1567,8 @@ AgfUseTrainingProgramModule=Utiliser les module dans les programme de formation 
 
 AgfQuestionnaireLinkRight=Voir les questionnaires
 AgfQuestionnaireSendRight=Envoyer des questionnaires
+
+# CRON TASK
+CronTaskAutoStatusAgefoddCalendar=Workflow des statut des créneaux de sessions
+CronTaskAutoStatusAgefoddCalendarDesc=Passer au statut Réalisé automatique par un traitement journalier si la date est dans le passé et que le statut est confirmé
+CronTaskSendAgendaToTraineeLabel=Envoi de mail de rappel aux stagiaires

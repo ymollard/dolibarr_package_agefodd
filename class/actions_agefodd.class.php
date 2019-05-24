@@ -226,8 +226,8 @@ class ActionsAgefodd
 			$mc->setValues($conf);
 		}
 
+		// For external Access module
 		$TContext = explode(':', $parameters['context']);
-
 		if (in_array('externalaccesspage', $TContext))
 		{
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
@@ -504,7 +504,12 @@ class ActionsAgefodd
 				}
 
 			}
-
+			elseif($context->controller == 'agefodd_trainer_agenda')
+			{
+				$context->title = $langs->trans('AgfExternalAccess_PageTitle_Agenda');
+				$context->desc = $langs->trans('AgfExternalAccess_PageDesc_Agenda');
+				$context->menu_active[] = 'invoices';
+			}
 
 			return 1;
 		}
@@ -514,7 +519,7 @@ class ActionsAgefodd
 
 	/**
 	 * Overloading the interface function : replacing the parent's function with the one below
-	 *
+	 * For external Access module
 	 * @param   array()         $parameters     Hook metadatas (context, etc...)
 	 * @param   CommonObject    &$object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
 	 * @param   string          &$action        Current action (if set). Generally create or edit or null
@@ -528,7 +533,8 @@ class ActionsAgefodd
 	    
 	    if (in_array('externalaccessinterface', explode(':', $parameters['context'])))
 	    {
-	        dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
+			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
+			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 	        
 	        if ($action == "downloadSessionFile")
 	        {
@@ -537,11 +543,30 @@ class ActionsAgefodd
 // 	            var_dump($file, $filename); exit;
 	            $this->_downloadSessionFile($filename);
 	        }
+
+			if ($action == "getSessionAgenda")
+			{
+				// Parse the start/end parameters.
+				// These are assumed to be ISO8601 strings with no time nor timeZone, like "2013-12-29".
+				// Since no timeZone will be present, they will parsed as UTC.
+
+				$timeZone 		= GETPOST('timeZone');
+				$range_start 	= parseFullCalendarDateTime(GETPOST('start'),$timeZone);
+				$range_end 		= parseFullCalendarDateTime(GETPOST('end'),$timeZone);
+
+				$teacher = new Agefodd_teacher($db);
+				$teacher->fetchByUser($user);
+
+
+				print getAgefoddJsonAgendaFormateur($teacher->id, $range_start->getTimestamp(), $range_end->getTimestamp());
+				exit;
+			}
+
 	    }
 	}
 	/**
 	 * Mes nouvelles pages pour l'accés au portail externe
-	 *
+	 * For external Access module
 	 * @param type $parameters
 	 * @param type $object
 	 * @param type $action
@@ -628,12 +653,17 @@ class ActionsAgefodd
 					}
 				}
 			}
+			elseif ($context->controller == 'agefodd_trainer_agenda')
+			{
+				print getPageViewAgendaFormateurExternalAccess();
+				$context->setControllerFound();
+			}
 		}
 		return 0;
 	}
 
 	/**
-	 * 
+	 * For external Access module
 	 * @param unknown $parameters
 	 * @param unknown $object
 	 * @param unknown $action
@@ -641,7 +671,7 @@ class ActionsAgefodd
 	 */
 	public function PrintTopMenu($parameters, &$object, &$action, $hookmanager)
 	{
-	    global $langs, $conf;
+	    global $langs, $conf, $user;
 	    
 	    if (empty($conf->global->AGF_EACCESS_ACTIVATE)) return 0;
 	    
@@ -667,14 +697,24 @@ class ActionsAgefodd
 	        'url' => $context->getRootUrl('agefodd_session_list'),
 	        'name' => $langs->trans('AgfMenuSess')
 	    );
-	    
+
+	    if($user->rights->agefodd->external_trainer_agenda){
+			$this->results['agefodd']['children']['agefodd_trainer_agenda'] = array(
+				'id' => 'agefodd',
+				'rank' => 30,
+				'url' => $context->getRootUrl('agefodd_trainer_agenda'),
+				'name' => $langs->trans('AgfMenuAgendaFormateur')
+			);
+		}
+
 	    
 	    return 0;
 	}
 
+	// For external Access module
 	public function PrintServices($parameters, &$object, &$action, $hookmanager)
 	{
-		global $langs, $conf;
+		global $langs, $conf, $user;
 
 		$TContext = explode(':', $parameters['context']);
 
@@ -684,7 +724,7 @@ class ActionsAgefodd
 			$context = Context::getInstance();
 
 			$link = $context->getRootUrl('agefodd');
-			$this->resprints.= getService($langs->trans('AgfTraining'),'fa-calendar',$link); // desc : $langs->trans('InvoicesDesc')
+			$this->resprints.= getService($langs->trans('AgfTraining'),'fa-graduation-cap',$link); // desc : $langs->trans('InvoicesDesc')
 
 			$this->results[] = 1;
 			return 0;
@@ -1018,7 +1058,8 @@ class ActionsAgefodd
 
 		return 0;
 	}
-	
+
+	// For external Access module
 	function _downloadSessionFile($filename)
 	{
 	    dol_include_once('/externalaccess/lib/externalaccess.lib.php');

@@ -22,8 +22,48 @@ class cron_agefodd
 
 	}
 
+	//Si la date est dans le passé et que le statut est confirmé
+	public function autoStatusAgefoddCalendar($fk_newStatus = Agefodd_sesscalendar::STATUS_FINISH, $days = 60)
+	{
+		global $db, $user;
 
-	public function sendAgendaToTrainee($fk_mailModel = 0, $days = 1)
+		$errors = 0;
+		$updated = 0;
+		$message = '';
+
+		dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
+		// GET SESSION AT DAY-1
+		$sql = "SELECT rowid, fk_agefodd_session ";
+		$sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
+		$sql.= " WHERE sc.heuref >=  CURDATE() - INTERVAL ".$days." DAY AND sc.heuref < CURDATE() - INTERVAL ".($days+1)." DAY ";
+		$sql.= " AND   sc.status =  ".Agefodd_sesscalendar::STATUS_CONFIRMED;
+
+		$resql = $this->db->query($sql);
+		if (!empty($resql) && $this->db->num_rows($resql) > 0) {
+			while ($obj = $this->db->fetch_object($resql)) {
+
+				$sessionCal = new Agefodd_sesscalendar($db);
+				if($sessionCal->fetch($obj->rowid)>0)
+				{
+					$sessionCal->status = $fk_newStatus;
+					if($sessionCal->update($user) > 0)
+					{
+						$updated++;
+					}
+					else
+					{
+						$errors++;
+					}
+				}
+			}
+		}
+
+		$this->output = 'errors: '.$errors.' | Updated: '.$updated;
+
+		return $errors;
+	}
+
+	public function sendAgendaToTrainee($fk_mailModel = 0, $days = 1, $basedOnSession = false)
 	{
         global $conf, $langs, $user;
         require_once (DOL_DOCUMENT_ROOT .'/core/class/CMailFile.class.php');
@@ -41,21 +81,40 @@ class cron_agefodd
         }
 
 
-        /* # Status
-         *  1 Envisagée
-         *  2 Confirmée
-         *  6 En cours
-         *  5 Réalisée
-         *  3 Non réalisée
-         *  4 Archivée
-         */
-        // GET SESSION AT DAY-1
-        $sql = "SELECT rowid ";
-        $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session s ";
-        $sql.= " WHERE s.dated >=  CURDATE() + INTERVAL ".$days." DAY AND s.dated < CURDATE() + INTERVAL ".($days+1)." DAY ";
-        $sql.= " AND   s.status = 2 ";
+        if(empty($basedOnSession))
+		{
+			/* # Status
+			 *  0 prévi
+			 *  1 Confirmée
+			 */
+			// GET SESSION AT DAY-1
+			$sql = "SELECT rowid fk_session_calendrier, fk_agefodd_session  ";
+			$sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
+			$sql.= " WHERE sc.heured >=  CURDATE() + INTERVAL ".$days." DAY AND sc.heured < CURDATE() + INTERVAL ".($days+1)." DAY ";
+			$sql.= " AND   sc.status = 1 ";
+		}
+		else{
+			/* # Status
+			 *  1 Envisagée
+			 *  2 Confirmée
+			 *  6 En cours
+			 *  5 Réalisée
+			 *  3 Non réalisée
+			 *  4 Archivée
+			 */
+			// GET SESSION AT DAY-1
+			$sql = "SELECT rowid fk_agefodd_session ";
+			$sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session s ";
+			$sql.= " WHERE s.dated >=  CURDATE() + INTERVAL ".$days." DAY AND s.dated < CURDATE() + INTERVAL ".($days+1)." DAY ";
+			$sql.= " AND   s.status = 2 ";
+		}
 
-        $resql = $this->db->query($sql);
+
+
+
+
+
+		$resql = $this->db->query($sql);
 
 
 
@@ -69,12 +128,11 @@ class cron_agefodd
             while ($obj = $this->db->fetch_object($resql))
             {
                 $agsession = new Agsession($this->db);
-                if($agsession->fetch($obj->rowid))
+                if($agsession->fetch($obj->fk_agefodd_session))
                 {
                     $agsession->fetch_optionals();
 
                     // GET TRAINEES
-
                     $sql = "SELECT rowid ";
                     $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ss ";
                     $sql.= " WHERE  ss.fk_session_agefodd = ".$agsession->id . ' AND status_in_session IN (2) ' ;
