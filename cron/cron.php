@@ -23,7 +23,7 @@ class cron_agefodd
 	}
 
 	//Si la date est dans le passé et que le statut est confirmé
-	public function autoStatusAgefoddCalendar($fk_newStatus = Agefodd_sesscalendar::STATUS_FINISH, $days = 60)
+	public function autoStatusAgefoddCalendar($fk_newStatus = Agefodd_sesscalendar::STATUS_FINISH, $daysOffset = 1, $daysRange = 1)
 	{
 		global $db, $user;
 
@@ -35,7 +35,7 @@ class cron_agefodd
 		// GET SESSION AT DAY-1
 		$sql = "SELECT rowid, fk_agefodd_session ";
 		$sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
-		$sql.= " WHERE sc.heuref >=  CURDATE() - INTERVAL ".$days." DAY AND sc.heuref < CURDATE() - INTERVAL ".($days+1)." DAY ";
+		$sql.= " WHERE sc.heuref >=  CURDATE() - INTERVAL ".intval($daysOffset)." DAY AND sc.heuref < CURDATE() - INTERVAL ".(intval($daysOffset) + intval($daysRange))." DAY ";
 		$sql.= " AND   sc.status =  ".Agefodd_sesscalendar::STATUS_CONFIRMED;
 
 		$resql = $this->db->query($sql);
