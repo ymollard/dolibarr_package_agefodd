@@ -533,7 +533,8 @@ class ActionsAgefodd
 	    
 	    if (in_array('externalaccessinterface', explode(':', $parameters['context'])))
 	    {
-	        dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
+			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
+			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 	        
 	        if ($action == "downloadSessionFile")
 	        {

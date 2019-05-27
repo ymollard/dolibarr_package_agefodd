@@ -63,7 +63,7 @@ class cron_agefodd
 		return $errors;
 	}
 
-	public function sendAgendaToTrainee($fk_mailModel = 0, $days = 1)
+	public function sendAgendaToTrainee($fk_mailModel = 0, $days = 1, $basedOnSession = false)
 	{
         global $conf, $langs, $user;
         require_once (DOL_DOCUMENT_ROOT .'/core/class/CMailFile.class.php');
@@ -81,17 +81,40 @@ class cron_agefodd
         }
 
 
-        /* # Status
-         *  0 prévi
-         *  1 Confirmée
-         */
-        // GET SESSION AT DAY-1
-        $sql = "SELECT rowid, fk_agefodd_session, heured, heuref, date_session  ";
-        $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
-        $sql.= " WHERE sc.heured >=  CURDATE() + INTERVAL ".$days." DAY AND sc.heured < CURDATE() + INTERVAL ".($days+1)." DAY ";
-        $sql.= " AND   sc.status = 1 ";
+        if(empty($basedOnSession))
+		{
+			/* # Status
+			 *  0 prévi
+			 *  1 Confirmée
+			 */
+			// GET SESSION AT DAY-1
+			$sql = "SELECT rowid fk_session_calendrier, fk_agefodd_session  ";
+			$sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
+			$sql.= " WHERE sc.heured >=  CURDATE() + INTERVAL ".$days." DAY AND sc.heured < CURDATE() + INTERVAL ".($days+1)." DAY ";
+			$sql.= " AND   sc.status = 1 ";
+		}
+		else{
+			/* # Status
+			 *  1 Envisagée
+			 *  2 Confirmée
+			 *  6 En cours
+			 *  5 Réalisée
+			 *  3 Non réalisée
+			 *  4 Archivée
+			 */
+			// GET SESSION AT DAY-1
+			$sql = "SELECT rowid fk_agefodd_session ";
+			$sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session s ";
+			$sql.= " WHERE s.dated >=  CURDATE() + INTERVAL ".$days." DAY AND s.dated < CURDATE() + INTERVAL ".($days+1)." DAY ";
+			$sql.= " AND   s.status = 2 ";
+		}
 
-        $resql = $this->db->query($sql);
+
+
+
+
+
+		$resql = $this->db->query($sql);
 
 
 
