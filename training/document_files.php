@@ -154,6 +154,7 @@ if ($object->id) {
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->agefodd_formation_catalogue->creer);
+    $permtoedit = $user->rights->agefodd->agefodd_formation_catalogue->creer;
 	$param = '&id=' . $object->id;
 
 	//Avoid bug with Jquery multiselect form
