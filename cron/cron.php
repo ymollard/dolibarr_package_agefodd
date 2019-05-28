@@ -126,6 +126,7 @@ class cron_agefodd
 
 		$sended = 0;
 		$errors = 0;
+		$invalidEmailAdress = 0;
 		$disabledMContact = 0;
 
 
@@ -196,8 +197,15 @@ class cron_agefodd
 										$sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
 										$sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
 
+										$to = $stagiaire->mail;
 
-										$to = $stagiaire->email;
+										if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+											// is not a valid email address
+											$invalidEmailAdress ++;
+											continue;
+										}
+
+
 										if(!empty($conf->global->AGF_CRON_FORCE_EMAIL_TO) && agf_isEmail($conf->global->AGF_CRON_FORCE_EMAIL_TO) ){
 											$to = $conf->global->AGF_CRON_FORCE_EMAIL_TO;
 										}
@@ -208,6 +216,10 @@ class cron_agefodd
 											$sended++;
 										}
 										else{
+
+											$message.=  $cMailFile->error .' : '.$to;
+
+
 											$errors++;
 										}
 
@@ -235,8 +247,10 @@ class cron_agefodd
 			}
 
 			$message.= ' | ' . $langs->trans('Sended').' : '.$sended;
-			$message.= ' | ' . $langs->trans('agfcron_sendEmailError').' : '.$errors;
+			$message.= ' | ' . $langs->trans('Errors').' : '.$errors;
 			$message.= ' | disabled contact : '.$disabledMContact;
+			$message.= ' | Invalid email adress : '.$invalidEmailAdress;
+
 		}
 		else{
 			if (empty($resql)) dol_print_error($this->db);
