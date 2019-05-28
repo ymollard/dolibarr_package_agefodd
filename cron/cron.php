@@ -206,7 +206,7 @@ class cron_agefodd
 										}
 
 
-										if(!empty($conf->global->AGF_CRON_FORCE_EMAIL_TO) && agf_isEmail($conf->global->AGF_CRON_FORCE_EMAIL_TO) ){
+										if(!empty($conf->global->AGF_CRON_FORCE_EMAIL_TO) && filter_var($conf->global->AGF_CRON_FORCE_EMAIL_TO, FILTER_VALIDATE_EMAIL)){
 											$to = $conf->global->AGF_CRON_FORCE_EMAIL_TO;
 										}
 
