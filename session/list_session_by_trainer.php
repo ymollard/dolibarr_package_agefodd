@@ -122,15 +122,13 @@ $r = new Listview($db, 'list_trainer_session');
 
 
 $sql = "SELECT";
-$sql .= " s.ref refsession, s.rowid idsession, s.duree_session";
+$sql .= " s.ref refsession, s.status, s.rowid idsession, s.duree_session";
 $sql .= " , fc.intitule as intituleformation , fc.rowid idformation ";
-$sql .= " , sf.fk_agefodd_formateur ";
+$sql .= " , sf.fk_agefodd_formateur , sf.rowid as fk_agefodd_session_formateur ";
 $sql .= " , SUM(HOUR(TIMEDIFF(sc.heuref, sc.heured))) as totalHour";
-//$sql .= " , SUM(HOUR(TIMEDIFF(sfc.heuref, sfc.heured))) as totalHourPlanned";
 $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session s";
 $sql .= " JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue fc ON (fc.rowid = s.fk_formation_catalogue ) ";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur sf ON (sf.fk_session = s.rowid  ) ";
-//$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier sfc ON (sfc.fk_agefodd_session_formateur = sf.rowid ) ";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ON (sc.fk_agefodd_session = s.rowid ) ";
 
 $sql .= " WHERE 1 = 1 ";
@@ -139,16 +137,16 @@ $sql .= " WHERE 1 = 1 ";
 
 $sql .= ' GROUP BY ';
 $sql .= ' s.rowid , s.ref,  s.duree_session';
-//$sql .= ' , sc.fk_agefodd_session';
-//$sql .= ', fc.intitule, fc.rowid';
-$sql .= ' ,sf.fk_agefodd_formateur ';
+$sql .= ' ,sf.fk_agefodd_formateur, sf.rowid ';
 
 
 
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 $formAgefodd = new FormAgefodd($db);
-$selectFormateur = $formAgefodd->select_formateur(GETPOST('fk_agefodd_formateur'), 'fk_agefodd_formateur', '', 1);
+$inputPrefix = 'Listview_list_trainer_session_search_';
+$selectFormateur = $formAgefodd->select_formateur(GETPOST($inputPrefix.'fk_agefodd_formateur'), $inputPrefix.'fk_agefodd_formateur', '', 1);
 
+$select_session_status = $formAgefodd->select_session_status(GETPOST($inputPrefix.'status'), $inputPrefix."status", '', 1);
 
 
 $sessionCardUrl = dol_buildpath('agefodd/session/card.php',1).'?id=@idsession@';
@@ -169,14 +167,15 @@ $param = array(
 		,'intituleformation' => $formationCardLink
 	)
 ,'type' => array(
-		'duree_session' => 'number', // [datetime], [hour], [money], [number], [integer]
-		'totalHour' => 'number'
+		//'duree_session' => 'number', // [datetime], [hour], [money], [number], [integer]
+		//'totalHour' => 'number'
 	)
 ,'search' => array(
 		'refsession' => array('search_type' => true, 'table' => array('s', 's'), 'field' => array('ref')),
 		'libelle' => array('search_type' => $goalLibelleList , 'table' => array('csg', 'csg'), 'field' => array('rowid')),
 		'intituleformation' => array('search_type' => true, 'table' => array('fc', 'fc'), 'field' => array('intitule')),
 		'fk_agefodd_formateur' => array('search_type' => 'override', 'override' => $selectFormateur),
+		'status' => array('search_type' => 'override', 'override' => $select_session_status, 'table' => array('s', 's'), 'field' => array('status')),
 		//'max_progress' => array('search_type' => getTraineeLevelProgress(false, true), 'field' => array('MAX(stg.progress)'), 'fieldas' => array('max_progress'),'fieldname' => 'max_progress'),
 )
 ,'list' => array(
@@ -186,14 +185,24 @@ $param = array(
 ,'title'=>array(
 	'intituleformation'  => $langs->trans('Formation')
 	,'fk_agefodd_formateur'  => $langs->trans('Trainer')
+	,'status'  => $langs->trans('Status')
 	,'refsession' => $langs->trans('AgfRefSession')
 	,'duree_session' => $langs->trans('AgfDuree')
 	,'totalHour' => $langs->trans('AgfTotalCalendrierHour')
 	,'totalHourPlanned' => $langs->trans('AgfTotalCalendrierHourPlanned')
+	,'totalHourConfirmed' => $langs->trans('AgfTotalCalendrierHourConfirmed')
+	,'totalHourRealised' => $langs->trans('AgfTotalCalendrierHourRealised')
+
 	,'selectedfields' => ''
 	)
 ,'eval'=>array(
-	'fk_agefodd_formateur'  => '_getTrainerUrl("@val@")'
+		'fk_agefodd_formateur'  => '_getTrainerUrl("@val@")',
+		'totalHourPlanned' 		=> '_getTotalHourFormateurCalendrier("@fk_agefodd_session_formateur@")',
+		'totalHourConfirmed' 	=> '_getTotalHourFormateurCalendrier("@fk_agefodd_session_formateur@", 1)',
+		'totalHourRealised' 	=> '_getTotalHourCalendrier("@idsession@", 3)',
+		'duree_session' 		=> '_convertHourToReadable("@val@")',
+		'totalHour' 			=> '_convertHourToReadable("@val@")',
+		'status' 				=> 'Agsession::getStaticLibStatut("@val@")',
 	)
 );
 
@@ -219,4 +228,78 @@ function _getTrainerUrl($id) {
 	$obj->fetch($id);
 	return $obj->getNomUrl();
 }
+
+
+function _getTotalHourFormateurCalendrier($fk_agefodd_session_formateur, $status = false)
+{
+	global $db;
+
+	$return = '';
+
+	$sql = "SELECT";
+	$sql .= " SUM(HOUR(TIMEDIFF(sfc.heuref, sfc.heured))) as totalHour";
+	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier sfc ";
+	$sql .= " WHERE sfc.fk_agefodd_session_formateur = ".intval($fk_agefodd_session_formateur);
+
+
+	if($status !== false && !is_array($status))
+	{
+		$sql .= " AND sfc.status = ".intval($status);
+	}
+	elseif (is_array($status))
+	{
+		$trainer_status = array_map('intval',$status);
+		$sql .= " AND sfc.status =IN (".implode(',', $status).') ';
+	}
+
+	$resql = $db->query($sql);
+	if ($resql) {
+		$obj = $db->fetch_object($resql) ;
+		$return = _convertHourToReadable($obj->totalHour);
+	}
+
+	return $return;
+}
+
+
+function _getTotalHourCalendrier($fk_agefodd_session, $status = false)
+{
+	global $db;
+
+	$return = '';
+
+	$sql = "SELECT";
+	$sql .= " SUM(HOUR(TIMEDIFF(sc.heuref, sc.heured))) as totalHour";
+	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
+	$sql .= " WHERE sc.fk_agefodd_session = ".intval($fk_agefodd_session);
+
+
+	if($status !== false && !is_array($status))
+	{
+		$sql .= " AND sc.status = ".intval($status);
+	}
+	elseif (is_array($status))
+	{
+		$trainer_status = array_map('intval',$status);
+		$sql .= " AND sc.status =IN (".implode(',', $status).') ';
+	}
+
+	$resql = $db->query($sql);
+	if ($resql) {
+		$obj = $db->fetch_object($resql) ;
+		$return = _convertHourToReadable($obj->totalHour);
+	}
+
+	return $return;
+}
+
+
+function _convertHourToReadable($hours)
+{
+	if(!empty($hours)){
+		$minutes = floor($hours * 60 % 60);
+		return $hours.'H'.(!empty($minutes)?$minutes:'');
+	}
+}
+
 

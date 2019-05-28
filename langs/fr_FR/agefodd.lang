@@ -1564,3 +1564,10 @@ AgfUseTrainingProgramModule=Utiliser les module dans les programme de formation 
 
 AgfQuestionnaireLinkRight=Voir les questionnaires
 AgfQuestionnaireSendRight=Envoyer des questionnaires
+
+# list session by trainer
+AgfSessionHours=Nombres d'heures sur la session
+AgfTotalCalendrierHour=Total heures sur calendrier
+AgfTotalCalendrierHourPlanned=Heures planifiées
+AgfTotalCalendrierHourConfirmed=Heures confirmées
+AgfTotalCalendrierHourRealised=Heures réalisées
