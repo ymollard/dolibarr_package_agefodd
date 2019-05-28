@@ -2162,16 +2162,6 @@ function displayProgress($percentProgress = 0, $title = '', $insideDisplay = "",
 }
 
 
-/**
- * Check if string is a correct email address
- * @param $email
- * @return bool
- */
-function agf_isEmail($email)
-{
-    return empty($email) OR preg_match('/^[a-z0-9!#$%&amp;\'*+\/=?^`{}|~_-]+[.a-z0-9!#$%&amp;\'*+\/=?^`{}|~_-]*@[a-z0-9]+[._a-z0-9-]*\.[a-z0-9]+$/ui', $email);
-}
-
 
 /**
  * get template model of mail
