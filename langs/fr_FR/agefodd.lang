@@ -1572,3 +1572,9 @@ AgfQuestionnaireSendRight=Envoyer des questionnaires
 CronTaskAutoStatusAgefoddCalendar=Workflow des statut des créneaux de sessions
 CronTaskAutoStatusAgefoddCalendarDesc=Passer au statut Réalisé automatique par un traitement journalier si la date est dans le passé et que le statut est confirmé
 CronTaskSendAgendaToTraineeLabel=Envoi de mail de rappel aux stagiaires
+
+setStatus_DRAFT=Appliquer l'état "Prévisionnel"
+setStatus_CONFIRMED=Appliquer l'état "Confirmé"
+setStatus_MISSING=Appliquer l'état "Absent"
+setStatus_FINISH=Appliquer l'état "Réalisé"
+setStatus_CANCELED=Appliquer l'état "Annulé"
