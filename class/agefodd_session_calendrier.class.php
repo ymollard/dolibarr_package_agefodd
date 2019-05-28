@@ -49,6 +49,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	const STATUS_DRAFT = 0;
 	const STATUS_CONFIRMED = 1;
 	const STATUS_MISSING = 2;
+	const STATUS_FINISH = 3;
 	const STATUS_CANCELED = -1;
 	/**
 	 * Constructor
@@ -638,11 +639,16 @@ class Agefodd_sesscalendar extends CommonObject{
 	        if ($mode == 1) $out.= img_picto('', 'statut6').' ';
 	        $out.= $langs->trans('AgfStatusCalendar_canceled');
 	    }
-	    else if ($status == self::STATUS_MISSING)
-	    {
-	        if ($mode == 1) $out.= img_picto('', 'statut8').' ';
-	        $out.= $langs->trans('AgfStatusCalendar_missing');
-	    }
+		else if ($status == self::STATUS_MISSING)
+		{
+			if ($mode == 1) $out.= img_picto('', 'statut8').' ';
+			$out.= $langs->trans('AgfStatusCalendar_missing');
+		}
+		else if ($status == self::STATUS_FINISH)
+		{
+			if ($mode == 1) $out.= img_picto('', 'statut9').' ';
+			$out.= $langs->trans('AgfStatusCalendar_finish');
+		}
 
 	    return $out;
 	}

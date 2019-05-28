@@ -2016,6 +2016,104 @@ if (! empty($id)) {
 
 			$formmail->substit['__PERSONALIZED__'] = '';
 
+
+			/*
+			 * LOAD TRAINERS EXTRAFIELDS REPLACEMENTS
+			 */
+
+			$agf->fetchTrainers();
+			if(is_array($agf->TTrainer)){
+				$nbTrainers = count($agf->TTrainer);
+			}
+
+			// Load contact extrafields list
+			$contactTemps = new Contact($db);
+			$contact_table_element = $contactTemps->table_element;
+			$trainneExtrafields = new ExtraFields($db);
+			$trainneExtrafields->fetch_name_optionals_label($contact_table_element);
+
+			$TExtrafields = array();
+			if(!empty($trainneExtrafields->attributes[$contact_table_element])) {
+				foreach ($trainneExtrafields->attributes[$contact_table_element]['elementtype'] as $extrafieldKey => $extrafieldElementType) {
+					$TExtrafields[] = $extrafieldKey;
+				}
+			}
+
+
+			// Load users extrafields list
+			$trainneExtrafields = new ExtraFields($db);
+			$trainneExtrafields->fetch_name_optionals_label($user->table_element);
+			if(!empty($trainneExtrafields->attributes[$user->table_element])) {
+				foreach ($trainneExtrafields->attributes[$user->table_element]['elementtype'] as $extrafieldKey => $extrafieldElementType) {
+					$TExtrafields[] = $extrafieldKey;
+				}
+			}
+
+
+			$TExtrafields = array_unique($TExtrafields);
+
+			if(!empty($TExtrafields))
+			{
+				// prepare key search
+				$TExtrafieldsOptions = array();
+				foreach ($TExtrafields as $extrafieldKey){
+					$TExtrafieldsOptions['options_'.$extrafieldKey] = $extrafieldKey;
+				}
+
+				// I set empty trainers to allocate data replacement
+				$nbTrainers = $nbTrainers>10?$nbTrainers:10;
+				for ($i = 0; $i <= $nbTrainers; $i++)
+				{
+					$t = $i+1; // more user friendly to start at 1 and not 0
+
+					// To set replacement key to empty
+					foreach ($TExtrafields as $extrafieldKey){
+						$extKey = '__TRAINER_'.$t.'_EXTRAFIELD_'.strtoupper($extrafieldKey).'__';
+						$formmail->substit[$extKey] = '';
+					}
+
+					// Replace with real data if exist
+					if(!empty($agf->TTrainer[$i]))
+					{
+						$trainer =& $agf->TTrainer[$i];
+						if(!empty($trainer->fk_socpeople)){
+							$contactTrainer = new Contact($db);
+							if($contactTrainer->fetch($trainer->fk_socpeople)>0){
+								$contactTrainer->fetch_optionals();
+
+								if(!empty($contactTrainer->array_options)){
+									foreach ($contactTrainer->array_options as $key => $value){
+										$extKey = '__TRAINER_'.$t.'_EXTRAFIELD_'.strtoupper($TExtrafieldsOptions[$key]).'__';
+										$formmail->substit[$extKey] = $value;
+									}
+								}
+							}
+						}
+						elseif(!empty($trainer->fk_user)){
+							$userTrainer = new User($db);
+							if($userTrainer->fetch($trainer->fk_user)>0){
+								$userTrainer->fetch_optionals();
+
+								if(!empty($userTrainer->array_options)){
+									foreach ($userTrainer->array_options as $key => $value){
+										$extKey = '__TRAINER_'.$t.'_EXTRAFIELD_'.strtoupper($TExtrafieldsOptions[$key]).'__';
+										$formmail->substit[$extKey] = $value;
+									}
+								}
+							}
+						}
+
+						// isset($agf->TTrainer[$i]->array_options['option'])
+					}
+
+				}
+
+
+			}
+
+			// <- End trainer extrafields replacement
+
+
 			// Tableau des parametres complementaires
 			$formmail->param['action'] = 'send';
 			$formmail->param['models_id'] = GETPOST('modelmailselected');

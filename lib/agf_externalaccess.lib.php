@@ -24,7 +24,7 @@
  */
 function getMenuAgefoddExternalAccess()
 {
-	global $langs;
+	global $langs, $user;
 
 	$context = Context::getInstance();
 	$html = '<section id="agefodd">
@@ -42,6 +42,13 @@ function getMenuAgefoddExternalAccess()
 	$link = $context->getRootUrl('agefodd_session_list');
 	$html.= getService($langs->trans('AgfMenuSess'),'fa-hourglass',$link);
 	// TODO faire les getService() pour avoir accés à d'autres objets d'agefodd (pour plus tard)
+
+	if($user->rights->agefodd->external_trainer_agenda){
+		$link = $context->getRootUrl('agefodd_trainer_agenda');
+		$html.= getService($langs->trans('AgfMenuAgendaFormateur'),'fa-calendar',$link);
+	}
+
+
 
 	$html.= '</div>
 			</div>
@@ -941,3 +948,212 @@ function validateFormateur($context)
     else return true;
 }
 
+function getPageViewAgendaFormateurExternalAccess(){
+
+	global $conf, $user;
+
+	$context = Context::getInstance();
+
+	$html = '<div class="container"><div class="container-fluid">';
+	$html.= '<div id="agf-agenda-formation" ></div>';
+	$html.= '</div></div>';
+
+	$html.= '<link href="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/core/main.css" rel="stylesheet">';
+	$html.= '<link href="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/daygrid/main.css" rel="stylesheet">';
+	$html.= '<link href="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/timegrid/main.css" rel="stylesheet"" />';
+	$html.= '<link href="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/list/main.css" rel="stylesheet"" />';
+
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/rrule/rrule.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/core/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/interaction/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/daygrid/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/timegrid/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/list/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/rrule/main.js"></script>';
+	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/core/locales-all.js"></script>';
+
+
+
+	$html.= '<script type="text/javascript">
+
+	fullcalendarscheduler_interface = "'.$context->getRootUrl().'script/interface.php?action=getSessionAgenda";
+	fullcalendarscheduler_initialLangCode = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_LOCALE_LANG) ? $conf->global->FULLCALENDARSCHEDULER_LOCALE_LANG : 'fr').'";
+	fullcalendarscheduler_snapDuration = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_SNAP_DURATION) ? $conf->global->FULLCALENDARSCHEDULER_SNAP_DURATION : '00:15:00').'";
+	fullcalendarscheduler_aspectRatio = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_ASPECT_RATIO) ? $conf->global->FULLCALENDARSCHEDULER_ASPECT_RATIO : '1.6').'";
+	fullcalendarscheduler_minTime = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_MIN_TIME) ? $conf->global->FULLCALENDARSCHEDULER_MIN_TIME : '00:00').'";
+	fullcalendarscheduler_maxTime = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_MAX_TIME) ? $conf->global->FULLCALENDARSCHEDULER_MAX_TIME : '23:00').'";
+
+
+	fullcalendar_scheduler_resources_allowed = [];
+
+	fullcalendar_scheduler_businessHours_week_start = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_START) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_START : '08:00').'";
+	fullcalendar_scheduler_businessHours_week_end = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_END) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEK_END : '18:00').'";
+
+	fullcalendar_scheduler_businessHours_weekend_start = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START : '10:00').'";
+	fullcalendar_scheduler_businessHours_weekend_end = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END : '16:00').'";
+
+
+
+		document.addEventListener(\'DOMContentLoaded\', function() {
+    var calendarEl = document.getElementById(\'agf-agenda-formation\');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+		plugins: [ \'interaction\', \'dayGrid\', \'timeGrid\', \'list\', \'rrule\' ],
+		defaultDate: \''.date('Y-m-d').'\',
+		defaultView: \'timeGridWeek\',
+		snapDuration: fullcalendarscheduler_snapDuration,
+		weekNumbers: true,
+		weekNumbersWithinDays: true,
+		weekNumberCalculation: \'ISO\',
+		header: {
+			left: \'prev,next today\',
+			center: \'title\',
+			right: \'dayGridMonth,timeGridWeek,timeGridDay,listMonth\'
+		},
+		editable: false, // next step add rights and allow edition
+		locale: fullcalendarscheduler_initialLangCode,
+		eventLimit: true, // allow "more" link when too many events
+		eventRender: function(info) {
+		    
+		    //info.el.tooltip({title: info.event.extendedProps.session_formateur_calendrier});
+		    //console.log(info.el);
+    		//console.log ( info.event.extendedProps.session_formateur_calendrier );
+		},
+		events: 
+		{
+			url: fullcalendarscheduler_interface,
+			extraParams: {
+				custom_param1: \'something\',
+				custom_param2: \'somethingelse\'
+			},
+			failure: function() {
+			//document.getElementById(\'script-warning\').style.display = \'block\'
+			}
+		},
+		loading: function(bool) {
+		//document.getElementById(\'loading\').style.display = bool ? \'block\' : \'none\';
+		},
+		eventClick: function(info) {
+		    
+    		info.jsEvent.preventDefault(); // don\'t let the browser navigate
+    		//console.log ( info.event.extendedProps.session_formateur_calendrier );
+    		
+			if (info.event.url.length > 0){
+			    //console.log(info.event);
+			    // Open url in new window
+			    window.open(info.event.url, "_blank");
+			    // Deactivate original link
+			    return false;
+			}
+		}
+    });
+
+    calendar.render();
+  });
+			 </script>';
+
+
+	return '<section >'.$html.'</section >';
+}
+
+
+
+function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0){
+
+	global $db, $hookmanager, $langs;
+
+	$context = Context::getInstance();
+
+	$TRes = array();
+	//if (empty($fk_formateur)) return json_encode($TRes);
+
+	$sql = 'SELECT c.rowid, c.heured, c.heuref, s.ref ref_session, sf.fk_session, fc.intitule, fc.ref as ref_formation ';
+
+	$sql.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier c ';
+
+	$sql.= ' JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur sf ON (sf.rowid = c.fk_agefodd_session_formateur) ';
+	$sql.= ' JOIN '.MAIN_DB_PREFIX.'agefodd_session s ON (s.rowid = sf.fk_session) ';
+	$sql.= ' JOIN '.MAIN_DB_PREFIX.'agefodd_formation_catalogue fc ON (fc.rowid = s.fk_formation_catalogue) ';
+
+
+
+	$sql.= ' WHERE 1 = 1 ';
+
+	if(!empty($start)){
+		$sql.= ' AND c.heured <= \''.date('Y-m-d H:i:s', $end).'\'';
+	}
+
+	if(!empty($start)){
+		$sql.= ' AND c.heuref >= \''.date('Y-m-d H:i:s', $start).'\'';
+	}
+
+	if(!empty($fk_formateur)){
+		$sql.= ' AND sf.fk_agefodd_formateur = '.intval($fk_formateur);
+	}
+
+
+	$resql = $db->query($sql);
+
+	if ($resql)
+	{
+		while ($obj = $db->fetch_object($resql))
+		{
+			$event = new stdClass();
+
+			//$event->groupId: 999,
+			$event->title	= $obj->intitule . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $obj->ref_session;
+
+			$event->toolTip = '';
+
+          	$event->url		= $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$obj->fk_session.'&slotid='.$obj->rowid.'&action=view');
+          	$event->start	= date('c', $db->jdate($obj->heured));
+			$event->end		= date('c', $db->jdate($obj->heuref));
+
+			//...
+			$event->session_formateur_calendrier = new stdClass();
+			$event->session_formateur_calendrier->id = $obj->rowid;
+
+			$parameters= array(
+				'sqlObj' => $obj,
+			);
+
+			$reshook=$hookmanager->executeHooks('externalaccess_getAgefoddJsonAgendaFormateur',$parameters,$event);    // Note that $action and $object may have been modified by hook
+
+			if ($reshook>0)
+			{
+				$event = $hookmanager->resArray;
+			}
+
+
+			$TRes[] = $event;
+		}
+	}
+	else
+	{
+		dol_print_error($db);
+	}
+
+	return json_encode($TRes);
+}
+
+
+
+/** Parses a string into a DateTime object, optionally forced into the given timezone.
+ * @param $string
+ * @param null $timezone
+ * @return DateTime
+ * @throws Exception
+ */
+function parseFullCalendarDateTime($string, $timezone=null) {
+	$date = new DateTime(
+		$string,
+		$timezone ? $timezone : new DateTimeZone('UTC')
+		// Used only when the string is ambiguous.
+		// Ignored if string has a timezone offset in it.
+	);
+	if ($timezone) {
+		// If our timezone was ignored above, force it.
+		$date->setTimezone($timezone);
+	}
+	return $date;
+}

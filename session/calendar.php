@@ -97,6 +97,49 @@ if (!empty($massaction))
         case "delete":
             $action = 'delete_calsel';
             break;
+		case "setStatus_DRAFT":
+		case "setStatus_CONFIRMED":
+		case "setStatus_MISSING":
+		case "setStatus_FINISH":
+		case "setStatus_CANCELED":
+
+
+			if($massaction == "setStatus_DRAFT"){
+				$statusToSet = Agefodd_sesscalendar::STATUS_DRAFT;
+			}elseif($massaction == "setStatus_CONFIRMED"){
+				$statusToSet = Agefodd_sesscalendar::STATUS_CONFIRMED;
+			}elseif($massaction == "setStatus_MISSING"){
+				$statusToSet = Agefodd_sesscalendar::STATUS_MISSING;
+			}elseif($massaction == "setStatus_FINISH"){
+				$statusToSet = Agefodd_sesscalendar::STATUS_FINISH;
+			}else{ // realised
+				$statusToSet = Agefodd_sesscalendar::STATUS_CANCELED;
+			}
+
+			if (count($toselect) > 0) {
+				foreach ( $toselect as $lineid ) {
+					$calrem = new Agefodd_sesscalendar($db);
+					$result = $calrem->fetch($lineid);
+					if ($result < 0) {
+						setEventMessage($calrem->error, 'errors');
+						$error ++;
+					}
+					else
+					{
+						$calrem->status = $statusToSet;
+						$res = $calrem->update($user);
+						if ($res < 0) {
+							setEventMessage($calrem->error, 'errors');
+							$error ++;
+						}
+					}
+				}
+			}
+			if (! $error) {
+				Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
+				exit();
+			}
+			break;
 
         case "bill":
             if (count($toselect) > 0) {
@@ -532,7 +575,19 @@ if ($id) {
 			    $arrayofaction['bill'] = $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('Billed').'"';
 			    $arrayofaction['tobill'] = $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('ToBill').'"';
 			}
+
+
+
+			$arrayofaction["setStatus_DRAFT"]=$langs->trans('setStatus_DRAFT');
+			$arrayofaction["setStatus_CONFIRMED"]=$langs->trans('setStatus_CONFIRMED');
+			$arrayofaction["setStatus_MISSING"]=$langs->trans('setStatus_MISSING');
+			$arrayofaction["setStatus_FINISH"]=$langs->trans('setStatus_FINISH');
+			$arrayofaction["setStatus_CANCELED"]=$langs->trans('setStatus_CANCELED');
+
+
+			$arrayofaction['separator']='---------------------';
 			$arrayofaction['delete']=$langs->trans('Delete');
+
 
 			$massactionbutton = $formAgefodd->selectMassAction('', $arrayofaction);
 

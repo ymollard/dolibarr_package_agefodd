@@ -200,7 +200,8 @@ if(!empty($conf->externalaccess->enabled))
         Agefodd_sesscalendar::STATUS_DRAFT => $langs->trans('AgfStatusCalendar_previsionnel'),
         Agefodd_sesscalendar::STATUS_CONFIRMED => $langs->trans('AgfStatusCalendar_confirmed'),
         Agefodd_sesscalendar::STATUS_CANCELED => $langs->trans('AgfStatusCalendar_canceled'),
-        Agefodd_sesscalendar::STATUS_MISSING => $langs->trans('AgfStatusCalendar_missing'),
+		Agefodd_sesscalendar::STATUS_MISSING => $langs->trans('AgfStatusCalendar_missing'),
+		Agefodd_sesscalendar::STATUS_FINISH => $langs->trans('AgfStatusCalendar_finish'),
     );
     print $form->multiselectarray('AGF_EA_ECLATE_HEURES_EXCLUES', $arrval, unserialize($conf->global->AGF_EA_ECLATE_HEURES_EXCLUES));
     
