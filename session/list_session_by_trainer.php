@@ -172,7 +172,7 @@ $param = array(
 	)
 ,'search' => array(
 		'refsession' => array('search_type' => true, 'table' => array('s', 's'), 'field' => array('ref')),
-		'libelle' => array('search_type' => $goalLibelleList , 'table' => array('csg', 'csg'), 'field' => array('rowid')),
+		'libelle' => array('search_type' => true , 'table' => array('csg', 'csg'), 'field' => array('rowid')),
 		'intituleformation' => array('search_type' => true, 'table' => array('fc', 'fc'), 'field' => array('intitule')),
 		'fk_agefodd_formateur' => array('search_type' => 'override', 'override' => $selectFormateur),
 		'status' => array('search_type' => 'override', 'override' => $select_session_status, 'table' => array('s', 's'), 'field' => array('status')),
