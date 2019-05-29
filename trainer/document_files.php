@@ -120,6 +120,7 @@ if ($object->id) {
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->creer);
+    $permtoedit = $user->rights->agefodd->creer;
 	$param = '&id=' . $object->id;
 	//Avoid bug with Jquery multiselect form
 	$conf->global->MAIN_USE_JQUERY_FILEUPLOAD=0;
