@@ -58,7 +58,21 @@ $search_soc = GETPOST('search_soc', 'array');
 $search_invoice_status = GETPOST('search_invoice_status');
 $search_only_active = $action == 'builddoc' ? isset($_REQUEST['search_only_active']) : true;
 $search_created_during_selected_period = isset($_REQUEST['search_created_during_selected_period']);
-$search_client_prospect = GETPOST('search_client_prospect');
+$search_client_prospect = GETPOST('search_client_prospect', 'array');
+if($action != 'builddoc' && empty($search_client_prospect))
+{
+	$search_client_prospect = array();
+
+	if(empty($conf->global->SOCIETE_DISABLE_CUSTOMERS))
+	{
+		$search_client_prospect[] = 1;
+
+		if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS) && empty($conf->global->SOCIETE_DISABLE_PROSPECTSCUSTOMERS))
+		{
+			$search_client_prospect[] = 3;
+		}
+	}
+}
 $search_detail = GETPOST('search_detail');
 
 //$ts_logistique = GETPOST('options_ts_logistique', 'int');
@@ -135,7 +149,11 @@ if(! empty($search_detail))
  */
 if ($action == 'builddoc')
 {
-	if (count($filter) > 0)
+	if(empty($filter['s.client']))
+	{
+		setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv('ProspectCustomer')), 'errors');
+	}
+	else
 	{
 		$outputlangs = $langs;
 		$newlang = $lang_id;
@@ -150,8 +168,7 @@ if ($action == 'builddoc')
 
 		$report = new ReportCommercial($db, $outputlangs);
 
-		//$report_by_cust->file = $upload_dir . 'reportbycust-' . dol_print_date(dol_now(), 'dayhourlog') . '.xlsx';
-		$file_sub_title=$report->getSubTitlFileName($filter);
+		$file_sub_title = $report->getSubTitlFileName($filter);
 		$report->file = $upload_dir . 'reportcommercial' . $file_sub_title . '.xlsx';
 
 
@@ -163,12 +180,10 @@ if ($action == 'builddoc')
 		} else {
 			setEventMessage($langs->trans("FileSuccessfullyBuilt"));
 		}
-	} else {
-		$langs->load('errors');
-		setEventMessage($langs->trans("AgfRptSelectAtLeastOneCriteria"), 'errors');
 	}
-} elseif ($action == 'remove_file') {
-
+}
+elseif ($action == 'remove_file')
+{
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 
 	$langs->load("other");
@@ -181,10 +196,34 @@ if ($action == 'builddoc')
 	$action = '';
 }
 
+/**
+ * View
+ */
+
 $report = new ReportCommercial($db, $langs);
 
 $head = agf_commercial_report_prepare_head(http_build_query($_REQUEST));
 dol_fiche_head($head, 'card', $langs->trans("AgfMenuReportCommercial"), 0, 'bill');
+
+
+
+$TClientProspectChoices = array(0 => $langs->trans('NorProspectNorCustomer'));
+
+if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS))
+{
+	$TClientProspectChoices[2] = $langs->trans('Prospect');
+}
+
+if (empty($conf->global->SOCIETE_DISABLE_CUSTOMERS))
+{
+	$TClientProspectChoices[1] = $langs->trans('Customer');
+
+	if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS) && empty($conf->global->SOCIETE_DISABLE_PROSPECTSCUSTOMERS))
+	{
+		$TClientProspectChoices[3] = $langs->trans('ProspectCustomer');
+	}
+}
+
 
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
 
@@ -192,7 +231,7 @@ print '<table class="border" width="100%">';
 
 
 print '<tr>';
-print '<td>' . $langs->trans('AgfReportCommercialBaseYear').'</td>';
+print '<td class="fieldrequired">' . $langs->trans('AgfReportCommercialBaseYear').'</td>';
 print '<td>';
 print $formother->selectyear($search_year ? $search_year : -1, 'search_year', 0, 15, 0);
 print '</td>';
@@ -202,14 +241,14 @@ $TYears = range(1, 15);
 $TYears = array_combine($TYears, $TYears);
 
 print '<tr>';
-print '<td>' . $langs->trans('AgfReportCommercialNbYears').'</td>';
+print '<td class="fieldrequired">' . $langs->trans('AgfReportCommercialNbYears').'</td>';
 print '<td>';
 print $form->selectarray('search_nb_years', $TYears, ! empty($search_nb_years) ? $search_nb_years : 4);
 print '</td>';
 print '</tr>';
 
 print '<tr>';
-print '<td>' . $langs->trans('AgfReportCommercialInvoiceAccountingDate').'</td>';
+print '<td class="fieldrequired">' . $langs->trans('AgfReportCommercialInvoiceAccountingDate').'</td>';
 print '<td>';
 print $form->selectarray('search_accounting_date', $report->T_ACCOUNTING_DATE_CHOICES, $search_accounting_date, 0, 0, 0, '', 1);
 print '</td>';
@@ -226,9 +265,10 @@ print '<td>' . $formother->select_salesrepresentatives($search_sale, 'search_sal
 print '</tr>';
 
 
-$TCompanies = $report->fetch_companies(array());
+$TCompanies = $report->fetch_companies(array('s.client' => array_keys($TClientProspectChoices))); // Filtre sur client obligatoire => on sélectionne tout
 
-$TCompaniesMultiSelect = array_map(function($elem) {
+$TCompaniesMultiSelect = array_map(function($elem)
+{
 	$out = $elem->nom;
 
 	if(! empty($elem->code_client))
@@ -245,14 +285,10 @@ print '<td>' . $langs->trans('Companies') . '</td>';
 print '<td>' . Form::multiselectarray('search_soc', $TCompaniesMultiSelect, ! empty($search_soc) ? $search_soc : array()) . '</td>';
 print '</tr>';
 
+
 print '<tr>';
-print '<td>' . $langs->trans('ProspectCustomer') . '</td>';
-print '<td><select class="flat" name="search_client_prospect" id="customerprospect">';
-if (empty($search_client_prospect)) print '<option value="">&nbsp;</option>';
-if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS)) print '<option value="2"'.($search_client_prospect==2?' selected':'').'>'.$langs->trans('Prospect').'</option>';
-if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS) && empty($conf->global->SOCIETE_DISABLE_CUSTOMERS) && empty($conf->global->SOCIETE_DISABLE_PROSPECTSCUSTOMERS)) print '<option value="3"'.($search_client_prospect==3?' selected':'').'>'.$langs->trans('ProspectCustomer').'</option>';
-if (empty($conf->global->SOCIETE_DISABLE_CUSTOMERS)) print '<option value="1"'.($search_client_prospect==1?' selected':'').'>'.$langs->trans('Customer').'</option>';
-print '</select></td>';
+print '<td class="fieldrequired">' . $langs->trans('ProspectCustomer') . '</td>';
+print '<td>' . Form::multiselectarray('search_client_prospect', $TClientProspectChoices, $search_client_prospect) . '</td>';
 print '</tr>';
 
 print '<tr>';

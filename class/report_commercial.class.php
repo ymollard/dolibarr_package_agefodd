@@ -155,20 +155,27 @@ class ReportCommercial extends AgefoddExportExcel
 
 							case 's.client':
 								$filterName = $this->outputlangs->transnoentities('ProspectCustomer');
-								switch ($value) {
-									case 1: // Client
-										$filterValue = 'C';
-										break;
+								$TValues = array();
 
-									case 2: // Prospect
-										$filterValue = 'P';
-										break;
-
-									case 3: // Client/Prospect
-										$filterValue = 'CP';
-										break;
+								// Client
+								if(in_array(1, $value))
+								{
+									$TValues[] = 'C';
 								}
 
+								// Prospect
+								if(in_array(2, $value))
+								{
+									$TValues[] = 'P';
+								}
+
+								// Client/Prospect
+								if(in_array(3, $value))
+								{
+									$TValues[] = 'CP';
+								}
+
+								$filterValue = implode(' + ', $TValues);
 								break;
 
 							case 's.active':
@@ -264,20 +271,27 @@ class ReportCommercial extends AgefoddExportExcel
 						break;
 
 					case 's.client':
-						switch($value)
+						$TValues = array();
+
+						// Client
+						if(in_array(1, $value))
 						{
-							case 1: // Client
-								$str_sub_name .= '-C';
-								break;
-
-							case 2: // Prospect
-								$str_sub_name .= '-P';
-								break;
-
-							case 3: // Client/Prospect
-								$str_sub_name .= '-CP';
-								break;
+							$TValues[] = 'C';
 						}
+
+						// Prospect
+						if(in_array(2, $value))
+						{
+							$TValues[] = 'P';
+						}
+
+						// Client/Prospect
+						if(in_array(3, $value))
+						{
+							$TValues[] = 'CP';
+						}
+
+						$str_sub_name.= '-' . implode('+', $TValues);
 
 						break;
 
@@ -474,7 +488,8 @@ class ReportCommercial extends AgefoddExportExcel
 				LEFT JOIN ' . MAIN_DB_PREFIX . 'societe_commerciaux sc ON (sc.fk_soc = s.rowid)
 				WHERE s.entity = ' . getEntity('societe') . '
 				AND COALESCE(parent.rowid, 0) = ' . $parentID . '
-				AND s.fk_typent != 103';
+				AND s.fk_typent != 103
+				AND s.client IN (' . implode(', ', $filter['s.client']) . ')';
 
 		if(empty($parentID) && ! empty($filter['soc.rowid']))
 		{
@@ -505,12 +520,6 @@ class ReportCommercial extends AgefoddExportExcel
 			$sql.= '
 				AND s.datec <= "' . $filter['startyear'] . '"
 				AND s.datec > "' . ($filter['startyear'] - $filter['nbyears']) . '"';
-		}
-
-		if(! empty($filter['s.client']))
-		{
-			$sql.= '
-				AND s.client = ' . $filter['s.client'];
 		}
 
 		$sql.= '
