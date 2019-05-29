@@ -1255,6 +1255,7 @@ AgfReportCommercialHelpFilterProspectCustomer=Restreint le rapport aux société
 AgfReportCommercialHelpFilterAgfReportCommercialOnlyActive=Restreient le rapport aux sociétés actives
 AgfReportCommercialHelpFilterAgfReportCommercialOnlyCreatedOnSelectedPeriod=Restreint le rapport aux sociétés crées lors de la période d'étude sélectionnée
 AgfReportCommercialHelpFilterAgfReportCommercialDetail=Pour chaque maison-mère ou société isolée, affiche le détail par filiale. Si tel est le cas, le montant de la ligne de la maison-mère n'indique que les montants affectés directement à la maison-mère.
+AgfReportCommercialHelpFilterWarning=Les filtres ne s'appliquent que sur la maison-mère : toutes les filiales seront sélectionnées.
 AgfReportCommercialHelpDifferenceWithSessionList=Différence avec les montants affichés sur la liste des sessions
 AgfReportCommercialHelpDifferenceNoLink=Les factures associées à des sessions mais à des sociétés qui ne sont liées à aucun participant (comme employeur, demandeur, ou OPCA) ne sont pas comptabilisées.
 AgfReportCommercialHelpDifferenceOPCAAndEmployer=Dans le cas où, dans une même session, une société est à la fois l'OPCA d'un participant et l'employeur d'un autre, les factures liées à cette société sont comptabilisées deux fois.

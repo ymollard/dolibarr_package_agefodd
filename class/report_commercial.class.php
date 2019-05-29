@@ -488,38 +488,43 @@ class ReportCommercial extends AgefoddExportExcel
 				LEFT JOIN ' . MAIN_DB_PREFIX . 'societe_commerciaux sc ON (sc.fk_soc = s.rowid)
 				WHERE s.entity = ' . getEntity('societe') . '
 				AND COALESCE(parent.rowid, 0) = ' . $parentID . '
-				AND s.fk_typent != 103
+				AND s.fk_typent != 103';
+
+		// On n'applique les filtres que sur la maison-mère
+		if(empty($parentID))
+		{
+			$sql .= '
 				AND s.client IN (' . implode(', ', $filter['s.client']) . ')';
 
-		if(empty($parentID) && ! empty($filter['soc.rowid']))
-		{
-			if(! is_array($filter['soc.rowid']))
+			if (! empty($filter['soc.rowid']))
 			{
-				$filter['soc.rowid'] = array($filter['soc.rowid']);
+				if (! is_array($filter['soc.rowid']))
+				{
+					$filter['soc.rowid'] = array($filter['soc.rowid']);
+				}
+
+				$sql .= '
+				AND s.rowid IN (' . implode(', ', $filter['soc.rowid']) . ')';
 			}
 
-			$sql.= '
-				AND s.rowid IN (' . implode(', ', $filter['soc.rowid']) . ')';
-		}
-
-		// TODO $parentID == 0 ?
-		if(! empty($filter['sale.fk_user']))
-		{
-			$sql.= '
+			if (! empty($filter['sale.fk_user']))
+			{
+				$sql .= '
 				AND sc.fk_user = ' . $filter['sale.fk_user'];
-		}
+			}
 
-		if(! empty($filter['s.active']))
-		{
-			$sql.= '
+			if (! empty($filter['s.active']))
+			{
+				$sql .= '
 				AND s.status = 1';
-		}
+			}
 
-		if(! empty($filter['s.created_during_selected_period']))
-		{
-			$sql.= '
+			if (! empty($filter['s.created_during_selected_period']))
+			{
+				$sql .= '
 				AND s.datec <= "' . $filter['startyear'] . '"
 				AND s.datec > "' . ($filter['startyear'] - $filter['nbyears']) . '"';
+			}
 		}
 
 		$sql.= '
