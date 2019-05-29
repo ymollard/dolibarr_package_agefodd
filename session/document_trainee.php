@@ -429,63 +429,81 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 			);
 		}
 
-		if ($sendmail_check == true) {
-			// Create form object
-			include_once (DOL_DOCUMENT_ROOT . '/core/class/html.formmail.class.php');
-			$formmail = new FormMail($db);
+		$parameters = array(
+			'contact_trainee' =>& $contact_trainee,
+			'subject' =>& $subject,
+			'send_email' =>& $send_email,
+			'from' =>& $from,
+			'message' =>& $message,
+			'filepath' =>& $filepath,
+			'mimetype' =>& $mimetype,
+			'filename' =>& $filename,
+			'sendtocc' =>& $sendtocc,
+			'sendmail_check' =>& $sendmail_check
+		);
 
-			if (! empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
-				$message = str_replace("\n", "<BR>", $message);
-			}
+		$reshook = $hookmanager->executeHooks('sendMassmail', $parameters, $agf_trainee, $action); // Note that $action and $object may have been modified by some hooks
+		if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+		if (empty($reshook)) {
 
-			$message .= $user->signature;
+			if ($sendmail_check == true) {
+				// Create form object
+				include_once(DOL_DOCUMENT_ROOT . '/core/class/html.formmail.class.php');
+				$formmail = new FormMail($db);
 
-			// Envoi de la fiche
-			require_once (DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
-			$mailfile = new CMailFile($subject, $send_email, $from, $message, $filepath, $mimetype, $filename, $sendtocc, '', 1, - 1);
-			if ($mailfile->error) {
-				setEventMessage($mailfile->error, 'errors');
-			} else {
-				$result = $mailfile->sendfile();
-				if ($result) {
-					setEventMessage($langs->trans('MailSuccessfulySent', $mailfile->getValidAddress($from, 2), $mailfile->getValidAddress($send_email, 2)), 'mesgs');
+				if (!empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
+					$message = str_replace("\n", "<BR>", $message);
+				}
 
-					$error = 0;
+				$message .= $user->signature;
 
-					$object->actiontypecode = $actiontypecode;
-					$object->actionmsg = $actionmsg;
-					$object->actionmsg2 = $actionmsg2;
-					$object->fk_element = $object->id;
-					$object->elementtype = $object->element;
-
-					/* Appel des triggers */
-					include_once (DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-					$interface = new Interfaces($db);
-
-					if ($models == 'convocation_trainee') {
-						$result = $interface->run_triggers('CONVOCATION_SENTBYMAIL', $object, $user, $langs, $conf);
-					} elseif ($models == 'attestation_trainee' || $models == 'attestationendtraining_trainee') {
-						$result = $interface->run_triggers('ATTESTATION_SENTBYMAIL', $object, $user, $langs, $conf);
-					}
-					if ($result < 0) {
-						$error ++;
-						$object->errors = $interface->errors;
-					}
-					// Fin appel triggers
-
-					if ($error) {
-						setEventMessage($object->errors, 'errors');
-					} else {
-						$i ++;
-						$action = '';
-					}
+				// Envoi de la fiche
+				require_once(DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
+				$mailfile = new CMailFile($subject, $send_email, $from, $message, $filepath, $mimetype, $filename, $sendtocc, '', 1, -1);
+				if ($mailfile->error) {
+					setEventMessage($mailfile->error, 'errors');
 				} else {
-					$langs->load("other");
-					if ($mailfile->error) {
-						setEventMessage($langs->trans('ErrorFailedToSendMail', $from, $send_email), 'errors');
-						dol_syslog($langs->trans('ErrorFailedToSendMail', $from, $send_email) . ' : ' . $mailfile->error);
+					$result = $mailfile->sendfile();
+					if ($result) {
+						setEventMessage($langs->trans('MailSuccessfulySent', $mailfile->getValidAddress($from, 2), $mailfile->getValidAddress($send_email, 2)), 'mesgs');
+
+						$error = 0;
+
+						$object->actiontypecode = $actiontypecode;
+						$object->actionmsg = $actionmsg;
+						$object->actionmsg2 = $actionmsg2;
+						$object->fk_element = $object->id;
+						$object->elementtype = $object->element;
+
+						/* Appel des triggers */
+						include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+						$interface = new Interfaces($db);
+
+						if ($models == 'convocation_trainee') {
+							$result = $interface->run_triggers('CONVOCATION_SENTBYMAIL', $object, $user, $langs, $conf);
+						} elseif ($models == 'attestation_trainee' || $models == 'attestationendtraining_trainee') {
+							$result = $interface->run_triggers('ATTESTATION_SENTBYMAIL', $object, $user, $langs, $conf);
+						}
+						if ($result < 0) {
+							$error++;
+							$object->errors = $interface->errors;
+						}
+						// Fin appel triggers
+
+						if ($error) {
+							setEventMessage($object->errors, 'errors');
+						} else {
+							$i++;
+							$action = '';
+						}
 					} else {
-						setEventMessage('No mail sent. Feature is disabled by option MAIN_DISABLE_ALL_MAILS', 'errors');
+						$langs->load("other");
+						if ($mailfile->error) {
+							setEventMessage($langs->trans('ErrorFailedToSendMail', $from, $send_email), 'errors');
+							dol_syslog($langs->trans('ErrorFailedToSendMail', $from, $send_email) . ' : ' . $mailfile->error);
+						} else {
+							setEventMessage('No mail sent. Feature is disabled by option MAIN_DISABLE_ALL_MAILS', 'errors');
+						}
 					}
 				}
 			}
