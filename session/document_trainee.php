@@ -429,7 +429,6 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 			);
 		}
 
-
 		$parameters = array(
 			'contact_trainee' =>& $contact_trainee,
 			'subject' =>& $subject,
