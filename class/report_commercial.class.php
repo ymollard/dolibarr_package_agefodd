@@ -906,7 +906,7 @@ class ReportCommercial extends AgefoddExportExcel
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
 					WHERE COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
-					AND COALESCE(IF(s2.fk_soc_OPCA < 0, 0, s2.fk_soc_OPCA), 0) = 0
+					AND COALESCE(CASE WHEN s2.fk_soc_OPCA < 0 THEN 0 ELSE s2.fk_soc_OPCA END, 0) = 0
 				)';
 
 				break;
@@ -922,7 +922,7 @@ class ReportCommercial extends AgefoddExportExcel
 					INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca opca ON (opca.fk_session_trainee = ass.rowid AND opca.fk_soc_trainee = ags.fk_soc)
 					WHERE ags.fk_soc = ' . $companyID . '
-					AND COALESCE(IF(s2.fk_soc_OPCA < 0, 0, s2.fk_soc_OPCA), 0) = 0
+					AND COALESCE(CASE WHEN s2.fk_soc_OPCA < 0 THEN 0 ELSE s2.fk_soc_OPCA END, 0) = 0
 					AND COALESCE(opca.rowid, 0) = 0
 				)';
 
@@ -971,7 +971,7 @@ class ReportCommercial extends AgefoddExportExcel
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
 					WHERE COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
-					AND COALESCE(IF(s2.fk_soc_OPCA < 0, 0, s2.fk_soc_OPCA), 0) = 0
+					AND COALESCE(CASE WHEN s2.fk_soc_OPCA < 0 THEN 0 ELSE s2.fk_soc_OPCA END, 0) = 0
 					AND COALESCE(s2.is_OPCA, 0) = 0
 				)';
 
