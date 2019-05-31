@@ -402,7 +402,7 @@ class Agsession extends CommonObject
 	    global $db, $conf;
 
 	    $sql = "SELECT
-                SUM(assh.heures) as heures, IF(c.label IS NULL, 'Autre', c.label) as type
+                SUM(assh.heures) as heures, CASE WHEN c.label IS NULL THEN 'Autre' ELSE c.label END as type
             FROM
                 llx_agefodd_session_stagiaire_heures as assh
             LEFT JOIN llx_agefodd_session_calendrier as agfsc ON assh.fk_calendrier = agfsc.rowid
