@@ -59,6 +59,18 @@ $agf = new Formation($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
 
+
+// Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
+$hookmanager->initHooks(array('agftrainingcard','globalcard'));
+
+
+$parameters=array('id'=>$id);
+$reshook=$hookmanager->executeHooks('doActions',$parameters,$agf,$action);     // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
+if (empty($reshook)){
+
+
 /*
  * Actions delete
  */
@@ -463,7 +475,7 @@ if ($action == 'fichepedamodule' && $user->rights->agefodd->agefodd_formation_ca
 		setEventMessage($agf->error, 'errors');
 	}
 }
-
+}
 /*
  * View
  */
@@ -1078,6 +1090,10 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
  */
 
 print '<div class="tabsAction">';
+$parameters=array();
+$reshook=$hookmanager->executeHooks('addMoreActionsButtons',$parameters,$agf,$action);    // Note that $action and $object may have been modified by hook
+if (empty($reshook)){
+
 
 if ($action != 'create' && $action != 'edit') {
 
@@ -1123,6 +1139,8 @@ if ($action != 'create' && $action != 'edit') {
 	} else {
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfPrintFichePedago') . '</a>';
 	}
+}
+
 }
 
 print '</div>';
