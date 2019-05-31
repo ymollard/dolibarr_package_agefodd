@@ -590,6 +590,11 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+
+if($dolibarr_main_db_type != 'pgsql')
+{
+
+
 //Collation, PS: il existe aussi un script dans abricot pour ça.
 $sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET utf8 COLLATE '.$dolibarr_main_db_collation.';\') AS    mySQL
         FROM INFORMATION_SCHEMA.TABLES
@@ -617,6 +622,7 @@ if ($resql) {
     dol_print_error($db);
 }
 
+}
 
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur', 'datec');
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'datec');
