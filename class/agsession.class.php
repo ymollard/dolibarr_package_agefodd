@@ -3244,7 +3244,12 @@ class Agsession extends CommonObject
 		$sql .= " ,s.duree_session,";
 		$sql .= " p.ref_interne";
 		if (! empty($invoiceid)) {
-			$sql .= " ,invoice.facnumber as invoiceref";
+            if(floatval(DOL_VERSION) > 9){
+                $sql .= " ,invoice.ref as invoiceref";
+            }
+            else{
+                $sql .= " ,invoice.facnumber as invoiceref";
+            }
 		}
 		if (! empty($fourninvoiceid)) {
 			$sql .= " ,fourninvoice.ref as fourninvoiceref";
@@ -5283,7 +5288,13 @@ class Agsession extends CommonObject
 
 			if ($obj_agefodd_convention->element_type == 'invoice') {
 				$obj_agefodd_convention->fetch_invoice_lines($obj_agefodd_convention->fk_element);
-				$sql='SELECT facnumber as ref FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.$obj_agefodd_convention->fk_element;
+				$sql='SELECT ';
+                if(floatval(DOL_VERSION) > 9){
+                    $sql.=' ref as ref ';
+                }else{
+                    $sql.=' facnumber as ref ';
+                }
+				$sql.=' FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.$obj_agefodd_convention->fk_element;
 				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
