@@ -715,7 +715,8 @@ class ReportCA extends AgefoddExportExcel {
 							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'facture f2 ON ase.fk_element = f2.rowid';
 							$sql .= '	WHERE ass.fk_session_agefodd = s.rowid';
 							$sql .= '	AND f2.rowid = f.rowid';
-							$sql .= '	AND f2.fk_soc = COALESCE(IF(s.type_session = 1, IF(opca.fk_soc_OPCA <= 0, NULL, opca.fk_soc_OPCA), s.fk_soc_OPCA), trainee.fk_soc)';
+							//$sql .= '	AND f2.fk_soc = COALESCE(IF(s.type_session = 1, IF(opca.fk_soc_OPCA <= 0, NULL, opca.fk_soc_OPCA), s.fk_soc_OPCA), trainee.fk_soc)';
+							$sql .= '	AND f2.fk_soc = COALESCE(CASE WHEN s.type_session = 1 THEN CASE WHEN opca.fk_soc_OPCA <= 0 THEN NULL ELSE opca.fk_soc_OPCA END ELSE s.fk_soc_OPCA END, trainee.fk_soc)'; // TODO : remove this comment if all is ok after few tests with CASE style
 							$sql .= '	AND sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)';
 							$sql .= ')';
 						} elseif ($key == 'so.parent|sorequester.parent') {
@@ -840,7 +841,8 @@ class ReportCA extends AgefoddExportExcel {
 							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'facture f2 ON ase.fk_element = f2.rowid';
 							$sql .= '	WHERE ass.fk_session_agefodd = s.rowid';
 							$sql .= '	AND f2.rowid = f.rowid';
-							$sql .= '	AND f2.fk_soc = COALESCE(IF(s.type_session = 1, IF(opca.fk_soc_OPCA <= 0, NULL, opca.fk_soc_OPCA), s.fk_soc_OPCA), trainee.fk_soc)';
+							//$sql .= '	AND f2.fk_soc = COALESCE(IF(s.type_session = 1, IF(opca.fk_soc_OPCA <= 0, NULL, opca.fk_soc_OPCA), s.fk_soc_OPCA), trainee.fk_soc)'; // TODO : remove this comment if all is ok after few tests with CASE style
+							$sql .= '	AND f2.fk_soc = COALESCE(CASE WHEN s.type_session = 1 THEN CASE WHEN opca.fk_soc_OPCA <= 0 THEN NULL ELSE opca.fk_soc_OPCA END ELSE s.fk_soc_OPCA END, trainee.fk_soc)';
 							$sql .= '	AND sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)';
 							$sql .= ')';
 						} elseif ($key == 'so.parent|sorequester.parent') {
