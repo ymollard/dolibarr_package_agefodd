@@ -532,7 +532,7 @@ class AgefoddExportExcel {
 					$this->workbook->getActiveSheet()->getRowDimension($this->rowheader[$keysheet])->setRowHeight($row_header_height);
 				}
 
-				if (!empty($freezepan)){
+				if (!empty($freezepan)) {
 					$this->workbook->getActiveSheet()->freezePaneByColumnAndRow($max_value_key, $this->rowheader[$keysheet]+1);
 				}
 

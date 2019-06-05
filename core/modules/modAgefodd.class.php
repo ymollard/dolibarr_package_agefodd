@@ -94,8 +94,6 @@ class modAgefodd extends DolibarrModules
 		// unit_frequency must be 60 for minute, 3600 for hour, 86400 for day, 604800 for week
 		$this->cronjobs = array(
 			0 => array('label' => 'CronTaskSendAgendaToTraineeLabel', 'jobtype' => 'method', 'class' => 'agefodd/cron/cron.php', 'objectname' => 'cron_agefodd', 'method' => 'sendAgendaToTrainee', 'parameters' => '', 'comment' => 'Send email to trainees', 'frequency' => 1, 'unitfrequency' => 86400, 'status' => 0, 'test' => true),
-			1 => array('label' => 'CronTaskAutoStatusAgefoddCalendar', 'jobtype' => 'method', 'class' => 'agefodd/cron/cron.php', 'objectname' => 'cron_agefodd', 'method' => 'autoStatusAgefoddCalendar', 'parameters' => '', 'comment' => 'CronTaskAutoStatusAgefoddCalendarDesc', 'frequency' => 1, 'unitfrequency' => 86400, 'status' => 0, 'test' => true),
-
 			//1 => array('label' => 'DATAPOLICY Mailing', 'jobtype' => 'method', 'class' => '/datapolicy/class/datapolicyCron.class.php', 'objectname' => 'RgpdCron', 'method' => 'sendMailing', 'parameters' => '', 'comment' => 'Comment', 'frequency' => 1, 'unitfrequency' => 86400, 'status' => 0, 'test' => true)
 		);
 		// Example: $this->cronjobs=array(0=>array('label'=>'My label', 'jobtype'=>'method', 'class'=>'/dir/class/file.class.php', 'objectname'=>'MyClass', 'method'=>'myMethod', 'parameters'=>'param1, param2', 'comment'=>'Comment', 'frequency'=>2, 'unitfrequency'=>3600, 'status'=>0, 'test'=>true),
@@ -1701,8 +1699,6 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][4] = 'session';
 		$this->rights[$r][5] = 'trainer';
 
-		// External access rights for agefodd
-		// Note some external access rights for agefodd are after questionnaire rights
 		$r ++;
         if (!empty($conf->externalaccess->enabled)) {
             $this->rights[$r][0] = $this->numero + $r;
@@ -1739,7 +1735,6 @@ class modAgefodd extends DolibarrModules
 		    $this->rights[$r][4] = 'external_trainer_upload';
 		}
 
-        // Questionnaire rights for agefodd
         $r ++;
         if (!empty($conf->questionnaire->enabled)) {
             $this->rights[$r][0] = $this->numero . $r;   // Permission id (must not be already used)

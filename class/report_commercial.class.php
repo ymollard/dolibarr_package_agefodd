@@ -155,20 +155,27 @@ class ReportCommercial extends AgefoddExportExcel
 
 							case 's.client':
 								$filterName = $this->outputlangs->transnoentities('ProspectCustomer');
-								switch ($value) {
-									case 1: // Client
-										$filterValue = 'C';
-										break;
+								$TValues = array();
 
-									case 2: // Prospect
-										$filterValue = 'P';
-										break;
-
-									case 3: // Client/Prospect
-										$filterValue = 'CP';
-										break;
+								// Client
+								if(in_array(1, $value))
+								{
+									$TValues[] = 'C';
 								}
 
+								// Prospect
+								if(in_array(2, $value))
+								{
+									$TValues[] = 'P';
+								}
+
+								// Client/Prospect
+								if(in_array(3, $value))
+								{
+									$TValues[] = 'CP';
+								}
+
+								$filterValue = implode(' + ', $TValues);
 								break;
 
 							case 's.active':
@@ -264,20 +271,27 @@ class ReportCommercial extends AgefoddExportExcel
 						break;
 
 					case 's.client':
-						switch($value)
+						$TValues = array();
+
+						// Client
+						if(in_array(1, $value))
 						{
-							case 1: // Client
-								$str_sub_name .= '-C';
-								break;
-
-							case 2: // Prospect
-								$str_sub_name .= '-P';
-								break;
-
-							case 3: // Client/Prospect
-								$str_sub_name .= '-CP';
-								break;
+							$TValues[] = 'C';
 						}
+
+						// Prospect
+						if(in_array(2, $value))
+						{
+							$TValues[] = 'P';
+						}
+
+						// Client/Prospect
+						if(in_array(3, $value))
+						{
+							$TValues[] = 'CP';
+						}
+
+						$str_sub_name.= '-' . implode('+', $TValues);
 
 						break;
 
@@ -476,41 +490,41 @@ class ReportCommercial extends AgefoddExportExcel
 				AND COALESCE(parent.rowid, 0) = ' . $parentID . '
 				AND s.fk_typent != 103';
 
-		if(empty($parentID) && ! empty($filter['soc.rowid']))
+		// On n'applique les filtres que sur la maison-mère
+		if(empty($parentID))
 		{
-			if(! is_array($filter['soc.rowid']))
+			$sql .= '
+				AND s.client IN (' . implode(', ', $filter['s.client']) . ')';
+
+			if (! empty($filter['soc.rowid']))
 			{
-				$filter['soc.rowid'] = array($filter['soc.rowid']);
+				if (! is_array($filter['soc.rowid']))
+				{
+					$filter['soc.rowid'] = array($filter['soc.rowid']);
+				}
+
+				$sql .= '
+				AND s.rowid IN (' . implode(', ', $filter['soc.rowid']) . ')';
 			}
 
-			$sql.= '
-				AND s.rowid IN (' . implode(', ', $filter['soc.rowid']) . ')';
-		}
-
-		// TODO $parentID == 0 ?
-		if(! empty($filter['sale.fk_user']))
-		{
-			$sql.= '
+			if (! empty($filter['sale.fk_user']))
+			{
+				$sql .= '
 				AND sc.fk_user = ' . $filter['sale.fk_user'];
-		}
+			}
 
-		if(! empty($filter['s.active']))
-		{
-			$sql.= '
+			if (! empty($filter['s.active']))
+			{
+				$sql .= '
 				AND s.status = 1';
-		}
+			}
 
-		if(! empty($filter['s.created_during_selected_period']))
-		{
-			$sql.= '
+			if (! empty($filter['s.created_during_selected_period']))
+			{
+				$sql .= '
 				AND s.datec <= "' . $filter['startyear'] . '"
 				AND s.datec > "' . ($filter['startyear'] - $filter['nbyears']) . '"';
-		}
-
-		if(! empty($filter['s.client']))
-		{
-			$sql.= '
-				AND s.client = ' . $filter['s.client'];
+			}
 		}
 
 		$sql.= '

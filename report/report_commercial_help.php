@@ -91,7 +91,7 @@ foreach($TFilters as $filterKey)
 print '</table>';
 
 
-
+print '<p>' . img_warning() . ' <b>' . $langs->trans('AgfReportCommercialHelpFilterWarning') . '</b></p>';
 
 
 print '<h2>' . $langs->trans('AgfReportCommercialHelpDifferenceWithSessionList') . '</h2>';

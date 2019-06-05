@@ -686,8 +686,8 @@ class AgefoddExportExcelByCustomer {
 			for ($i=$this->rowheader; $i <= $this->row; $i++) {
 				$this->workbook->getActiveSheet()->getRowDimension($i)->setRowHeight(25);
 			}
-			
-			$this->workbook->getActiveSheet()->freezePaneByColumnAndRow(PHPExcel_Cell::stringFromColumnIndex($max_value_key),$this->rowheader+1);
+
+			$this->workbook->getActiveSheet()->freezePaneByColumnAndRow($max_value_key,$this->rowheader+1);
 			
 			$this->workbook->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
 			$this->workbook->getActiveSheet()->getPageSetup()->setPrintArea('A1:'.PHPExcel_Cell::stringFromColumnIndex($max_value_key).$this->row);
