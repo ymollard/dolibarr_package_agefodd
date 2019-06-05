@@ -402,7 +402,7 @@ class Agsession extends CommonObject
 	    global $db, $conf;
 
 	    $sql = "SELECT
-                SUM(assh.heures) as heures, IF(c.label IS NULL, 'Autre', c.label) as type
+                SUM(assh.heures) as heures, CASE WHEN c.label IS NULL THEN 'Autre' ELSE c.label END as type
             FROM
                 llx_agefodd_session_stagiaire_heures as assh
             LEFT JOIN llx_agefodd_session_calendrier as agfsc ON assh.fk_calendrier = agfsc.rowid
@@ -2555,7 +2555,7 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code,  s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+		$sql .= " GROUP BY s.rowid,soemployer.nom, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code,  s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom,c.color,agefoddcontact.fk_socpeople";
 		foreach ( $array_options_keys as $key ) {
 			$sql.= ',ef.'.$key;
@@ -3244,7 +3244,12 @@ class Agsession extends CommonObject
 		$sql .= " ,s.duree_session,";
 		$sql .= " p.ref_interne";
 		if (! empty($invoiceid)) {
-			$sql .= " ,invoice.facnumber as invoiceref";
+            if(floatval(DOL_VERSION) > 9){
+                $sql .= " ,invoice.ref as invoiceref";
+            }
+            else{
+                $sql .= " ,invoice.facnumber as invoiceref";
+            }
 		}
 		if (! empty($fourninvoiceid)) {
 			$sql .= " ,fourninvoice.ref as fourninvoiceref";
@@ -5283,7 +5288,13 @@ class Agsession extends CommonObject
 
 			if ($obj_agefodd_convention->element_type == 'invoice') {
 				$obj_agefodd_convention->fetch_invoice_lines($obj_agefodd_convention->fk_element);
-				$sql='SELECT facnumber as ref FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.$obj_agefodd_convention->fk_element;
+				$sql='SELECT ';
+                if(floatval(DOL_VERSION) > 9){
+                    $sql.=' ref as ref ';
+                }else{
+                    $sql.=' facnumber as ref ';
+                }
+				$sql.=' FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.$obj_agefodd_convention->fk_element;
 				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {

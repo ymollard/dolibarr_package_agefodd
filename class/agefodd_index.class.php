@@ -318,7 +318,7 @@ class Agefodd_index
 		$sql .= " ON c.rowid = s.fk_formation_catalogue";
 		$sql .= " WHERE s.status IN (5,4)";
 		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
-		$sql .= " GROUP BY c.intitule, c.duree, c.ref, c.ref_interne";
+		$sql .= " GROUP BY c.intitule, c.duree, c.ref, c.ref_interne, s.fk_formation_catalogue";
 		$sql .= " ORDER BY num DESC LIMIT " . $number;
 
 		dol_syslog(get_class($this) . "::fetch_top_formations", LOG_DEBUG);

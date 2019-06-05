@@ -161,7 +161,7 @@ class Agefodd_session_formateur {
 		$sql = "SELECT";
 		$sql .= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql .= " f.fk_socpeople,";
-		$sql .= " sp.lastname, sp.firstname";
+		$sql .= " sp.lastname, sp.firstname, sp.address, sp.zip, sp.town";
 		$sql .= " ,u.lastname as ulastname, u.firstname as ufirstname";
 		$sql .= " ,sf.trainer_status";
 		$sql .= " ,sf.fk_agefodd_formateur_type as trainer_type";
@@ -189,6 +189,9 @@ class Agefodd_session_formateur {
 				if ($obj->type_trainer=='socpeople') {
 					$this->lastname = $obj->lastname;
 					$this->firstname = $obj->firstname;
+					$this->address = $obj->address;
+					$this->zip = $obj->zip;
+					$this->town = $obj->town;
 				} elseif ($obj->type_trainer=='user') {
 					$this->lastname = $obj->ulastname;
 					$this->firstname = $obj->ufirstname;
