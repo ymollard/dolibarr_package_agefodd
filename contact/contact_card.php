@@ -29,6 +29,7 @@ if (! $res)
 	die("Include of main fails");
 
 require_once ('../class/agsession.class.php');
+require_once ('../lib/agefodd.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/contact.lib.php';
 
