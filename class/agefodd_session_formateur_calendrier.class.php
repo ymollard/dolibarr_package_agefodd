@@ -52,10 +52,11 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public $status = 0;
 	public $lines = array ();
 
-
+	// Attention Const need to be same as Agefodd_sesscalendar, take care of getListStatus
 	const STATUS_DRAFT = 0;
 	const STATUS_CONFIRMED = 1;
 	const STATUS_MISSING = 2;
+	const STATUS_FINISH = 3;
 	const STATUS_CANCELED = -1;
 	/**
 	 * Constructor
@@ -66,6 +67,19 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$this->db = $db;
 		return 1;
 	}
+
+	static function getListStatus()
+	{
+		global $langs;
+		return array (
+			self::STATUS_DRAFT 		=> self::getStaticLibStatut(self::STATUS_DRAFT),
+			self::STATUS_CONFIRMED 	=> self::getStaticLibStatut(self::STATUS_CONFIRMED),
+			self::STATUS_CANCELED 	=> self::getStaticLibStatut(self::STATUS_CANCELED),
+			self::STATUS_MISSING 	=> self::getStaticLibStatut(self::STATUS_MISSING),
+			self::STATUS_FINISH 	=> self::getStaticLibStatut(self::STATUS_FINISH),
+		);
+	}
+
 
 	/**
 	 * Create object into database
@@ -821,7 +835,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		if ($status == self::STATUS_DRAFT)
 		{
 			if ($mode == 1) $out.= img_picto('', 'statut0').' ';
-			$out.= $langs->trans('AgfStatusCalendar_draft');
+			$out.= $langs->trans('AgfStatusCalendar_previsionnel');
 		}
 		else if ($status == self::STATUS_CONFIRMED)
 		{
@@ -835,8 +849,13 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		}
 		else if ($status == self::STATUS_MISSING)
 		{
-		    if ($mode == 1) $out.= img_picto('', 'statut8').' ';
-		    $out.= $langs->trans('AgfStatusCalendar_missing');
+			if ($mode == 1) $out.= img_picto('', 'statut8').' ';
+			$out.= $langs->trans('AgfStatusCalendar_missing');
+		}
+		else if ($status == self::STATUS_FINISH)
+		{
+			if ($mode == 1) $out.= img_picto('', 'statut9').' ';
+			$out.= $langs->trans('AgfStatusCalendar_finish');
 		}
 
 		return $out;

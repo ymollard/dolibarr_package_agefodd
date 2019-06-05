@@ -380,7 +380,13 @@ class ActionsAgefodd
 								$agf_calendrier_formateur->heuref = strtotime($date_session.' '.$heuref);
 								$agf_calendrier_formateur->fk_agefodd_session_formateur = $trainer->agefodd_session_formateur->id;
 
-								if (in_array($status, array(Agefoddsessionformateurcalendrier::STATUS_DRAFT, Agefoddsessionformateurcalendrier::STATUS_CONFIRMED, Agefoddsessionformateurcalendrier::STATUS_MISSING, Agefoddsessionformateurcalendrier::STATUS_CANCELED)))
+								if (in_array($status, array(
+									Agefoddsessionformateurcalendrier::STATUS_DRAFT,
+									Agefoddsessionformateurcalendrier::STATUS_CONFIRMED,
+									Agefoddsessionformateurcalendrier::STATUS_MISSING,
+									Agefoddsessionformateurcalendrier::STATUS_CANCELED,
+									Agefoddsessionformateurcalendrier::STATUS_FINISH
+								)))
 								{
 								    $old_status = $agf_calendrier_formateur->status;
 									$agf_calendrier_formateur->status = $status;
