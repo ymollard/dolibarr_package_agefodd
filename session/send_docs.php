@@ -289,6 +289,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 				if (empty($subject))
 					$langs->transnoentities('AgfAttestation') . ' ' . $object->ref;
 				$actiontypecode = 'AC_AGF_ATTES';
+				if($models == 'attestationpresencetraining') $actiontypecode = 'AC_AGF_ATTEP';
 				$actionmsg = $langs->trans('MailSentBy') . ' ' . $from . ' ' . $langs->trans('To') . ' ' . $send_email . ".\n";
 				if ($message) {
 					$actionmsg .= $langs->trans('MailTopic') . ": " . $subject . "\n";
@@ -296,6 +297,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					$actionmsg .= $message;
 				}
 				$actionmsg2 = $langs->trans('ActionATTESTATION_SENTBYMAIL');
+				if($models == 'attestationpresencetraining') $actionmsg2 = $langs->trans('ActionATTESTATION_PRESENCE_SENTBYMAIL');
 			}
 
 			$attachedfiles = $formmail->get_attached_files();
@@ -335,6 +337,8 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 						$result = $interface->run_triggers('CONVENTION_SENTBYMAIL', $object, $user, $langs, $conf);
 					} elseif ($models == 'attestation') {
 						$result = $interface->run_triggers('ATTESTATION_SENTBYMAIL', $object, $user, $langs, $conf);
+					} elseif ($models == 'attestationpresencetraining') {
+						$result = $interface->run_triggers('ATTESTATION_PRESENCE_TRAINING_SENTBYMAIL', $object, $user, $langs, $conf);
 					} elseif ($models == 'convocation') {
 						$result = $interface->run_triggers('CONVOCATION_SENTBYMAIL', $object, $user, $langs, $conf);
 					} elseif ($models == 'conseils') {

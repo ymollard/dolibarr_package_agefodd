@@ -52,8 +52,10 @@ if (! $user->rights->agefodd->lire) {
 	accessforbidden();
 }
 
+// Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
 $hookmanager->initHooks(array(
 		'agefoddsessioncard'
+		,'globalcard'
 ));
 
 $action = GETPOST('action', 'alpha');
@@ -74,6 +76,7 @@ $parameters = array(
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $agf, $action); // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0)
 	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+if (empty($reshook)){
 
 /*
  * Actions delete session
@@ -648,6 +651,8 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 		}
 	}
 	// }
+}
+
 }
 
 /*
