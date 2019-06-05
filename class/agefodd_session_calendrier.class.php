@@ -45,7 +45,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	public $billed = 0;
 	public $lines = array ();
 
-
+    // Attention Const need to be same as Agefoddsessionformateurcalendrier, take care of getListStatus
 	const STATUS_DRAFT = 0;
 	const STATUS_CONFIRMED = 1;
 	const STATUS_MISSING = 2;
@@ -59,6 +59,19 @@ class Agefodd_sesscalendar extends CommonObject{
 	public function __construct($db) {
 		$this->db = $db;
 		return 1;
+	}
+
+
+	static function getListStatus()
+	{
+		global $langs;
+		return array (
+			self::STATUS_DRAFT 		=> self::getStaticLibStatut(self::STATUS_DRAFT),
+			self::STATUS_CONFIRMED 	=> self::getStaticLibStatut(self::STATUS_CONFIRMED),
+			self::STATUS_CANCELED 	=> self::getStaticLibStatut(self::STATUS_CANCELED),
+			self::STATUS_MISSING 	=> self::getStaticLibStatut(self::STATUS_MISSING),
+			self::STATUS_FINISH 	=> self::getStaticLibStatut(self::STATUS_FINISH),
+		);
 	}
 
 	/**

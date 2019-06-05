@@ -709,15 +709,15 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 								}
 
 								if (array_key_exists('sale.fk_user_com', $filter)) {
-									$trainesoc=array();
+									$traineesoc=array();
 									if (!empty($traine_line->socid)) {
-										$trainesoc[]=$traine_line->socid;
+										$traineesoc[]=$traine_line->socid;
 									}
 									if (!empty($traine_line->fk_soc_requester)) {
 										$traineesoc[]=$traine_line->fk_soc_requester;
 									}
 									if (count($traineesoc)>0){
-										$sql = 'SELECT fk_user FROM '.MAIN_DB_PREFIX.'societe_commerciaux WHERE fk_soc IN ('.implode(',',$trainesoc).')';
+										$sql = 'SELECT fk_user FROM '.MAIN_DB_PREFIX.'societe_commerciaux WHERE fk_soc IN ('.implode(',',$traineesoc).')';
 										$sql .='  AND fk_user='.$filter['sale.fk_user_com'];
 										dol_syslog(get_class($this) . "::find salesman for thirdparty output_trainee_salesman sql=" . $sql, LOG_DEBUG);
 										$result = $this->db->query($sql);
@@ -1159,7 +1159,6 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 
 							$output_propal = $output_propal && $output_propal_no_invoice_link_outputed;
 
-							//var_dump($output_propal);
 							if (! empty($propal->id) && $output_propal) {
 								if (is_array($propal->lines) && count($propal->lines) > 0) {
 									foreach ( $propal->lines as $propal_lines ) {
@@ -1383,6 +1382,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
     
     					$array_sub_total[20] += $facture->total_ht;
     					$array_sub_total[21] += $facture->total_ttc;
+
     				}
     
     				$line_to_output[14] = $productlist;
