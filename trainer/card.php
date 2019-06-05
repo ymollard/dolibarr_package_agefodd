@@ -229,8 +229,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '</table>';
 
-	print '<table style=noborder align="right">';
-	print '<tr><td align="center" colspan=2>';
+	print '<table class="noborder" style="text-align: right;">';
+	print '<tr><td style="text-align: right;" colspan=2>';
 	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
 	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 	print '</td></tr>';
