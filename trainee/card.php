@@ -945,10 +945,18 @@ else
 			if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $action != 'presend') {
 
 				// Send
-				if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
+				if (($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && floatval(DOL_VERSION) > 8) {
 					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $agf->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a></div>';
 				} else {
-					print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('SendMail') . '</a></div>';
+
+					$class = "";
+					$title = "";
+					if(floatval(DOL_VERSION) < 9){
+						$class = "classfortooltip";
+						$title = $langs->trans("AGF_ForDoliVersionXMinOnly", 9);
+					}
+
+					print '<div class="inline-block divButAction"><a class="butActionRefused '.$class.'" href="#" title="'.$title.'">' . $langs->trans('SendMail') . '</a></div>';
 				}
 
 				if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {

@@ -7,6 +7,7 @@ Permission103002=Modifier les sessions
 Permission103003=Créer des sessions
 Permission103004=Supprimer les sessions
 Permission103005=Voir stats
+AGF_ForDoliVersionXMinOnly=Disponible seulement à partir de la version %s de Dolibarr
 Agefodd=Assistant de Gestion de la Formation Dans Dolibarr
 AgefoddShort=Gestion de la formation
 AgefoddSetupDesc=Configuration d'Agefodd
