@@ -1335,6 +1335,7 @@ AgfTypePrestaFirstName=Nom sous traitant
 AgfTypePrestaLastName=Prénom sous traitant
 AgfErrNoAdminTasksFound=Aucune tâche administrative trouvée
 AgfNoDateSessionFound=Aucune date saisie
+AgfForSession=pour la session
 
 SessionOneParticipant=(1 participant)
 SessionMoreThanOneParticipants=(%d participants)

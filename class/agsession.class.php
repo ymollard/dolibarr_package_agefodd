@@ -3215,15 +3215,15 @@ class Agsession extends CommonObject
 		if (!empty($limit)) {
 			$sql .= $this->db->plimit($limit + 1, $offset);
 		}
-
 		dol_syslog(get_class($this) . "::fetch_all_by_order_invoice_propal", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 
 			if ($num) {
+			    //var_dump($this->lines);
 				while ($obj = $this->db->fetch_object($resql)) {
 					$line = new AgfInvoiceOrder();
 
