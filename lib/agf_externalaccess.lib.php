@@ -705,7 +705,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 
 function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
 {
-	global $db,$langs, $hookmanager;
+	global $db,$langs, $hookmanager, $user;
 
 	dol_include_once('/agefodd/class/html.formagefodd.class.php');
 	$formAgefodd = new FormAgefodd($db);
@@ -725,7 +725,16 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 	$out = '';
 	$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
-	$out.= getEaNavbar($context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id.'&save_lastsearch_values=1'));
+
+	$backUrl = $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id.'&save_lastsearch_values=1');
+	if($context->iframe){
+		$backUrl=false;
+	}
+	$editUrl = '';
+	if (empty($agf_calendrier->billed) && $user->rights->agefodd->external_trainer_write && $action != 'update' ){
+		$editUrl = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$agf_calendrier_formateur->id);
+	}
+	$out.= getEaNavbar($backUrl, '', $editUrl);
 
 	if ($action != 'view')
 	{
@@ -735,6 +744,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				<input type="hidden" name="sessid" value="'.$agsession->id.'" />
 				<input type="hidden" name="trainerid" value="'.$trainer->id.'" />
 				<input type="hidden" name="slotid" value="'.$agf_calendrier_formateur->id.'" />
+				<input type="hidden" name="iframe" value="'.$context->iframe.'" />
 				<input type="hidden" name="controller" value="'.$context->controller.'" />';
 	}
 
@@ -967,7 +977,6 @@ function getPageViewAgendaFormateurExternalAccess(){
 	$html.= '<link href="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/timegrid/main.css" rel="stylesheet"" />';
 	$html.= '<link href="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/list/main.css" rel="stylesheet"" />';
 
-	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/rrule/rrule.js"></script>';
 	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/core/main.js"></script>';
 	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/interaction/main.js"></script>';
 	$html.= '<script src="'.$context->getRootUrl(). 'vendor/fullcalendar/packages/daygrid/main.js"></script>';
@@ -1041,11 +1050,33 @@ function getPageViewAgendaFormateurExternalAccess(){
 		    
     		info.jsEvent.preventDefault(); // don\'t let the browser navigate
     		//console.log ( info.event.extendedProps.session_formateur_calendrier );
+    		//console.log ( info.event );
     		
 			if (info.event.url.length > 0){
 			    //console.log(info.event);
 			    // Open url in new window
-			    window.open(info.event.url, "_blank");
+			    //window.open(info.event.url, "_blank");
+			    
+			    $("#calendarModalLabel").html(info.event.title);
+			    $("#calendarModalIframe").attr("src",info.event.url + "&iframe=1");
+
+    			$("#calendarModal").modal();
+			    $("#calendarModalIframe").on("load", function() {
+			        var calendarIframeHeight = 0;
+					calendarIframeHeight = $(this).contents().find("#section-session-card-calendrier-formateur").height();
+					
+					if( $( window ).height() < (calendarIframeHeight + 200) ){
+						$("#calendarModalIframe").height($( window ).height() - 200);
+					}
+					else if(calendarIframeHeight > 0){
+						$("#calendarModalIframe").height(calendarIframeHeight);
+					}
+					else{
+						$("#calendarModalIframe").height(400);
+					}
+				});
+
+			    
 			    // Deactivate original link
 			    return false;
 			}
@@ -1057,14 +1088,42 @@ function getPageViewAgendaFormateurExternalAccess(){
 			 </script>';
 
 
-	return '<section >'.$html.'</section >';
+
+
+	return '<section >'.$html.'</section >
+	<!-- Modal -->
+	<div class="modal fade" id="calendarModal" tabindex="-1" role="dialog" aria-labelledby="calendarModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" >
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="calendarModalLabel">=</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+
+				<div class="modal-body">
+				<iframe id="calendarModalIframe" src="" width="100%" height="300" frameborder="0" allowtransparency="true"></iframe>  
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /.modal -->
+	';
+	
+	
 }
 
 
 
 function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0){
 
-	global $db, $hookmanager, $langs;
+	global $db, $hookmanager, $langs, $user;
+
+
+	dol_include_once('/agefodd/class/agsession.class.php');
+	dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+	dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+	dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
+
 
 	$context = Context::getInstance();
 
@@ -1105,11 +1164,20 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 			$event = new stdClass();
 
 			//$event->groupId: 999,
-			$event->title	= $obj->intitule . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $obj->ref_session;
+			$event->title	= $obj->intitule . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $db->ref_session;
 
 			$event->toolTip = '';
 
-          	$event->url		= $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$obj->fk_session.'&slotid='.$obj->rowid.'&action=view');
+
+			$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
+			$agf_calendrier_formateur->fetch($obj->rowid);
+
+			$actionUrl = '&action=view';
+			if (empty($agf_calendrier_formateur->billed) && $user->rights->agefodd->external_trainer_write) {
+				$actionUrl = '';
+			}
+
+          	$event->url		= $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$obj->fk_session.'&slotid='.$obj->rowid.$actionUrl);
           	$event->start	= date('c', $db->jdate($obj->heured));
 			$event->end		= date('c', $db->jdate($obj->heuref));
 
@@ -1119,6 +1187,7 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 
 			$parameters= array(
 				'sqlObj' => $obj,
+				'agf_calendrier_formateur' => $agf_calendrier_formateur,
 			);
 
 			$reshook=$hookmanager->executeHooks('externalaccess_getAgefoddJsonAgendaFormateur',$parameters,$event);    // Note that $action and $object may have been modified by hook
