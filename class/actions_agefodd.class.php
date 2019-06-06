@@ -497,7 +497,12 @@ class ActionsAgefodd
 									$context->setError($langs->trans('AgfExternalAccessErrorCreateOrUpdateCreneau'));
 								}
 
-								header('Location: '.$context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id));
+								$redirect = $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id);
+								if($context->iframe){
+									$redirect = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$slotid);
+								}
+
+								header('Location: '.$redirect);
 								exit;
 							}
 							else
