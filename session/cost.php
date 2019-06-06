@@ -815,7 +815,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 							print '<td nowrap="nowrap">';
 							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht). $langs->getCurrencySymbol($conf->currency);
 							if ($count > 1){
-                                print ' '. $langs->trans("or").' '.price($suplier_invoice->total_ht/count($agf->lines)) . $langs->getCurrencySymbol($conf->currency) .' '. $langs->trans("AgfForSession"). ' ' . $agf->ref;
+                                print ' soit '.price($suplier_invoice->total_ht/count($agf->lines)) . $langs->getCurrencySymbol($conf->currency) .' '. $langs->trans("AgfForSession"). ' ' . $agf->ref;
                             }
                             print ')';
 							print '</td>';
