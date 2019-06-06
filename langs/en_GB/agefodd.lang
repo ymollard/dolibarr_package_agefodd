@@ -1111,3 +1111,4 @@ AgfMenuFormateurCreate=New trainer
 AgfMenuContactCreate=New trainning contact
 AgfNobodyTrainer=No trainer subs.
 AgfThirdpartyOfTraineeMandatory=Cannot create trainnee without thirdparty linked
+AgfForSession=for the session
