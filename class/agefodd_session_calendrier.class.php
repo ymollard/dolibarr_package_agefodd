@@ -435,7 +435,7 @@ class Agefodd_sesscalendar extends CommonObject{
 			dol_include_once('/comm/action/class/actioncomm.class.php');
 
 			$action = new ActionComm($this->db);
-			$action->id = $this->fk_actioncomm;
+			$action->fetch($this->fk_actioncomm); // for triggers we must load object
 			$r=$action->delete();
 			if ($r < 0) $error++;
 		}
