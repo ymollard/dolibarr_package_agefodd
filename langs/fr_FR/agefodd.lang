@@ -1336,6 +1336,8 @@ AgfTypePrestaLastName=Prénom sous traitant
 AgfErrNoAdminTasksFound=Aucune tâche administrative trouvée
 AgfNoDateSessionFound=Aucune date saisie
 AgfForSession=pour la session
-
+AgfModels=Modéle de documents
+AgfSelectDocEditModel=Quel modèle de documents voulez vous utiliser ?
+AgfDocModelStandard = Modèle standard
 SessionOneParticipant=(1 participant)
 SessionMoreThanOneParticipants=(%d participants)
