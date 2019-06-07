@@ -4975,13 +4975,18 @@ class Agsession extends CommonObject
 	    }
 	}
 
-	function load_all_data_agefodd_session(&$object_refletter, $socid='', $obj_agefodd_convention='', $print_r=false) {
+	function load_all_data_agefodd_session(&$object_refletter, $socid='', $obj_agefodd_convention='', $print_r=false, $outputlangs='') {
 
-		global $db, $conf, $langs;
+		global $db, $conf;
+
+		if (is_object($outputlangs) && get_class($outputlangs)=='Translate') {
+			$langs=$outputlangs;
+		} else {
+			global $langs;
+		}
 
 		if($object_refletter->element_type === 'rfltr_agefodd_contrat_trainer' || $object_refletter->element_type === 'rfltr_agefodd_mission_trainer') $id_trainer = $socid;
-		if($object_refletter->element_type === 'rfltr_agefodd_convocation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestationendtraining_trainee') $id_trainee = $socid;
-		//elseif($object_refletter->element_type === 'rfltr_agefodd_mission_trainer') $id_trainer = $socid; TODO quand on aura créé le modèle par participant
+		if($object_refletter->element_type === 'rfltr_agefodd_convocation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestation_trainee' || $object_refletter->element_type === 'rfltr_agefodd_attestationendtraining_trainee') $id_session_trainee = $socid;
 
 		// Chargement des participants
 		if(empty($this->TStagiairesSession)) {
@@ -5041,7 +5046,7 @@ class Agsession extends CommonObject
 
 					if ($obj = $this->db->fetch_object($resql)) {
 						$this->ref_findoc=$obj->ref;
-			}
+					}
 
 				} else {
 					//I know nothing is bad
@@ -5088,6 +5093,7 @@ class Agsession extends CommonObject
 						$this->conv_qty += $line->qty;
 						$this->conv_products .= $line->description.'<br />';
 						$line->form_label = $langs->trans('AgfTraining')."  ".(!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
+						$line->form_label_short = (!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
 						$this->TConventionFinancialLine[]= $line;
 					} elseif (empty($obj_agefodd_convention->only_product_session)) {
 						$this->conv_amount_ht += $line->total_ht;
@@ -5097,8 +5103,10 @@ class Agsession extends CommonObject
 						$this->conv_products .= $line->description.'<br />';
 						if ($line->fk_product==$this->fk_product) {
 							$line->form_label = $langs->trans('AgfTraining')."  ".(!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
+							$line->form_label_short = (!empty($this->intitule_custo)?$this->intitule_custo:$this->formintitule);
 						} else {
 							$line->form_label = $line->description;
+							$line->form_label_short = $line->description;
 						}
 						$this->TConventionFinancialLine[]= $line;
 					}
@@ -5185,10 +5193,10 @@ class Agsession extends CommonObject
 
 					if ($line->date_session != $old_date) {
 						$this->dthour_text .= "<br>";
-						$this->dthour_text .= dol_print_date($line->date_session, 'daytext') . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
+						$this->dthour_text .= dol_print_date($line->date_session, 'daytext','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour','tzuser',$langs);
 					} else {
 						$this->dthour_text .= ', ';
-						$this->dthour_text .= dol_print_date($line->heured, 'hour') . ' - ' . dol_print_date($line->heuref, 'hour');
+						$this->dthour_text .= dol_print_date($line->heured, 'hour','tzuser',$langs) . ' - ' . dol_print_date($line->heuref, 'hour','tzuser',$langs);
 					}
 					$old_date = $line->date_session;
 				}
@@ -5266,10 +5274,10 @@ class Agsession extends CommonObject
 					if ($trainercalline->date_session != $old_date) {
 						$this->TFormateursSessionCal[$trainercalline->date_session]=dol_print_date($trainercalline->date_session,'daytext');
 						$this->trainer_datehourtextline .= "<br>";
-						$this->trainer_datehourtextline .= dol_print_date($trainercalline->date_session, 'daytext') . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($trainercalline->heured, 'hour') . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($trainercalline->heuref, 'hour');
+						$this->trainer_datehourtextline .= dol_print_date($trainercalline->date_session, 'daytext','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($trainercalline->heured, 'hour','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($trainercalline->heuref, 'hour','tzuser',$langs);
 					} else {
 						$this->trainer_datehourtextline .= ", ";
-						$this->trainer_datehourtextline .= dol_print_date($trainercalline->heured, 'hour') . ' - ' . dol_print_date($trainercalline->heuref, 'hour');
+						$this->trainer_datehourtextline .= dol_print_date($trainercalline->heured, 'hour','tzuser',$langs) . ' - ' . dol_print_date($trainercalline->heuref, 'hour','tzuser',$langs);
 					}
 					$old_date = $trainercalline->date_session;
 
@@ -5285,23 +5293,25 @@ class Agsession extends CommonObject
 			$this->formateur_session_societe = $formateurs->thirdparty;
 		}
 
-		if(!empty($id_trainee)) {
+		if(!empty($id_session_trainee)) {
 		    dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
-
-		    $trainee = new Agefodd_stagiaire($db);
-		    $trainee->fetch($id_trainee);
-		    $this->stagiaire = $trainee;
+		    dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+		    $trainee_session = new Agefodd_session_stagiaire($db);
+		    $trainee_session->fetch($id_session_trainee);
+		    if (!empty($trainee_session->fk_stagiaire)) {
+			    $trainee = new Agefodd_stagiaire($db);
+			    $trainee->fetch($trainee_session->fk_stagiaire);
+			    $this->stagiaire = $trainee;
+		    }
 		}
 
 		if(!empty($socid)) {
 			$document_thirdparty = new Societe($db);
 			$document_thirdparty->fetch($socid);
 			$this->document_societe= $document_thirdparty;
-
 		}
 
 		foreach($conf->global as $conf_name=>$osef) {
-
 			if(strpos($conf_name, 'AGF_') !== false) {
 				$this->{$conf_name} = $conf->global->{$conf_name};
 			}
