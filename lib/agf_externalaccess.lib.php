@@ -1077,12 +1077,18 @@ function getPageViewAgendaFormateurExternalAccess(){
 				});
 
 			    
+			    
 			    // Deactivate original link
 			    return false;
 			}
 		}
     });
 
+    // refresh event on modal close
+    $("#calendarModal").on("hide.bs.modal", function (e) {
+		calendar.refetchEvents();
+	});
+    
     calendar.render();
   });
 			 </script>';
