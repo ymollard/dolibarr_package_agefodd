@@ -574,7 +574,7 @@ elseif ($action == 'link_confirm' && $confirm == 'yes' && $user->rights->agefodd
 
 		if ($result < 0)
 		{
-			setEventMessage($obj_link->error, 'errors');
+			setEventMessage($session_invoice->error, 'errors');
 		}
 		else
 		{

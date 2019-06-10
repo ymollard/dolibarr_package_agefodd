@@ -1497,22 +1497,27 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 		$line4.=($line4?" - ":"").$outputlangs->transnoentities("VATIntraShort").": ".$outputlangs->convToOutputCharset($fromcompany->tva_intra);
 	}
 
-	// Set free text font size
-	if (! empty($conf->global->ULTIMATEPDF_FREETEXT_FONT_SIZE)) {
-		$freetextfontsize=$conf->global->ULTIMATEPDF_FREETEXT_FONT_SIZE;
-	}
-	$pdf->SetFont('','',$freetextfontsize);
-	//$pdf->SetDrawColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
+	$pdf->SetFont('','',7);
+	$pdf->SetDrawColor(224,224,224);
 
-	// On positionne le debut du bas de page selon nbre de lignes de ce bas de page
+	// The start of the bottom of this page footer is positioned according to # of lines
 	$freetextheight=0;
 	if ($line)	// Free text
 	{
-		$width=20000; $align='L';	// By default, ask a manual break: We use a large value 20000, to not have automatic wrap. This make user understand, he need to add CR on its text.
-		if (! empty($conf->global->MAIN_USE_AUTOWRAP_ON_FREETEXT)) {
-			$width=$page_largeur-$marge_gauche-$marge_droite; $align='C';
+		//$line="eee<br>\nfd<strong>sf</strong>sdf<br>\nghfghg<br>";
+		if (empty($conf->global->PDF_ALLOW_HTML_FOR_FREE_TEXT))
+		{
+			$width=20000; $align='L';	// By default, ask a manual break: We use a large value 20000, to not have automatic wrap. This make user understand, he need to add CR on its text.
+			if (! empty($conf->global->MAIN_USE_AUTOWRAP_ON_FREETEXT)) {
+				$width=200; $align='C';
+			}
+			$freetextheight=$pdf->getStringHeight($width,$line);
 		}
-		$freetextheight=$pdf->getStringHeight($width,$line);
+		else
+		{
+			$freetextheight=pdfGetHeightForHtmlContent($pdf,dol_htmlentitiesbr($line, 1, 'UTF-8', 0));      // New method (works for HTML content)
+			//print '<br>'.$freetextheight;exit;
+		}
 	}
 
 	$marginwithfooter=$marge_basse + $freetextheight + (! empty($line1)?3:0) + (! empty($line2)?3:0) + (! empty($line3)?3:0) + (! empty($line4)?3:0);
@@ -1521,10 +1526,17 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 	if ($line)	// Free text
 	{
 		$pdf->SetXY($dims['lm'],-$posy);
-		$pdf->MultiCell($width, 3, $line, 0, $align, 0);
+		if (empty($conf->global->PDF_ALLOW_HTML_FOR_FREE_TEXT))   // by default
+		{
+			$pdf->MultiCell(0, 3, $line, 0, $align, 0);
+		}
+		else
+		{
+			$pdf->writeHTMLCell($pdf->page_largeur - $pdf->margin_left - $pdf->margin_right, $freetextheight, $dims['lm'], $dims['hk']-$marginwithfooter, dol_htmlentitiesbr($line, 1, 'UTF-8', 0));
+		}
 		$posy-=$freetextheight;
 	}
-	$pdf->SetFont('','',7);
+
 	$pdf->SetY(-$posy);
 	$pdf->line($dims['lm'], $dims['hk']-$posy, $dims['wk']-$dims['rm'], $dims['hk']-$posy);
 	$posy--;
