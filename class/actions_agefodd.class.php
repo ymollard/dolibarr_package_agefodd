@@ -502,6 +502,8 @@ class ActionsAgefodd
 									$redirect = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$slotid);
 								}
 
+								$context->setEvents($langs->transnoentities('Saved'));
+
 								header('Location: '.$redirect);
 								exit;
 							}
@@ -592,6 +594,9 @@ class ActionsAgefodd
 
 		if (in_array('externalaccesspage', $TContext) && !empty($conf->global->AGF_EACCESS_ACTIVATE))
 		{
+
+			$sessid = GETPOST('sessid','int');
+
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
 			dol_include_once('/agefodd/class/agsession.class.php');
 			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
@@ -626,7 +631,7 @@ class ActionsAgefodd
 				}
 
 			}
-			else if ($context->controller == 'agefodd_session_card_time_slot' && GETPOST('sessid','int') > 0)
+			else if ($context->controller == 'agefodd_session_card_time_slot' && $sessid > 0)
 			{
 				$agsession = new Agsession($this->db);
 				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
@@ -663,6 +668,63 @@ class ActionsAgefodd
 						}
 					}
 				}
+			}
+			else if ($context->controller == 'agefodd_session_card_time_slot' && empty($sessid))
+			{
+				$trainer = new Agefodd_teacher($this->db);
+
+				if ($trainer->fetchByUser($user) > 0)
+				{
+
+					$out = '';
+					$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
+					$out.= '<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">';
+					$out.= '<input type="hidden" name="iframe" value="'.$context->iframe.'" />';
+					$out.= '<input type="hidden" name="controller" value="'.$context->controller.'" />';
+
+					$startDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('start'));
+
+					if(!empty($startDate)){
+						$out.= '<input type="hidden" name="date" 	value="'.$startDate->format('Y-m-d').'" />';
+						$out.= '<input type="hidden" name="heured" 	value="'.$startDate->format('H:i').'" />';
+					}
+
+					$endDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('end'));
+					if(!empty($endDate)){
+						$out.= '<input type="hidden" name="heuref" 	value="'.$endDate->format('H:i').'" />';
+					}
+
+					$agsession = new Agsession($this->db);
+					$agsession->fetch_session_per_trainer($trainer->id);
+					$optionSessions = '';
+					if(!empty($agsession->lines)){
+						foreach ($agsession->lines as $line){
+							$optionSessions.= '<option value="'.$line->rowid.'">'.$line->sessionref.' : '.$line->intitule.'</option>';
+						}
+					}
+
+					$out.= '<div class="form-group">';
+					$out.= '<label for="sessid">'.$langs->trans('AgfSelectSession').'</label>';
+    				$out.= '<select class="form-control" name="sessid">'.$optionSessions.'</select>';
+					$out.= '</div>';
+
+
+					$out.= '<button type="submit" class="btn btn-primary pull-right" >'.$langs->trans('Next').'</button>';
+
+					$out.= '</form></div></section>';
+
+					print $out;
+
+					$context->setControllerFound();
+
+
+				}
+				else{
+					print 'nope';
+					var_dump($trainer);
+					$context->setControllerFound();
+				}
+
 			}
 			elseif ($context->controller == 'agefodd_trainer_agenda')
 			{

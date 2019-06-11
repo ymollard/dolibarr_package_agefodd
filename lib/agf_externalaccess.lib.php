@@ -703,7 +703,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 }
 
 
-function externalaccess_getAgefoddJsonAgendaFormateurgetPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
+function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
 {
 	global $db,$langs, $hookmanager, $user;
 
@@ -731,7 +731,7 @@ function externalaccess_getAgefoddJsonAgendaFormateurgetPageViewSessionCardCalen
 		$backUrl=false;
 	}
 	$editUrl = '';
-	if (empty($agf_calendrier->billed) && $user->rights->agefodd->external_trainer_write && $action != 'update' ){
+	if (empty($agf_calendrier->billed) && $user->rights->agefodd->external_trainer_write && $action != 'update' && $action != 'add'){
 		$editUrl = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$agf_calendrier_formateur->id);
 	}
 	$out.= getEaNavbar($backUrl, '', $editUrl);
@@ -767,16 +767,33 @@ function externalaccess_getAgefoddJsonAgendaFormateurgetPageViewSessionCardCalen
 		$statusOptions.= '<option '.($agf_calendrier_formateur->status == $statusKey ? 'selected' : '').' value="'.$statusKey.'">'.$label.'</option>';
 	}
 
+
+	$date_session = (($action == 'update' || $action == 'view') ? date('Y-m-d', $agf_calendrier_formateur->date_session) : date('Y-m-d'));
+	if(isset($_POST['date'])){
+		$date_session = GETPOST('date');
+	}
+
+	$heured = (($action == 'update' || $action == 'view') ? date('H:i', $agf_calendrier_formateur->heured) : '09:00' );
+	if(isset($_POST['heured'])){
+		$heured = GETPOST('heured');
+	}
+
+	$heuref = (($action == 'update' || $action == 'view') ? date('H:i', $agf_calendrier_formateur->heuref) : '12:00' );
+	if(isset($_POST['heuref'])){
+		$heuref = GETPOST('heuref');
+	}
+
+
 	$out.='
 			<div class="form-group">
 				<label for="heured">Date</label>
-				<input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="date_session" required name="date_session" value="'.(($action == 'update' || $action == 'view') ? date('Y-m-d', $agf_calendrier_formateur->date_session) : date('Y-m-d')).'">
+				<input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="date_session" required name="date_session" value="'.$date_session.'">
 			</div>
 			<div class="form-group">
 				<label for="heured">Heure début:</label>
-				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heured" required name="heured" value="'.(($action == 'update' || $action == 'view') ? date('H:i', $agf_calendrier_formateur->heured) : '09:00' ).'">
+				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heured" required name="heured" value="'.$heured.'">
 				<label for="heuref">Heure fin:</label>
-				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heuref" required name="heuref" value="'.(($action == 'update' || $action == 'view') ? date('H:i', $agf_calendrier_formateur->heuref) : '12:00' ).'">
+				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heuref" required name="heuref" value="'.$heuref.'">
 			</div>
 			<div class="form-group">
 				<label for="status">Status</label>
@@ -964,7 +981,7 @@ function validateFormateur($context)
 
 function getPageViewAgendaFormateurExternalAccess(){
 
-	global $conf, $user;
+	global $conf, $user, $langs;
 
 	$context = Context::getInstance();
 
@@ -1007,7 +1024,7 @@ function getPageViewAgendaFormateurExternalAccess(){
     
 
 
-		document.addEventListener(\'DOMContentLoaded\', function() {
+	document.addEventListener(\'DOMContentLoaded\', function() {
     var calendarEl = document.getElementById(\'agf-agenda-formation\');
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -1024,6 +1041,8 @@ function getPageViewAgendaFormateurExternalAccess(){
 			right: \'dayGridMonth,timeGridWeek,timeGridDay,listMonth\'
 		},
 		editable: false, // next step add rights and allow edition
+      	selectable: true,
+      	
 		locale: fullcalendarscheduler_initialLangCode,
 		eventLimit: true, // allow "more" link when too many events
 		eventRender: function(info) {
@@ -1039,10 +1058,10 @@ function getPageViewAgendaFormateurExternalAccess(){
 		events: 
 		{
 			url: fullcalendarscheduler_interface,
-			extraParams: {
+			/*extraParams: {
 				custom_param1: \'something\',
 				custom_param2: \'somethingelse\'
-			},
+			},*/
 			failure: function() {
 			//document.getElementById(\'script-warning\').style.display = \'block\'
 			}
@@ -1085,6 +1104,14 @@ function getPageViewAgendaFormateurExternalAccess(){
 			    // Deactivate original link
 			    return false;
 			}
+		},
+		
+		dateClick: function(info) {
+			alert(\'clicked \' + info.dateStr);
+		},
+		
+		select: function(info) {
+			newEventModal(info.startStr, info.endStr);
 		}
     });
 
@@ -1094,12 +1121,23 @@ function getPageViewAgendaFormateurExternalAccess(){
 	});
     
     
- 
+    calendar.render();
+    
+    
+ 	function newEventModal(start, end = 0){
+ 	     console.log(start);
+ 	    $("#calendarModalLabel").html("'.$langs->trans('Agf_fullcalendarscheduler_title_dialog_create_event').'");
+ 	    $("#calendarModalIframe").attr("src","'.$context->getRootUrl('agefodd_session_card_time_slot', '&iframe=1').'" + "&start=" + encodeURIComponent(start) + "&end=" + encodeURIComponent(end) );
+    	$("#calendarModal").modal();
+    	$("#calendarModalIframe").on("load", function() { $("#calendarModalIframe").height($( window ).height() - 200); });
+
+ 	    
+ 	}
 		    
     
-    calendar.render();
   });
-			 </script>';
+			
+</script>';
 
 
 
@@ -1213,6 +1251,7 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 			$duree_declared = Agsession::getStaticSumDureePresence($obj->fk_session);
 
 			$T = array();
+			$T[] = '<small style="font-weight: bold;" >'.$langs->trans('AgfInfoSession').' :</small>';
 			$T[] = $langs->trans('AgfDuree').' : '.$agf_session->duree_session;
 			$T[] = $langs->trans('AgfDureeDeclared').' : '.$duree_declared;
 			$T[] = $langs->trans('AgfDureeSolde').' : '. ($agf_session->duree_session - $duree_declared);
