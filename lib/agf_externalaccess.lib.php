@@ -703,7 +703,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 }
 
 
-function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
+function externalaccess_getAgefoddJsonAgendaFormateurgetPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
 {
 	global $db,$langs, $hookmanager, $user;
 
@@ -1004,7 +1004,7 @@ function getPageViewAgendaFormateurExternalAccess(){
 
 	fullcalendar_scheduler_businessHours_weekend_start = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START : '10:00').'";
 	fullcalendar_scheduler_businessHours_weekend_end = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END : '16:00').'";
-
+    
 
 
 		document.addEventListener(\'DOMContentLoaded\', function() {
@@ -1027,10 +1027,14 @@ function getPageViewAgendaFormateurExternalAccess(){
 		locale: fullcalendarscheduler_initialLangCode,
 		eventLimit: true, // allow "more" link when too many events
 		eventRender: function(info) {
+
+		    $(info.el).popover({
+		    		title: info.event.title ,
+		    		content: info.event.extendedProps.session_formateur_calendrier.msg,
+		    		html: true,
+		    		trigger: "hover"
+		    });
 		    
-		    //info.el.tooltip({title: info.event.extendedProps.session_formateur_calendrier});
-		    //console.log(info.el);
-    		//console.log ( info.event.extendedProps.session_formateur_calendrier );
 		},
 		events: 
 		{
@@ -1089,6 +1093,10 @@ function getPageViewAgendaFormateurExternalAccess(){
 		calendar.refetchEvents();
 	});
     
+    
+ 
+		    
+    
     calendar.render();
   });
 			 </script>';
@@ -1122,14 +1130,15 @@ function getPageViewAgendaFormateurExternalAccess(){
 
 function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0){
 
-	global $db, $hookmanager, $langs, $user;
+	global $db, $hookmanager, $langs, $user, $globalSessionCache;
 
+	$langs->load("agefodd@agefodd");
 
 	dol_include_once('/agefodd/class/agsession.class.php');
 	dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 	dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 	dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
-
+	dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
 
 	$context = Context::getInstance();
 
@@ -1172,11 +1181,19 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 			//$event->groupId: 999,
 			$event->title	= $obj->intitule . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $obj->ref_session;
 
-			$event->toolTip = '';
+			$event->toolTip = 'test';
 
 
 			$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
 			$agf_calendrier_formateur->fetch($obj->rowid);
+
+			// get agf session cache
+			if(empty($globalSessionCache[$obj->fk_session]) || !is_object($globalSessionCache[$obj->fk_session])){
+				$agf_session = new Agsession($db);
+				$agf_session->fetch($obj->fk_session);
+			}else{
+				$agf_session = $globalSessionCache[$obj->fk_session];
+			}
 
 			$actionUrl = '&action=view';
 			if (empty($agf_calendrier_formateur->billed) && $user->rights->agefodd->external_trainer_write) {
@@ -1190,6 +1207,18 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 			//...
 			$event->session_formateur_calendrier = new stdClass();
 			$event->session_formateur_calendrier->id = $obj->rowid;
+			$event->session_formateur_calendrier->msg = '';
+
+
+			$duree_declared = Agsession::getStaticSumDureePresence($obj->fk_session);
+
+			$T = array();
+			$T[] = $langs->trans('AgfDuree').' : '.$agf_session->duree_session;
+			$T[] = $langs->trans('AgfDureeDeclared').' : '.$duree_declared;
+			$T[] = $langs->trans('AgfDureeSolde').' : '. ($agf_session->duree_session - $duree_declared);
+
+			$event->session_formateur_calendrier->msg.= implode('<br/>',$T);
+
 
 			$parameters= array(
 				'sqlObj' => $obj,
