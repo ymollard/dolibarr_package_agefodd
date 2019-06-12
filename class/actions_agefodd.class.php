@@ -730,12 +730,6 @@ class ActionsAgefodd
 
 
 				}
-				else{
-					print 'nope';
-					var_dump($trainer);
-					$context->setControllerFound();
-				}
-
 			}
 			elseif ($context->controller == 'agefodd_trainer_agenda')
 			{
