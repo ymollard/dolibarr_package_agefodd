@@ -286,9 +286,10 @@ class ActionsAgefodd
 							else
 							{
 								$this->db->commit();
+								$context->setEvents($langs->transnoentities('AgfCreneauDeleted'));
 							}
 
-							$url = $context->getRootUrl(GETPOST('controller'), '&sessid='.$agsession->id);
+							$url = $context->getRootUrl(GETPOST('controller'), '&sessid='.$agsession->id.'&fromAction=deleteCalendrierFormateur');
 							header('Location: '.$url);
 							exit;
 						}
@@ -619,6 +620,16 @@ class ActionsAgefodd
 			}
 			else if ($context->controller == 'agefodd_session_card' && GETPOST('sessid', 'int') > 0)
 			{
+
+				// CLOSE IFRAME
+				if($context->iframe){
+					$fromAction = GETPOST('fromAction');
+					if(!empty($fromAction) && $fromAction == 'deleteCalendrierFormateur'){
+						print '<script >window.parent.closeModal();</script>';
+					}
+				}
+
+
 				$agsession = new Agsession($this->db);
 				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
 				{

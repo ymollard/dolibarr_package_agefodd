@@ -27,7 +27,8 @@ function getMenuAgefoddExternalAccess()
 	global $langs, $user;
 
 	$context = Context::getInstance();
-	$html = '<section id="agefodd">
+	$html = '	<!-- getMenuAgefoddExternalAccess -->
+				<section id="agefodd">
 				<div class="container">
 				  <div class="row">
 					<div class="col-lg-12 text-center">
@@ -81,7 +82,7 @@ function getPageViewSessionListExternalAccess()
 		$agsession->fetch_session_per_trainer($formateur->id);
 	}
 
-	$out = '';
+	$out = '<!-- getPageViewSessionListExternalAccess -->';
 	$out.= '<section id="section-session-list"><div class="container">';
 
 	if(!empty($agsession->lines))
@@ -236,7 +237,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
 	$agf_calendrier_formateur->fetchAllBy(array('trainer.rowid'=>$trainer->id, 'sf.fk_session'=>$agsession->id), '');
 
-	$out = '';
+	$out = '<!-- getPageViewSessionCardExternalAccess -->';
 	$out.= '<section id="section-session-card" class="py-5"><div class="container">';
 
 	$url_add = '';
@@ -306,7 +307,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 
 	if (!validateFormateur($context)) return '';
 
-	$out = '';
+	$out = '<!-- getPageViewSessionCardExternalAccess_creneaux -->';
 	$out.= '<table id="session-list" class="table table-striped w-100" >';
 
 	$out.= '<thead>';
@@ -488,7 +489,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 
 	$out = '';
 
-	$out.= '
+	$out.= '<!-- getPageViewSessionCardExternalAccess_summary -->
 		<div class="container px-0">
 			<h5>'.$langs->trans('AgfSessionSummary', $date_deb, $date_fin).'</h5>
 			<div class="panel panel-default">
@@ -612,7 +613,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
     }
 
     $out = '';
-    $out.= '
+    $out.= '<!-- getPageViewSessionCardExternalAccess_files -->
 		<div class="container px-0">
 			<div class="panel panel-default">
 				<div class="panel-body">
@@ -723,7 +724,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		else $action = 'add';
 	}
 
-	$out = '';
+	$out = '<!-- getPageViewSessionCardCalendrierFormateurExternalAccess -->';
 	$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
 
 	$backUrl = $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id.'&save_lastsearch_values=1');
@@ -898,6 +899,8 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
         $buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />';
 	}
 
+	$buttons.= '<button type="button" class="btn btn-danger" data-id="21" data-toggle="modal" data-target="#session-card-delete-time-slot" ><i class="fa fa-trash"></i>  Supprimer </button>';
+
 
     $parameters=array(
         'agsession' =>& $agsession,
@@ -949,6 +952,15 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 
     $out.= '</section>';
+
+    // Delete creneau modal
+	$body = $langs->trans('Agf_EA_DeleteClandrierFormateurBody');
+	$body.= '<input type="hidden" name="sessid" value="'.$agsession->id.'" />';
+	$body.= '<input type="hidden" name="fk_agefodd_session_formateur_calendrier" value="'.$agf_calendrier_formateur->id.'" />';
+
+
+	$out .= getEaModalConfirm('session-card-delete-time-slot', $langs->trans('Agf_EA_DeleteClandrierFormateurTitle'), $body, $context->getRootUrl('agefodd_session_card'), 'deleteCalendrierFormateur');
+
 
 	return $out;
 }
@@ -1042,7 +1054,6 @@ function getPageViewAgendaFormateurExternalAccess(){
 		},
 		editable: false, // next step add rights and allow edition
       	selectable: true,
-      	
 		locale: fullcalendarscheduler_initialLangCode,
 		eventLimit: true, // allow "more" link when too many events
 		eventRender: function(info) {
@@ -1107,7 +1118,7 @@ function getPageViewAgendaFormateurExternalAccess(){
 		},
 		
 		dateClick: function(info) {
-			alert(\'clicked \' + info.dateStr);
+			//newEventModal(info.startStr);
 		},
 		
 		select: function(info) {
@@ -1119,6 +1130,8 @@ function getPageViewAgendaFormateurExternalAccess(){
     $("#calendarModal").on("hide.bs.modal", function (e) {
 		calendar.refetchEvents();
 	});
+	
+
     
     
     calendar.render();
@@ -1136,13 +1149,15 @@ function getPageViewAgendaFormateurExternalAccess(){
 		    
     
   });
-			
+		
+	
+	window.closeModal = function(){
+    	$("#calendarModal").modal(\'hide\');
+	};
 </script>';
 
 
-
-
-	return '<section >'.$html.'</section >
+	$iframeModal = '
 	<!-- Modal -->
 	<div class="modal fade" id="calendarModal" tabindex="-1" role="dialog" aria-labelledby="calendarModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg" >
@@ -1160,8 +1175,9 @@ function getPageViewAgendaFormateurExternalAccess(){
 	</div>
 	<!-- /.modal -->
 	';
-	
-	
+
+
+	return '<section >'.$html.'</section >'.$iframeModal;
 }
 
 

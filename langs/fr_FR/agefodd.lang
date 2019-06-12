@@ -52,6 +52,7 @@ AgfShowDetails=Consulter/Modifier la fiche
 AgfObjPeda=Objectifs pédagogiques
 AgfCatalogDetail=Détail formation
 AgfDeleteOps=Confirmation de suppression
+AgfCreneauDeleted=Créneau supprimé
 AgfConfirmDeleteOps=ATTENTION : Les sessions liées à cette formation ne seront plus accessibles. Souhaitez-vous vraiment supprimer cette formation ?
 AgfConfirmDeleteSession=ATTENTION : Les évemenents de l'agenda liés à cette session ne seront plus accessibles. Souhaitez-vous vraiment supprimer cette session ?
 AgfConfirmDeleteAction=Souhaitez-vous vraiment supprimer cette action ?
