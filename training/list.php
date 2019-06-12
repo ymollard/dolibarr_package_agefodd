@@ -359,18 +359,18 @@ print "</tr>\n";
 
 print '<tr class="liste_titre">';
 
-if (! empty($arrayfields['c.rowid']['checked']))			print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "c.rowid", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.intitule']['checked']))			print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.ref']['checked']))				print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.ref_interne']['checked']))		print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['dictcat.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCateg"), $_SERVEUR ['PHP_SELF'], "dictcat.code", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['dictcatbpf.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCategBPF"), $_SERVEUR ['PHP_SELF'], "dictcatbpf.code", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.datec']['checked']))		print_liste_field_titre($langs->trans("AgfDateC"), $_SERVEUR ['PHP_SELF'], "c.datec", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.duree']['checked']))		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.nb_place']['checked']))		print_liste_field_titre($langs->trans("AgfNbPlace"), $_SERVEUR ['PHP_SELF'], "c.nb_place", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['a.dated']['checked']))		print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVEUR ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['AgfNbreAction']['checked']))		print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.fk_product']['checked'])) print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR ['PHP_SELF'], 'c.fk_product', '', $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.rowid']['checked']))			print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "c.rowid", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.intitule']['checked']))			print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.ref']['checked']))				print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.ref_interne']['checked']))		print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['dictcat.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCateg"), $_SERVER ['PHP_SELF'], "dictcat.code", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['dictcatbpf.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCategBPF"), $_SERVER ['PHP_SELF'], "dictcatbpf.code", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.datec']['checked']))		print_liste_field_titre($langs->trans("AgfDateC"), $_SERVER ['PHP_SELF'], "c.datec", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.duree']['checked']))		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVER ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.nb_place']['checked']))		print_liste_field_titre($langs->trans("AgfNbPlace"), $_SERVER ['PHP_SELF'], "c.nb_place", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['a.dated']['checked']))		print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVER ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['AgfNbreAction']['checked']))		print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.fk_product']['checked'])) print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVER ['PHP_SELF'], 'c.fk_product', '', $option, '', $sortfield, $sortorder);
 // Extra fields
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 {

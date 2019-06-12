@@ -74,7 +74,7 @@ if ($id) {
 		dol_agefodd_banner_tab($agf, 'id');
 		print '<div class="underbanner clearboth"></div>';
 
-		print_barre_liste($langs->trans("AgfSessionDetail"), 0, $_SERVEUR ['PHP_SELF'], '', '', '', '', $result, $result, 'title_generic.png', 0, '', '', 0, 1);
+		print_barre_liste($langs->trans("AgfSessionDetail"), 0, $_SERVER ['PHP_SELF'], '', '', '', '', $result, $result, 'title_generic.png', 0, '', '', 0, 1);
 
 		if (count($agf_session->lines) > 0) {
 			print '<table class="tagtable liste listwithfilterbefore"  width="100%">';

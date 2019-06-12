@@ -539,7 +539,7 @@ if ($resql != - 1) {
 
 	$menu = $langs->trans("AgfMenuSessAct");
 
-	print_barre_liste($menu, $page, $_SERVEUR['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid . '&search_fournorderid=' . $search_fournorderid, $sortfield,
+	print_barre_liste($menu, $page, $_SERVER['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid . '&search_fournorderid=' . $search_fournorderid, $sortfield,
 			$sortorder, '', $num);
 
 	$i = 0;
@@ -548,28 +548,28 @@ if ($resql != - 1) {
 	print '<tr class="liste_titre">';
 	$arg_url = '&page=' . $page . '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid;
 	$arg_url .= '&search_fournorderid=' . $search_fournorderid;
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Id"), $_SERVER['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVER['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVER['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVER['PHP_SELF'], "p.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
 	if (! (empty($search_orderref))) {
-		print_liste_field_titre($langs->trans("AgfBonCommande"), $_SERVEUR['PHP_SELF'], "order_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfBonCommande"), $_SERVER['PHP_SELF'], "order_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	if (! (empty($search_invoiceref))) {
-		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVER['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	if (! (empty($search_fourninvoiceref))) {
-		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVEUR['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("Type"), $_SERVEUR['PHP_SELF'], "ord_inv.element_type", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfFacture"), $_SERVER['PHP_SELF'], "invoice.facnumber", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Type"), $_SERVER['PHP_SELF'], "ord_inv.element_type", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	if (! (empty($search_fournorderref))) {
-		print_liste_field_titre($langs->trans("Order"), $_SERVEUR['PHP_SELF'], "fournorder.ref", '', $arg_url, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("Type"), $_SERVEUR['PHP_SELF'], "ord_inv.element_type", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Order"), $_SERVER['PHP_SELF'], "fournorder.ref", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Type"), $_SERVER['PHP_SELF'], "ord_inv.element_type", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	if (! (empty($search_propalref))) {
-		print_liste_field_titre($langs->trans("Proposal"), $_SERVEUR['PHP_SELF'], "propal_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Proposal"), $_SERVER['PHP_SELF'], "propal_dol.ref", '', $arg_url, '', $sortfield, $sortorder);
 	}
 	print '<td>&nbsp;</td>';
 	print "</tr>\n";

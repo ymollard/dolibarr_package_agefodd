@@ -172,7 +172,7 @@ if ($resql>=0) {
 	print '<input type="hidden" name="socid" value="' . $socid . '"/>';
 
 	$option = '&socid=' . $socid . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$i = 0;
 	print '<table class="noborder tagtable liste listwithfilterbefore" width="100%">';
@@ -240,20 +240,20 @@ if ($resql>=0) {
 
 	print '<tr class="liste_titre">';
 	$arg_url = '&page=' . $page . '&socid=' . $socid . '&search_trainning_name=' . $search_trainning_name . '&search_soc=' . $search_soc . '&search_teacher_name=' . $search_teacher_name . '&search_training_ref=' . $search_training_ref . '&search_start_date=' . $search_start_date . '&search_start_end=' . $search_start_end . '&search_site=' . $search_site;
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "certif.fk_session_agefodd", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "certif.fk_session_agefodd", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "soc.nom", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfParticipant"), $_SERVEUR ['PHP_SELF'], "sta.nom", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Email"), $_SERVEUR ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifCode"), $_SERVEUR ['PHP_SELF'], 'certif.certif_code', '', $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifLabel"), $_SERVEUR ['PHP_SELF'], 'certif.certif_label', '', $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifDateSt"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_start", "", $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifDateEnd"), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_end", '', $arg_url, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfCertifDateWarning").' '.$form->textwithpicto('', $langs->trans("AgfCertifLegend"), 1, 'help'), $_SERVEUR ['PHP_SELF'], "certif.certif_dt_warning", '', $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER ['PHP_SELF'], "c.ref_interne", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfParticipant"), $_SERVER ['PHP_SELF'], "sta.nom", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Email"), $_SERVER ['PHP_SELF'], "", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVER ['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVER ['PHP_SELF'], "s.datef", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifCode"), $_SERVER ['PHP_SELF'], 'certif.certif_code', '', $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifLabel"), $_SERVER ['PHP_SELF'], 'certif.certif_label', '', $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifDateSt"), $_SERVER ['PHP_SELF'], "certif.certif_dt_start", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifDateEnd"), $_SERVER ['PHP_SELF'], "certif.certif_dt_end", '', $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfCertifDateWarning").' '.$form->textwithpicto('', $langs->trans("AgfCertifLegend"), 1, 'help'), $_SERVER ['PHP_SELF'], "certif.certif_dt_warning", '', $arg_url, '', $sortfield, $sortorder);
 	print "</tr>\n";
 	//AgfCertificateValidity
 	// Search bar
