@@ -694,15 +694,26 @@ class ActionsAgefodd
 					$out.= '<input type="hidden" name="controller" value="'.$context->controller.'" />';
 
 					$startDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('start'));
+					if(!$startDate){
+						$startDate = DateTime::createFromFormat("Y-m-d", GETPOST('start'));
+					}
+
 
 					if(!empty($startDate)){
 						$out.= '<input type="hidden" name="date" 	value="'.$startDate->format('Y-m-d').'" />';
 						$out.= '<input type="hidden" name="heured" 	value="'.$startDate->format('H:i').'" />';
 					}
 
+
 					$endDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('end'));
+
+
 					if(!empty($endDate)){
 						$out.= '<input type="hidden" name="heuref" 	value="'.$endDate->format('H:i').'" />';
+					}
+					elseif($startDate){
+						$startDate->add(new DateInterval('PT1H'));
+						$out.= '<input type="hidden" name="heuref" 	value="'.$startDate->format('H:i').'" />';
 					}
 
 					$agsession = new Agsession($this->db);
