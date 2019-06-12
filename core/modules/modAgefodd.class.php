@@ -2464,6 +2464,7 @@ class modAgefodd extends DolibarrModules
                     foreach ($sql_execution_order as $sql_file_role) {
                         if (preg_match($sql_regexp[$sql_file_role], $file)) {
                             $sql_file_paths[$sql_file_role][] = $dir . $file;
+                            break;
                         }
                     }
                 }
@@ -2516,7 +2517,7 @@ class modAgefodd extends DolibarrModules
 
 		$return_code = ($error == 0);
 
-		// TODO flo m: ask why we don't count the following DELETE for the return code.
+		// FIXME (atm-florianm): shouldn’t we set the return code after the following DELETE to include possible errors?
         // DELETE AGF_LAST_VERION_INSTALL to update with the new one
         $sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'const WHERE name=\'AGF_LAST_VERION_INSTALL\'';
         dol_syslog(get_class($this) . "::_load_tables_agefodd ", LOG_DEBUG);
