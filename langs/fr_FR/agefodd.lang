@@ -1488,6 +1488,12 @@ AgfMenuAgendaFormateur=Agenda formation
 AgfExternalAccess_PageTitle_Agenda=Agenda formations
 AgfExternalAccess_PageDesc_Agenda=Une vue globale de votre planning formateur
 AgfInfoSession=Informations sur la session
+Agf_TrainerNotAvailableRange=Indisponibilité
+Agf_TrainerNotAvailableRangeDesc=Saisir un événement d'indisponibilité formateur qui apparait sur ce planning
+StartDateTime=Date et heure de début
+EndDateTime=Date et heure de fin
+AgfAgendaOtherTypeNotValid=Type d'évenement non reconu
+AgfAgendaOtherType_not_available_range=Indisponibilité formateur
 
 Agf_fullcalendarscheduler_title_dialog_create_event=Création du créneau horaire
 Agf_fullcalendarscheduler_title_dialog_update_event=Modification du crénau horaire

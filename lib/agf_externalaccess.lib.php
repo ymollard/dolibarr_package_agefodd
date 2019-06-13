@@ -703,6 +703,118 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
     return $out;
 }
 
+function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess($action='')
+{
+	global $db,$langs, $hookmanager, $user;
+
+	$context = Context::getInstance();
+	$trainer = new Agefodd_teacher($db);
+
+	if ($trainer->fetchByUser($user) > 0) {
+
+		$out = '<!-- getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess -->';
+		$out .= '<section id="section-session-card-calendrier-formateur" class="py-5">';
+		$out .= '<div class="container">';
+		$out .= '<form action="' . $_SERVER['PHP_SELF'] . '" method="POST" class="clearfix">';
+		$out .= '<input type="hidden" name="iframe" value="' . $context->iframe . '" />';
+		$out .= '<input type="hidden" name="controller" value="' . $context->controller . '" />';
+
+		$startDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('start'));
+		$fullDay = false;
+		if (!$startDate) {
+			$startDate = DateTime::createFromFormat("Y-m-d", GETPOST('start'));
+			$fullDay = true;
+		}
+
+
+		if (!empty($startDate)) {
+			$out .= '<input type="hidden" name="date" 	value="' . $startDate->format('Y-m-d') . '" />';
+			$out .= '<input type="hidden" name="heured" 	value="' . $startDate->format('H:i') . '" />';
+		}
+
+
+		$endDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('end'));
+
+
+		if (!empty($endDate)) {
+			$out .= '<input type="hidden" name="heuref" 	value="' . $endDate->format('H:i') . '" />';
+		} elseif ($startDate) {
+			$startDate->add(new DateInterval('PT1H'));
+			$out .= '<input type="hidden" name="heuref" 	value="' . $startDate->format('H:i') . '" />';
+		}
+
+		$agsession = new Agsession($db);
+		$agsession->fetch_session_per_trainer($trainer->id);
+		$optionSessions = '';
+		if (!empty($agsession->lines)) {
+			foreach ($agsession->lines as $line) {
+				$optionSessions .= '<option value="' . $line->rowid . '">' . $line->sessionref . ' : ' . $line->intitule . '</option>';
+			}
+		}
+
+		$out .= '<div class="form-group">';
+		$out .= '<label for="sessid">' . $langs->trans('AgfSelectSession') . '</label>';
+		$out .= '<select class="form-control" name="sessid">' . $optionSessions . '</select>';
+		$out .= '</div>';
+
+
+		$out .= '<button type="submit" class="btn btn-primary pull-right" >' . $langs->trans('Next') . '</button>';
+
+		$out .= '</form>';
+
+
+		// Others options
+		$out .= '<div class="or">' . $langs->trans('OrSeparator') . '</div>';
+
+		$out .= '<div class="row">';
+
+		$enableAddNotAvailableRange = false;
+		$link = '';
+		if ((!empty($startDate) && $fullDay && empty($endDate)) || (!empty($startDate) && !empty($endDate))) {
+			$enableAddNotAvailableRange = true;
+
+			$linkParams = '&action=add&type=not_available_range';
+			if (!empty($startDate)) {
+				$linkParams .= '&heured=' . urlencode($startDate->format('Y-m-d\TH:i'));
+				if ($fullDay) {
+					$linkParams .= '&date=' . urlencode($startDate->format('Y-m-d\TH:i'));
+				}
+			}
+
+			if (!empty($endDate)) {
+				$linkParams .= '&heuref=' . urlencode($endDate->format('Y-m-d\TH:i'));
+			}
+
+			$link = $context->getRootUrl('agefodd_event_other', $linkParams);
+
+		}
+
+		$out .= getService($langs->trans('Agf_TrainerNotAvailableRange'), 'fa-calendar-times-o', $link, $langs->trans('Agf_TrainerNotAvailableRangeDesc'), !$enableAddNotAvailableRange);
+
+		$parameters=array(
+			'startDate' => $startDate,
+			'endDate' => $endDate,
+			'action' => $action,
+			'fullDay' => $fullDay
+		);
+		$reshook=$hookmanager->executeHooks('getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess', $parameters, $agf_calendrier_formateur);
+
+		if (!empty($reshook)){
+			// override full output
+			$out = $hookmanager->resPrint;
+		}
+		else{
+			$out.= $hookmanager->resPrint;
+		}
+
+
+		$out .= '</div>';
+
+		$out .= '</div></section>';
+
+		return $out;
+	}
+}
 
 function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
 {
@@ -786,27 +898,44 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 
 	$out.='
+	<div class="form-row">
+		<div class="col">
 			<div class="form-group">
 				<label for="heured">Date</label>
 				<input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="date_session" required name="date_session" value="'.$date_session.'">
 			</div>
+		</div>
+		<div class="col">
 			<div class="form-group">
 				<label for="heured">Heure début:</label>
 				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heured" required name="heured" value="'.$heured.'">
+			</div>
+		</div>	
+		<div class="col">
+			<div class="form-group">
 				<label for="heuref">Heure fin:</label>
 				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heuref" required name="heuref" value="'.$heuref.'">
 			</div>
+		</div>	
+	</div>
+	
+	<div class="form-row">
+		<div class="col">
+		
 			<div class="form-group">
 				<label for="status">Status</label>
 				<select '.($action == 'view' ? 'disabled' : '').' class="form-control" id="status" name="status" >
 					'.$statusOptions.'
 				</select>
-
 			</div>
+		</div>	
+		<div class="col">
 			<div class="form-group">
 				<label for="status">Type</label>
 				'.$formAgefodd->select_calendrier_type($calendrier_type, 'code_c_session_calendrier_type', true, ($action == 'view' ? 'disabled' : ''), 'form-control').'
 			</div>
+		</div>	
+	</div>
 
 			<script>
 			$( document ).ready(function() {
@@ -990,6 +1119,91 @@ function validateFormateur($context)
     }
     else return true;
 }
+
+function getPageViewAgendaOtherExternalAccess()
+{
+
+	global $db, $conf, $user, $langs;
+
+	include_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
+
+	$context = Context::getInstance();
+	$action = $context->action;
+
+	$event = new ActionComm($db);
+
+
+
+	$html = '';
+
+	// Get start date
+	$heured = GETPOST('heured');
+	$startDate 	= new DateTime();
+	if(empty($heured) && !empty($event->id)){
+		$startDate 	= DateTime::setTimestamp ( $event->datep );
+	}
+	elseif(!empty($heured)){
+		$startDate 	= parseFullCalendarDateTime($heured);
+	}
+
+	if(!empty($startDate)){
+		$heured = $startDate->format('Y-m-d\TH:i');
+	}
+
+	// Get end date
+	$heuref = GETPOST('heuref');
+	$endDate = new DateTime();
+	if(empty($heuref) && !empty($event->id)){
+		$endDate = DateTime::setTimestamp ( $event->datef );
+	}
+	elseif(!empty($heuref)){
+		$endDate = parseFullCalendarDateTime($heuref);
+	}
+
+	if(!empty($endDate)){
+		$heuref = $endDate->format('Y-m-d\TH:i');
+	}
+
+	$TAvailableType = array(
+		'not_available_range'
+	);
+
+
+	$type = GETPOST('type');
+	if(!in_array($type, $TAvailableType)){
+		$typeTitle = $langs->trans('AgfAgendaOtherTypeNotValid') ;
+	}
+	else{
+		$typeTitle = $langs->trans('AgfAgendaOtherType_'.$type) ;
+	}
+
+	$html.='<h4>'.$typeTitle.'</h4>';
+
+
+
+	$html.='
+	<div class="form-row">
+		<div class="col">
+			<div class="form-group">
+				<label for="heured">'.$langs->trans('StartDateTime').'</label>
+				<input '.($action == 'view' ? 'readonly' : '').' type="datetime-local" class="form-control" id="heured" required name="heured" value="'.$heured.'">
+			</div>
+		</div>
+		<div class="col">
+			<div class="form-group">
+				<label for="heured">'.$langs->trans('EndDateTime').'</label>
+				<input '.($action == 'view' ? 'readonly' : '').' type="datetime-local" class="form-control" id="heuref" required name="heuref" value="'.$heuref.'">
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	';
+
+	return '<section ><div class="container">'.$html.'</div></section >';
+}
+
 
 function getPageViewAgendaFormateurExternalAccess(){
 
