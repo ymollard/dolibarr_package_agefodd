@@ -773,7 +773,7 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
 		if ((!empty($startDate) && $fullDay && empty($endDate)) || (!empty($startDate) && !empty($endDate))) {
 			$enableAddNotAvailableRange = true;
 
-			$linkParams = '&action=add&type=not_available_range';
+			$linkParams = '&action=add&type=AC_AGF_NOT_AVAILABLE_RANGE';
 			if (!empty($startDate)) {
 				$linkParams .= '&heured=' . urlencode($startDate->format('Y-m-d\TH:i'));
 				if ($fullDay) {
@@ -1128,13 +1128,25 @@ function getPageViewAgendaOtherExternalAccess()
 	include_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
 
 	$context = Context::getInstance();
-	$action = $context->action;
+
+	$action = 'view';
+	if($context->action == 'add' || $context->action == 'edit'){
+		$action = 'edit';
+	}
 
 	$event = new ActionComm($db);
 
-
+	$id = GETPOST('id', 'int');
+	if(!empty($id)){
+		$event->fetch(intval($id));
+	}
 
 	$html = '';
+
+	$note = GETPOST('note', 'nohtml');
+	if(empty($note)){
+		$note = $event->note;
+	}
 
 	// Get start date
 	$heured = GETPOST('heured');
@@ -1164,10 +1176,14 @@ function getPageViewAgendaOtherExternalAccess()
 		$heuref = $endDate->format('Y-m-d\TH:i');
 	}
 
-	$TAvailableType = array(
-		'not_available_range'
-	);
+	$TAvailableType = getEnventOtherTAvailableType();
 
+
+	if ($action == 'edit'){
+		$html.= '<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">';
+		$html.= '<input type="hidden" name="iframe" value="'.$context->iframe.'" />';
+		$html.= '<input type="hidden" name="controller" value="'.$context->controller.'" />';
+	}
 
 	$type = GETPOST('type');
 	if(!in_array($type, $TAvailableType)){
@@ -1175,11 +1191,14 @@ function getPageViewAgendaOtherExternalAccess()
 	}
 	else{
 		$typeTitle = $langs->trans('AgfAgendaOtherType_'.$type) ;
+		$html.='<input type="hidden" name="type" value="'.$type.'" />';
 	}
 
 	$html.='<h4>'.$typeTitle.'</h4>';
 
-
+	if(!empty($id)){
+		$html.='<input type="hidden" name="id" value="'.$id.'" />';
+	}
 
 	$html.='
 	<div class="form-row">
@@ -1191,19 +1210,34 @@ function getPageViewAgendaOtherExternalAccess()
 		</div>
 		<div class="col">
 			<div class="form-group">
-				<label for="heured">'.$langs->trans('EndDateTime').'</label>
+				<label for="heuref">'.$langs->trans('EndDateTime').'</label>
 				<input '.($action == 'view' ? 'readonly' : '').' type="datetime-local" class="form-control" id="heuref" required name="heuref" value="'.$heuref.'">
 			</div>
 		</div>
 	</div>
 	
 	
-	
+	<div class="form-group">
+		<label for="actionnote">'.$langs->trans('Notes').'</label>
+		<textarea '.($action == 'view' ? 'readonly' : '').' type="datetime-local" class="form-control" id="actionnote" name="note" >'.dol_htmlentities($event->note).'</textarea>
+	</div>
 	';
+
+	if($action == 'edit'){
+		$html.='<p><button class="btn btn-primary pull-right" type="submit" name="action" value="save" >'.$langs->trans('Save').'</button></p>';
+		$html.= '</form>';
+	}
 
 	return '<section ><div class="container">'.$html.'</div></section >';
 }
 
+function getEnventOtherTAvailableType()
+{
+	// car à un moment il va bien en avoir d'autres ...
+	return array(
+		'AC_AGF_NOT_AVAILABLE_RANGE'
+	);
+}
 
 function getPageViewAgendaFormateurExternalAccess(){
 

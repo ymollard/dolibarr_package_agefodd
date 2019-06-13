@@ -524,6 +524,119 @@ class ActionsAgefodd
 				$context->desc = $langs->trans('AgfExternalAccess_PageDesc_Agenda');
 				$context->menu_active[] = 'invoices';
 			}
+			elseif ($context->controller == 'agefodd_event_other')
+			{
+				if($context->action == 'save'){
+
+					$errors = 0;
+
+					include_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
+
+					$event = new ActionComm($this->db);
+
+					$trainer = new Agefodd_teacher($this->db);
+					if ($trainer->fetchByUser($user) <= 0) {
+						$errors ++;
+						$context->setEvents($langs->transnoentities('agfSaveEventFetchCurrentTeacher'), 'errors');
+					}
+
+					$event->fk_element = $trainer->id ;    // Id of record
+					$event->elementtype = $trainer->element;   // Type of record. This if property ->element of object linked to.
+
+					// Id for update
+					$id = GETPOST('id', 'int');
+					if(!empty($id)){
+						if($event->fetch(intval($id)) < 1 ){
+							$errors ++;
+							$context->setEvents($langs->transnoentities('agfSaveEventFetchError'), 'errors');
+						}
+					}
+
+					// Type
+					$TAvailableType = getEnventOtherTAvailableType();
+
+					$type = GETPOST('type');
+					if(!empty($id)){
+						$type =$event->code; // on update, code could not be change
+					}
+
+					if(in_array($type, $TAvailableType)){
+						$typeTitle = $langs->trans('AgfAgendaOtherType_'.$type) ;
+						$event->code = $type;
+					}
+					else{
+						$typeTitle = $langs->trans('AgfAgendaOtherTypeNotValid') ;
+						$context->setEvents($langs->transnoentities('AgfAgendaOtherTypeNotValid'), 'errors');
+						$errors ++;
+					}
+
+					$event->type_code = $event->code ;
+					$event->label = $typeTitle;
+					$event->note = GETPOST('note', 'nohtml');
+
+					// Get start date
+					$heured = GETPOST('heured');
+					$startDate 	= parseFullCalendarDateTime($heured);
+
+					if(!empty($startDate)){
+						$event->datep = $startDate->getTimestamp();
+					}
+					else{
+						$context->setEvents($langs->transnoentities('agfSaveEventStartDateInvalid'), 'errors');
+						$errors ++;
+					}
+
+					// Get end date
+					$heuref = GETPOST('heuref');
+					$endDate = new DateTime();
+					$endDate = parseFullCalendarDateTime($heuref);
+					if(!empty($endDate)){
+						$event->datef = $endDate->getTimestamp();
+					}
+					else{
+						$context->setEvents($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
+						$errors ++;
+					}
+
+					// get date
+					if($event->datef <= $event->dated){
+						$context->setEvents($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
+						$errors ++;
+					}
+
+					if($errors > 0){
+						$context->setEvents($langs->transnoentities('agfSaveEventOtherErrors'), 'errors');
+						$context->action = 'edit';
+					}
+					else{
+						// Save
+
+						$saveRes = 0; // reset error status
+
+						if($event->id > 0)
+						{
+							$saveRes = $event->create($user);
+						}
+						else{
+							$saveRes = $event->update($user);
+						}
+
+						if($saveRes > 0){
+							$context->setEvents($langs->transnoentities('Saved'));
+							$context->action = 'saved';
+						}
+						else{
+							$context->setEvents($langs->transnoentities('agfSaveEventOtherActionErrors').'<br/>code: '.$event->error, 'errors');
+							$context->action = 'edit';
+						}
+
+						//$context->setEvents($langs->transnoentities('Saved'));
+
+						//header('Location: '.$redirect);
+						//exit;
+					}
+				}
+			}
 
 			return 1;
 		}
