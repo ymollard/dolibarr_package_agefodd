@@ -3340,7 +3340,7 @@ class Agsession extends CommonObject
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 
 			if ($num) {
@@ -5451,11 +5451,10 @@ class Agsession extends CommonObject
 
 					if ($line->date_session != $old_date) {
 						$this->dthour_text .= "<br>";
-						$this->dthour_text .= dol_print_date($line->date_session, 'daytext', 'tzserver', $langs) . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour', 'tzserver', $langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date(
-								$line->heuref, 'hour', 'tzserver', $langs);
+						$this->dthour_text .= dol_print_date($line->date_session, 'daytext','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour','tzuser',$langs);
 					} else {
 						$this->dthour_text .= ', ';
-						$this->dthour_text .= dol_print_date($line->heured, 'hour', 'tzserver', $langs) . ' '.$langs->trans('AgfPDFConvocation5').' '. dol_print_date($line->heuref, 'hour', 'tzserver', $langs);
+						$this->dthour_text .= dol_print_date($line->heured, 'hour','tzuser',$langs) . ' - ' . dol_print_date($line->heuref, 'hour','tzuser',$langs);
 					}
 					$old_date = $line->date_session;
 				}
@@ -5533,11 +5532,10 @@ class Agsession extends CommonObject
 					if ($trainercalline->date_session != $old_date) {
 						$this->TFormateursSessionCal[$trainercalline->date_session]=dol_print_date($trainercalline->date_session,'daytext');
 						$this->trainer_datehourtextline .= "<br>";
-						$this->trainer_datehourtextline .= dol_print_date($trainercalline->date_session, 'daytext', 'tzserver', $langs) . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($trainercalline->heured, 'hour', 'tzserver', $langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date(
-								$trainercalline->heuref, 'hour', 'tzserver', $langs);
+						$this->trainer_datehourtextline .= dol_print_date($trainercalline->date_session, 'daytext','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($trainercalline->heured, 'hour','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($trainercalline->heuref, 'hour','tzuser',$langs);
 					} else {
 						$this->trainer_datehourtextline .= ", ";
-						$this->trainer_datehourtextline .= dol_print_date($trainercalline->heured, 'hour', 'tzserver', $langs) . ' - ' . dol_print_date($trainercalline->heuref, 'hour', 'tzserver', $langs);
+						$this->trainer_datehourtextline .= dol_print_date($trainercalline->heured, 'hour','tzuser',$langs) . ' - ' . dol_print_date($trainercalline->heuref, 'hour','tzuser',$langs);
 					}
 					$old_date = $trainercalline->date_session;
 

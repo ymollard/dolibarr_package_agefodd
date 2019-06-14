@@ -885,11 +885,17 @@ foreach ( $agf_formateurs->lines as $line ) {
 						if($line_fin->element_type == "invoice_supplier_trainer"){
 							$suplier_invoice = new FactureFournisseur($db);
 							$suplier_invoice->fetch($line_fin->fk_element);
+							$agf->fetch_all_by_order_invoice_propal('', '','','','','','',$suplier_invoice->id,'');
+                            $count = count($agf->lines);
 							print '<table class="nobordernopadding">';
 							print '<tr>';
 							// Supplier Invoice inforamtion
 							print '<td nowrap="nowrap">';
-							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0) . ' (' . price($suplier_invoice->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' (' . price($suplier_invoice->total_ht). $langs->getCurrencySymbol($conf->currency);
+							if ($count > 1){
+                                print ' soit '.price($suplier_invoice->total_ht/count($agf->lines)) . $langs->getCurrencySymbol($conf->currency) .' '. $langs->trans("AgfForSession"). ' ' . $agf->ref;
+                            }
+                            print ')';
 							print '</td>';
 							print '<td>';
 							// Ad invoice line
@@ -916,7 +922,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 							print '<tr>';
 							// Supplier Invoice inforamtion
 							print '<td nowrap="nowrap">';
-							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0) . ' - '.$label.' (' . price($supplier_invoiceline->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
+							print $suplier_invoice->getLibStatut(2) . ' ' . $suplier_invoice->getNomUrl(1, '', 0, $conf->global->AGF_NEW_BROWSER_WINDOWS_ON_LINK) . ' - '.$label.' (' . price($supplier_invoiceline->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 							print '</td>';
 							print '<td>';
 
