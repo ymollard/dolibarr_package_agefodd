@@ -1497,7 +1497,7 @@ agfSaveEventStartDateInvalid=Date de début invalide
 agfSaveEventEndDateInvalid=Date de fin invalide
 agfSaveEventOtherActionErrors=Echec de la sauvegarde : contacter un administrateur
 agfSaveEventFetchError=L'évenement est inconu
-AgfAgendaOtherType_AC_AGF_NOT_AVAILABLE_RANGE=Indisponibilité formateur
+AgfAgendaOtherType_AC_AGF_NOTAV=Indisponibilité formateur
 
 Agf_fullcalendarscheduler_title_dialog_create_event=Création du créneau horaire
 Agf_fullcalendarscheduler_title_dialog_update_event=Modification du crénau horaire

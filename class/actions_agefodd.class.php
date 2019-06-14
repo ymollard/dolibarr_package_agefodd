@@ -548,7 +548,7 @@ class ActionsAgefodd
 					if(!empty($id)){
 						if($event->fetch(intval($id)) < 1 ){
 							$errors ++;
-							$context->setEvents($langs->transnoentities('agfSaveEventFetchError'), 'errors');
+							$context->setEvents($langs->trans('agfSaveEventFetchError'), 'errors');
 						}
 					}
 
@@ -557,16 +557,16 @@ class ActionsAgefodd
 
 					$type = GETPOST('type');
 					if(!empty($id)){
-						$type =$event->code; // on update, code could not be change
+						$type =$event->type_code; // on update, code could not be change
 					}
 
 					if(in_array($type, $TAvailableType)){
-						$typeTitle = $langs->trans('AgfAgendaOtherType_'.$type) ;
-						$event->code = $type;
+						$typeTitle = $langs->transnoentities('AgfAgendaOtherType_'.$type) ;
+						$event->code=$type;
 					}
 					else{
-						$typeTitle = $langs->trans('AgfAgendaOtherTypeNotValid') ;
-						$context->setEvents($langs->transnoentities('AgfAgendaOtherTypeNotValid'), 'errors');
+						$typeTitle = $langs->transnoentities('AgfAgendaOtherTypeNotValid') ;
+						$context->setEvents($langs->trans('AgfAgendaOtherTypeNotValid'), 'errors');
 						$errors ++;
 					}
 
@@ -615,10 +615,13 @@ class ActionsAgefodd
 
 						if($event->id > 0)
 						{
-							$saveRes = $event->create($user);
+							$saveRes = $event->update($user);
 						}
 						else{
-							$saveRes = $event->update($user);
+
+							$event->userownerid = $user->id;
+
+							$saveRes = $event->create($user);
 						}
 
 						if($saveRes > 0){
@@ -626,7 +629,15 @@ class ActionsAgefodd
 							$context->action = 'saved';
 						}
 						else{
-							$context->setEvents($langs->transnoentities('agfSaveEventOtherActionErrors').'<br/>code: '.$event->error, 'errors');
+
+
+							$errors = is_array($event->errors)?'<br/>'.implode('<br/>', $event->errors):'';
+							if(!empty($event->error)){
+								$errors.= '<br/>'.$event->error;
+							}
+
+
+							$context->setEvents($langs->transnoentities('agfSaveEventOtherActionErrors').$errors, 'errors');
 							$context->action = 'edit';
 						}
 

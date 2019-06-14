@@ -773,7 +773,7 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
 		if ((!empty($startDate) && $fullDay && empty($endDate)) || (!empty($startDate) && !empty($endDate))) {
 			$enableAddNotAvailableRange = true;
 
-			$linkParams = '&action=add&type=AC_AGF_NOT_AVAILABLE_RANGE';
+			$linkParams = '&action=add&type=AC_AGF_NOTAV';
 			if (!empty($startDate)) {
 				$linkParams .= '&heured=' . urlencode($startDate->format('Y-m-d\TH:i'));
 				if ($fullDay) {
@@ -1235,7 +1235,7 @@ function getEnventOtherTAvailableType()
 {
 	// car à un moment il va bien en avoir d'autres ...
 	return array(
-		'AC_AGF_NOT_AVAILABLE_RANGE'
+		'AC_AGF_NOTAV'
 	);
 }
 
