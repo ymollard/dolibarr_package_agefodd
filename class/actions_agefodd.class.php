@@ -524,6 +524,130 @@ class ActionsAgefodd
 				$context->desc = $langs->trans('AgfExternalAccess_PageDesc_Agenda');
 				$context->menu_active[] = 'invoices';
 			}
+			elseif ($context->controller == 'agefodd_event_other')
+			{
+				if($context->action == 'save'){
+
+					$errors = 0;
+
+					include_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
+
+					$event = new ActionComm($this->db);
+
+					$trainer = new Agefodd_teacher($this->db);
+					if ($trainer->fetchByUser($user) <= 0) {
+						$errors ++;
+						$context->setEvents($langs->transnoentities('agfSaveEventFetchCurrentTeacher'), 'errors');
+					}
+
+					$event->fk_element = $trainer->id ;    // Id of record
+					$event->elementtype = $trainer->element;   // Type of record. This if property ->element of object linked to.
+
+					// Id for update
+					$id = GETPOST('id', 'int');
+					if(!empty($id)){
+						if($event->fetch(intval($id)) < 1 ){
+							$errors ++;
+							$context->setEvents($langs->trans('agfSaveEventFetchError'), 'errors');
+						}
+					}
+
+					// Type
+					$TAvailableType = getEnventOtherTAvailableType();
+
+					$type = GETPOST('type');
+					if(!empty($id)){
+						$type =$event->type_code; // on update, code could not be change
+					}
+
+					if(in_array($type, $TAvailableType)){
+						$typeTitle = $langs->transnoentities('AgfAgendaOtherType_'.$type) ;
+						$event->code=$type;
+					}
+					else{
+						$typeTitle = $langs->transnoentities('AgfAgendaOtherTypeNotValid') ;
+						$context->setEvents($langs->trans('AgfAgendaOtherTypeNotValid'), 'errors');
+						$errors ++;
+					}
+
+					$event->type_code = $event->code ;
+					$event->label = $typeTitle;
+					$event->note = GETPOST('note', 'nohtml');
+
+					// Get start date
+					$heured = GETPOST('heured');
+					$startDate 	= parseFullCalendarDateTime($heured);
+
+					if(!empty($startDate)){
+						$event->datep = $startDate->getTimestamp();
+					}
+					else{
+						$context->setEvents($langs->transnoentities('agfSaveEventStartDateInvalid'), 'errors');
+						$errors ++;
+					}
+
+					// Get end date
+					$heuref = GETPOST('heuref');
+					$endDate = new DateTime();
+					$endDate = parseFullCalendarDateTime($heuref);
+					if(!empty($endDate)){
+						$event->datef = $endDate->getTimestamp();
+					}
+					else{
+						$context->setEvents($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
+						$errors ++;
+					}
+
+					// get date
+					if($event->datef <= $event->dated){
+						$context->setEvents($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
+						$errors ++;
+					}
+
+					if($errors > 0){
+						$context->setEvents($langs->transnoentities('agfSaveEventOtherErrors'), 'errors');
+						$context->action = 'edit';
+					}
+					else{
+						// Save
+
+						$saveRes = 0; // reset error status
+
+						if($event->id > 0)
+						{
+							$saveRes = $event->update($user);
+						}
+						else{
+
+							$event->userownerid = $user->id;
+
+							$saveRes = $event->create($user);
+						}
+
+						if($saveRes > 0){
+							$context->setEvents($langs->transnoentities('Saved'));
+							$context->action = 'saved';
+						}
+						else{
+
+
+							$errors = is_array($event->errors)?'<br/>'.implode('<br/>', $event->errors):'';
+							if(!empty($event->error)){
+								$errors.= '<br/>'.$event->error;
+							}
+
+
+							$context->setEvents($langs->transnoentities('agfSaveEventOtherActionErrors').$errors, 'errors');
+							$context->action = 'edit';
+						}
+
+						//$context->setEvents($langs->transnoentities('Saved'));
+
+						//header('Location: '.$redirect);
+						//exit;
+					}
+				}
+			}
 
 			return 1;
 		}
@@ -587,7 +711,7 @@ class ActionsAgefodd
 	 * @param type $hookmanager
 	 * @return int
 	 */
-	public function PrintPageView($parameters, &$object, &$action, $hookmanager)
+	public function PrintPageView($parameters, &$context, &$action, $hookmanager)
 	{
 		global $langs,$user, $conf;
 
@@ -605,7 +729,6 @@ class ActionsAgefodd
 			dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 
 			$langs->load('agefodd@agefodd');
-			$context = Context::getInstance();
 
 			if ($context->controller == 'agefodd')
 			{
@@ -682,69 +805,17 @@ class ActionsAgefodd
 			}
 			else if ($context->controller == 'agefodd_session_card_time_slot' && empty($sessid))
 			{
-				$trainer = new Agefodd_teacher($this->db);
-
-				if ($trainer->fetchByUser($user) > 0)
-				{
-
-					$out = '';
-					$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
-					$out.= '<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">';
-					$out.= '<input type="hidden" name="iframe" value="'.$context->iframe.'" />';
-					$out.= '<input type="hidden" name="controller" value="'.$context->controller.'" />';
-
-					$startDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('start'));
-					if(!$startDate){
-						$startDate = DateTime::createFromFormat("Y-m-d", GETPOST('start'));
-					}
-
-
-					if(!empty($startDate)){
-						$out.= '<input type="hidden" name="date" 	value="'.$startDate->format('Y-m-d').'" />';
-						$out.= '<input type="hidden" name="heured" 	value="'.$startDate->format('H:i').'" />';
-					}
-
-
-					$endDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('end'));
-
-
-					if(!empty($endDate)){
-						$out.= '<input type="hidden" name="heuref" 	value="'.$endDate->format('H:i').'" />';
-					}
-					elseif($startDate){
-						$startDate->add(new DateInterval('PT1H'));
-						$out.= '<input type="hidden" name="heuref" 	value="'.$startDate->format('H:i').'" />';
-					}
-
-					$agsession = new Agsession($this->db);
-					$agsession->fetch_session_per_trainer($trainer->id);
-					$optionSessions = '';
-					if(!empty($agsession->lines)){
-						foreach ($agsession->lines as $line){
-							$optionSessions.= '<option value="'.$line->rowid.'">'.$line->sessionref.' : '.$line->intitule.'</option>';
-						}
-					}
-
-					$out.= '<div class="form-group">';
-					$out.= '<label for="sessid">'.$langs->trans('AgfSelectSession').'</label>';
-    				$out.= '<select class="form-control" name="sessid">'.$optionSessions.'</select>';
-					$out.= '</div>';
-
-
-					$out.= '<button type="submit" class="btn btn-primary pull-right" >'.$langs->trans('Next').'</button>';
-
-					$out.= '</form></div></section>';
-
-					print $out;
-
-					$context->setControllerFound();
-
-
-				}
+				print getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess($sessid, $action);
+				$context->setControllerFound();
 			}
 			elseif ($context->controller == 'agefodd_trainer_agenda')
 			{
 				print getPageViewAgendaFormateurExternalAccess();
+				$context->setControllerFound();
+			}
+			elseif ($context->controller == 'agefodd_event_other')
+			{
+				print getPageViewAgendaOtherExternalAccess();
 				$context->setControllerFound();
 			}
 		}

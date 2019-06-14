@@ -2576,6 +2576,36 @@ class modAgefodd extends DolibarrModules
 		}
 		$reult = $result && $result_cleanright;
 
+		// Create new agenda event type
+		include_once DOL_DOCUMENT_ROOT . '/comm/action/class/cactioncomm.class.php';
+		$cactioncomm=new CActionComm($this->db);
+		$resultAc=$cactioncomm->fetch('AC_AGF_NOTAV');
+
+		if ($resultAc <= 0)
+		{
+			// Add new event type
+			$cactioncomm=new CActionComm($this->db);
+			$cactioncomm->code = 'AC_AGF_NOTAV';
+			$cactioncomm->label = 'Indisponibilité formateur'; //'AgfAgendaOtherType_AC_AGF_NOTAV';
+			$cactioncomm->color = '#ec9497';
+			$cactioncomm->active = 1;
+
+
+			$sql = "SELECT MAX(id) id FROM ".MAIN_DB_PREFIX."c_actioncomm ";
+			$resql = $this->db->query($sql);
+			$obj = $this->db->fetch_object($resql);
+
+
+			// Incredible, CActionComm haven't any save methode ...
+			$sql = "INSERT INTO  ".MAIN_DB_PREFIX."c_actioncomm  (id, code, type, libelle, module, active, todo, position, color)";
+			$sql.= " VALUES (".( intval($obj->id) + 1 ).", '".$cactioncomm->code."', 'agefodd', '".$cactioncomm->label."', 'agefodd', '".$cactioncomm->active."', NULL, 60, '".$cactioncomm->color."');";
+
+			if(!$this->db->query($sql)){
+				setEventMessage('Error adding new action com type : '.$this->db->error(), 'errors');
+				$result ++;
+			}
+		}
+
 		if (! $result) {
 			setEventMessage('Problem during Migration, please contact your administrator', 'errors');
 		}
