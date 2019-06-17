@@ -598,6 +598,7 @@ class ActionsAgefodd
 						$errors ++;
 					}
 
+
 					// get date
 					if($event->datef <= $event->dated){
 						$context->setEvents($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
@@ -689,14 +690,22 @@ class ActionsAgefodd
 				// Since no timeZone will be present, they will parsed as UTC.
 
 				$timeZone 		= GETPOST('timeZone');
+				$agendaType 		= GETPOST('agendaType');
 				$range_start 	= parseFullCalendarDateTime(GETPOST('start'),$timeZone);
 				$range_end 		= parseFullCalendarDateTime(GETPOST('end'),$timeZone);
 
 				$teacher = new Agefodd_teacher($db);
 				$teacher->fetchByUser($user);
 
+				if($agendaType == 'session'){
+					print getAgefoddJsonAgendaFormateur($teacher->id, $range_start->getTimestamp(), $range_end->getTimestamp());
+				}
+				elseif($agendaType == 'notAvailableRange'){
+					print getAgefoddJsonAgendaFormateurNotAvailable($teacher->id, $range_start->getTimestamp(), $range_end->getTimestamp());
+				}
 
-				print getAgefoddJsonAgendaFormateur($teacher->id, $range_start->getTimestamp(), $range_end->getTimestamp());
+
+
 				exit;
 			}
 

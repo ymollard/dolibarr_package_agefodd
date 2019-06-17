@@ -1130,7 +1130,7 @@ function getPageViewAgendaOtherExternalAccess()
 	$context = Context::getInstance();
 
 	$action = 'view';
-	if($context->action == 'add' || $context->action == 'edit'){
+	if($context->action == 'add' || $context->action == 'edit' || $context->action == 'saved'){
 		$action = 'edit';
 	}
 
@@ -1152,7 +1152,7 @@ function getPageViewAgendaOtherExternalAccess()
 	$heured = GETPOST('heured');
 	$startDate 	= new DateTime();
 	if(empty($heured) && !empty($event->id)){
-		$startDate 	= DateTime::setTimestamp ( $event->datep );
+		$startDate->setTimestamp ( $event->datep );
 	}
 	elseif(!empty($heured)){
 		$startDate 	= parseFullCalendarDateTime($heured);
@@ -1166,7 +1166,7 @@ function getPageViewAgendaOtherExternalAccess()
 	$heuref = GETPOST('heuref');
 	$endDate = new DateTime();
 	if(empty($heuref) && !empty($event->id)){
-		$endDate = DateTime::setTimestamp ( $event->datef );
+		$endDate->setTimestamp ( $event->datef );
 	}
 	elseif(!empty($heuref)){
 		$endDate = parseFullCalendarDateTime($heuref);
@@ -1186,6 +1186,9 @@ function getPageViewAgendaOtherExternalAccess()
 	}
 
 	$type = GETPOST('type');
+	if(!empty($id)){
+		$type =$event->type_code; // on update, code could not be change
+	}
 	if(!in_array($type, $TAvailableType)){
 		$typeTitle = $langs->trans('AgfAgendaOtherTypeNotValid') ;
 	}
@@ -1306,25 +1309,36 @@ function getPageViewAgendaFormateurExternalAccess(){
 		eventLimit: true, // allow "more" link when too many events
 		eventRender: function(info) {
 
+			$(info.el).popover(\'destroy\');
+
 		    $(info.el).popover({
 		    		title: info.event.title ,
-		    		content: info.event.extendedProps.session_formateur_calendrier.msg,
+		    		content: info.event.extendedProps.msg,
 		    		html: true,
 		    		trigger: "hover"
 		    });
 		    
 		},
-		events: 
-		{
-			url: fullcalendarscheduler_interface,
-			/*extraParams: {
-				custom_param1: \'something\',
-				custom_param2: \'somethingelse\'
-			},*/
-			failure: function() {
-			//document.getElementById(\'script-warning\').style.display = \'block\'
+		eventSources: [ 
+			{
+				url: fullcalendarscheduler_interface,
+				extraParams: {
+					agendaType: \'session\'
+				},
+				failure: function() {
+				//document.getElementById(\'script-warning\').style.display = \'block\'
+				}
+			},
+			{
+				url: fullcalendarscheduler_interface,
+				extraParams: {
+					agendaType: \'notAvailableRange\'
+				},
+				failure: function() {
+				//document.getElementById(\'script-warning\').style.display = \'block\'
+				}
 			}
-		},
+		],
 		loading: function(bool) {
 		//document.getElementById(\'loading\').style.display = bool ? \'block\' : \'none\';
 		},
@@ -1407,7 +1421,7 @@ function getPageViewAgendaFormateurExternalAccess(){
 
 	$iframeModal = '
 	<!-- Modal -->
-	<div class="modal fade" id="calendarModal" tabindex="-1" role="dialog" aria-labelledby="calendarModalLabel" aria-hidden="true">
+	<div class="modal fade" id="calendarModal" tabindex="-1" role="dialog" aria-labelledby="calendarModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
 		<div class="modal-dialog modal-lg" >
 			<div class="modal-content">
 				<div class="modal-header">
@@ -1483,7 +1497,7 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 			//$event->groupId: 999,
 			$event->title	= $obj->intitule . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $obj->ref_session;
 
-			$event->toolTip = 'test';
+
 
 
 			$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
@@ -1509,23 +1523,50 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 			//...
 			$event->session_formateur_calendrier = new stdClass();
 			$event->session_formateur_calendrier->id = $obj->rowid;
-			$event->session_formateur_calendrier->msg = '';
+
+
+			$event->msg = '';
 
 
 			$duree_declared = Agsession::getStaticSumDureePresence($obj->fk_session);
 
+
+			//$TsessionStatusLiving = array('ENV', 'CONF', 'ONGOING');
+			//$TsessionStatusIdle = array('NOT', 'ARCH', 'DONE');
+
+			$TsessionCalendrierStatusLiving = array(
+				Agefoddsessionformateurcalendrier::STATUS_CONFIRMED,
+			);
+			$TsessionCalendrierStatusIdle = array(
+				Agefoddsessionformateurcalendrier::STATUS_DRAFT,
+				Agefoddsessionformateurcalendrier::STATUS_MISSING,
+				Agefoddsessionformateurcalendrier::STATUS_FINISH,
+				Agefoddsessionformateurcalendrier::STATUS_CANCELED,
+			);
+
+			$event->color = '#3788d8';
+			if(in_array($agf_calendrier_formateur->status, $TsessionCalendrierStatusIdle)){
+				$event->color = '#547ea9';
+			}
+
+			if($db->jdate($obj->heuref) < time()){
+				$event->color = AGF_colorLighten($event->color, 10);
+			}
+
 			$T = array();
-			$T[] = '<small style="font-weight: bold;" >'.$langs->trans('AgfInfoSession').' :</small>';
-			$T[] = $langs->trans('AgfDuree').' : '.$agf_session->duree_session;
-			$T[] = $langs->trans('AgfDureeDeclared').' : '.$duree_declared;
-			$T[] = $langs->trans('AgfDureeSolde').' : '. ($agf_session->duree_session - $duree_declared);
+			$T['calendrierStatus'] 	= '<span class="badge badge-primary" style="background: '.$event->color.' " >'.$agf_calendrier_formateur->getLibStatut().'</span>';
+			$T['sessionTitle'] 		= '<small style="font-weight: bold;" >'.$langs->trans('AgfInfoSession').' :</small>';
+			$T['sessionStatus'] 	= $langs->trans('AgfStatus').' : '.$agf_session->getLibStatut(0);
+			$T['sessionDuration'] 	= $langs->trans('AgfDuree').' : '.$agf_session->duree_session;
+			$T['sessionDurationDeclared'] = $langs->trans('AgfDureeDeclared').' : '.$duree_declared;
+			$T['sessionDurationSold'] = $langs->trans('AgfDureeSolde').' : '. ($agf_session->duree_session - $duree_declared);
 
-			$event->session_formateur_calendrier->msg.= implode('<br/>',$T);
-
+			$event->msg.= implode('<br/>',$T);
 
 			$parameters= array(
 				'sqlObj' => $obj,
 				'agf_calendrier_formateur' => $agf_calendrier_formateur,
+				'T' => $T
 			);
 
 			$reshook=$hookmanager->executeHooks('externalaccess_getAgefoddJsonAgendaFormateur',$parameters,$event);    // Note that $action and $object may have been modified by hook
@@ -1548,6 +1589,107 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 }
 
 
+function  getAgefoddJsonAgendaFormateurNotAvailable($fk_formateur = 0, $start = 0, $end = 0){
+
+	global $db, $hookmanager, $langs, $user, $globalSessionCache;
+
+	$langs->load("agefodd@agefodd");
+
+	dol_include_once('/agefodd/class/agsession.class.php');
+	dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+
+	$context = Context::getInstance();
+
+	$TRes = array();
+	//if (empty($fk_formateur)) return json_encode($TRes);
+
+	$sql = 'SELECT a.id, a.datep, a.datep2, a.fk_action, a.code, a.label, a.fk_element, a.elementtype, a.fulldayevent  ';
+
+	$sql.= ' FROM '.MAIN_DB_PREFIX.'actioncomm a ';
+
+
+	$sql.= " WHERE a.code = 'AC_AGF_NOTAV' ";
+
+	if(!empty($start)){
+		$sql.= ' AND a.datep <= \''.date('Y-m-d H:i:s', $end).'\'';
+	}
+
+	if(!empty($start)){
+		$sql.= ' AND a.datep2 >= \''.date('Y-m-d H:i:s', $start).'\'';
+	}
+
+	if(!empty($fk_formateur)){
+		$sql.= ' AND a.fk_element = '.intval($fk_formateur);
+		$sql.= " AND a.elementtype = 'agefodd_formateur' ";
+	}
+
+
+	$resql = $db->query($sql);
+
+	if ($resql)
+	{
+		while ($obj = $db->fetch_object($resql))
+		{
+			$event = new stdClass();
+
+			//$event->groupId: 999,
+			$event->title	= $obj->label;
+
+
+
+			$actionUrl = '&action=view';
+			if ( $user->rights->agefodd->external_trainer_write) {
+				$actionUrl = '&action=edit';
+			}//agefodd_event_other
+
+			$event->url		= $context->getRootUrl('agefodd_event_other', '&id='.$obj->id.$actionUrl);
+			$event->start	= date('c', $db->jdate($obj->datep));
+			$event->end		= date('c', $db->jdate($obj->datep2));
+			$event->agendaType == 'notAvailableRange';
+			//$event->rendering = 'background';
+
+			//...
+			$event->session_formateur_calendrier = new stdClass();
+			$event->session_formateur_calendrier->id = 0;
+			$event->msg = '';
+
+
+			$event->color = '#828282';
+			if($db->jdate($obj->datep2) < time()){
+				$event->color = AGF_colorLighten($event->color, 10);
+			}
+
+
+
+			$T = array();
+			//$T[] = '<small style="font-weight: bold;" >'.$langs->trans('AgfInfoSession').' :</small>';
+
+			$event->msg.= implode('<br/>',$T);
+
+
+			$parameters= array(
+				'sqlObj' => $obj,
+				'T' => $T
+			);
+
+			$reshook=$hookmanager->executeHooks('externalaccess_getAgefoddJsonAgendaFormateurNotAvailable',$parameters,$event);    // Note that $action and $object may have been modified by hook
+
+			if ($reshook>0)
+			{
+				$event = $hookmanager->resArray;
+			}
+
+
+			$TRes[] = $event;
+		}
+	}
+	else
+	{
+		dol_print_error($db);
+	}
+
+	return json_encode($TRes);
+}
 
 /** Parses a string into a DateTime object, optionally forced into the given timezone.
  * @param $string
@@ -1556,15 +1698,59 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
  * @throws Exception
  */
 function parseFullCalendarDateTime($string, $timezone=null) {
-	$date = new DateTime(
-		$string,
-		$timezone ? $timezone : new DateTimeZone('UTC')
-		// Used only when the string is ambiguous.
-		// Ignored if string has a timezone offset in it.
-	);
+
+	$date = new DateTime($string);
 	if ($timezone) {
 		// If our timezone was ignored above, force it.
 		$date->setTimezone($timezone);
 	}
 	return $date;
+}
+
+
+/**
+ * @param string $hex color in hex
+ * @param integer $steps Steps should be between -255 and 255. Negative = darker, positive = lighter
+ * @return string
+ */
+function AGF_colorAdjustBrightness($hex, $steps)
+{
+	// Steps should be between -255 and 255. Negative = darker, positive = lighter
+	$steps = max(-255, min(255, $steps));
+	// Normalize into a six character long hex string
+	$hex = str_replace('#', '', $hex);
+	if (strlen($hex) == 3) {
+		$hex = str_repeat(substr($hex, 0, 1), 2).str_repeat(substr($hex, 1, 1), 2).str_repeat(substr($hex, 2, 1), 2);
+	}
+	// Split into three parts: R, G and B
+	$color_parts = str_split($hex, 2);
+	$return = '#';
+	foreach ($color_parts as $color) {
+		$color   = hexdec($color); // Convert to decimal
+		$color   = max(0, min(255, $color + $steps)); // Adjust color
+		$return .= str_pad(dechex($color), 2, '0', STR_PAD_LEFT); // Make two char hex code
+	}
+	return $return;
+}
+
+/**
+ * @param string $hex color in hex
+ * @param integer $percent 0 to 100
+ * @return string
+ */
+function AGF_colorDarker($hex, $percent)
+{
+	$steps = intval(255 * $percent / 100) * -1;
+	return AGF_colorAdjustBrightness($hex, $steps);
+}
+
+/**
+ * @param string $hex color in hex
+ * @param integer $percent 0 to 100
+ * @return string
+ */
+function AGF_colorLighten($hex, $percent)
+{
+	$steps = intval(255 * $percent / 100);
+	return AGF_colorAdjustBrightness($hex, $steps);
 }
