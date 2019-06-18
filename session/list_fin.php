@@ -612,6 +612,8 @@ if ($resql != - 1) {
 	print '<td>&nbsp;</td>';
 
 	print '<td>&nbsp;</td>';
+
+	print '<td>&nbsp;</td>';
 	if (! (empty($search_orderref))) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_orderref" value="' . $search_orderref . '" size="20">';
