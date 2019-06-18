@@ -723,10 +723,12 @@ class Agefodd_session_element extends CommonObject {
 	/**
 	 * Set invoice ref where propal or order is already linked
 	 *
-	 * @param int $id to find
-	 * @param int $type or propal
-	 * @param int $invoiceid to link
-	 * @return int <0 if KO, >0 if OK
+	 * @param $user user oprate
+	 * @param $id id of source lement
+	 * @param $type type of element
+	 * @param $invoiceid invoice to link
+	 * @return int int <0 if KO, >0 if OK
+	 * @throws Exception
 	 */
 	public function add_invoice($user, $id, $type, $invoiceid) {
 		global $langs;
@@ -739,6 +741,9 @@ class Agefodd_session_element extends CommonObject {
 		}
 		if ($type == 'commande') {
 			$sql .= " WHERE f.fk_element = " . $id . " AND f.element_type='order'";
+		}
+		if ($type == 'facture') {
+			$sql .= " WHERE f.fk_element = " . $id . " AND f.element_type='invoice'";
 		}
 
 		dol_syslog(get_class($this) . "::add_invoice", LOG_DEBUG);

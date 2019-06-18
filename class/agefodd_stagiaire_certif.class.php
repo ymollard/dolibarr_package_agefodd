@@ -209,7 +209,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$sqlwhere[] = " t.fk_session_stagiaire = " . $id_sess_trainee;
 			}
 
-			if (count($sqlwhere > 0)) {
+			if (count($sqlwhere) > 0) {
 				$sql .= " WHERE " . implode(' AND ', $sqlwhere);
 			}
 		}
