@@ -818,7 +818,7 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
 
 function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
 {
-	global $db,$langs, $hookmanager, $user;
+	global $db,$langs, $hookmanager, $user, $conf;
 
 	dol_include_once('/agefodd/class/html.formagefodd.class.php');
 	$formAgefodd = new FormAgefodd($db);
@@ -962,6 +962,10 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			</script>
 			';
 
+
+	$stagiairesEmailErrors = array();
+	$stagiairesEmailOk = 0;
+
 	$stagiaires = new Agefodd_session_stagiaire($db);
 	$stagiaires->fetch_stagiaire_per_session($agsession->id);
 	if (!empty($stagiaires->lines))
@@ -987,6 +991,13 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		foreach ($stagiaires->lines as &$stagiaire)
 		{
 			if ($stagiaire->id <= 0)	continue;
+
+			if(!filter_var($stagiaire->email, FILTER_VALIDATE_EMAIL)){
+				$stagiairesEmailErrors[] = $stagiaire->nom;
+			}
+			else{
+				$stagiairesEmailOk++;
+			}
 
 			$secondes = 0;
 			if (!empty($TCalendrier))
@@ -1022,7 +1033,46 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
     }
 
 
-    $buttons= '';
+	if ($action != 'view') {
+
+		$emailErrors = '';
+		if(!empty($stagiairesEmailErrors)){
+			$emailErrors = $langs->trans('AgfEmailInvalid')." :\n";
+			$emailErrors.= implode("\n", $stagiairesEmailErrors);
+
+			$emailErrors= ' <i class="fa fa-exclamation-triangle" class="tooltip" title="'.dol_htmlentities($emailErrors).'"></i>';
+		}
+
+		$checked = '';
+		$readonly = '';
+		if(!empty($stagiairesEmailOk))
+		{
+			if(empty($conf->global->AGF_DONT_SEND_EMAIL_TO_TRAINEE_BY_DEFAULT)){
+				$checked = ' checked ';
+			}
+
+			if(isset($_POST['SendEmailAlertToTrainees']) || isset($_GET['SendEmailAlertToTrainees'])){
+				$is_checked = GETPOST('SendEmailAlertToTrainees', 'int');
+				if(empty($is_checked)){
+					$checked = ' ';
+				}else{
+					$checked = ' checked ';
+				}
+			}
+		}
+		else{
+			$readonly = ' disabled readonly ';
+		}
+
+		$out.= '<div class="form-check text-right">
+    					<input type="checkbox" name="SendEmailAlertToTrainees" class="form-check-input" id="SendEmailAlertToTrainees" value="1" '.$checked.$readonly.' >
+    					'.$emailErrors.' <label class="form-check-label" for="SendEmailAlertToTrainees">'.$langs->trans('AGFSendEmailAlertToTrainees').'</label>
+  					</div>';
+	}
+
+
+
+		$buttons= '';
 	if ($action != 'view')
 	{
         $buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />';

@@ -1,0 +1,10 @@
+# IL est temps de séparer les traductions du portail
+
+# ADMIN PAGE
+AgfSendCreateCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une notification de création créneau
+AgfSendSaveCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une notification de modification de créneau
+AgfSendNotification=Notifications EMAILS
+
+# AGENDA
+AGFSendEmailAlertToTrainees=Envoyer une alerte email au(x) stagiaire(s)
+AgfEmailInvalid=Email(s) invalide(s)
