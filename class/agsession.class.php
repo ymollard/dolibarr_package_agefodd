@@ -2282,70 +2282,72 @@ class Agsession extends CommonObject
 		// Manage filter
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
-				if (($key == 'YEAR(s.dated)') || ($key == 'MONTH(s.dated)')) {
-					$sql .= ' AND ' . $key . ' IN (' . $value . ')';
-				} elseif (in_array($key, array('s.dated', 's.dated2')) && !empty($filter['s.dated']) && !empty($filter['s.dated2'])) {
-					if ($key == 's.dated') {
-						$sql.= ' AND s.dated BETWEEN \''.$this->db->escape($filter['s.dated']).'\' AND \''.$this->db->escape($filter['s.dated2']).'\'';
-					} else {
-						// do nothing more
-					}
-				} elseif (in_array($key, array('s.datef', 's.datef2')) && !empty($filter['s.datef']) && !empty($filter['s.datef2'])) {
-					if ($key == 's.datef') {
-						$sql.= ' AND s.datef BETWEEN \''.$this->db->escape($filter['s.datef']).'\' AND \''.$this->db->escape($filter['s.datef2']).'\'';
-					} else {
-						// do nothing more
-					}
-				} elseif ($key == 's.dated>') {
-					if ($this->db->type == 'pgsql') {
-						$intervalday = "'" . $value . " DAYS'";
-					} else {
-						$intervalday = $value . ' DAY';
-					}
-					$sql .= ' AND s.dated>= DATE_ADD(NOW(), INTERVAL -' . $intervalday . ')';
-				} elseif (strpos($key, 'date')) { // To allow $filter['YEAR(s.dated)']=>$year
-					$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
-				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session')
-						|| ($key == 's.status') || ($key == 'sale.fk_user_com') || ($key == 's.rowid')
-						|| $key=='s.fk_formation_catalogue' || $key=='s.fk_product') {
-					$sql .= ' AND ' . $key . ' = ' . $value;
-				} elseif ($key == '!s.status') {
-					$sql .= ' AND s.status <> ' . $value;
-				} elseif ($key == 'so.nom') {
-					// Search for all thirdparty concern by the session
-					$sql .= ' AND ((' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\') OR (s.rowid IN (SELECT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess ';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire ';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = insersta.fk_soc ';
-					$sql .= ' WHERE insersoc.nom LIKE \'%' . $this->db->escape($value) . '%\' )))';
-				} elseif ($key == 'socppresta.name') {
-				    $sql .= ' AND ((socppresta.lastname LIKE \'%' . $this->db->escape($value) . '%\') OR (socppresta.lastname LIKE \'%' . $this->db->escape($value) . '%\'))';
-				} elseif ($key == 'so.parent|sorequester.parent') {
+				if (!empty($key)) {
+					if (($key == 'YEAR(s.dated)') || ($key == 'MONTH(s.dated)')) {
+						$sql .= ' AND ' . $key . ' IN (' . $value . ')';
+					} elseif (in_array($key, array('s.dated', 's.dated2')) && !empty($filter['s.dated']) && !empty($filter['s.dated2'])) {
+						if ($key == 's.dated') {
+							$sql.= ' AND s.dated BETWEEN \''.$this->db->escape($filter['s.dated']).'\' AND \''.$this->db->escape($filter['s.dated2']).'\'';
+						} else {
+							// do nothing more
+						}
+					} elseif (in_array($key, array('s.datef', 's.datef2')) && !empty($filter['s.datef']) && !empty($filter['s.datef2'])) {
+						if ($key == 's.datef') {
+							$sql.= ' AND s.datef BETWEEN \''.$this->db->escape($filter['s.datef']).'\' AND \''.$this->db->escape($filter['s.datef2']).'\'';
+						} else {
+							// do nothing more
+						}
+					} elseif ($key == 's.dated>') {
+						if ($this->db->type == 'pgsql') {
+							$intervalday = "'" . $value . " DAYS'";
+						} else {
+							$intervalday = $value . ' DAY';
+						}
+						$sql .= ' AND s.dated>= DATE_ADD(NOW(), INTERVAL -' . $intervalday . ')';
+					} elseif (strpos($key, 'date')) { // To allow $filter['YEAR(s.dated)']=>$year
+						$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
+					} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session')
+							|| ($key == 's.status') || ($key == 'sale.fk_user_com') || ($key == 's.rowid')
+							|| $key=='s.fk_formation_catalogue' || $key=='s.fk_product') {
+						$sql .= ' AND ' . $key . ' = ' . $value;
+					} elseif ($key == '!s.status') {
+						$sql .= ' AND s.status <> ' . $value;
+					} elseif ($key == 'so.nom') {
+						// Search for all thirdparty concern by the session
+						$sql .= ' AND ((' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\') OR (s.rowid IN (SELECT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess ';
+						$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
+						$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire ';
+						$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = insersta.fk_soc ';
+						$sql .= ' WHERE insersoc.nom LIKE \'%' . $this->db->escape($value) . '%\' )))';
+					} elseif ($key == 'socppresta.name') {
+					    $sql .= ' AND ((socppresta.lastname LIKE \'%' . $this->db->escape($value) . '%\') OR (socppresta.lastname LIKE \'%' . $this->db->escape($value) . '%\'))';
+					} elseif ($key == 'so.parent|sorequester.parent') {
 
-					$sql .= ' AND (';
-					$sql .= '	(so.parent=' . $this->db->escape($value) . ' OR sorequester.parent=' . $this->db->escape($value);
-					$sql .= ' OR so.rowid=' . $this->db->escape($value) . ' OR sorequester.rowid=' . $this->db->escape($value) . ')';
-					// Parent company of trainnee into inter session
-					$sql .= ' OR (  s.rowid IN (SELECT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = insersta.fk_soc';
-					$sql .= ' WHERE insersoc.parent=' . $this->db->escape($value) . '))';
-					// Parent company of trainnee soc requester
-					$sql .= ' OR (  s.rowid IN (SELECT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = innersess.fk_soc_requester';
-					$sql .= ' WHERE insersoc.parent=' . $this->db->escape($value) . ')) ';
-					$sql .= ')';
-				} elseif ($key == 's.rowid') {
-					$sql .= ' AND ' . $key . '=' . $value;
-				} elseif ($key == '!s.rowid') {
-					$sql .= ' AND s.rowid NOT IN (' . $value . ')';
-				}  elseif (strpos($key,'ef.')!==false){
-					$sql.= $value;
-				} else {
-					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+						$sql .= ' AND (';
+						$sql .= '	(so.parent=' . $this->db->escape($value) . ' OR sorequester.parent=' . $this->db->escape($value);
+						$sql .= ' OR so.rowid=' . $this->db->escape($value) . ' OR sorequester.rowid=' . $this->db->escape($value) . ')';
+						// Parent company of trainnee into inter session
+						$sql .= ' OR (  s.rowid IN (SELECT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess';
+						$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
+						$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
+						$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = insersta.fk_soc';
+						$sql .= ' WHERE insersoc.parent=' . $this->db->escape($value) . '))';
+						// Parent company of trainnee soc requester
+						$sql .= ' OR (  s.rowid IN (SELECT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess';
+						$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
+						$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
+						$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = innersess.fk_soc_requester';
+						$sql .= ' WHERE insersoc.parent=' . $this->db->escape($value) . ')) ';
+						$sql .= ')';
+					} elseif ($key == 's.rowid') {
+						$sql .= ' AND ' . $key . '=' . $value;
+					} elseif ($key == '!s.rowid') {
+						$sql .= ' AND s.rowid NOT IN (' . $value . ')';
+					}  elseif (strpos($key,'ef.')!==false){
+						$sql.= $value;
+					} else {
+						$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+					}
 				}
 			}
 		}
