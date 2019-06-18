@@ -2375,6 +2375,7 @@ class Agsession extends CommonObject
 		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
 		$sql .= " p.ref_interne";
+		$sql .= " ,s.nb_place";
 		$sql .= " ,so.nom as socname";
 		$sql .= " ,f.rowid as trainerrowid";
 		$sql .= " ,s.intitule_custo";
@@ -2636,6 +2637,7 @@ class Agsession extends CommonObject
 					$line->trainingcolor = $obj->trainingcolor;
 					$line->fk_product = $obj->fk_product;
 					$line->status = $obj->status;
+					$line->nb_place = $obj->nb_place;
 
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
 						$label = stripslashes($obj->statuslib);
