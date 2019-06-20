@@ -3246,7 +3246,8 @@ class Agsession extends CommonObject
 		$sql .= " ,ord_inv.element_type";
 		$sql .= " ,ord_inv.rowid id_element";
 		$sql .= " ,s.duree_session,";
-		$sql .= " p.ref_interne";
+		$sql .= " p.ref_interne,";
+		$sql .= " s.ref as refsession";
 		if (! empty($invoiceid)) {
             if(floatval(DOL_VERSION) > 9){
                 $sql .= " ,invoice.ref as invoiceref";
@@ -3352,6 +3353,7 @@ class Agsession extends CommonObject
 					$line = new AgfInvoiceOrder();
 
 					$line->rowid = $obj->rowid;
+					$line->refsession = $obj->refsession;
 					$line->socid = $obj->fk_soc;
 					$line->type_session = $obj->type_session;
 					$line->date_res_trainer = $this->db->jdate($obj->date_res_trainer);
@@ -5810,6 +5812,7 @@ class AgfInvoiceOrder
 	public $duree_session;
 	public $intitule_custo;
 	public $fourninvoiceref;
+	public $refsession;
 	public function __construct() {
 		return 1;
 	}

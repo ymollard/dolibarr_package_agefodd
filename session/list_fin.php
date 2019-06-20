@@ -549,6 +549,7 @@ if ($resql != - 1) {
 	$arg_url = '&page=' . $page . '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid;
 	$arg_url .= '&search_fournorderid=' . $search_fournorderid;
 	print_liste_field_titre($langs->trans("Id"), $_SERVER['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Ref"), $_SERVER['PHP_SELF'], "s.ref", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVER['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
@@ -599,6 +600,8 @@ if ($resql != - 1) {
 	}
 
 	print '<tr class="liste_titre">';
+
+	print '<td>&nbsp;</td>';
 
 	print '<td>&nbsp;</td>';
 
@@ -664,6 +667,11 @@ if ($resql != - 1) {
 			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
 		} else {
 			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="cost.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+		}
+		if (empty($search_fourninvoiceref)) {
+			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->refsession . '</a></td>';
+		} else {
+			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="cost.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->refsession . '</a></td>';
 		}
 		print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 		print '<td>' . $line->ref . '</td>';
@@ -754,7 +762,7 @@ if ($resql != - 1) {
 	setEventMessage($agf->error, 'errors');
 }
 if (! empty($search_fournorderid)) {
-
+	$excludeSessions=array();
 	$sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated, s.ref as sessionref
             FROM " . MAIN_DB_PREFIX . "agefodd_session as s
             INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
@@ -778,6 +786,7 @@ if (! empty($search_fournorderid)) {
 	}
 
 	if (! empty($conf->global->AGF_ASSOCIATE_PROPAL_WITH_NON_RELATED_SESSIONS)) {
+		$sessions=array();
 		$excludeSessions = array();
 		foreach ( $agf->lines as $line )
 			$excludeSessions[] = ( int ) $line->rowid;
