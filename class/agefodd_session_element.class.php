@@ -731,7 +731,6 @@ class Agefodd_session_element extends CommonObject {
 	 * @throws Exception
 	 */
 	public function add_invoice($user, $id, $type, $invoiceid) {
-		global $langs;
 
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_element, f.element_type, f.fk_soc, f.fk_session_agefodd ";
