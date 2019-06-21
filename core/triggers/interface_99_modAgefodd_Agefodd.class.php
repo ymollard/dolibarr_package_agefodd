@@ -562,9 +562,9 @@ class InterfaceAgefodd {
 
 				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 				$object->fetchObjectLinked();
-
 				foreach ( $object->linkedObjects as $objecttype => $objectslinked ) {
 					$objectlinked=reset($objectslinked);
+
 					if (($objectlinked->element == 'propal' || $objectlinked->element == 'commande') && ($objectlinked->socid==$object->socid)) {
 
 						$agf_fin = new Agefodd_session_element($this->db);
@@ -582,6 +582,29 @@ class InterfaceAgefodd {
 							$admintask = new Agefodd_sessadm($this->db);
 
 							$admintask->updateByTriggerName($user, $agf_fin->fk_session_agefodd, 'AGF_BILL_CREATE');
+						}
+					}
+				}
+
+				//If credit note is created from invoice link to the session, link de credit note to the session also
+				if($object->element == 'facture' && $object->type==$object::TYPE_CREDIT_NOTE && !empty($object->fk_facture_source)) {
+
+					$origin_invoice=new Facture($this->db);
+					$result=$origin_invoice->fetch($object->fk_facture_source);
+					if ($result<0) {
+						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $origin_invoice->error, LOG_ERR);
+						return - 1;
+					}
+					if ($origin_invoice->fk_soc==$object->fk_soc) {
+						$agf_fin = new Agefodd_session_element($this->db);
+						$result = $agf_fin->add_invoice($user, $object->fk_facture_source, $object->element, $object->id);
+
+						if ($result < 0) {
+							$error = "Failed to add agefodd invoice link : " . $agf_fin->error . " ";
+							$this->error = $error;
+
+							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
+							return -1;
 						}
 					}
 				}

@@ -266,28 +266,28 @@ if ($result >= 0) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$i = 0;
 	print '<table class="tagtable liste listwithfilterbefore" width="100%">';
 	print '<tr class="liste_titre">';
 	print '<td></td>';
-	print_liste_field_titre($langs->trans("AgfTypeRessource"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfTypeRessource"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "socpf.lastname", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], 's.status', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVER ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVER ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVER ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVER ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], 's.status', '', $option, '', $sortfield, $sortorder);
 	if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
-		print_liste_field_titre($langs->trans("AgfParticipantsWithTotal"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfSessionCostPerTrainee"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-		print_liste_field_titre($langs->trans("AgfSessionCostForThirdparty"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfParticipantsWithTotal"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfSessionCostPerTrainee"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfSessionCostForThirdparty"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	}
 	print '<td></td>';
 	print "</tr>\n";
