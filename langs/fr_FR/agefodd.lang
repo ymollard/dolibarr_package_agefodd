@@ -1553,6 +1553,8 @@ AgfActivateExternalAccessForAgefodd=Activer l'accès externe aux données du mod
 AgfActivateAccessForTrainers=Activer l'accès externe pour les formateurs (il est nécessaire d'attribuer des droits utilisateurs aux formateurs)
 
 AgfTypeTime=Agefodd - Modalité de formation des creneaux horaire de session
+AgfNoDateSessionFound=Aucune date saisie
+AgfForSession=pour la session
 
 AgfModels=Modéle de documents
 AgfSelectDocEditModel=Quel modèle de documents voulez vous utiliser ?
@@ -1573,6 +1575,8 @@ AgfNeedEmail=Ce participant n'a pas d'email.
 AgfUseTrainingProgramModule=Utiliser les module dans les programme de formation (expérimental)
 
 AgfQuestionnaireLinkRight=Voir les questionnaires
+SessionOneParticipant=(1 participant)
+SessionMoreThanOneParticipants=(%d participants)
 AgfQuestionnaireSendRight=Envoyer des questionnaires
 
 # list session by trainer

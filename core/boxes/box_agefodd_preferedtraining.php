@@ -48,7 +48,7 @@ class box_agefodd_preferedtraining extends ModeleBoxes {
 
 		$this->boxlabel = $langs->transnoentitiesnoconv("AgefoddShort").'-'.$langs->transnoentitiesnoconv("AgfIndexTop5");
 
-		$this->hidden=! ($user->rights->agefodd->lire);
+		$this->hidden= ! ($user->rights->agefodd->agefodd_formation_catalogue->lire);
 	}
 
 	/**
