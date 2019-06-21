@@ -215,7 +215,7 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 
 	// If the user can view prospects other than his'
 	if ($user->rights->societe->client->voir || $socid) {
@@ -233,22 +233,22 @@ if ($resql != - 1) {
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVER ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVER ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVER ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfTypeRequester"), $_SERVER ['PHP_SELF'], "sorequester.nom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfAlertDay"), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfYDaysBeforeAlert"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfXDaysBeforeAlert"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfZDaysBeforeAlert"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfAlertLevel3Short"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Comment."), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfAlertDay"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfYDaysBeforeAlert"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfXDaysBeforeAlert"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfZDaysBeforeAlert"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfAlertLevel3Short"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVER ['PHP_SELF'], "s.nb_stagiaire", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVER ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Comment."), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
 	print "</tr>\n";
 
 	print '<tr class="liste_titre">';

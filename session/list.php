@@ -698,7 +698,7 @@ if ($resql != - 1) {
 	}
 
 	$massactionbutton = $formAgefodd->selectMassSessionsAction();
-	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVER['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$morefilter = '';
 	// If the user can view prospects other than his'
@@ -927,10 +927,10 @@ if ($resql != - 1) {
 
 	print '<tr class="liste_titre">';
 	if (array_key_exists('s.rowid', $arrayfields) && ! empty($arrayfields['s.rowid']['checked'])) {
-		print_liste_field_titre($langs->trans("Id"), $_SERVEUR['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Id"), $_SERVER['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.ref', $arrayfields) && ! empty($arrayfields['s.ref']['checked'])) {
-		print_liste_field_titre($langs->trans("SessionRef"), $_SERVEUR['PHP_SELF'], "s.ref", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("SessionRef"), $_SERVER['PHP_SELF'], "s.ref", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('so.nom', $arrayfields) && ! empty($arrayfields['so.nom']['checked'])) {
 		print_liste_field_titre($langs->trans("Company"), $_SERVER['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
@@ -939,28 +939,28 @@ if ($resql != - 1) {
 		print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
-		print_liste_field_titre($langs->trans("Ref"), $_SERVEUR['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Ref"), $_SERVER['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('c.ref_interne', $arrayfields) && ! empty($arrayfields['c.ref_interne']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.type_session', $arrayfields) && ! empty($arrayfields['s.type_session']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVEUR['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVER['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.dated', $arrayfields) && ! empty($arrayfields['s.dated']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVER['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.datef', $arrayfields) && ! empty($arrayfields['s.datef']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVER['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('dicstatus.intitule', $arrayfields) && ! empty($arrayfields['dicstatus.intitule']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfStatusSession"), $_SERVEUR['PHP_SELF'], "dictstatus.intitule", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfStatusSession"), $_SERVER['PHP_SELF'], "dictstatus.intitule", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('p.ref_interne', $arrayfields) && ! empty($arrayfields['p.ref_interne']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfLieu"), $_SERVER['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.sell_price', $arrayfields) && ! empty($arrayfields['s.sell_price']['checked'])) {
 		print_liste_field_titre($langs->trans("AgfCoutFormation"), $_SERVER['PHP_SELF'], "s.sell_price", "", $option, ' name="margininfo1"  ', $sortfield, $sortorder);
@@ -996,31 +996,31 @@ if ($resql != - 1) {
 		print_liste_field_titre($langs->trans("AgfMarginPlanned"), $_SERVER['PHP_SELF'], "", "", $option, ' name="margininfo11"  ', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.nb_stagiaire', $arrayfields) && ! empty($arrayfields['s.nb_stagiaire']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVER['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.duree_session', $arrayfields) && ! empty($arrayfields['s.duree_session']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR['PHP_SELF'], "s.duree_session", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVER['PHP_SELF'], "s.duree_session", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.notes', $arrayfields) && ! empty($arrayfields['s.notes']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfNote"), $_SERVEUR['PHP_SELF'], "s.notes", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfNote"), $_SERVER['PHP_SELF'], "s.notes", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.fk_socpeople_presta', $arrayfields) && ! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfTypePresta"), $_SERVEUR['PHP_SELF'], "s.fk_socpeople_presta", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfTypePresta"), $_SERVER['PHP_SELF'], "s.fk_socpeople_presta", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.fk_soc_employer', $arrayfields) && ! empty($arrayfields['s.fk_soc_employer']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfTypeEmployee"), $_SERVEUR['PHP_SELF'], "s.fk_soc_employer", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfTypeEmployee"), $_SERVER['PHP_SELF'], "s.fk_soc_employer", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.fk_soc_requester', $arrayfields) && ! empty($arrayfields['s.fk_soc_requester']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfTypeRequester"), $_SERVEUR['PHP_SELF'], "s.fk_soc_requester", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfTypeRequester"), $_SERVER['PHP_SELF'], "s.fk_soc_requester", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('AgfListParticipantsStatus', $arrayfields) && ! empty($arrayfields['AgfListParticipantsStatus']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfListParticipantsStatus"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfListParticipantsStatus"), $_SERVER['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('AgfSheduleBillingState', $arrayfields) && ! empty($arrayfields['AgfSheduleBillingState']['checked'])) {
-	    print_liste_field_titre($langs->trans("AgfSheduleBillingState"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	    print_liste_field_titre($langs->trans("AgfSheduleBillingState"), $_SERVER['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.fk_product', $arrayfields) && ! empty($arrayfields['s.fk_product']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVER['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	}
 
 	// Extra fields

@@ -491,7 +491,15 @@ class ActionsAgefodd
 									}
 								}
 
-								if (empty($error)) $this->db->commit();
+								if (empty($error)){
+									$this->db->commit();
+
+									$sendEmailAlertToTrainees = GETPOST('SendEmailAlertToTrainees', 'int');
+
+									if(!empty($sendEmailAlertToTrainees)){
+										$context->setEvents('par contre l\'envoi de mail n\'est pas géré', 'warnings');
+									}
+								}
 								else
 								{
 									$this->db->rollback();
@@ -737,7 +745,7 @@ class ActionsAgefodd
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 			dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 
-			$langs->load('agefodd@agefodd');
+			$langs->loadLangs(array('agefodd@agefodd', 'agfexternalaccess@agefodd'));
 
 			if ($context->controller == 'agefodd')
 			{

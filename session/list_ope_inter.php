@@ -184,7 +184,7 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 
 	$moreforfilter = '<div class="divsearchfield">';
 	$moreforfilter .= $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
@@ -329,27 +329,27 @@ if ($resql != - 1) {
 	print '</tr>';
 	
 	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], "s.status", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Date Début"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "s.status", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Date Début"), $_SERVER ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Montant HT"), $_SERVER ['PHP_SELF'], "s.sell_price", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Formateur RN"), $_SERVER ['PHP_SELF'], "trainerrn", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Part /Soc /Sub"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Prosp./ Ann."), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Convoc"), $_SERVEUR ['PHP_SELF'], 'convoc', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Support"), $_SERVEUR ['PHP_SELF'], 'support', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("FEE Edit"), $_SERVEUR ['PHP_SELF'], 'ffeedit', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Fact/C"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Att RN"), $_SERVEUR ['PHP_SELF'], "attrn", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("FEE Env."), $_SERVEUR ['PHP_SELF'], "ffeenv", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Fact/F"), $_SERVEUR ['PHP_SELF'], "invtrainer", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Fact/L"), $_SERVEUR ['PHP_SELF'], "invroom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Comment."), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVER ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Part /Soc /Sub"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Prosp./ Ann."), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Convoc"), $_SERVER ['PHP_SELF'], 'convoc', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Support"), $_SERVER ['PHP_SELF'], 'support', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("FEE Edit"), $_SERVER ['PHP_SELF'], 'ffeedit', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Fact/C"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Att RN"), $_SERVER ['PHP_SELF'], "attrn", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("FEE Env."), $_SERVER ['PHP_SELF'], "ffeenv", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Fact/F"), $_SERVER ['PHP_SELF'], "invtrainer", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Fact/L"), $_SERVER ['PHP_SELF'], "invroom", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Comment."), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre(''); // Action
 	
 	print "</tr>\n";
