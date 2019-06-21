@@ -497,7 +497,7 @@ class ActionsAgefodd
 									$sendEmailAlertToTrainees = GETPOST('SendEmailAlertToTrainees', 'int');
 
 									if(!empty($sendEmailAlertToTrainees)){
-
+										$context->setEvents('par contre l\'envoi de mail n\'est pas géré', 'warnings');
 									}
 								}
 								else
