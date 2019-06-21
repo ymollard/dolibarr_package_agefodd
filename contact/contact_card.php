@@ -45,7 +45,7 @@ $id = GETPOST('id', 'int');
 $langs->load("companies");
 $langs->load("agefodd@agefodd");
 
-$title = $langs->trans("Contacts");
+$title = (! empty($conf->global->SOCIETE_ADDRESSES_MANAGEMENT) ? $langs->trans("Contacts") : $langs->trans("ContactsAddresses"));
 llxHeader('', $title);
 
 $object = new Contact($db);
@@ -57,7 +57,7 @@ if ($res < 0) {
 $res = $object->fetch_optionals();
 
 // Show tabs
-$head = agefodd_contact_prepare_head($object);
+$head = contact_prepare_head($object);
 
 dol_fiche_head($head, 'tabAgefodd', $title, - 1, 'contact');
 
