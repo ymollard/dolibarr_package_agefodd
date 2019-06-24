@@ -482,7 +482,7 @@ class ActionsAgefodd
 										if ($r < 0) $error++;
 										else
 										{
-											// TODO à faire évoluer, mais en l'état cela semble bien compliqué d'automatisé le satut du participant
+											// TODO à faire évoluer, mais en l'état cela semble bien compliqué d'automatisé le statut du participant
 											if ($duree > 0 && !in_array($stagiaire->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT) ))
 											{
 												$stagiaires->setValueFrom('status_in_session', Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT, '', $stagiaire->stagerowid, 'int', '', 'none');
@@ -497,7 +497,15 @@ class ActionsAgefodd
 									$sendEmailAlertToTrainees = GETPOST('SendEmailAlertToTrainees', 'int');
 
 									if(!empty($sendEmailAlertToTrainees)){
-										$context->setEvents('par contre l\'envoi de mail n\'est pas géré', 'warnings');
+										$sendRes = $this->sendCreneauEmailAlertToTrainees($agsession, $agf_calendrier, $stagiaires, $old_status);
+										if($sendRes > 0){
+											$context->setEvents($langs->trans('AgfNbEmailSended', $sendRes));
+										}elseif($sendRes < 0){
+											$context->setEvents($langs->trans('AgfEmailSendError'), 'errors');
+										}
+										else{
+											$context->setEvents($langs->trans('AgfNoEmailSended'), 'warnings');
+										}
 									}
 								}
 								else
@@ -1384,5 +1392,105 @@ class ActionsAgefodd
 				}
 			}
 		}
+	}
+
+	function sendCreneauEmailAlertToTrainees($agsession, $agf_calendrier, $stagiaires, $old_status, &$errorsMsg = array() )
+	{
+		global $conf, $langs, $user;
+
+		$nbMailSend = 0;
+		$error = 0;
+
+		// Check conf of module
+		if(empty($conf->global->AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL) || empty($conf->global->AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODE)) {
+			$errorsMsg[]= $langs->trans('TemplateMailNotExist');
+			return -1;
+		}
+
+		$fk_mailModel_create= $conf->global->AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL;
+		$fk_mailModel_save 	= $conf->global->AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL;
+
+		require_once (DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
+
+		foreach ($stagiaires->lines as &$stagiaire) {
+			if ($stagiaire->id <= 0) continue;
+
+			$agfssh = new Agefoddsessionstagiaireheures($this->db);
+			$result = $agfssh->fetch_by_session($agsession->id, $stagiaire->id, $agf_calendrier->id);
+			if ($result < 0){
+				$error++;
+			}else {
+
+				// select mail template
+				$fk_mailModel = $fk_mailModel_create;
+				if(!empty($agfssh->mail_sended)){
+					$fk_mailModel = $fk_mailModel_save;
+				}
+
+				$mailTpl = agf_getMailTemplate($fk_mailModel);
+				if($mailTpl < 1){
+					$errorsMsg[] = $langs->trans('AgfEMailTemplateNotExist');
+					return -1;
+				}
+
+
+				// PREPARE EMAIL
+				$from = $user->email;
+
+				if (! isset($arrayoffamiliestoexclude)) $arrayoffamiliestoexclude=null;
+
+				// Make substitution in email content
+				$substitutionarray = getCommonSubstitutionArray($langs, 0, $arrayoffamiliestoexclude, $agsession);
+
+				complete_substitutions_array($substitutionarray, $langs, $agsession);
+
+				$thisSubstitutionarray = $substitutionarray;
+
+				$thisSubstitutionarray['__agfsendall_nom__'] = $stagiaire->nom;
+				$thisSubstitutionarray['__agfsendall_prenom__'] = $stagiaire->prenom;
+				$thisSubstitutionarray['__agfsendall_civilite__'] = $stagiaire->civilite;
+				$thisSubstitutionarray['__agfsendall_socname__'] = $stagiaire->socname;
+				$thisSubstitutionarray['__agfsendall_email__'] = $stagiaire->email;
+
+				// Tableau des substitutions
+				if (! empty($agsession->intitule_custo)) {
+					$thisSubstitutionarray['__FORMINTITULE__'] = $agsession->intitule_custo;
+				} else {
+					$thisSubstitutionarray['__FORMINTITULE__'] = $agsession->formintitule;
+				}
+
+				$date_conv = $agsession->libSessionDate('daytext');
+				$thisSubstitutionarray['__FORMDATESESSION__'] = $date_conv;
+
+				$sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
+				$sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
+
+				$to = $stagiaire->mail;
+
+				if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+					// is not a valid email address
+					$errorsMsg[] = $langs->trans('AgfInvalidAddressEmail', $to);
+					$error++;
+					continue;
+				}
+
+				// hidden conf
+				if(!empty($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO) && filter_var($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO, FILTER_VALIDATE_EMAIL)){
+					$to = $conf->global->AGF_CRENEAU_FORCE_EMAIL_TO;
+				}
+
+				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "",  0, 1, $from);
+
+				if($cMailFile->sendfile()){
+					$nbMailSend++;
+				}
+				else{
+					$errorsMsg[] =  $cMailFile->error .' : '.$to;
+					$error++;
+				}
+			}
+		}
+
+		return $nbMailSend;
 	}
 }
