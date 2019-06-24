@@ -240,7 +240,9 @@ class ActionsAgefodd
 
 			// TODO gérer ici les actions de mes pages pour update les données
 			$context = Context::getInstance();
-			
+
+			$langs->load('agfexternalaccess@agefodd');
+
 			if ($context->controller == 'agefodd_session_card')
 			{
 				if ($action == 'deleteCalendrierFormateur' && GETPOST('sessid') > 0 && GETPOST('fk_agefodd_session_formateur_calendrier') > 0)
@@ -497,14 +499,19 @@ class ActionsAgefodd
 									$sendEmailAlertToTrainees = GETPOST('SendEmailAlertToTrainees', 'int');
 
 									if(!empty($sendEmailAlertToTrainees)){
-										$sendRes = $this->sendCreneauEmailAlertToTrainees($agsession, $agf_calendrier, $stagiaires, $old_status);
+										$errorsMsg = array();
+										$sendRes = $this->sendCreneauEmailAlertToTrainees($agsession, $agf_calendrier, $stagiaires, $old_status, $errorsMsg);
 										if($sendRes > 0){
 											$context->setEvents($langs->trans('AgfNbEmailSended', $sendRes));
 										}elseif($sendRes < 0){
-											$context->setEvents($langs->trans('AgfEmailSendError'), 'errors');
+											$context->setEvents($langs->trans('AgfEmailSendError').$sendRes, 'errors');
 										}
 										else{
 											$context->setEvents($langs->trans('AgfNoEmailSended'), 'warnings');
+										}
+
+										if(!empty($errorsMsg) and is_array($errorsMsg)){
+											$context->setEvents($errorsMsg, 'errors');
 										}
 									}
 								}
@@ -1402,7 +1409,7 @@ class ActionsAgefodd
 		$error = 0;
 
 		// Check conf of module
-		if(empty($conf->global->AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL) || empty($conf->global->AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODE)) {
+		if(empty($conf->global->AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL) || empty($conf->global->AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL)) {
 			$errorsMsg[]= $langs->trans('TemplateMailNotExist');
 			return -1;
 		}
@@ -1413,11 +1420,15 @@ class ActionsAgefodd
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
 
 		foreach ($stagiaires->lines as &$stagiaire) {
-			if ($stagiaire->id <= 0) continue;
+			if ($stagiaire->id <= 0){
+				$errorsMsg[] = $langs->trans('AgfWarningStagiaireNoId');
+				continue;
+			}
 
 			$agfssh = new Agefoddsessionstagiaireheures($this->db);
 			$result = $agfssh->fetch_by_session($agsession->id, $stagiaire->id, $agf_calendrier->id);
 			if ($result < 0){
+				$errorsMsg[] = $langs->trans('AgfErrorFetchingAgefoddsessionstagiaireheures');
 				$error++;
 			}else {
 
@@ -1430,7 +1441,7 @@ class ActionsAgefodd
 				$mailTpl = agf_getMailTemplate($fk_mailModel);
 				if($mailTpl < 1){
 					$errorsMsg[] = $langs->trans('AgfEMailTemplateNotExist');
-					return -1;
+					return -2;
 				}
 
 
@@ -1465,11 +1476,12 @@ class ActionsAgefodd
 				$sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
 				$sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
 
-				$to = $stagiaire->mail;
+				$to = $stagiaire->email;
 
 				if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
 					// is not a valid email address
-					$errorsMsg[] = $langs->trans('AgfInvalidAddressEmail', $to);
+					$toMsg = empty($to)?$langs->trans('AgfMailEmpty'):$to;
+					$errorsMsg[] = $langs->trans('AgfInvalidAddressEmail', $toMsg);
 					$error++;
 					continue;
 				}

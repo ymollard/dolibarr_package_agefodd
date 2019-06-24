@@ -13,3 +13,5 @@ AgfEmailInvalid=Email(s) invalide(s)
 AgfInvalidAddressEmail=Adresse email invalide %s
 AgfEMailTemplateNotExist=Le model d'email n'existe pas ou plus.
 AgfNbEmailSended=%s email(s) envoyé(s)
+AgfEmailSendError=Erreur lors de l'envoi des mails
+AgfNoEmailSended=Aucun email envoyé
