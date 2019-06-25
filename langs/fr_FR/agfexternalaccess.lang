@@ -8,3 +8,10 @@ AgfSendNotification=Notifications EMAILS
 # AGENDA
 AGFSendEmailAlertToTrainees=Envoyer une alerte email au(x) stagiaire(s)
 AgfEmailInvalid=Email(s) invalide(s)
+
+# Email
+AgfInvalidAddressEmail=Adresse email invalide %s
+AgfEMailTemplateNotExist=Le model d'email n'existe pas ou plus.
+AgfNbEmailSended=%s email(s) envoyé(s)
+AgfEmailSendError=Erreur lors de l'envoi des mails
+AgfNoEmailSended=Aucun email envoyé

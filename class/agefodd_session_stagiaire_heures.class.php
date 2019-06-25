@@ -51,6 +51,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
     public $fk_calendrier;
     public $fk_session;
     public $heures;
+    public $mail_sended = 0;
 
 	/**
 	 * Constructor
@@ -94,7 +95,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= "fk_calendrier,";
         $sql .= "heures,";
         $sql .= "fk_user_author,";
-        $sql .= "datec";
+        $sql .= "datec,";
+        $sql .= "mail_sended";
         $sql .= ") VALUES (";
 
         $sql .= " '" . $conf->entity . "',";
@@ -103,7 +105,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= " " . (! isset($this->fk_calendrier) ? 'NULL' : "'" . $this->fk_calendrier . "'") . ",";
         $sql .= " " . (! isset($this->heures) || dol_strlen($this->heures) == 0 ? 'NULL' : "'" . $this->db->escape($this->heures) . "'") . ",";
         $sql .= " " . (! isset($this->fk_user_author) ? $user->id : "'" . $this->fk_user_author . "'") . ",";
-        $sql .= " '" . (! isset($this->datec) || dol_strlen($this->datec) == 0 ? $this->db->idate(dol_now()) : $this->db->idate($this->datec)) . "'";
+        $sql .= " '" . (! isset($this->datec) || dol_strlen($this->datec) == 0 ? $this->db->idate(dol_now()) : $this->db->idate($this->datec)) . "', ";
+        $sql .= intval($this->mail_sended);
 
         $sql .= ")";
         $this->db->begin();
@@ -215,7 +218,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= " fk_session=" . (isset($this->fk_session) ? $this->fk_session : "null") . ",";
         $sql .= " fk_calendrier=" . (isset($this->fk_calendrier) ? $this->fk_calendrier : "null") . ",";
         $sql .= " heures=" . (isset($this->heures) ? "'" . $this->heures . "'" : 'null') . ",";
-        $sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null");
+        $sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null") . ",";
+        $sql .= " mail_sended=" . intval($this->mail_sended);
 
         $sql .= " WHERE rowid=" . $this->id;
 
@@ -273,7 +277,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $sql .= " t.fk_user_author,";
 	    $sql .= " t.datec,";
 	    $sql .= " t.tms,";
-	    $sql .= " CONCAT(a.nom,' ', a.prenom) as nom_stagiaire";
+	    $sql .= " CONCAT(a.nom,' ', a.prenom) as nom_stagiaire, ";
+	    $sql .= " t.mail_sended";
 	    $sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element . " as t";
 	    $sql .= " LEFT JOIN " .MAIN_DB_PREFIX . "agefodd_stagiaire as a ON a.rowid = t.fk_stagiaire";
 	    $sql .= " WHERE t.rowid = " . $id;
