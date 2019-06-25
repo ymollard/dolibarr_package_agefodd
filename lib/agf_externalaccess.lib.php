@@ -250,6 +250,9 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 			<p>'.$agsession->ref.'</p>
 			<p>'.$agsession->trainer_ext_information.'</p>
 		</blockquote>
+	';
+
+	$tabTitle= '
 		<ul class="nav nav-tabs mb-3" id="section-session-card-calendrier-formateur-tab" role="tablist">
 			<li class="nav-item">
 				<a class="nav-link'.((empty($tab) || $tab == 'calendrier-info-tab') ? ' active' : '').'" id="calendrier-info-tab" data-toggle="tab" href="#nav-calendrier-info" role="tab" aria-controls="calendrier-info" aria-selected="'.((empty($tab) || $tab == 'calendrier-info-tab') ? 'true' : 'false').'">Créneaux</a>
@@ -260,16 +263,54 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
             <li class="nav-item">
 				<a class="nav-link'.(($tab == 'session-files-tab') ? ' active' : '').'" id="session-files-tab" data-toggle="tab" href="#nav-session-files" role="tab" aria-controls="session-files" aria-selected="'.(($tab == 'session-files-tab') ? 'true' : 'false').'">Fichiers joints</a>
 			</li>
-		</ul>
 	';
 
-	$out.= '
+
+	$parameters=array(
+		'agsession' =>& $agsession,
+		'trainer' =>& $trainer,
+		'tab' =>& $tab
+	);
+	$reshook=$hookmanager->executeHooks('agf_getPageViewSessionCardExternalAccess_tab', $parameters, $agf_calendrier_formateur);
+
+	if (!empty($reshook)){
+		// override full output
+		$tabTitle = $hookmanager->resPrint;
+	}
+	else{
+		$tabTitle.= $hookmanager->resPrint;
+		$tabTitle.= '</ul>';
+	}
+
+	$out.= $tabTitle;
+
+	$tabContent= '
 		<div class="tab-content" id="section-session-card-calendrier-formateur-tab-tabContent">
 			<div class="tab-pane fade'.((empty($tab) || $tab == 'calendrier-info-tab') ? ' show active' : '').'" id="nav-calendrier-info" role="tabpanel" aria-labelledby="nav-calendrier-info-tab">'.getPageViewSessionCardExternalAccess_creneaux($agsession, $trainer, $agf_calendrier_formateur).'</div>
 			<div class="tab-pane fade'.(($tab == 'calendrier-summary-tab') ? ' show active' : '').'" id="nav-calendrier-summary" role="tabpanel" aria-labelledby="nav-calendrier-summary-tab">'.getPageViewSessionCardExternalAccess_summary($agsession, $trainer, $agf_calendrier_formateur).'</div>
             <div class="tab-pane fade'.(($tab == 'session-files-tab') ? ' show active' : '').'" id="nav-session-files" role="tabpanel" aria-labelledby="nav-session-files-tab">'.getPageViewSessionCardExternalAccess_files($agsession, $trainer).'</div>
-		</div>
+		
 	';
+
+
+	$parameters=array(
+		'agsession' =>& $agsession,
+		'trainer' =>& $trainer,
+		'tab' =>& $tab
+	);
+	$reshook=$hookmanager->executeHooks('agf_getPageViewSessionCardExternalAccess_tab_content', $parameters, $agf_calendrier_formateur);
+
+	if (!empty($reshook)){
+		// override full output
+		$tabContent = $hookmanager->resPrint;
+	}
+	else{
+		$tabContent.= $hookmanager->resPrint.'</div>';
+	}
+
+	$out.= $tabContent;
+
+
 
     $out.= '</div>';
 
@@ -698,7 +739,8 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 	$out.=			    '</div>
 					</div>
 				</div>
-			</div>';
+			</div>
+		</div>';
 
     return $out;
 }
