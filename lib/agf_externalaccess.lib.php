@@ -1120,8 +1120,9 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
         $buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />';
 	}
 
-	$buttons.= '<button type="button" class="btn btn-danger" data-id="21" data-toggle="modal" data-target="#session-card-delete-time-slot" ><i class="fa fa-trash"></i>  Supprimer </button>';
-
+	if(!empty($agf_calendrier_formateur->id)) {
+		$buttons .= '<button type="button" class="btn btn-danger" data-id="21" data-toggle="modal" data-target="#session-card-delete-time-slot" ><i class="fa fa-trash"></i>  Supprimer </button>';
+	}
 
     $parameters=array(
         'agsession' =>& $agsession,
