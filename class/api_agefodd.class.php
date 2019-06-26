@@ -3330,7 +3330,7 @@ class Agefodd extends DolibarrApi
                 {
                     $mod = substr($f['name'], 0, strrpos($f['name'], '_'));
                     if(in_array($mod, array("convocation_trainee", "attestation_trainee", "attestationendtraining_trainee")) && preg_match("/^".$mod."_([0-9]+).pdf$/", $f['name'], $i) && $i[1] == $this->traineeinsession->id) $files[$sessid][] = $f['name'];
-                    if(preg_match("/^attestation_cursus_([0-9]+)_([0-9]+).pdf$/", $f['name'], $i )) return $f['name'];
+                    if(preg_match("/^attestation_cursus_([0-9]+)_([0-9]+).pdf$/", $f['name'], $i ) && $i[2] == $id) $files[$sessid][] = $f['name'];
                 }
             }
          }
