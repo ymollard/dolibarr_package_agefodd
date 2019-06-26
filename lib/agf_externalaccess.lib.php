@@ -319,7 +319,18 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 	$out.= ' <th class="text-center" >'.$langs->trans('AgfDuree').'</th>';
 	$out.= ' <th class="text-center" >'.$langs->trans('Status').'</th>';
 	$out.= ' <th class="text-center" >'.$langs->trans('Type').'</th>';
-	$out.= ' <th class="text-center" ></th>';
+
+
+    // Fields from hook
+    $parameters=array(
+        'agsession' =>& $agsession,
+        'trainer' =>& $trainer
+    );
+    $reshook=$hookmanager->executeHooks('printFieldListTitle',$parameters, $agf_calendrier_formateur);    // Note that $action and $object may have been modified by hook
+    $out.= $hookmanager->resPrint;
+
+
+    $out.= ' <th class="text-center" ></th>';
 	$out.= '</tr>';
 
 	$out.= '<tbody>';
@@ -354,6 +365,18 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 
 		$calendrier_type_label = !empty($agf_calendrier) ? $agf_calendrier->calendrier_type_label : '';
 		$out.= ' <td class="text-center" data-order="'.$calendrier_type_label.'" data-search="'.$calendrier_type_label.'" >'.$calendrier_type_label.'</td>';
+
+
+
+        // Fields from hook
+        $parameters=array(
+            'agsession' =>& $agsession,
+            'trainer' =>& $trainer,
+            'agf_calendrier_formateur' =>& $agf_calendrier_formateur
+        );
+        $reshook=$hookmanager->executeHooks('printFieldListValue',$parameters, $item);    // Note that $action and $object may have been modified by hook
+        $out.= $hookmanager->resPrint;
+
 
 		//$edit = '<a href="'.$url.'"><i class="fa fa-edit"></a></i>';
 		$delete = '<i class="fa fa-trash" ></i>  Supprimer';
