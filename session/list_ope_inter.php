@@ -362,7 +362,7 @@ if ($resql != - 1) {
 
 			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->id . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->id . '</a></td>';
 
-			print '<td>' . $line->status_lib . '</td>';
+			print '<td>' . $line->statuslib . '</td>';
 			print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
 			print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 

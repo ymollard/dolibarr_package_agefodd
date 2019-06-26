@@ -982,7 +982,7 @@ if ($resql != - 1) {
 
 			if (! empty($arrayfields['dicstatus.intitule']['checked'])) {
 				print '<td>';
-				print $line->status_lib;
+				print $line->statuslib;
 				print '</td>';
 			}
 

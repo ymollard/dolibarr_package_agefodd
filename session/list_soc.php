@@ -448,7 +448,7 @@ if ($result >= 0) {
 			print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
 			print '<td>' . dol_print_date($line->datef, 'daytext') . '</td>';
 			print '<td>' . stripslashes($line->ref_interne) . '</td>';
-			print '<td>' . stripslashes($line->status_lib) . '</td>';
+			print '<td>' . stripslashes($line->statuslib) . '</td>';
 			if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
 				$coutTotalLigne /= $line->nb_stagiaire;
 			//	$coutTotalLigne *= $nbSocParticipant;
