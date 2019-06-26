@@ -593,6 +593,7 @@ class ActionsAgefodd
 						$errors ++;
 					}
 
+                    $event->percentage = -1;
 					$event->type_code = $event->code ;
 					$event->label = $typeTitle;
 					$event->note = GETPOST('note', 'nohtml');
