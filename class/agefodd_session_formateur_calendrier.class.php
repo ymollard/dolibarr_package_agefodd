@@ -388,6 +388,135 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		return $this->fetchAllBy(array('trainer.rowid'=>$id));
 	}
 
+
+    /**
+     * Check if a trainer is free for a time range
+     *
+     * @param int            $fk_formateur                 The trainer id
+     * @param int            $startTime                 Timestamp start date
+     * @param int            $endTime                   Timestamp end date
+     * @param array          $excludeFormationCalendrierId An array of ignored session formateur calendrier ids or
+     * @param string|array $errorsStatus                An array of status returning an error
+     * @param string|array $warningsStatus              An array of status returning a warning
+     *
+     * @return object
+     * @throws Exception
+     */
+    public static function isTrainerFree($fk_formateur, $startTime, $endTime, $excludeFormationCalendrierId = array(), $errorsStatus = 'default', $warningsStatus = 'default') {
+
+        global $conf, $db;
+
+        // prepare returned object
+        $returnObj = new stdClass();
+        $returnObj->isFree   = 1;
+        $returnObj->errors   = 0;
+        $returnObj->warnings = 0;
+        $returnObj->errorMsg = '';
+
+        // set default status returning error
+        if($errorsStatus == 'default'){
+            $errorsStatus = array(
+                self::STATUS_CONFIRMED,
+                self::STATUS_MISSING,
+                self::STATUS_FINISH
+            );
+        }
+
+        // set default status returning warning
+        if($warningsStatus == 'default'){
+            $warningsStatus = array(
+                self::STATUS_DRAFT
+            );
+        }
+
+        // force var to be an array
+        if(!is_array($errorsStatus)){$errorsStatus = array();}
+        if(!is_array($warningsStatus)){$warningsStatus = array();}
+
+        // for security
+        $errorsStatus   = array_map('intval', $errorsStatus);
+        $warningsStatus = array_map('intval',  $warningsStatus);
+
+        if(!is_array($excludeFormationCalendrierId)){
+            if(!empty($excludeFormationCalendrierId)){
+                $excludeFormationCalendrierId = array($excludeFormationCalendrierId);
+            }else{
+                $excludeFormationCalendrierId = array();
+            }
+        }
+        $excludeFormationCalendrierId = array_map('intval',  $excludeFormationCalendrierId);
+
+        // the trainer session calendar query
+        $sql = "SELECT COUNT(*) as nb, c.status";
+        $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as c";
+        $sql.= ' JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur sf ON (sf.rowid = c.fk_agefodd_session_formateur) ';
+        $sql .= " WHERE sf.fk_agefodd_formateur = " . intval($fk_formateur);
+        $sql .= " AND c.heuref > '" . date("Y-m-d H:i:s", $startTime)."'";
+        $sql .= " AND c.heured < '" . date("Y-m-d H:i:s", $endTime)."'";
+        if(!empty($excludeFormationCalendrierId)){
+            $sql .= " AND sf.fk_agefodd_formateur NOT IN(".implode(',', $excludeFormationCalendrierId).")";
+        }
+        $sql .= " GROUP BY c.status";
+
+        dol_syslog(get_called_class() . "::isTrainerFree", LOG_DEBUG);
+        $resql = $db->query($sql);
+        if ($resql) {
+            if ($db->num_rows($resql)) {
+                while($obj = $db->fetch_object($resql))
+                {
+                    // count errors
+                    if(in_array($obj->status, $errorsStatus)){
+                        $returnObj->errors = $returnObj->errors + intval($obj->nb);
+                    }
+
+                    // count warnings
+                    if(in_array($obj->status, $warningsStatus)){
+                        $returnObj->warnings = $returnObj->warnings + intval($obj->nb);
+                    }
+                }
+            }
+            $db->free($resql);
+
+        } else {
+            $returnObj->errors   = 1;
+            $returnObj->errorMsg = "Error " . $db->lasterror();
+            dol_syslog(get_called_class() . "::isTrainerFree " . $returnObj->errorMsg, LOG_ERR);
+        }
+
+        if($conf->agenda->enabled)
+        {
+            // the unavailability trainer's calendar query
+            $sql = 'SELECT COUNT(*) as nb ';
+            $sql.= ' FROM '.MAIN_DB_PREFIX.'actioncomm a ';
+            $sql.= " WHERE a.code = 'AC_AGF_NOTAV' ";
+            $sql.= ' AND a.datep < "'.date('Y-m-d H:i:s', $endTime).'"';
+            $sql.= ' AND a.datep2 > "'.date('Y-m-d H:i:s', $startTime).'"';
+            $sql.= ' AND a.fk_element = '.intval($fk_formateur);
+            $sql.= ' AND a.elementtype = "agefodd_formateur" ';
+
+            $resql = $db->query($sql);
+            if ($resql) {
+                if ($db->num_rows($resql)) {
+                    $obj = $db->fetch_object($resql);
+                    // count errors
+                    $returnObj->errors = $returnObj->errors + intval($obj->nb);
+                }
+                $db->free($resql);
+            } else {
+                $returnObj->errors   = 1;
+                $returnObj->errorMsg = "Error " . $db->lasterror();
+                dol_syslog(get_called_class() . "::isTrainerFree " . $returnObj->errorMsg, LOG_ERR);
+            }
+        }
+
+        // Update isFree status
+        if(!empty($returnObj->errors) || !empty($returnObj->warnings)){
+            $returnObj->isFree = 0;
+        }
+
+        return $returnObj;
+    }
+
 	/**
 	 * Fait les verifications pour savoir si le formateur est déjà inscrit sur une plage horaire similaire
 	 * @param type $fk_trainer
@@ -878,4 +1007,3 @@ class AgefoddcalendrierformateurLines {
 	public $fk_session;
 	public $sessid; // identique que $fk_session mais le code semble valoriser un $sessid dans les autres fetch
 }
-?>
