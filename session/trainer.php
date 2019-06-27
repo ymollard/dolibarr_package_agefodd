@@ -295,7 +295,7 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 			}
 			else
             {
-                if (!empty($TCalendrier))
+                if (!empty($TCalendrier) && is_array($TCalendrier))
                 {
                     $agf_calendrier = $TCalendrier[0];
                     $agf_calendrier->date_session = $agf_cal->date_session;
