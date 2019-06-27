@@ -454,7 +454,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
         $sql .= " AND c.heuref > '" . date("Y-m-d H:i:s", $startTime)."'";
         $sql .= " AND c.heured < '" . date("Y-m-d H:i:s", $endTime)."'";
         if(!empty($excludeFormationCalendrierId)){
-            $sql .= " AND sf.fk_agefodd_formateur NOT IN(".implode(',', $excludeFormationCalendrierId).")";
+            $sql .= " AND c.rowid NOT IN(".implode(',', $excludeFormationCalendrierId).")";
         }
         $sql .= " GROUP BY c.status";
 

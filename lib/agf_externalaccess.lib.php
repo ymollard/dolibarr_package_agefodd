@@ -858,6 +858,15 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
 	}
 }
 
+/**
+ * @param $agsession Agsession
+ * @param $trainer Agefodd_teacher
+ * @param $agf_calendrier_formateur Agefoddsessionformateurcalendrier
+ * @param $agf_calendrier
+ * @param string $action
+ * @return string
+ * @throws Exception
+ */
 function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
 {
 	global $db,$langs, $hookmanager, $user, $conf;
@@ -891,7 +900,18 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	}
 	$out.= getEaNavbar($backUrl, '', $editUrl);
 
-	if ($action != 'view')
+
+    $isTrainerFree = Agefoddsessionformateurcalendrier::isTrainerFree($trainer->id, $agf_calendrier_formateur->heured, $agf_calendrier_formateur->heuref, $agf_calendrier_formateur->id, 'default', array());
+    if(!$isTrainerFree->isFree)
+    {
+        if($isTrainerFree->errors > 0){
+            $out.= '<div class="alert alert-danger" >'.$langs->trans('TrainerNotFree').'</div>';
+        } elseif ($isTrainerFree->warnings > 0){
+            $out.= '<div class="alert alert-warning" >'.$langs->trans('TrainerCouldBeNotFree').'</div>';
+        }
+    }
+
+    if ($action != 'view')
 	{
 		$out.= '
 			<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">
@@ -1658,14 +1678,14 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
             if(!$isTrainerFree->isFree)
             {
                 if($isTrainerFree->errors > 0){
-                    $event->borderColor = '#c20a22';
+                    $event->color = '#c20a22';
                     $T['calendrierIsTrainerFree'] = '<div class="alert alert-danger" >'.$langs->trans('TrainerNotFree').'</div>';
                 } elseif ($isTrainerFree->warnings > 0){
                     $event->borderColor = '#ffa20d';
                     $T['calendrierIsTrainerFree'] = '<div class="alert alert-warning" >'.$langs->trans('TrainerCouldBeNotFree').'</div>';
                 }
 
-                $T['calendrierIsTrainerFree'].= ' '.$isTrainerFree->errorMsg.' | '.$isTrainerFree->errors.' | '.$isTrainerFree->warnings;
+                $T['calendrierIsTrainerFree'].= ' '.$isTrainerFree->errorMsg;
             }
 
 			$T['sessionTitle'] 		= '<small style="font-weight: bold;" >'.$langs->trans('AgfInfoSession').' :</small>';
