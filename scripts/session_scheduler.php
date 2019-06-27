@@ -54,6 +54,7 @@ dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
+dol_include_once('agefodd/lib/agefodd.lib.php');
 
 $langs->load('agefodd@agefodd');
 $response = new interfaceResponse;
@@ -170,36 +171,6 @@ function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 }
 
 
-
-function _getCalendrierFormateurFromCalendrier(&$agf_calendrier)
-{
-	global $db, $response;
-	
-	$TRes = array();
-	
-	$sql = 'SELECT agsfc.rowid, agsf.fk_agefodd_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
-	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
-	$sql.= ' WHERE agsf.fk_session = '.$agf_calendrier->sessid;
-	$sql.= ' AND agsfc.heured < \''.date('Y-m-d H:i:s', $agf_calendrier->heuref).'\'';
-	$sql.= ' AND agsfc.heuref > \''.date('Y-m-d H:i:s', $agf_calendrier->heured).'\'';
-	
-	$resql = $db->query($sql);
-	if ($resql)
-	{
-		while ($obj = $db->fetch_object($resql))
-		{
-			$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
-			$agf_calendrier_formateur->fetch($obj->rowid);
-			$TRes[] = $agf_calendrier_formateur;
-		}
-	}
-	else
-	{
-		$response->TError[] = $db->lasterror;
-	}
-	
-	return $TRes;
-}
 
 function _deleteCalendrier($fk_agefodd_session_calendrier, $delete_cal_formateur=0)
 {

@@ -2114,6 +2114,35 @@ function calcul_margin_percent($cashed_cost,$spend_cost)
 	}
 }
 
+function _getCalendrierFormateurFromCalendrier(&$agf_calendrier)
+{
+    global $db, $response;
+
+    $TRes = array();
+
+    $sql = 'SELECT agsfc.rowid, agsf.fk_agefodd_formateur FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
+    $sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
+    $sql.= ' WHERE agsf.fk_session = '.$agf_calendrier->sessid;
+    $sql.= ' AND agsfc.heured < \''.date('Y-m-d H:i:s', $agf_calendrier->heuref).'\'';
+    $sql.= ' AND agsfc.heuref > \''.date('Y-m-d H:i:s', $agf_calendrier->heured).'\'';
+
+    $resql = $db->query($sql);
+    if ($resql)
+    {
+        while ($obj = $db->fetch_object($resql))
+        {
+            $agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
+            $agf_calendrier_formateur->fetch($obj->rowid);
+            $TRes[] = $agf_calendrier_formateur;
+        }
+    }
+    else
+    {
+        $response->TError[] = $db->lasterror;
+    }
+
+    return $TRes;
+}
 
 function _getCalendrierFromCalendrierFormateur(&$agf_calendrier_formateur, $strict=true, $return_error=false)
 {
