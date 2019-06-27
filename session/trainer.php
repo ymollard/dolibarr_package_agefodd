@@ -305,6 +305,10 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 //                    $agf_calendrier->calendrier_type = $code_c_session_calendrier_type;
                     $r=$agf_calendrier->update($user);
                 }
+                elseif (is_string($TCalendrier))
+                {
+                    setEventMessage($TCalendrier, 'errors');
+                }
             }
 		}
 
