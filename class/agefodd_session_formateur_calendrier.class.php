@@ -744,7 +744,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
 
-		$action = new ActionComm($this->db);
+		$action  = new ActionComm($this->db);
 		$session = new Agsession($this->db);
 
 		$formateur_session = new Agefodd_session_formateur($this->db);
