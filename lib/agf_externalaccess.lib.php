@@ -881,6 +881,15 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
 	}
 }
 
+/**
+ * @param $agsession Agsession
+ * @param $trainer Agefodd_teacher
+ * @param $agf_calendrier_formateur Agefoddsessionformateurcalendrier
+ * @param $agf_calendrier
+ * @param string $action
+ * @return string
+ * @throws Exception
+ */
 function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $trainer, $agf_calendrier_formateur, $agf_calendrier, $action='')
 {
 	global $db,$langs, $hookmanager, $user, $conf;
@@ -914,7 +923,18 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	}
 	$out.= getEaNavbar($backUrl, '', $editUrl);
 
-	if ($action != 'view')
+
+    $isTrainerFree = Agefoddsessionformateurcalendrier::isTrainerFree($trainer->id, $agf_calendrier_formateur->heured, $agf_calendrier_formateur->heuref, $agf_calendrier_formateur->id, 'default', array());
+    if(!$isTrainerFree->isFree)
+    {
+        if($isTrainerFree->errors > 0){
+            $out.= '<div class="alert alert-danger" >'.$langs->trans('TrainerNotFree').'</div>';
+        } elseif ($isTrainerFree->warnings > 0){
+            $out.= '<div class="alert alert-warning" >'.$langs->trans('TrainerCouldBeNotFree').'</div>';
+        }
+    }
+
+    if ($action != 'view')
 	{
 		$out.= '
 			<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">
@@ -1564,7 +1584,8 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 
 	global $db, $hookmanager, $langs, $user, $globalSessionCache;
 
-	$langs->load("agefodd@agefodd");
+    $langs->load("agefodd@agefodd");
+    $langs->load("agfexternalaccess@agefodd");
 
 	dol_include_once('/agefodd/class/agsession.class.php');
 	dol_include_once('/agefodd/class/agefodd_formateur.class.php');
@@ -1613,11 +1634,15 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 			//$event->groupId: 999,
 			$event->title	= $obj->intitule . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $obj->ref_session;
 
-
+            $obj->heured = $db->jdate($obj->heured);
+            $obj->heuref = $db->jdate($obj->heuref);
 
 
 			$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
 			$agf_calendrier_formateur->fetch($obj->rowid);
+
+            $isTrainerFree = Agefoddsessionformateurcalendrier::isTrainerFree($fk_formateur, $obj->heured, $obj->heuref, $obj->rowid, 'default', array());
+
 
 			// get agf session cache
 			if(empty($globalSessionCache[$obj->fk_session]) || !is_object($globalSessionCache[$obj->fk_session])){
@@ -1633,8 +1658,8 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 			}
 
           	$event->url		= $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$obj->fk_session.'&slotid='.$obj->rowid.$actionUrl);
-          	$event->start	= date('c', $db->jdate($obj->heured));
-			$event->end		= date('c', $db->jdate($obj->heuref));
+          	$event->start	= date('c', $obj->heured);
+			$event->end		= date('c', $obj->heuref);
 
 			//...
 			$event->session_formateur_calendrier = new stdClass();
@@ -1665,12 +1690,28 @@ function  getAgefoddJsonAgendaFormateur($fk_formateur = 0, $start = 0, $end = 0)
 				$event->color = '#547ea9';
 			}
 
+
+
 			if($db->jdate($obj->heuref) < time()){
 				$event->color = AGF_colorLighten($event->color, 10);
 			}
 
 			$T = array();
 			$T['calendrierStatus'] 	= '<span class="badge badge-primary" style="background: '.$event->color.' " >'.$agf_calendrier_formateur->getLibStatut().'</span>';
+
+            if(!$isTrainerFree->isFree)
+            {
+                if($isTrainerFree->errors > 0){
+                    $event->color = '#c20a22';
+                    $T['calendrierIsTrainerFree'] = '<div class="alert alert-danger" >'.$langs->trans('TrainerNotFree').'</div>';
+                } elseif ($isTrainerFree->warnings > 0){
+                    $event->borderColor = '#ffa20d';
+                    $T['calendrierIsTrainerFree'] = '<div class="alert alert-warning" >'.$langs->trans('TrainerCouldBeNotFree').'</div>';
+                }
+
+                $T['calendrierIsTrainerFree'].= ' '.$isTrainerFree->errorMsg;
+            }
+
 			$T['sessionTitle'] 		= '<small style="font-weight: bold;" >'.$langs->trans('AgfInfoSession').' :</small>';
 			$T['sessionStatus'] 	= $langs->trans('AgfStatus').' : '.$agf_session->getLibStatut(0);
 			$T['sessionDuration'] 	= $langs->trans('AgfDuree').' : '.$agf_session->duree_session;

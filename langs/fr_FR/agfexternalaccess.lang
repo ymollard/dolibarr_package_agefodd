@@ -8,6 +8,7 @@ AgfSendNotification=Notifications EMAILS
 # AGENDA
 AGFSendEmailAlertToTrainees=Envoyer une alerte email au(x) stagiaire(s)
 AgfEmailInvalid=Email(s) invalide(s)
+AgfStatus=Statut
 
 # Email
 AgfInvalidAddressEmail=Adresse email invalide %s
