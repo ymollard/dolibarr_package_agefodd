@@ -9,8 +9,6 @@ AgfSendNotification=Notifications EMAILS
 AGFSendEmailAlertToTrainees=Envoyer une alerte email au(x) stagiaire(s)
 AgfEmailInvalid=Email(s) invalide(s)
 AgfStatus=Statut
-TrainerNotFree=Le formateur n'est pas libre ou le créneau chevauche un autre créneau
-TrainerCouldBeNotFree=Le formateur n'est potentielement pas libre ou le créneau chevauche un autre créneau
 
 # Email
 AgfInvalidAddressEmail=Adresse email invalide %s

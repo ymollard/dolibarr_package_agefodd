@@ -1599,6 +1599,9 @@ AgfTotalCalendrierHourPlanned=Heures planifiées
 AgfTotalCalendrierHourConfirmed=Heures confirmées
 AgfTotalCalendrierHourRealised=Heures réalisées
 
+TrainerNotFree=Le formateur n'est pas libre ou le créneau chevauche un autre créneau
+TrainerCouldBeNotFree=Le formateur n'est potentielement pas libre ou le créneau chevauche un autre créneau
+
 # CRON TASK
 CronTaskAutoStatusAgefoddCalendar=Workflow des statut des créneaux de sessions
 CronTaskAutoStatusAgefoddCalendarDesc=Passer au statut Réalisé automatique par un traitement journalier si la date est dans le passé et que le statut est confirmé
