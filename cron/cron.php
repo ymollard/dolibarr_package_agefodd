@@ -22,14 +22,87 @@ class cron_agefodd
 
 	}
 
-	//Si la date est dans le passé et que le statut est confirmé
+
+    /**  Change le statut du calendrié formateur et du calendrier de session lié si la date est dans le passé et que le statut est confirmé
+     * @param int $fk_newStatus
+     * @param int $daysOffset
+     * @param int $daysRange
+     * @return int
+     */
+    public function autoStatusAgefoddFormateurCalendar($fk_newStatus = Agefoddsessionformateurcalendrier::STATUS_FINISH, $daysOffset = 0, $daysRange = 1)
+    {
+        global $db, $user;
+
+        $errors = 0;
+        $updated = 0;
+
+        dol_include_once('agefodd/class/agefodd_session_formateur_calendrier.class.php');
+        // GET SESSION AT DAY-1
+        $sql = "SELECT rowid, fk_agefodd_session_formateur";
+        $sql.= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier sfc ";
+        $sql.= " WHERE sfc.heuref >=  CURDATE() - INTERVAL ".(intval($daysOffset) + intval($daysRange))." DAY ";
+
+        $sql.= " AND sfc.heuref < CURDATE() ";
+        if(!empty($daysOffset)){
+            $sql.= " - INTERVAL ".(intval($daysOffset))." DAY ";
+        }
+
+        $sql.= " AND   sfc.status =  ". Agefoddsessionformateurcalendrier::STATUS_CONFIRMED;
+
+        $resql = $this->db->query($sql);
+        if (!empty($resql) && $this->db->num_rows($resql) > 0) {
+            while ($obj = $this->db->fetch_object($resql)) {
+
+                $sessionCal = new  Agefoddsessionformateurcalendrier($db);
+                if($sessionCal->fetch($obj->rowid)>0)
+                {
+                    $sessionCal->status = $fk_newStatus;
+                    if($sessionCal->update($user) > 0)
+                    {
+                        $updated++;
+
+                        // Now update trainer and trainee
+                        $TCalendrier = _getCalendrierFromCalendrierFormateur($sessionCal, true, true);
+                        if (!empty($TCalendrier))
+                        {
+                            $agf_calendrier = $TCalendrier[0];
+                            $agf_calendrier->date_session = $sessionCal->date_session;
+                            $agf_calendrier->heured = $sessionCal->heured;
+                            $agf_calendrier->heuref = $sessionCal->heuref;
+                            $agf_calendrier->status = $sessionCal->status;
+                            //$agf_calendrier->calendrier_type = $code_c_session_calendrier_type;
+                            $r=$agf_calendrier->update($user);
+                        }
+
+                    }
+                    else
+                    {
+                        $errors++;
+                    }
+                }
+            }
+        }
+
+        $this->output = 'errors: '.$errors.' | Updated: '.$updated;
+
+        return $errors;
+    }
+
+
+
+
+    /**  Change le statut du calendrié de session si la date est dans le passé et que le statut est confirmé
+     * @param int $fk_newStatus
+     * @param int $daysOffset
+     * @param int $daysRange
+     * @return int
+     */
 	public function autoStatusAgefoddCalendar($fk_newStatus = Agefodd_sesscalendar::STATUS_FINISH, $daysOffset = 0, $daysRange = 1)
 	{
 		global $db, $user;
 
 		$errors = 0;
 		$updated = 0;
-		$message = '';
 
 		dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
 		// GET SESSION AT DAY-1
@@ -55,6 +128,21 @@ class cron_agefodd
 					if($sessionCal->update($user) > 0)
 					{
 						$updated++;
+
+						/*
+						// Now update trainer and trainee
+                        $TCalendrier = _getCalendrierFormateurFromCalendrier($sessionCal);
+                        if (!empty($TCalendrier))
+                        {
+                            $agf_calendrier = $TCalendrier[0];
+                            $agf_calendrier->date_session = $sessionCal->date_session;
+                            $agf_calendrier->heured = $sessionCal->heured;
+                            $agf_calendrier->heuref = $sessionCal->heuref;
+                            $agf_calendrier->status = $sessionCal->status;
+                            //$agf_calendrier->calendrier_type = $code_c_session_calendrier_type;
+                            $r=$agf_calendrier->update($user);
+                        }*/
+
 					}
 					else
 					{
