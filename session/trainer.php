@@ -111,7 +111,7 @@ if ($action == 'edit' && $user->rights->agefodd->modifier) {
 		$result = $agf->update($user);
 
 		if ($result > 0) {
-			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+			header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 			exit();
 		} else {
 			setEventMessage($agf->error, 'errors');
@@ -249,7 +249,10 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 
 		$agf_cal->sessid = GETPOST('sessid', 'int');
 
-		if (! empty($modperiod))
+        // Je récupère le/les calendrier participants avant modificatino du calendrier formateur
+        $TCalendrier = _getCalendrierFromCalendrierFormateur($agf_cal, true, true);
+
+        if (! empty($modperiod))
 			$agf_cal->id = $modperiod;
 		if (! empty($date_session))
 			$agf_cal->date_session = $date_session;
@@ -290,6 +293,19 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 				$error ++;
 				$error_message[] = $agf_cal->error;
 			}
+			else
+            {
+                if (!empty($TCalendrier))
+                {
+                    $agf_calendrier = $TCalendrier[0];
+                    $agf_calendrier->date_session = $agf_cal->date_session;
+                    $agf_calendrier->heured = $agf_cal->heured;
+                    $agf_calendrier->heuref = $agf_cal->heuref;
+                    $agf_calendrier->status = $agf_cal->status;
+//                    $agf_calendrier->calendrier_type = $code_c_session_calendrier_type;
+                    $r=$agf_calendrier->update($user);
+                }
+            }
 		}
 
 		if (count($warning_message) > 0) {
