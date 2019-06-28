@@ -288,7 +288,7 @@ class ActionsAgefodd
 							else
 							{
 								$this->db->commit();
-								$context->setEvents($langs->transnoentities('AgfCreneauDeleted'));
+								$context->setEventMessages($langs->transnoentities('AgfCreneauDeleted'));
 							}
 
 							$url = $context->getRootUrl(GETPOST('controller'), '&sessid='.$agsession->id.'&fromAction=deleteCalendrierFormateur');
@@ -502,16 +502,16 @@ class ActionsAgefodd
 										$errorsMsg = array();
 										$sendRes = $this->sendCreneauEmailAlertToTrainees($agsession, $agf_calendrier, $stagiaires, $old_status, $errorsMsg);
 										if($sendRes > 0){
-											$context->setEvents($langs->trans('AgfNbEmailSended', $sendRes));
+											$context->setEventMessages($langs->trans('AgfNbEmailSended', $sendRes));
 										}elseif($sendRes < 0){
-											$context->setEvents($langs->trans('AgfEmailSendError').$sendRes, 'errors');
+											$context->setEventMessages($langs->trans('AgfEmailSendError').$sendRes, 'errors');
 										}
 										else{
-											$context->setEvents($langs->trans('AgfNoEmailSended'), 'warnings');
+											$context->setEventMessages($langs->trans('AgfNoEmailSended'), 'warnings');
 										}
 
 										if(!empty($errorsMsg) and is_array($errorsMsg)){
-											$context->setEvents($errorsMsg, 'errors');
+											$context->setEventMessages($errorsMsg, 'errors');
 										}
 									}
 								}
@@ -526,7 +526,7 @@ class ActionsAgefodd
 									$redirect = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$agf_calendrier_formateur->id);
 								}
 
-								$context->setEvents($langs->transnoentities('Saved'));
+								$context->setEventMessages($langs->transnoentities('Saved'));
 
 								header('Location: '.$redirect);
 								exit;
@@ -560,7 +560,7 @@ class ActionsAgefodd
 					$trainer = new Agefodd_teacher($this->db);
 					if ($trainer->fetchByUser($user) <= 0) {
 						$errors ++;
-						$context->setEvents($langs->transnoentities('agfSaveEventFetchCurrentTeacher'), 'errors');
+						$context->setEventMessages($langs->transnoentities('agfSaveEventFetchCurrentTeacher'), 'errors');
 					}
 
 					$event->fk_element = $trainer->id ;    // Id of record
@@ -571,7 +571,7 @@ class ActionsAgefodd
 					if(!empty($id)){
 						if($event->fetch(intval($id)) < 1 ){
 							$errors ++;
-							$context->setEvents($langs->trans('agfSaveEventFetchError'), 'errors');
+							$context->setEventMessages($langs->trans('agfSaveEventFetchError'), 'errors');
 						}
 					}
 
@@ -589,7 +589,7 @@ class ActionsAgefodd
 					}
 					else{
 						$typeTitle = $langs->transnoentities('AgfAgendaOtherTypeNotValid') ;
-						$context->setEvents($langs->trans('AgfAgendaOtherTypeNotValid'), 'errors');
+						$context->setEventMessages($langs->trans('AgfAgendaOtherTypeNotValid'), 'errors');
 						$errors ++;
 					}
 
@@ -606,7 +606,7 @@ class ActionsAgefodd
 						$event->datep = $startDate->getTimestamp();
 					}
 					else{
-						$context->setEvents($langs->transnoentities('agfSaveEventStartDateInvalid'), 'errors');
+						$context->setEventMessages($langs->transnoentities('agfSaveEventStartDateInvalid'), 'errors');
 						$errors ++;
 					}
 
@@ -618,19 +618,19 @@ class ActionsAgefodd
 						$event->datef = $endDate->getTimestamp();
 					}
 					else{
-						$context->setEvents($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
+						$context->setEventMessages($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
 						$errors ++;
 					}
 
 
 					// get date
 					if($event->datef <= $event->dated){
-						$context->setEvents($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
+						$context->setEventMessages($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
 						$errors ++;
 					}
 
 					if($errors > 0){
-						$context->setEvents($langs->transnoentities('agfSaveEventOtherErrors'), 'errors');
+						$context->setEventMessages($langs->transnoentities('agfSaveEventOtherErrors'), 'errors');
 						$context->action = 'edit';
 					}
 					else{
@@ -650,7 +650,7 @@ class ActionsAgefodd
 						}
 
 						if($saveRes > 0){
-							$context->setEvents($langs->transnoentities('Saved'));
+							$context->setEventMessages($langs->transnoentities('Saved'));
 							$context->action = 'saved';
 						}
 						else{
@@ -662,11 +662,11 @@ class ActionsAgefodd
 							}
 
 
-							$context->setEvents($langs->transnoentities('agfSaveEventOtherActionErrors').$errors, 'errors');
+							$context->setEventMessages($langs->transnoentities('agfSaveEventOtherActionErrors').$errors, 'errors');
 							$context->action = 'edit';
 						}
 
-						//$context->setEvents($langs->transnoentities('Saved'));
+						//$context->setEventMessages($langs->transnoentities('Saved'));
 
 						//header('Location: '.$redirect);
 						//exit;
