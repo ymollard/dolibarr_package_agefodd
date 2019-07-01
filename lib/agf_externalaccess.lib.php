@@ -1241,6 +1241,17 @@ function getPageViewAgendaOtherExternalAccess()
 
 	$context = Context::getInstance();
 
+
+    if($context->action == 'eventdeleted'){
+        $html = $langs->trans('agfEventDeleted');
+        // CLOSE IFRAME
+        if($context->iframe){
+            $html .= '<script >window.parent.closeModal();</script>';
+        }
+        return '<section ><div class="container">'.$html.'</div></section >';
+    }
+
+
 	$action = 'view';
 	if($context->action == 'add' || $context->action == 'edit' || $context->action == 'saved'){
 		$action = 'edit';
@@ -1338,10 +1349,24 @@ function getPageViewAgendaOtherExternalAccess()
 	</div>
 	';
 
+    $html.='<p>';
+    $html.='<button class="btn btn-danger pull-left" type="button" data-toggle="modal" data-target="#deleteeventotherconfirm"  ><i class="fa fa-trash" ></i> '.$langs->trans('Delete').'</button>';
 	if($action == 'edit'){
-		$html.='<p><button class="btn btn-primary pull-right" type="submit" name="action" value="save" >'.$langs->trans('Save').'</button></p>';
-		$html.= '</form>';
+        $html.='<button class="btn btn-primary pull-right" type="submit" name="action" value="save" > '.$langs->trans('Save').'</button>';
 	}
+    $html.='</p>';
+
+    if($action == 'edit'){
+        $html.= '</form>';
+    }
+
+
+
+    $title = $langs->trans('AreYouSureToDelete');
+    $body  = $langs->trans('AgfYouAreUnderDeleteCalendarEvent');
+    $deleteUrl = $_SERVER['PHP_SELF'] . '?iframe='.$context->iframe.'&controller='.$context->controller."&id=".$id;
+    $html.= getEaModalConfirm('deleteeventotherconfirm', $title, $body, $deleteUrl, 'delete');
+
 
 	return '<section ><div class="container">'.$html.'</div></section >';
 }

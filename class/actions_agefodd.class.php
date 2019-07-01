@@ -549,7 +549,48 @@ class ActionsAgefodd
 			}
 			elseif ($context->controller == 'agefodd_event_other')
 			{
-				if($context->action == 'save'){
+                if($context->action == 'delete')
+                {
+                    // DELETE
+                    $trainer = new Agefodd_teacher($this->db);
+                    if ($trainer->fetchByUser($user) <= 0) {
+                        $context->setEventMessages($langs->transnoentities('agfSaveEventFetchCurrentTeacher'), 'errors');
+                    }
+                    else{
+                        include_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
+                        $event = new ActionComm($this->db);
+
+                        // Id for delete
+                        $id = GETPOST('id', 'int');
+                        if(!empty($id)){
+                            if($event->fetch(intval($id)) > 0 ){
+                                if($event->code == 'AC_AGF_NOTAV'
+                                    && $event->elementid == $trainer->id
+                                    && $event->elementtype == 'agefodd_formateur'
+                                )
+                                {
+                                    if($event->delete() > 0){
+                                        $context->setEventMessages($langs->trans('agfEventDeleted'));
+                                        $context->action = 'eventdeleted';
+                                    }
+                                    else{
+                                        $context->setEventMessages($langs->trans('agfDeleteEventError'), 'errors');
+                                    }
+                                }
+                                else
+                                {
+                                    $context->setEventMessages($langs->trans('agfDeleteEventNotAuthorized'), 'errors');
+                                }
+                            }
+                            else
+                            {
+                                $context->setEventMessages($langs->trans('agfSaveEventFetchError'), 'errors');
+                            }
+                        }
+                    }
+                }
+				elseif($context->action == 'save')
+                {
 
 					$errors = 0;
 
