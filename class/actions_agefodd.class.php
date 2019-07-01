@@ -1443,7 +1443,15 @@ class ActionsAgefodd
 		}
 	}
 
-	function sendCreneauEmailAlertToTrainees($agsession, $agf_calendrier, $stagiaires, $old_status, &$errorsMsg = array() )
+    /**
+     * @param $agsession
+     * @param $agf_calendrier Agefodd_sesscalendar
+     * @param $stagiaires
+     * @param $old_status
+     * @param array $errorsMsg
+     * @return int
+     */
+    function sendCreneauEmailAlertToTrainees($agsession, $agf_calendrier, $stagiaires, $old_status, &$errorsMsg = array() )
 	{
 		global $conf, $langs, $user;
 
@@ -1505,6 +1513,14 @@ class ActionsAgefodd
 				$thisSubstitutionarray['__agfsendall_socname__'] = $stagiaire->socname;
 				$thisSubstitutionarray['__agfsendall_email__'] = $stagiaire->email;
 
+
+
+                $thisSubstitutionarray['__agfcreneau_heured__'] = date('H:i', $agf_calendrier->heured);
+                $thisSubstitutionarray['__agfcreneau_heuref__'] = date('H:i', $agf_calendrier->heured);
+                $thisSubstitutionarray['__agfcreneau_datesession__'] = dol_print_date($agf_calendrier->date_session);
+                $thisSubstitutionarray['__agfcreneau_status__'] = $agf_calendrier->getLibStatut();
+
+
 				// Tableau des substitutions
 				if (! empty($agsession->intitule_custo)) {
 					$thisSubstitutionarray['__FORMINTITULE__'] = $agsession->intitule_custo;
@@ -1515,8 +1531,8 @@ class ActionsAgefodd
 				$date_conv = $agsession->libSessionDate('daytext');
 				$thisSubstitutionarray['__FORMDATESESSION__'] = $date_conv;
 
-				$sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
-				$sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
+                $sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
+                $sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
 
 				$to = $stagiaire->email;
 
