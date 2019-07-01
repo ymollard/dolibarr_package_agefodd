@@ -866,7 +866,7 @@ elseif (empty($search_fourninvoiceref)) {
             }
 
 			$sessionLabel .= ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session	->dated, 'daytext');
-			$sessionLabel .= ' - ' . $line_session->statuslib . ' - ' . $langs->trans('AgfTraineesRegisteredPresent', $objcount->nb_inscrits, $objcount->nb_confirm);
+			$sessionLabel .= ' - ' . $line_session->statuslib . ' - ' . $langs->trans('AgfTraineesRegisteredPresent', intval($objcount->nb_inscrits), intval($objcount->nb_confirm));
 
 			$sessions[$line_session->rowid] = $sessionLabel;
 		}
@@ -913,7 +913,7 @@ elseif (empty($search_fourninvoiceref)) {
 
                 $objcount = new stdClass;
                 $objcount->nb_confirm = 0;
-                $objcount->nb_presents = 0;
+                $objcount->nb_inscrits = 0;
 
 	            // CASE au lieu de IF pour compatibilité postGreSQL
 		        $sqlcount = '
@@ -940,7 +940,7 @@ elseif (empty($search_fourninvoiceref)) {
                 }
 
 		        $sessionLabel.= ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
-		        $sessionLabel.= ' - ' . $obj->statuslib . ' - ' . $langs->trans('AgfTraineesRegisteredPresent', $objcount->nb_inscrits, $objcount->nb_confirm);
+		        $sessionLabel.= ' - ' . $obj->statuslib . ' - ' . $langs->trans('AgfTraineesRegisteredPresent', intval($objcount->nb_inscrits), intval($objcount->nb_confirm));
 
 	            $sessions[$obj->rowid] = $sessionLabel;
 	        }
