@@ -9,6 +9,11 @@ AgfSendNotification=Notifications EMAILS
 AGFSendEmailAlertToTrainees=Envoyer une alerte email au(x) stagiaire(s)
 AgfEmailInvalid=Email(s) invalide(s)
 AgfStatus=Statut
+AreYouSureToDelete=Êtes-vous sûre ?
+AgfYouAreUnderDeleteCalendarEvent=Vous êtes sur le point de supprimer un évènement agenda, cette action est irréverssible, souhaites-vous continuer ?
+agfEventDeleted=Evènement supprimé
+agfDeleteEventError=Une erreur c'est produite lors de la suppression
+agfDeleteEventNotAuthorized=Vous n'êtes pas
 
 # Email
 AgfInvalidAddressEmail=Adresse email invalide %s
