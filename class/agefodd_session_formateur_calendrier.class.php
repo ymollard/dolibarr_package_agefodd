@@ -853,11 +853,13 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		if ($result < 0) {
 			$error ++;
 		}
+		elseif ($result > 0) {
+            $result = $action->fetch_userassigned();
+            if ($result < 0) {
+                $error ++;
+            }
+        }
 
-		$result = $action->fetch_userassigned();
-		if ($result < 0) {
-			$error ++;
-		}
 
 		if ($error == 0) {
 
