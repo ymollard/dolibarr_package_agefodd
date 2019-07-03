@@ -676,7 +676,8 @@ if (! empty($id)) {
 									$hourhtml .= dol_print_date($trainer_calendar->lines[$j]->date_session, 'daytextshort') . '</td>' . "\n";
 									$hourhtml .= '<td width="100px">' . "\n";
 									if (! $user->rights->agefodd->session->trainer) {
-										$hourhtml .= dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
+                                        $hourDisplay = dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
+										$hourhtml .= _isTrainerFreeBadge($hourDisplay, $trainer_calendar->lines[$j], $formateurs->lines[$i]->formid);
 									}
 									$hourhtml .= '</td></tr>' . "\n";
 								}
@@ -982,7 +983,9 @@ if (! empty($id)) {
 								}
 								print '</td>' . "\n";
 								print '<td width="20%">' . dol_print_date($calendrier->lines[$j]->date_session, 'daytext') . '</td>' . "\n";
-								print '<td  width="40%">' . dol_print_date($calendrier->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$j]->heuref, 'hour') . '</td>';
+                                $hourDisplay = dol_print_date($calendrier->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$j]->heuref, 'hour');
+                                $hourDisplay = _isTrainerFreeBadge($hourDisplay, $calendrier->lines[$j], $formateurs->lines[$i]->opsid);
+								print '<td  width="40%">' . $hourDisplay  . '</td>';
 								print '<td>' . Agefodd_sesscalendar::getStaticLibStatut($calendrier->lines[$j]->status, 0) . '</td>';
 
 								// Trainer cost is fully managed into cost management not here
@@ -1121,3 +1124,26 @@ print '</div>';
 
 llxFooter();
 $db->close();
+
+
+function _isTrainerFreeBadge($hourDisplay, $line, $fk_trainer)
+{
+    global $langs;
+
+    $errorsStatus = $warningsStatus = 'default';
+    if($line->status != Agefoddsessionformateurcalendrier::STATUS_DRAFT){
+        $warningsStatus = array();
+    }
+
+    $isTrainerFree = Agefoddsessionformateurcalendrier::isTrainerFree($fk_trainer, $line->heured, $line->heuref, $line->id, $errorsStatus, $warningsStatus);
+    if(!$isTrainerFree->isFree)
+    {
+        if($isTrainerFree->errors > 0){
+            $hourDisplay = '<span class="classfortooltip badge badge-danger" title="'.$langs->trans('TrainerNotFree').'" ><i class="fa fa-exclamation-circle"></i> '.$hourDisplay .'</span>';
+        } elseif ($isTrainerFree->warnings > 0){
+            $hourDisplay = '<span class="classfortooltip badge badge-warning" title="'.$langs->trans('TrainerCouldBeNotFree').'" ><i class="fa fa-exclamation-triangle"></i> '.$hourDisplay .'</span>';
+        }
+    }
+
+    return $hourDisplay;
+}

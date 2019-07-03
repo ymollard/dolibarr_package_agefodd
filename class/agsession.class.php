@@ -127,8 +127,9 @@ class Agsession extends CommonObject
 	/**
 	 * Create object into database
 	 *
-	 * @param User $user that create
-	 * @param int $notrigger triggers after, 1=disable triggers
+	 * @param User $user      that create
+	 * @param int  $notrigger triggers after, 1=disable triggers
+     *
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	public function create($user, $notrigger = 0) {

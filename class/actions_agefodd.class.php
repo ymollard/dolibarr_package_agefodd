@@ -240,7 +240,9 @@ class ActionsAgefodd
 
 			// TODO gérer ici les actions de mes pages pour update les données
 			$context = Context::getInstance();
-			
+
+			$langs->load('agfexternalaccess@agefodd');
+
 			if ($context->controller == 'agefodd_session_card')
 			{
 				if ($action == 'deleteCalendrierFormateur' && GETPOST('sessid') > 0 && GETPOST('fk_agefodd_session_formateur_calendrier') > 0)
@@ -286,9 +288,10 @@ class ActionsAgefodd
 							else
 							{
 								$this->db->commit();
+								$context->setEventMessages($langs->transnoentities('AgfCreneauDeleted'));
 							}
 
-							$url = $context->getRootUrl(GETPOST('controller'), '&sessid='.$agsession->id);
+							$url = $context->getRootUrl(GETPOST('controller'), '&sessid='.$agsession->id.'&fromAction=deleteCalendrierFormateur');
 							header('Location: '.$url);
 							exit;
 						}
@@ -481,7 +484,7 @@ class ActionsAgefodd
 										if ($r < 0) $error++;
 										else
 										{
-											// TODO à faire évoluer, mais en l'état cela semble bien compliqué d'automatisé le satut du participant
+											// TODO à faire évoluer, mais en l'état cela semble bien compliqué d'automatisé le statut du participant
 											if ($duree > 0 && !in_array($stagiaire->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT) ))
 											{
 												$stagiaires->setValueFrom('status_in_session', Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT, '', $stagiaire->stagerowid, 'int', '', 'none');
@@ -490,7 +493,28 @@ class ActionsAgefodd
 									}
 								}
 
-								if (empty($error)) $this->db->commit();
+								if (empty($error)){
+									$this->db->commit();
+
+									$sendEmailAlertToTrainees = GETPOST('SendEmailAlertToTrainees', 'int');
+
+									if(!empty($sendEmailAlertToTrainees)){
+										$errorsMsg = array();
+										$sendRes = $this->sendCreneauEmailAlertToTrainees($agsession, $agf_calendrier, $stagiaires, $old_status, $errorsMsg);
+										if($sendRes > 0){
+											$context->setEventMessages($langs->trans('AgfNbEmailSended', $sendRes));
+										}elseif($sendRes < 0){
+											$context->setEventMessages($langs->trans('AgfEmailSendError').$sendRes, 'errors');
+										}
+										else{
+											$context->setEventMessages($langs->trans('AgfNoEmailSended'), 'warnings');
+										}
+
+										if(!empty($errorsMsg) and is_array($errorsMsg)){
+											$context->setEventMessages($errorsMsg, 'errors');
+										}
+									}
+								}
 								else
 								{
 									$this->db->rollback();
@@ -499,8 +523,10 @@ class ActionsAgefodd
 
 								$redirect = $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id);
 								if($context->iframe){
-									$redirect = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$slotid);
+									$redirect = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$agf_calendrier_formateur->id);
 								}
+
+								$context->setEventMessages($langs->transnoentities('Saved'));
 
 								header('Location: '.$redirect);
 								exit;
@@ -520,6 +546,173 @@ class ActionsAgefodd
 				$context->title = $langs->trans('AgfExternalAccess_PageTitle_Agenda');
 				$context->desc = $langs->trans('AgfExternalAccess_PageDesc_Agenda');
 				$context->menu_active[] = 'invoices';
+			}
+			elseif ($context->controller == 'agefodd_event_other')
+			{
+                if($context->action == 'delete')
+                {
+                    // DELETE
+                    $trainer = new Agefodd_teacher($this->db);
+                    if ($trainer->fetchByUser($user) <= 0) {
+                        $context->setEventMessages($langs->transnoentities('agfSaveEventFetchCurrentTeacher'), 'errors');
+                    }
+                    else{
+                        include_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
+                        $event = new ActionComm($this->db);
+
+                        // Id for delete
+                        $id = GETPOST('id', 'int');
+                        if(!empty($id)){
+                            if($event->fetch(intval($id)) > 0 ){
+                                if($event->code == 'AC_AGF_NOTAV'
+                                    && $event->elementid == $trainer->id
+                                    && $event->elementtype == 'agefodd_formateur'
+                                )
+                                {
+                                    if($event->delete() > 0){
+                                        $context->setEventMessages($langs->trans('agfEventDeleted'));
+                                        $context->action = 'eventdeleted';
+                                    }
+                                    else{
+                                        $context->setEventMessages($langs->trans('agfDeleteEventError'), 'errors');
+                                    }
+                                }
+                                else
+                                {
+                                    $context->setEventMessages($langs->trans('agfDeleteEventNotAuthorized'), 'errors');
+                                }
+                            }
+                            else
+                            {
+                                $context->setEventMessages($langs->trans('agfSaveEventFetchError'), 'errors');
+                            }
+                        }
+                    }
+                }
+				elseif($context->action == 'save')
+                {
+
+					$errors = 0;
+
+					include_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
+
+					$event = new ActionComm($this->db);
+
+					$trainer = new Agefodd_teacher($this->db);
+					if ($trainer->fetchByUser($user) <= 0) {
+						$errors ++;
+						$context->setEventMessages($langs->transnoentities('agfSaveEventFetchCurrentTeacher'), 'errors');
+					}
+
+					$event->fk_element = $trainer->id ;    // Id of record
+					$event->elementtype = $trainer->element;   // Type of record. This if property ->element of object linked to.
+
+					// Id for update
+					$id = GETPOST('id', 'int');
+					if(!empty($id)){
+						if($event->fetch(intval($id)) < 1 ){
+							$errors ++;
+							$context->setEventMessages($langs->trans('agfSaveEventFetchError'), 'errors');
+						}
+					}
+
+					// Type
+					$TAvailableType = getEnventOtherTAvailableType();
+
+					$type = GETPOST('type');
+					if(!empty($id)){
+						$type =$event->type_code; // on update, code could not be change
+					}
+
+					if(in_array($type, $TAvailableType)){
+						$typeTitle = $langs->transnoentities('AgfAgendaOtherType_'.$type) ;
+						$event->code=$type;
+					}
+					else{
+						$typeTitle = $langs->transnoentities('AgfAgendaOtherTypeNotValid') ;
+						$context->setEventMessages($langs->trans('AgfAgendaOtherTypeNotValid'), 'errors');
+						$errors ++;
+					}
+
+                    $event->percentage = -1;
+					$event->type_code = $event->code ;
+					$event->label = $typeTitle;
+					$event->note = GETPOST('note', 'nohtml');
+
+					// Get start date
+					$heured = GETPOST('heured');
+					$startDate 	= parseFullCalendarDateTime($heured);
+
+					if(!empty($startDate)){
+						$event->datep = $startDate->getTimestamp();
+					}
+					else{
+						$context->setEventMessages($langs->transnoentities('agfSaveEventStartDateInvalid'), 'errors');
+						$errors ++;
+					}
+
+					// Get end date
+					$heuref = GETPOST('heuref');
+					$endDate = new DateTime();
+					$endDate = parseFullCalendarDateTime($heuref);
+					if(!empty($endDate)){
+						$event->datef = $endDate->getTimestamp();
+					}
+					else{
+						$context->setEventMessages($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
+						$errors ++;
+					}
+
+
+					// get date
+					if($event->datef <= $event->dated){
+						$context->setEventMessages($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
+						$errors ++;
+					}
+
+					if($errors > 0){
+						$context->setEventMessages($langs->transnoentities('agfSaveEventOtherErrors'), 'errors');
+						$context->action = 'edit';
+					}
+					else{
+						// Save
+
+						$saveRes = 0; // reset error status
+
+						if($event->id > 0)
+						{
+							$saveRes = $event->update($user);
+						}
+						else{
+
+							$event->userownerid = $user->id;
+
+							$saveRes = $event->create($user);
+						}
+
+						if($saveRes > 0){
+							$context->setEventMessages($langs->transnoentities('Saved'));
+							$context->action = 'saved';
+						}
+						else{
+
+
+							$errors = is_array($event->errors)?'<br/>'.implode('<br/>', $event->errors):'';
+							if(!empty($event->error)){
+								$errors.= '<br/>'.$event->error;
+							}
+
+
+							$context->setEventMessages($langs->transnoentities('agfSaveEventOtherActionErrors').$errors, 'errors');
+							$context->action = 'edit';
+						}
+
+						//$context->setEventMessages($langs->transnoentities('Saved'));
+
+						//header('Location: '.$redirect);
+						//exit;
+					}
+				}
 			}
 
 			return 1;
@@ -562,14 +755,22 @@ class ActionsAgefodd
 				// Since no timeZone will be present, they will parsed as UTC.
 
 				$timeZone 		= GETPOST('timeZone');
+				$agendaType 		= GETPOST('agendaType');
 				$range_start 	= parseFullCalendarDateTime(GETPOST('start'),$timeZone);
 				$range_end 		= parseFullCalendarDateTime(GETPOST('end'),$timeZone);
 
 				$teacher = new Agefodd_teacher($db);
 				$teacher->fetchByUser($user);
 
+				if($agendaType == 'session'){
+					print getAgefoddJsonAgendaFormateur($teacher->id, $range_start->getTimestamp(), $range_end->getTimestamp());
+				}
+				elseif($agendaType == 'notAvailableRange'){
+					print getAgefoddJsonAgendaFormateurNotAvailable($teacher->id, $range_start->getTimestamp(), $range_end->getTimestamp());
+				}
 
-				print getAgefoddJsonAgendaFormateur($teacher->id, $range_start->getTimestamp(), $range_end->getTimestamp());
+
+
 				exit;
 			}
 
@@ -584,7 +785,7 @@ class ActionsAgefodd
 	 * @param type $hookmanager
 	 * @return int
 	 */
-	public function PrintPageView($parameters, &$object, &$action, $hookmanager)
+	public function PrintPageView($parameters, &$context, &$action, $hookmanager)
 	{
 		global $langs,$user, $conf;
 
@@ -592,14 +793,16 @@ class ActionsAgefodd
 
 		if (in_array('externalaccesspage', $TContext) && !empty($conf->global->AGF_EACCESS_ACTIVATE))
 		{
+
+			$sessid = GETPOST('sessid','int');
+
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
 			dol_include_once('/agefodd/class/agsession.class.php');
 			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 			dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 
-			$langs->load('agefodd@agefodd');
-			$context = Context::getInstance();
+			$langs->loadLangs(array('agefodd@agefodd', 'agfexternalaccess@agefodd'));
 
 			if ($context->controller == 'agefodd')
 			{
@@ -614,6 +817,16 @@ class ActionsAgefodd
 			}
 			else if ($context->controller == 'agefodd_session_card' && GETPOST('sessid', 'int') > 0)
 			{
+
+				// CLOSE IFRAME
+				if($context->iframe){
+					$fromAction = GETPOST('fromAction');
+					if(!empty($fromAction) && $fromAction == 'deleteCalendrierFormateur'){
+						print '<script >window.parent.closeModal();</script>';
+					}
+				}
+
+
 				$agsession = new Agsession($this->db);
 				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
 				{
@@ -626,7 +839,7 @@ class ActionsAgefodd
 				}
 
 			}
-			else if ($context->controller == 'agefodd_session_card_time_slot' && GETPOST('sessid','int') > 0)
+			else if ($context->controller == 'agefodd_session_card_time_slot' && $sessid > 0)
 			{
 				$agsession = new Agsession($this->db);
 				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
@@ -664,9 +877,19 @@ class ActionsAgefodd
 					}
 				}
 			}
+			else if ($context->controller == 'agefodd_session_card_time_slot' && empty($sessid))
+			{
+				print getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess($sessid, $action);
+				$context->setControllerFound();
+			}
 			elseif ($context->controller == 'agefodd_trainer_agenda')
 			{
 				print getPageViewAgendaFormateurExternalAccess();
+				$context->setControllerFound();
+			}
+			elseif ($context->controller == 'agefodd_event_other')
+			{
+				print getPageViewAgendaOtherExternalAccess();
 				$context->setControllerFound();
 			}
 		}
@@ -1218,5 +1441,126 @@ class ActionsAgefodd
 				}
 			}
 		}
+	}
+
+    /**
+     * @param $agsession
+     * @param $agf_calendrier Agefodd_sesscalendar
+     * @param $stagiaires
+     * @param $old_status
+     * @param array $errorsMsg
+     * @return int
+     */
+    function sendCreneauEmailAlertToTrainees($agsession, $agf_calendrier, $stagiaires, $old_status, &$errorsMsg = array() )
+	{
+		global $conf, $langs, $user;
+
+		$nbMailSend = 0;
+		$error = 0;
+
+		// Check conf of module
+		if(empty($conf->global->AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL) || empty($conf->global->AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL)) {
+			$errorsMsg[]= $langs->trans('TemplateMailNotExist');
+			return -1;
+		}
+
+		$fk_mailModel_create= $conf->global->AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL;
+		$fk_mailModel_save 	= $conf->global->AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL;
+
+		require_once (DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
+
+		foreach ($stagiaires->lines as &$stagiaire) {
+			if ($stagiaire->id <= 0){
+				$errorsMsg[] = $langs->trans('AgfWarningStagiaireNoId');
+				continue;
+			}
+
+			$agfssh = new Agefoddsessionstagiaireheures($this->db);
+			$result = $agfssh->fetch_by_session($agsession->id, $stagiaire->id, $agf_calendrier->id);
+			if ($result < 0){
+				$errorsMsg[] = $langs->trans('AgfErrorFetchingAgefoddsessionstagiaireheures');
+				$error++;
+			}else {
+
+				// select mail template
+				$fk_mailModel = $fk_mailModel_create;
+				if(!empty($agfssh->mail_sended)){
+					$fk_mailModel = $fk_mailModel_save;
+				}
+
+				$mailTpl = agf_getMailTemplate($fk_mailModel);
+				if($mailTpl < 1){
+					$errorsMsg[] = $langs->trans('AgfEMailTemplateNotExist');
+					return -2;
+				}
+
+
+				// PREPARE EMAIL
+				$from = $user->email;
+
+				if (! isset($arrayoffamiliestoexclude)) $arrayoffamiliestoexclude=null;
+
+				// Make substitution in email content
+				$substitutionarray = getCommonSubstitutionArray($langs, 0, $arrayoffamiliestoexclude, $agsession);
+
+				complete_substitutions_array($substitutionarray, $langs, $agsession);
+
+				$thisSubstitutionarray = $substitutionarray;
+
+				$thisSubstitutionarray['__agfsendall_nom__'] = $stagiaire->nom;
+				$thisSubstitutionarray['__agfsendall_prenom__'] = $stagiaire->prenom;
+				$thisSubstitutionarray['__agfsendall_civilite__'] = $stagiaire->civilite;
+				$thisSubstitutionarray['__agfsendall_socname__'] = $stagiaire->socname;
+				$thisSubstitutionarray['__agfsendall_email__'] = $stagiaire->email;
+
+
+
+                $thisSubstitutionarray['__agfcreneau_heured__'] = date('H:i', $agf_calendrier->heured);
+                $thisSubstitutionarray['__agfcreneau_heuref__'] = date('H:i', $agf_calendrier->heured);
+                $thisSubstitutionarray['__agfcreneau_datesession__'] = dol_print_date($agf_calendrier->date_session);
+                $thisSubstitutionarray['__agfcreneau_status__'] = $agf_calendrier->getLibStatut();
+
+
+				// Tableau des substitutions
+				if (! empty($agsession->intitule_custo)) {
+					$thisSubstitutionarray['__FORMINTITULE__'] = $agsession->intitule_custo;
+				} else {
+					$thisSubstitutionarray['__FORMINTITULE__'] = $agsession->formintitule;
+				}
+
+				$date_conv = $agsession->libSessionDate('daytext');
+				$thisSubstitutionarray['__FORMDATESESSION__'] = $date_conv;
+
+                $sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
+                $sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
+
+				$to = $stagiaire->email;
+
+				if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+					// is not a valid email address
+					$toMsg = empty($to)?$langs->trans('AgfMailEmpty'):$to;
+					$errorsMsg[] = $langs->trans('AgfInvalidAddressEmail', $toMsg);
+					$error++;
+					continue;
+				}
+
+				// hidden conf
+				if(!empty($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO) && filter_var($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO, FILTER_VALIDATE_EMAIL)){
+					$to = $conf->global->AGF_CRENEAU_FORCE_EMAIL_TO;
+				}
+
+				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "",  0, 1, $from);
+
+				if($cMailFile->sendfile()){
+					$nbMailSend++;
+				}
+				else{
+					$errorsMsg[] =  $cMailFile->error .' : '.$to;
+					$error++;
+				}
+			}
+		}
+
+		return $nbMailSend;
 	}
 }

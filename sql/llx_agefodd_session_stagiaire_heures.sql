@@ -20,6 +20,7 @@ CREATE TABLE llx_agefodd_session_stagiaire_heures(
 	fk_stagiaire integer NOT NULL,
 	fk_session integer NOT NULL,
 	fk_calendrier integer NOT NULL,
+	mail_sended integer NOT NULL,
 	heures float NOT NULL,
     fk_user_author integer NOT NULL,
 	datec DATETIME NOT NULL,

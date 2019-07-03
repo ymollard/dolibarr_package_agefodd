@@ -35,9 +35,11 @@ require_once '../lib/agefodd.lib.php';
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once DOL_DOCUMENT_ROOT . "/core/lib/images.lib.php";
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
+require_once DOL_DOCUMENT_ROOT .'/core/class/html.formmail.class.php';
 
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
+$langs->load('agfexternalaccess@agefodd');
 
 if (! $user->rights->agefodd->admin && ! $user->admin)
     accessforbidden();
@@ -64,6 +66,18 @@ if ($action == 'setvarother') {
         if ($res < 0) $error++;
         
     }
+
+    $confKey = 'AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL';
+	$mailmodel = GETPOST($confKey, 'alpha');
+	$res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$confKey = 'AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL';
+	$mailmodel = GETPOST($confKey, 'alpha');
+	$res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
     
     // Vue éclatée des heures participant sur la liste des sessions
     $heuresEclateeExclues = serialize(GETPOST('AGF_EA_ECLATE_HEURES_EXCLUES'));
@@ -98,7 +112,7 @@ print_fiche_titre($langs->trans("AgefoddSetupDesc"), $linkback, 'setup');
 
 // Configuration header
 $head = agefodd_admin_prepare_head();
-dol_fiche_head($head, 'external', $langs->trans("Module103000Name"), 0, "agefodd@agefodd");
+dol_fiche_head($head, 'external', $langs->trans("Module103000Name"), -1, "agefodd@agefodd");
 
 if ($conf->use_javascript_ajax) {
     print ' <script type="text/javascript">';
@@ -107,7 +121,7 @@ if ($conf->use_javascript_ajax) {
     print ' </script>';
 }
 
-print_titre($langs->trans("Options"));
+
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" enctype="multipart/form-data" >';
 print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 print '<input type="hidden" name="action" value="setvarother">';
@@ -115,11 +129,15 @@ print '<input type="hidden" name="action" value="setvarother">';
 print '<table class="noborder" width="100%">';
 $var = true;
 
+print '<tr class="liste_titre" >';
+print '<th colspan="3" class="left">' . $langs->trans("Options") . '</th>';
+print '</tr>';
+
 // configuration external access
 if(!empty($conf->externalaccess->enabled))
 {
     // Active l'accés externe pour agefodd
-    print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfActivateExternalAccessForAgefodd") . '</td>';
+    print '<tr class="oddeven"><td>' . $langs->trans("AgfActivateExternalAccessForAgefodd") . '</td>';
     print '<td align="left">';
     if ($conf->use_javascript_ajax) {
         $input_array = array (
@@ -152,14 +170,18 @@ if(!empty($conf->externalaccess->enabled))
     print '</td>';
     print '<td></td>';
     print '</tr>';
-    $var=!$var;
+
     print '</table>';
     
-    print_titre($langs->trans("Options")." ".$langs->trans('AgfExternalAccess'));
+
     print '<table class="noborder" width="100%" id="externaloption">';
-    
+
+	print '<tr class="liste_titre" >';
+	print '<th colspan="3" class="left">' . $langs->trans("Options")." ".$langs->trans('AgfExternalAccess') . '</th>';
+	print '</tr>';
+
     // Active l'accés formateur
-    print '<tr '.$bc[$var].'"><td>' . $langs->trans("AgfActivateAccessForTrainers") . '</td>';
+    print '<tr  class="oddeven"><td>' . $langs->trans("AgfActivateAccessForTrainers") . '</td>';
     print '<td align="left">';
     if ($conf->use_javascript_ajax) {
         print ajax_constantonoff('AGF_EA_TRAINER_ENABLED');
@@ -173,10 +195,10 @@ if(!empty($conf->externalaccess->enabled))
     print '</td>';
     print '<td></td>';
     print '</tr>';
-    $var=!$var;
+
     
     // Vue éclatée des heures participant sur la liste des sessions
-    print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHeuresDeclareesEclateesParType") . '</td>';
+    print '<tr  class="oddeven" ><td>' . $langs->trans("AgfHeuresDeclareesEclateesParType") . '</td>';
     print '<td align="left">';
     if ($conf->use_javascript_ajax) {
         print ajax_constantonoff('AGF_EA_ECLATE_HEURES_PAR_TYPE');
@@ -190,10 +212,10 @@ if(!empty($conf->externalaccess->enabled))
     print '</td>';
     print '<td></td>';
     print '</tr>';
-    $var=!$var;
+
     
     // status à exclure des heures éclatées
-    print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHeuresDeclareesEclateesStatusExclus") . '</td>';
+    print '<tr  class="oddeven" ><td>' . $langs->trans("AgfHeuresDeclareesEclateesStatusExclus") . '</td>';
     print '<td align="left">';
     //AGF_EA_ECLATE_HEURES_EXCLUES
     $arrval = Agefodd_sesscalendar::getListStatus();
@@ -216,8 +238,54 @@ if(!empty($conf->externalaccess->enabled))
     print '</td>';
     print '<td></td>';
     print '</tr>';
-    $var=!$var;
 }
+
+print '</table>';
+
+
+print '<table class="noborder" width="100%" id="externaloption">';
+
+$formMail = new FormMail($db);
+$models = $formMail->fetchAllEMailTemplate('agf_trainee', $user, $langs);
+$modelmail_array= array();
+if($models>0)
+{
+	foreach($formMail->lines_model as $line)
+    {
+		if (preg_match('/\((.*)\)/', $line->label, $reg)){
+			$modelmail_array[$line->id]=$langs->trans($reg[1]);		// langs->trans when label is __(xxx)__
+		}
+		else{
+			$modelmail_array[$line->id]=$line->label;
+		}
+		if ($line->lang) $modelmail_array[$line->id].=' ('.$line->lang.')';
+		if ($line->private) $modelmail_array[$line->id].=' - '.$langs->trans("Private");
+		//if ($line->fk_user != $user->id) $modelmail_array[$line->id].=' - '.$langs->trans("By").' ';
+	}
+}
+
+print '<tr class="liste_titre" >';
+print '<th colspan="3" class="left">' . $langs->trans("AgfSendNotification") . '</th>';
+print '</tr>';
+
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfSendCreateCreneauxToTraineeMailModel") . '<br/><em><small>(' . $langs->trans('AgfMailToSendTrainee').')</small></em></td>';
+print '<td align="left">';
+
+print $formMail->selectarray('AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL', $modelmail_array, $conf->global->AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL, 1);
+
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
+print '<tr  class="oddeven" ><td>' . $langs->trans("AgfSendSaveCreneauxToTraineeMailModel") . '<br/><em><small>(' . $langs->trans('AgfMailToSendTrainee').')</small></em></td>';
+print '<td align="left">';
+
+print $formMail->selectarray('AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL', $modelmail_array, $conf->global->AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL, 1);
+
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
 
 // if (empty($conf->use_javascript_ajax))
 // {

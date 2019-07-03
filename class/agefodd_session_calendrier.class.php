@@ -74,6 +74,19 @@ class Agefodd_sesscalendar extends CommonObject{
 		);
 	}
 
+
+    /**
+     *    	Return label of status of proposal (draft, validated, ...)
+     *
+     *    	@param      int			$mode        0=Long label, 1=Short label, 2=Picto + Short label, 3=Picto, 4=Picto + Long label, 5=Short label + Picto, 6=Long label + Picto
+     *    	@return     string		Label
+     */
+    function getLibStatut($mode=0)
+    {
+        // TODO: do a true getlibstatus
+        return self::getStaticLibStatut($this->status);
+    }
+
 	/**
 	 * Create object into database
 	 *
