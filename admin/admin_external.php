@@ -251,8 +251,7 @@ $modelmail_array= array();
 if($models>0)
 {
 	foreach($formMail->lines_model as $line)
-	{
-		$langs->trans("members");
+    {
 		if (preg_match('/\((.*)\)/', $line->label, $reg)){
 			$modelmail_array[$line->id]=$langs->trans($reg[1]);		// langs->trans when label is __(xxx)__
 		}
