@@ -40,22 +40,167 @@ function getMenuAgefoddExternalAccess()
 				<div class="container">
 				  <div class="row">';
 
-	$link = $context->getRootUrl('agefodd_session_list');
-	$html.= getService($langs->trans('AgfMenuSess'),'fa-hourglass',$link);
-	// TODO faire les getService() pour avoir accés à d'autres objets d'agefodd (pour plus tard)
+    if($user->rights->agefodd->external_trainer_read) {
+        $link = $context->getRootUrl('agefodd_session_list');
+        $html .= getService($langs->trans('AgfMenuSess'), 'fa-hourglass', $link);
+        // TODO faire les getService() pour avoir accés à d'autres objets d'agefodd (pour plus tard)
+    }
 
 	if($user->rights->agefodd->external_trainer_agenda){
 		$link = $context->getRootUrl('agefodd_trainer_agenda');
 		$html.= getService($langs->trans('AgfMenuAgendaFormateur'),'fa-calendar',$link);
 	}
 
-
+    if($user->rights->agefodd->external_trainee_read){
+        $link = $context->getRootUrl('agefodd_trainee_session_list');
+        $html.= getService($langs->trans('AgfMenuSessTrainee'),'fa-graduation-cap',$link);
+    }
 
 	$html.= '</div>
 			</div>
 		  </section>';
 
 	return $html;
+}
+
+
+/**
+ * Affiche la liste des sessions du stagiaire courant agefodd
+ *
+ * route => agefodd_trainee_session_list
+ *
+ * @return string
+ */
+function getPageViewTraineeSessionListExternalAccess()
+{
+    global $langs,$db,$user, $conf;
+
+    $context = Context::getInstance();
+
+    if (!validateTrainee($context, true)) return '';
+
+    $trainee = new Agefodd_stagiaire($db);
+    if($trainee->fetch_by_contact($user->contactid) <= 0)
+    {
+        // normalement ne devrait jamais arriver vu que ce test est effectué par validateTrainee()
+        $context->setError($langs->trans('ErrorFechingTrainee'));
+    }
+
+
+    $agsession = new Agsession($db);
+
+    if (!empty($trainee->id)){
+        $agsession->fetch_session_per_trainee($trainee->id);
+    }
+
+    $out = '<!-- getPageViewTraineeSessionListExternalAccess -->';
+    $out.= '<section id="section-session-list"><div class="container">';
+
+    if(!empty($agsession->lines))
+    {
+        $out.= '<table id="session-list" class="table table-striped w-100" >';
+
+        $out.= '<thead>';
+
+        $out.= '<tr>';
+        $out.= ' <th class="" >'.$langs->trans('Ref').'</th>';
+        $out.= ' <th class="" >'.$langs->trans('AgfFormIntitule').'</th>';
+        $out.= ' <th class="" >'.$langs->trans('DateStart').'</th>';
+        $out.= ' <th class="" >'.$langs->trans('DateEnd').'</th>';
+        $out.= ' <th class="text-center" >'.$langs->trans('AgfDuree').'</th>';
+        $out.= ' <th class="text-center" >'.$langs->trans('AgfDureeDeclared').'</th>';
+        $out.= ' <th class="text-center" >'.$langs->trans('AgfDureeSolde').'</th>';
+        $out.= ' <th class="text-center" >'.$langs->trans('Status').'</th>';
+        $out.= ' <th class="text-center" ></th>';
+        $out.= '</tr>';
+
+        $out.= '</thead>';
+
+        $out.= '<tbody>';
+
+        /** @var AgfSessionLine $item */
+        foreach ($agsession->lines as &$item)
+        {
+
+            $out.= '<tr>';
+            $out.= ' <td data-order="'.$item->sessionref.'" data-search="'.$item->sessionref.'"  ><a href="'.$context->getRootUrl('agefodd_session_card', '&sessid='.$item->rowid).'">'.$item->sessionref.'</a></td>';
+            $out.= ' <td data-order="'.$item->intitule.'" data-search="'.$item->intitule.'"  >'.$item->intitule.'</td>';
+            $out.= ' <td data-order="'.$item->dated.'" data-search="'.dol_print_date($item->dated, '%d/%m/%Y').'" >'.dol_print_date($item->dated, '%d/%m/%Y').'</td>';
+            $out.= ' <td data-order="'.$item->datef.'" data-search="'.dol_print_date($item->datef, '%d/%m/%Y').'" >'.dol_print_date($item->datef, '%d/%m/%Y').'</td>';
+            $out.= ' <td class="text-center" data-order="'.$item->duree_session.'" data-session="'.$item->duree_session.'"  >'.$item->duree_session.'</td>';
+
+            $filters['excludeCanceled'] = true;
+            $duree_declared = Agsession::getStaticSumDureePresence($item->rowid, $trainee->id, $filters);
+
+            if (!empty($duree_declared) && !empty($conf->global->AGF_EA_ECLATE_HEURES_PAR_TYPE))
+            {
+                $duree_exploded = Agsession::getStaticSumExplodeDureePresence($item->rowid);
+
+                if (count($duree_exploded))
+                {
+                    $plus = ' <i class="fa fa-plus hours-detail"></i>';
+
+
+                    $popcontent = '';
+                    foreach ($duree_exploded as $label => $hours)
+                    {
+                        $popcontent.= dol_escape_htmltag('<br>'.$label.' : '.$hours, 1);
+                    }
+                    $plus = ' <span data-toggle="popover" title="Détail des heures" data-content="'.$popcontent.'"><i class="fa fa-plus hours-detail"></i></span>';
+                    $plus.= '<span style="display:none;">';
+
+                    $plus.='</span>';
+                }
+            }
+            else
+            {
+                $plus = '';
+            }
+            $out.= ' <td class="text-center" data-order="'.$duree_declared.'">'.$duree_declared.$plus.'</td>';
+            $solde = $item->duree_session - $duree_declared;
+            $out.= ' <td class="text-center" data-order="'.$solde.'">'.$solde.'</td>';
+            $statut = Agsession::getStaticLibStatut($item->status, 0);
+            $out.= ' <td class="text-center" data-search="'.$statut.'" data-order="'.$statut.'" >'.$statut.'</td>';
+
+            $out.= ' <td class="text-right" >&nbsp;</td>';
+
+            $out.= '</tr>';
+        }
+        $out.= '</tbody>';
+
+        $out.= '</table>';
+
+        $out.= '<script type="text/javascript" >
+					$(document).ready(function(){
+						$("#session-list").DataTable({
+							stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
+							"language": {
+								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
+							},
+							responsive: true,
+							order: [[ 3, "desc" ]],
+							columnDefs: [{
+								orderable: false,
+								"aTargets": [-1, 2]
+							}, {
+								"bSearchable": false,
+								"aTargets": [-1]
+							}]
+						});
+                        /* on réaffecte event js on mouseenter pour hacker datatable */
+                        $(document).on("mouseenter", \'[data-toggle="popover"]\', function(e){$(this).popover({html : true});});
+					});
+			   </script>';
+    }
+    else {
+        $out.= '<div class="info clearboth text-center" >';
+        $out.=  $langs->trans('EACCESS_Nothing');
+        $out.= '</div>';
+    }
+
+    $out.= '</div></section>';
+
+    return $out;
 }
 
 /**
@@ -1254,6 +1399,64 @@ function validateFormateur($context)
         return false;
     }
     else return true;
+}
+
+
+/**
+ * @param $context
+ * @param bool $strict check if current user is a trainee too
+ * @return bool
+ */
+function validateTrainee($context, $strict = true)
+{
+    global $conf, $user, $langs;
+
+    $errors = array();
+
+    // si l'accés stagiaire n'est pas activé ont rejette
+    if (empty($conf->global->AGF_EA_TRAINEE_ENABLED))
+    {
+        $errors[] = $context->setError($langs->trans('AgfErrorAccessTraineeNotActivated'));
+    }
+
+    // si l'utilisateur n'a pas le droit de lecture externe
+    if(empty($user->rights->agefodd->external_trainee_read))
+    {
+        $errors[] = $context->setError($langs->trans('AgfErrorRightsNotValide'));
+    }
+
+    if($strict && !agf_UserIsTrainee($user)){
+        $errors[] = $context->setError($langs->trans('AgfErrorCurrentUserIsntTrainee'));
+    }
+
+    if (count($errors))
+    {
+        $context->setError($errors);
+        return false;
+    }
+    else return true;
+}
+
+/**
+ * @param $user User
+ * @return bool
+ */
+function agf_UserIsTrainee($user){
+    global $db;
+
+    require_once __DIR__ . '/../class/agefodd_stagiaire.class.php';
+
+    $isTrainee = false;
+
+    if(!empty($user->contactid)){
+        $trainee = new Agefodd_stagiaire($db);
+        if($trainee->fetch_by_contact($user->contactid) > 0)
+        {
+            $isTrainee = true;
+        }
+    }
+
+    return $isTrainee;
 }
 
 function getPageViewAgendaOtherExternalAccess()

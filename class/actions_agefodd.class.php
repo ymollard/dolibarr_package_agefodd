@@ -809,12 +809,18 @@ class ActionsAgefodd
 				$context->setControllerFound();
 				print getMenuAgefoddExternalAccess();
 			}
-			else if ($context->controller == 'agefodd_session_list')
-			{
-				$context->setControllerFound();
-				print getPageViewSessionListExternalAccess();
-
-			}
+            else if ($context->controller == 'agefodd_session_list')
+            {
+                // Trainer sessions list
+                $context->setControllerFound();
+                print getPageViewSessionListExternalAccess();
+            }
+            else if ($context->controller == 'agefodd_trainee_session_list')
+            {
+                // Trainee sessions list
+                $context->setControllerFound();
+                print getPageViewTraineeSessionListExternalAccess();
+            }
 			else if ($context->controller == 'agefodd_session_card' && GETPOST('sessid', 'int') > 0)
 			{
 
@@ -924,13 +930,15 @@ class ActionsAgefodd
 	        'url' => $context->getRootUrl('agefodd'),
 	        'name' => $langs->trans('AgfTraining')
 	    );
-	    
-	    $this->results['agefodd']['children']['agefodd_session_list'] = array(
-	        'id' => 'agefodd',
-	        'rank' => 20,
-	        'url' => $context->getRootUrl('agefodd_session_list'),
-	        'name' => $langs->trans('AgfMenuSess')
-	    );
+
+        if($user->rights->agefodd->external_trainer_read) {
+            $this->results['agefodd']['children']['agefodd_session_list'] = array(
+                'id' => 'agefodd',
+                'rank' => 20,
+                'url' => $context->getRootUrl('agefodd_session_list'),
+                'name' => $langs->trans('AgfMenuSess')
+            );
+        }
 
 	    if($user->rights->agefodd->external_trainer_agenda){
 			$this->results['agefodd']['children']['agefodd_trainer_agenda'] = array(
@@ -940,6 +948,15 @@ class ActionsAgefodd
 				'name' => $langs->trans('AgfMenuAgendaFormateur')
 			);
 		}
+
+        if($user->rights->agefodd->external_trainee_read){
+            $this->results['agefodd']['children']['agefodd_trainee_session_list'] = array(
+                'id' => 'agefodd',
+                'rank' => 30,
+                'url' => $context->getRootUrl('agefodd_trainee_session_list'),
+                'name' => $langs->trans('AgfMenuSessTrainee')
+            );
+        }
 
 	    
 	    return 0;

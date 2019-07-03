@@ -5,6 +5,9 @@ AgfSendCreateCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une 
 AgfSendSaveCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une notification de modification de créneau
 AgfSendNotification=Notifications EMAILS
 
+AgfActivateAccessForTrainees=Activer l'accès externe pour les stagiaires (il est nécessaire d'attribuer des droits utilisateurs au contacts liées aux stagiaires)
+
+
 # AGENDA
 AGFSendEmailAlertToTrainees=Envoyer une alerte email au(x) stagiaire(s)
 AgfEmailInvalid=Email(s) invalide(s)
@@ -21,3 +24,7 @@ AgfEMailTemplateNotExist=Le model d'email n'existe pas ou plus.
 AgfNbEmailSended=%s email(s) envoyé(s)
 AgfEmailSendError=Erreur lors de l'envoi des mails
 AgfNoEmailSended=Aucun email envoyé
+
+# Trainee
+AgfErrorAccessTraineeNotActivated=L'accès externe stagiaire doit être activé pour accéder à cette section
+AgfErrorCurrentUserIsntTrainee=L'utilisateur courant n'est pas un stagiaire

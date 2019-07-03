@@ -238,6 +238,23 @@ if(!empty($conf->externalaccess->enabled))
     print '</td>';
     print '<td></td>';
     print '</tr>';
+
+
+    // Active l'accés stagiaire
+    print '<tr  class="oddeven"><td>' . $langs->trans("AgfActivateAccessForTrainees") . '</td>';
+    print '<td align="left">';
+    if ($conf->use_javascript_ajax) {
+        print ajax_constantonoff('AGF_EA_TRAINEE_ENABLED');
+    } else {
+        $arrval = array (
+            '0' => $langs->trans("No"),
+            '1' => $langs->trans("Yes")
+        );
+        print $form->selectarray("AGF_EA_TRAINEE_ENABLED", $arrval, $conf->global->AGF_EA_TRAINEE_ENABLED);
+    }
+    print '</td>';
+    print '<td></td>';
+    print '</tr>';
 }
 
 print '</table>';

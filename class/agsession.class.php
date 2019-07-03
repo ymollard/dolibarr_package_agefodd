@@ -781,6 +781,7 @@ class Agsession extends CommonObject
 		$sql .= " so.rowid as socid,";
 		$sql .= " so.nom as socname,";
 		$sql .= " s.type_session,";
+        $sql .= " s.ref as sessionref,";
 		$sql .= " s.fk_session_place,";
 		$sql .= " s.dated,";
 		$sql .= " s.datef,";
@@ -820,6 +821,7 @@ class Agsession extends CommonObject
 
 				$line->rowid = $obj->sessid;
 				$line->socid = $obj->socid;
+                $line->sessionref = $obj->sessionref;
 				$line->status = $obj->status;
 				$line->socname = $obj->socname;
 				$line->type_session = $obj->type_session;
