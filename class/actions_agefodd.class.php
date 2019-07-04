@@ -541,12 +541,18 @@ class ActionsAgefodd
 				}
 
 			}
-			elseif($context->controller == 'agefodd_trainer_agenda')
-			{
-				$context->title = $langs->trans('AgfExternalAccess_PageTitle_Agenda');
-				$context->desc = $langs->trans('AgfExternalAccess_PageDesc_Agenda');
-				$context->menu_active[] = 'invoices';
-			}
+            elseif($context->controller == 'agefodd_trainee_session_list' || $context->controller == 'agefodd_trainee_session_card')
+            {
+                $context->title = $langs->trans('AgfExternalAccess_PageTitle_TraineeSessions');
+                $context->desc = $langs->trans('AgfExternalAccess_PageDesc_TraineeSessions');
+                $context->menu_active[] = 'invoices';
+            }
+            elseif($context->controller == 'agefodd_trainer_agenda')
+            {
+                $context->title = $langs->trans('AgfExternalAccess_PageTitle_My');
+                $context->desc = $langs->trans('AgfExternalAccess_PageDesc_Agenda');
+                $context->menu_active[] = 'invoices';
+            }
 			elseif ($context->controller == 'agefodd_event_other')
 			{
                 if($context->action == 'delete')
@@ -809,19 +815,13 @@ class ActionsAgefodd
 				$context->setControllerFound();
 				print getMenuAgefoddExternalAccess();
 			}
-            else if ($context->controller == 'agefodd_session_list')
+            elseif ($context->controller == 'agefodd_session_list')
             {
                 // Trainer sessions list
                 $context->setControllerFound();
                 print getPageViewSessionListExternalAccess();
             }
-            else if ($context->controller == 'agefodd_trainee_session_list')
-            {
-                // Trainee sessions list
-                $context->setControllerFound();
-                print getPageViewTraineeSessionListExternalAccess();
-            }
-			else if ($context->controller == 'agefodd_session_card' && GETPOST('sessid', 'int') > 0)
+			elseif ($context->controller == 'agefodd_session_card' && GETPOST('sessid', 'int') > 0)
 			{
 
 				// CLOSE IFRAME
@@ -845,7 +845,17 @@ class ActionsAgefodd
 				}
 
 			}
-			else if ($context->controller == 'agefodd_session_card_time_slot' && $sessid > 0)
+            elseif ($context->controller == 'agefodd_trainee_session_list')
+            {
+                // Trainee sessions list
+                $context->setControllerFound();
+                print getPageViewTraineeSessionListExternalAccess();
+            }
+            elseif ($context->controller == 'agefodd_trainee_session_card' && GETPOST('sessid', 'int') > 0)
+            {
+                print getPageViewTraineeSessionCardExternalAccess();
+            }
+			elseif ($context->controller == 'agefodd_session_card_time_slot' && $sessid > 0)
 			{
 				$agsession = new Agsession($this->db);
 				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
@@ -883,7 +893,7 @@ class ActionsAgefodd
 					}
 				}
 			}
-			else if ($context->controller == 'agefodd_session_card_time_slot' && empty($sessid))
+			elseif ($context->controller == 'agefodd_session_card_time_slot' && empty($sessid))
 			{
 				print getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess($sessid, $action);
 				$context->setControllerFound();

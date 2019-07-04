@@ -1,5 +1,9 @@
 # IL est temps de séparer les traductions du portail
 
+# PAGES NAMES AND DESC
+AgfExternalAccess_PageTitle_TraineeSessions=Mes formations
+AgfExternalAccess_PageDesc_TraineeSessions=Une vue globale de votre planning de formation
+
 # ADMIN PAGE
 AgfSendCreateCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une notification de création créneau
 AgfSendSaveCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une notification de modification de créneau
@@ -28,3 +32,14 @@ AgfNoEmailSended=Aucun email envoyé
 # Trainee
 AgfErrorAccessTraineeNotActivated=L'accès externe stagiaire doit être activé pour accéder à cette section
 AgfErrorCurrentUserIsntTrainee=L'utilisateur courant n'est pas un stagiaire
+ErrorFechingTrainee=Erreur l'utilisateur courant n'a pas pu être identifié comme un stagiaire lié à une formation
+YourPresence=Votre présence
+AgfTraineePresent=Présent
+AgfTraineeCreaneaux=Créneaux
+AgfTraineePartialyPresent=Partielement présent
+AgfTraineeMissing=Absent
+AgfTraineePlannedAbsence=Absence planifiée
+AgfConsumedTime=Temps consomé
+AgfSessionTime=Temps de la session
+AgfSessionBalanceOfHours=Solde
+AgfTraineeSessionDownload=Télechargements
