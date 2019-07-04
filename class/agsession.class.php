@@ -5404,6 +5404,17 @@ class Agsession extends CommonObject
 		        }
 		    }
 		}
+
+		if(empty($this->TStagiairesSessionSocConfirm) && !empty($this->TStagiairesSessionSoc)) {
+			if (is_array($this->TStagiairesSessionSoc) && count($this->TStagiairesSessionSoc)>0) {
+				foreach($this->TStagiairesSessionSoc as $linesta) {
+					if ($linesta->status_in_session == 2) {
+						$this->TStagiairesSessionSocConfirm[]=$linesta;
+					}
+				}
+			}
+		}
+
 		//Trainee link to the company convention
 		if (!empty($this->contactname)) {
 			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
