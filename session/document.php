@@ -379,6 +379,9 @@ if (($action == 'link') && $user->rights->agefodd->creer) {
 	// creation de la liste de choix
 	$agf_liste = new Agefodd_session_element($db);
 	$result = $agf_liste->fetch_element_per_soc($socid, $type_link);
+	if ($result<0) {
+		setEventMessage($agf_liste->error,'errors');
+	}
 	$num = count($agf_liste->lines);
 	if ($num > 0) {
 		print '<form name="fact_link" action="document.php?action=link_confirm&id=' . $id . '"  method="post">' . "\n";
@@ -425,7 +428,9 @@ if (($action == 'link') && $user->rights->agefodd->creer) {
 	print '</tr>' . "\n";
 
 	print '</div>' . "\n";
+	llxFooter();
 	exit();
+
 }
 
 if (! empty($id)) {
