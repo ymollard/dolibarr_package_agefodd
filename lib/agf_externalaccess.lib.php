@@ -699,7 +699,8 @@ function getAgefoddDownloadTpl($title, $desc = '', $downloadLink = '', $fileType
  */
 function getAgefoddTraineeDocumentPath($agsession, $trainee, $model)
 {
-    global $conf;
+    global $conf, $db;
+    require_once __DIR__ . '/../class/agefodd_session_stagiaire.class.php';
 
     if(empty($trainee->id)){
         return false;
@@ -709,12 +710,14 @@ function getAgefoddTraineeDocumentPath($agsession, $trainee, $model)
     }
 
     // TODO : Apparement je télécharge pas le bon fichier, pas cool
+    $session_stagiaire = new Agefodd_session_stagiaire($db);
+    $resFetchSessStag = $session_stagiaire->fetch_by_trainee($agsession->id, $trainee->id);
 
     $file = false;
-    if ($model == 'attestation_trainee') {
-        $file = $conf->agefodd->dir_output . '/' . 'attestation_trainee_' . $agsession->id.'_'.$trainee->id . '.pdf';
-    } elseif ($model == 'attestationendtraining_trainee') {
-        $file = $conf->agefodd->dir_output . '/' . 'attestationendtraining_trainee_' . $agsession->id.'_'.$trainee->id . '.pdf';
+    if ($model == 'attestation_trainee' && $session_stagiaire->id > 0) {
+        $file = $conf->agefodd->dir_output . '/' . 'attestation_trainee_' . $session_stagiaire->id . '.pdf';
+    } elseif ($model == 'attestationendtraining_trainee' && $session_stagiaire->id > 0) {
+        $file = $conf->agefodd->dir_output . '/' . 'attestationendtraining_trainee_' . $session_stagiaire->id . '.pdf';
     }
 
     return $file;
