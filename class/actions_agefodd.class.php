@@ -779,9 +779,16 @@ class ActionsAgefodd
 
 				exit;
 			}
+            elseif($action === 'downloadAgefoddTrainneeDoc')
+            {
+                downloadAgefoddTrainneeDoc();
+            }
 
 	    }
 	}
+
+
+
 	/**
 	 * Mes nouvelles pages pour l'accés au portail externe
 	 * For external Access module

@@ -610,7 +610,114 @@ function getPageViewTraineeSessionCardExternalAccess()
  */
 function getPageViewTraineeSessionCardExternalAccess_downloads($agsession, $trainee)
 {
-    return '';
+    global $langs;
+
+    $context = Context::getInstance();
+
+    $out = '';
+
+    $downloadUrl = $context->getRootUrl().'script/interface.php?action=downloadAgefoddTrainneeDoc&session='.$agsession->id.'&model=';
+
+
+
+
+    $attestationendtraining_trainee = getAgefoddTraineeDocumentPath($agsession, $trainee, 'attestationendtraining_trainee');
+    $downloadLink = '';
+    if(!empty($attestationendtraining_trainee)){
+        $downloadLink = $downloadUrl.'attestationendtraining_trainee';
+    }
+    $out.= getAgefoddDownloadTpl($langs->trans('AgfAttestationEndTraining'), $langs->trans('AgfDownloadDescAttestationEndTraining'), $downloadLink);
+
+
+    $attestationendtraining_trainee = getAgefoddTraineeDocumentPath($agsession, $trainee, 'attestation_trainee');
+    $downloadLink = '';
+    if(!empty($attestationendtraining_trainee)){
+        $downloadLink = $downloadUrl.'attestationendtraining_trainee';
+    }
+    $out.= getAgefoddDownloadTpl($langs->trans('AgfAttestationTraining'), $langs->trans('AgfDownloadDescAttestationTraining'), $downloadLink);
+
+
+
+    return $out;
+}
+
+function getAgefoddDownloadTpl($title, $desc = '', $downloadLink = '', $fileType = 'pdf', $imageUrl = false)
+{
+    global  $langs;
+    $context = Context::getInstance();
+
+    if(empty($imageUrl)){
+        $imageUrl = $context->getRootUrl().'/img/mime/'.$fileType.'.png';
+    }
+
+
+    $out = '<!-- Left-aligned -->';
+    $out.= '<div class="media">';
+    $out.= '<div class="media-left">';
+    $out.= '<img src="'.$imageUrl.'" class="media-object" style="margin: 5px 5px 5px 0;">';
+    $out.= '</div>';
+
+    if(!empty($downloadLink)){
+        $out.= '<a class="media-body" href="'.$downloadLink.'" target="_blank">';
+    }
+    else{
+        $out.= '<div class="media-body" href="'.$downloadLink.'" target="_blank">';
+    }
+
+
+    $out.= '<strong class="media-heading">'.$title.'</strong>';
+    $out.= '<p>';
+    if(empty($downloadLink)){
+        $out.= ' <small>('.$langs->trans('DocumentFileNotAvailable').')</small>';
+    }
+    elseif(empty($desc)){
+        $out.= ' <small><i class="fa fa-download" aria-hidden="true"></i> '.$langs->trans('Download').'</small>';
+    }
+    else{
+        $out.= ' <small>'.$desc.'</small>';
+    }
+
+    $out.= '</p>';
+
+    if(!empty($downloadLink)){
+        $out.= '</a>';
+    }
+    else{
+        $out.= '</div>';
+    }
+
+    $out.= '</div>';
+
+    return $out;
+}
+
+/**
+ * @param Agefodd_stagiaire $trainee
+ * @param Agsession $agsession
+ * @param $model string
+ * @return bool|int|string
+ */
+function getAgefoddTraineeDocumentPath($agsession, $trainee, $model)
+{
+    global $conf;
+
+    if(empty($trainee->id)){
+        return false;
+    }
+    if(empty($agsession->id)){
+        return false;
+    }
+
+    // TODO : Apparement je télécharge pas le bon fichier, pas cool
+
+    $file = false;
+    if ($model == 'attestation_trainee') {
+        $file = $conf->agefodd->dir_output . '/' . 'attestation_trainee_' . $agsession->id.'_'.$trainee->id . '.pdf';
+    } elseif ($model == 'attestationendtraining_trainee') {
+        $file = $conf->agefodd->dir_output . '/' . 'attestationendtraining_trainee_' . $agsession->id.'_'.$trainee->id . '.pdf';
+    }
+
+    return $file;
 }
 
 
@@ -2453,4 +2560,51 @@ function AGF_colorLighten($hex, $percent)
 {
 	$steps = intval(255 * $percent / 100);
 	return AGF_colorAdjustBrightness($hex, $steps);
+}
+
+
+function downloadAgefoddTrainneeDoc(){
+
+    global $langs, $db, $conf, $user;
+
+    dol_include_once('/agefodd/class/agsession.class.php');
+
+    $filename=false;
+    $context = Context::getInstance();
+    $forceDownload = GETPOST('forcedownload','int');
+    $model = GETPOST('model');
+    $sessionId = GETPOST('session', 'int');
+
+
+    if($conf->global->AGF_EA_TRAINEE_ENABLED
+        && !empty($user->rights->agefodd->external_trainee_read)
+        && validateTrainee($context, true)
+        && !empty($sessionId)
+    )
+    {
+
+        $trainee = new Agefodd_stagiaire($db);
+        if($trainee->fetch_by_contact($user->contactid) > 0)
+        {
+            $modelsAvailables = array(
+                'attestationendtraining_trainee',
+                'attestationtraining_trainee'
+            );
+
+            $agsession = new Agsession($db);
+            if($agsession->fetch($sessionId) > 0)
+            {
+                if(!empty($model) && in_array($model, $modelsAvailables)){
+                    $documentPath = getAgefoddTraineeDocumentPath($agsession, $trainee, $model);
+
+                    if(!empty($documentPath)){
+                        downloadFile($documentPath, $forceDownload);
+                    }
+                    else{
+                        print $langs->trans('FileNotExists');
+                    }
+                }
+            }
+        }
+    }
 }
