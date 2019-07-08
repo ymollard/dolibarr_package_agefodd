@@ -65,6 +65,12 @@ class ActionsAgefodd
 	 $this->resprints = $out;
 	 }*/
 
+	public function updateSession($parameters, &$object, &$action, $hookmanager) {
+	    // hack for fileupload.php
+        global $conf;
+        $conf->agefodd_agsession = $conf->agefodd;
+    }
+
 	public function completeTabsHead($parameters, &$object, &$action, $hookmanager) {
 
 		global $conf, $langs, $bc, $var;
@@ -1081,6 +1087,27 @@ class ActionsAgefodd
 		}
 	}
 
+    /**
+    * @param $parameters
+    * @param $object
+    * @param $action
+    * @param $hookmanager
+    * @return int
+    */
+    public function overrideUploadOptions($parameters, &$object, &$action, $hookmanager)
+    {
+        global $conf;
+
+        $TContext = explode(':', $parameters['context']);
+        if(in_array('fileupload', $TContext)){
+            if($parameters['element'] == 'agefodd_agsession')
+            {
+
+                $parameters['options']['upload_dir'] = $conf->agefodd->dir_output . "/" . $object->id."/";
+                return 0;
+            }
+        }
+    }
 
 	function updateFullcalendarEvents($parameters, &$object, &$action, HookManager $hookmanager)
 	{
