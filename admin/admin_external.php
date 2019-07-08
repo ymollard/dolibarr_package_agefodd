@@ -78,6 +78,14 @@ if ($action == 'setvarother') {
 	$res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
+
+
+    $confKey = 'AGF_NUMBER_OF_DAYS_BEFOR_LOCKING_ABSENCE_REQUESTS';
+    $mailmodel = GETPOST($confKey, 'alpha');
+    $res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
+
     
     // Vue éclatée des heures participant sur la liste des sessions
     $heuresEclateeExclues = serialize(GETPOST('AGF_EA_ECLATE_HEURES_EXCLUES'));
@@ -298,6 +306,21 @@ print '<tr  class="oddeven" ><td>' . $langs->trans("AgfSendSaveCreneauxToTrainee
 print '<td align="left">';
 
 print $formMail->selectarray('AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL', $modelmail_array, $conf->global->AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL, 1);
+
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
+
+print '<tr class="liste_titre" >';
+print '<th colspan="3" class="left">' . $langs->trans("AgfEATraineeTitle") . '</th>';
+print '</tr>';
+
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfNumberOfDaysBeforeLockingAbsenceRequests"). ' '. img_help(1,$langs->trans('AgfNumberOfDaysBeforeLockingAbsenceRequestsHelp')) . '</td>';
+print '<td align="left">';
+
+print '<input type="nSumber" step="1" min="0" name="AGF_NUMBER_OF_DAYS_BEFOR_LOCKING_ABSENCE_REQUESTS" value="'.$conf->global->AGF_NUMBER_OF_DAYS_BEFOR_LOCKING_ABSENCE_REQUESTS.'"  >';
+
 
 print '</td>';
 print '<td></td>';

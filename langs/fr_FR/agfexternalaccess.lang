@@ -10,7 +10,9 @@ AgfSendSaveCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une no
 AgfSendNotification=Notifications EMAILS
 
 AgfActivateAccessForTrainees=Activer l'accès externe pour les stagiaires (il est nécessaire d'attribuer des droits utilisateurs au contacts liées aux stagiaires)
-
+AgfEATraineeTitle=Configurations des stagiaires
+AgfNumberOfDaysBeforeLockingAbsenceRequests=Nombres de jours avant le blocage des requettes d'absences
+AgfNumberOfDaysBeforeLockingAbsenceRequestsHelp=Sur le portail client, les stagiares peuvent marquer sur leurs créneaux qu'ils sont absents
 
 # AGENDA
 AGFSendEmailAlertToTrainees=Envoyer une alerte email au(x) stagiaire(s)
@@ -47,3 +49,5 @@ NotAvailableYet=Actuellement indisponible
 AgfDownloadDescAttestationEndTraining=Télécharger votre attestation
 AgfAttestationTraining=Attestation de formation
 AgfDownloadDescAttestationTraining=Télécharger votre attestation
+AgfSetTrainneePresent=Je serais présent
+AgfSetTrainneeMissing=Je serais absent

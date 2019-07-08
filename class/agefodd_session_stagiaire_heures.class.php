@@ -52,6 +52,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
     public $fk_session;
     public $heures;
     public $mail_sended = 0;
+    public $planned_absence = 0;
 
 	/**
 	 * Constructor
@@ -96,7 +97,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= "heures,";
         $sql .= "fk_user_author,";
         $sql .= "datec,";
-        $sql .= "mail_sended";
+        $sql .= "mail_sended,";
+        $sql .= "planned_absence";
         $sql .= ") VALUES (";
 
         $sql .= " '" . $conf->entity . "',";
@@ -107,6 +109,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= " " . (! isset($this->fk_user_author) ? $user->id : "'" . $this->fk_user_author . "'") . ",";
         $sql .= " '" . (! isset($this->datec) || dol_strlen($this->datec) == 0 ? $this->db->idate(dol_now()) : $this->db->idate($this->datec)) . "', ";
         $sql .= intval($this->mail_sended);
+        $sql .= " " . (! isset($this->planned_absence) ? 'NULL' : "'" . $this->planned_absence . "'") . ",";
 
         $sql .= ")";
         $this->db->begin();
@@ -220,6 +223,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= " heures=" . (isset($this->heures) ? "'" . $this->heures . "'" : 'null') . ",";
         $sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null") . ",";
         $sql .= " mail_sended=" . intval($this->mail_sended);
+        $sql .= " planned_absence=" . (isset($this->planned_absence) ? $this->planned_absence : "null") . ",";
+
 
         $sql .= " WHERE rowid=" . $this->id;
 

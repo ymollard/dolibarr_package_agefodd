@@ -721,6 +721,52 @@ class ActionsAgefodd
 				}
 			}
 
+            if ($context->controller == 'agefodd_trainee_session_card' && in_array($action, array('setplannedAbsence')) && GETPOST('sessid','int') > 0) {
+
+                include_once __DIR__ . '/agefodd_session_stagiaire.class.php';
+                include_once __DIR__ . '/agefodd_stagiaire.class.php';
+
+                $agsession = new Agsession($this->db);
+                $sessid = GETPOST('sessid', 'int');
+                $slotid = GETPOST('slotid', 'int');
+                if ($agsession->fetch($sessid) > 0) // Vérification que la session existe
+                {
+                    // Trainee exist ?
+                    $trainee = new Agefodd_stagiaire($this->db);
+                    if($trainee->fetch_by_contact($user->contactid) > 0)
+                    {
+                        // Trainee is in session ?
+                        $sessionStagiaire = new Agefodd_session_stagiaire($this->db);
+                        if($sessionStagiaire->fetch_by_trainee($agsession->id, $trainee->id) > 0)
+                        {
+                            $sessionstagiaireheures = new Agefoddsessionstagiaireheures($this->db);
+                            if($sessionstagiaireheures->fetch_by_session($agsession->id, $trainee->id, $slotid) > 0)
+                            {
+                                if(GETPOST('plannedAbsence') == 'missing')
+                                {
+                                    $sessionstagiaireheures->planned_absence = 1;
+                                    $sessionstagiaireheures->update($user);
+                                    $context->setEventMessages($langs->trans('AgfSetPlannedAbsenceMissing'));
+                                }
+                                else{
+                                    $sessionstagiaireheures->planned_absence = 0;
+                                    $sessionstagiaireheures->update($user);
+                                    $context->setEventMessages($langs->trans('AgfSetPlannedAbsencePresent'));
+                                }
+                            }else{
+                                $context->setEventMessages($langs->trans('AgfSessionStagiaireHeuresNotFound'), 'errors');
+                            }
+                        }else{
+                            $context->setEventMessages($langs->trans('AgfContactNotInSession'), 'errors');
+                        }
+                    }else{
+                        $context->setEventMessages($langs->trans('AgfTraineeNotExistOrUserNoTrainee'), 'errors');
+                    }
+                }else{
+                    $context->setEventMessages($langs->trans('AgfSessionNotExist'), 'errors');
+                }
+            }
+
 			return 1;
 		}
 

@@ -898,7 +898,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
  */
 function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$trainee, &$agf_calendrier)
 {
-    global $langs, $user, $hookmanager, $db;
+    global $langs, $hookmanager, $db, $conf;
 
     $context = Context::getInstance();
 
@@ -927,7 +927,6 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
     $out.= $hookmanager->resPrint;
 
 
-    $out.= ' <th class="text-center" ></th>';
     $out.= '</tr>';
 
     $out.= '<tbody>';
@@ -975,19 +974,46 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
             && $item->heuref < time()
         )
         {
+            $out.= '<div class="btn-group">';
+
             if(!empty($plannedAbsence)){
-                $out.= '<span class="badge badge-info" ><i class="fa fa-calendar-times-o" aria-hidden="true"></i> '.$langs->trans('AgfTraineePlannedAbsence').'</span>';
+                $class= 'btn btn-info btn-xs';
+                $out.= '<button type="button" disabled class="btn btn-info btn-xs" ><i class="fa fa-calendar-times-o" aria-hidden="true"></i> '.$langs->trans('AgfTraineePlannedAbsence').'</span>';
             }
             elseif(empty($heures) && empty($plannedAbsence)){
-                $out.= '<span class="badge badge-danger" ><i class="fa fa-user-times" aria-hidden="true"></i> '.$langs->trans('AgfTraineeMissing').'</span>';
+                $class= 'btn btn-danger btn-xs';
+                $out.= '<button type="button" disabled class="btn btn-danger btn-xs" ><i class="fa fa-user-times" aria-hidden="true"></i> '.$langs->trans('AgfTraineeMissing').'</span>';
             }
             elseif($heures < $duree ){
-                $out.= '<span class="badge badge-warning" ><i class="fa fa-user-times"></i> '.$langs->trans('AgfTraineePartialyPresent').' : '.$heuresLabel.'</span>';
+                $class= 'btn btn-warning btn-xs';
+                $out.= '<button type="button" disabled class="btn btn-warning btn-xs" ><i class="fa fa-user-times"></i> '.$langs->trans('AgfTraineePartialyPresent').' : '.$heuresLabel.'</span>';
             }
             else{
-                $out.= '<span class="badge badge-success" ><i class="fa fa-check"></i> '.$langs->trans('AgfTraineePresent').'</span>';
+                $class= 'btn btn-success btn-xs';
+                $out.= '<button type="button" disabled class="btn btn-success btn-xs" ><i class="fa fa-check"></i> '.$langs->trans('AgfTraineePresent').'</span>';
             }
+
+            if(!empty($conf->global->AGF_NUMBER_OF_DAYS_BEFOR_LOCKING_ABSENCE_REQUESTS)
+                //&& $item->heured > time() - intval($conf->global->AGF_NUMBER_OF_DAYS_BEFOR_LOCKING_ABSENCE_REQUESTS) * 86400
+            )
+            {
+                $out.= '<button type="button" class="'.$class.' dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>';
+                $out.= '<ul class="dropdown-menu">';
+                $out.= '<li>';
+                $url = $context->getRootUrl('agefodd_trainee_session_card').'&sessid='.$agsession->id.'&slotid='.$item->id;
+                if($plannedAbsence){
+                    $out.= '<a href="'.$url.'&action=setplannedAbsence&plannedAbsence=present" >'.$langs->trans('AgfSetTrainneePresent').'</a>';
+                }
+                else{
+                    $out.= '<a href="'.$url.'&action=setplannedAbsence&plannedAbsence=missing" >'.$langs->trans('AgfSetTrainneeMissing').'</a>';
+                }
+                $out.= '</li>';
+            }
+            $out.='</ul>';
+            $out.= '</div>';
+
         }
+
 
 
         $out.='</td>';
@@ -1002,10 +1028,7 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
         $out.= $hookmanager->resPrint;
 
 
-        // column for buttons
-        $out.= '<td class="text-center" >';
 
-        $out.= '</td>';
 
         $out.= '</tr>';
 
