@@ -8,6 +8,7 @@ AgfExternalAccess_PageDesc_TraineeSessions=Une vue globale de votre planning de 
 AgfSendCreateCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une notification de création créneau
 AgfSendSaveCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une notification de modification de créneau
 AgfSendNotification=Notifications EMAILS
+AgfSendTraineeAbsenceMailModel=Modèle email utilisé pour envoyer une notification de modification d'absence de la part du stagiaire
 
 AgfActivateAccessForTrainees=Activer l'accès externe pour les stagiaires (il est nécessaire d'attribuer des droits utilisateurs au contacts liées aux stagiaires)
 AgfEATraineeTitle=Configurations des stagiaires
@@ -30,6 +31,8 @@ AgfEMailTemplateNotExist=Le model d'email n'existe pas ou plus.
 AgfNbEmailSended=%s email(s) envoyé(s)
 AgfEmailSendError=Erreur lors de l'envoi des mails
 AgfNoEmailSended=Aucun email envoyé
+AgfFetchTrainersError=Erreur lors de la récupération des formateurs
+AgfNoTrainerFoundCallYourContact=Aucun formateur trouvé, contactez directement votre "interlocuteur formation"
 
 # Trainee
 AgfErrorAccessTraineeNotActivated=L'accès externe stagiaire doit être activé pour accéder à cette section
@@ -49,5 +52,15 @@ NotAvailableYet=Actuellement indisponible
 AgfDownloadDescAttestationEndTraining=Télécharger votre attestation
 AgfAttestationTraining=Attestation de formation
 AgfDownloadDescAttestationTraining=Télécharger votre attestation
-AgfSetTrainneePresent=Je serais présent
-AgfSetTrainneeMissing=Je serais absent
+AgfSetTrainneePresent=Je serai présent
+AgfSetTrainneeMissing=Je serai absent
+AgfSetPlannedAbsenceMissing=Absence planifiée
+AgfSetPlannedAbsenceError=Modification en erreur
+AgfSetPlannedAbsencePresent=Présence planifiée
+AgfSessionStagiaireHeuresNotFound=le créneau n'a pas était trouvé
+AgfContactNotInSession=Vous ne faites pas partie de la formation
+AgfTraineeNotExistOrUserNoTrainee=Vous n'êtes pas un stagiaire ou votre compte utilisateur à mal était créé
+AgfSessionNotExist=La session de formation n'existe pas
+AgfSetPlannedAbsenceErrorNotAllowed=Vous n'êtes pas ou plus autorisé à faire cette modification
+AgfSessionCreneauNotFound=Créneau non trouvé
+AgfTraineePlanedPresent=sera présent

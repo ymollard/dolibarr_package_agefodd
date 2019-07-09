@@ -147,10 +147,11 @@ class Agefoddcalendrier extends CommonObject {
 		$sql .= " t.heured,";
 		$sql .= " t.heuref";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_calendrier as t";
-		$sql .= " WHERE t.rowid = " . $id;
+		$sql .= " WHERE t.rowid = " . intval($id);
 		$sql .= " AND t.entity IN (" . getEntity('agefodd'/*'agsession'*/) . ")";
 
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
+		var_dump($sql);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -162,6 +163,9 @@ class Agefoddcalendrier extends CommonObject {
 				$this->heured = $obj->heured;
 				$this->heuref = $obj->heuref;
 			}
+            else {
+                return 0;
+            }
 			$this->db->free($resql);
 
 			return 1;

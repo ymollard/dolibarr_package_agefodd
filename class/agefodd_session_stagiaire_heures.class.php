@@ -108,8 +108,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= " " . (! isset($this->heures) || dol_strlen($this->heures) == 0 ? 'NULL' : "'" . $this->db->escape($this->heures) . "'") . ",";
         $sql .= " " . (! isset($this->fk_user_author) ? $user->id : "'" . $this->fk_user_author . "'") . ",";
         $sql .= " '" . (! isset($this->datec) || dol_strlen($this->datec) == 0 ? $this->db->idate(dol_now()) : $this->db->idate($this->datec)) . "', ";
-        $sql .= intval($this->mail_sended);
-        $sql .= " " . (! isset($this->planned_absence) ? 'NULL' : "'" . $this->planned_absence . "'") . ",";
+        $sql .= intval($this->mail_sended) . ",";
+        $sql .= " " . (! isset($this->planned_absence) ? 'NULL' : "'" . $this->planned_absence . "'");
 
         $sql .= ")";
         $this->db->begin();
@@ -222,8 +222,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= " fk_calendrier=" . (isset($this->fk_calendrier) ? $this->fk_calendrier : "null") . ",";
         $sql .= " heures=" . (isset($this->heures) ? "'" . $this->heures . "'" : 'null') . ",";
         $sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null") . ",";
-        $sql .= " mail_sended=" . intval($this->mail_sended);
-        $sql .= " planned_absence=" . (isset($this->planned_absence) ? $this->planned_absence : "null") . ",";
+        $sql .= " mail_sended=" . intval($this->mail_sended) . ",";
+        $sql .= " planned_absence=" . (isset($this->planned_absence) ? $this->planned_absence : "null");
 
 
         $sql .= " WHERE rowid=" . $this->id;
@@ -283,7 +283,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $sql .= " t.datec,";
 	    $sql .= " t.tms,";
 	    $sql .= " CONCAT(a.nom,' ', a.prenom) as nom_stagiaire, ";
-	    $sql .= " t.mail_sended";
+	    $sql .= " t.mail_sended, ";
+	    $sql .= " t.planned_absence";
 	    $sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element . " as t";
 	    $sql .= " LEFT JOIN " .MAIN_DB_PREFIX . "agefodd_stagiaire as a ON a.rowid = t.fk_stagiaire";
 	    $sql .= " WHERE t.rowid = " . $id;
@@ -300,6 +301,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	            $this->fk_session = $obj->fk_session;
 	            $this->fk_calendrier = $obj->fk_calendrier;
 	            $this->heures= $obj->heures;
+	            $this->planned_absence= $obj->planned_absence;
 	            $this->fk_user_author = $obj->fk_user_author;
 	            $this->datec = $this->db->jdate($obj->datec);
 	            $this->tms = $this->db->jdate($obj->tms);

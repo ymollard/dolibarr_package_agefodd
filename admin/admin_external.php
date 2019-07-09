@@ -73,14 +73,19 @@ if ($action == 'setvarother') {
 	if (! $res > 0)
 		$error ++;
 
-	$confKey = 'AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL';
-	$mailmodel = GETPOST($confKey, 'alpha');
-	$res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+    $confKey = 'AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL';
+    $mailmodel = GETPOST($confKey, 'alpha');
+    $res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
 
+    $confKey = 'AGF_SEND_TRAINEE_ABSENCE_ALERT_MAILMODEL';
+    $mailmodel = GETPOST($confKey, 'alpha');
+    $res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
 
-    $confKey = 'AGF_NUMBER_OF_DAYS_BEFOR_LOCKING_ABSENCE_REQUESTS';
+    $confKey = 'AGF_NUMBER_OF_DAYS_BEFORE_LOCKING_ABSENCE_REQUESTS';
     $mailmodel = GETPOST($confKey, 'alpha');
     $res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
     if (! $res > 0)
@@ -319,8 +324,18 @@ print '</tr>';
 print '<tr  class="oddeven"><td>' . $langs->trans("AgfNumberOfDaysBeforeLockingAbsenceRequests"). ' '. img_help(1,$langs->trans('AgfNumberOfDaysBeforeLockingAbsenceRequestsHelp')) . '</td>';
 print '<td align="left">';
 
-print '<input type="nSumber" step="1" min="0" name="AGF_NUMBER_OF_DAYS_BEFOR_LOCKING_ABSENCE_REQUESTS" value="'.$conf->global->AGF_NUMBER_OF_DAYS_BEFOR_LOCKING_ABSENCE_REQUESTS.'"  >';
+print '<input type="nSumber" step="1" min="0" name="AGF_NUMBER_OF_DAYS_BEFORE_LOCKING_ABSENCE_REQUESTS" value="'.$conf->global->AGF_NUMBER_OF_DAYS_BEFORE_LOCKING_ABSENCE_REQUESTS.'"  >';
 
+
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
+
+print '<tr  class="oddeven" ><td>' . $langs->trans("AgfSendTraineeAbsenceMailModel") . '<br/><em><small>(' . $langs->trans('AgfMailToSendTrainee').')</small></em></td>';
+print '<td align="left">';
+
+print $formMail->selectarray('AGF_SEND_TRAINEE_ABSENCE_ALERT_MAILMODEL', $modelmail_array, $conf->global->AGF_SEND_TRAINEE_ABSENCE_ALERT_MAILMODEL, 1);
 
 print '</td>';
 print '<td></td>';

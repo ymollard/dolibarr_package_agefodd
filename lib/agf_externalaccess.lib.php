@@ -902,6 +902,8 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
 
     $context = Context::getInstance();
 
+    $slotid = GETPOST('slotid', 'int');
+
     if (!validateTrainee($context)) return '';
 
     $out = '<!-- getPageViewTraineeSessionCardExternalAccess_creneaux -->';
@@ -932,7 +934,14 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
     $out.= '<tbody>';
     foreach ($agf_calendrier->lines as &$item)
     {
-        $out.= '<tr>';
+
+        $rowclass = '';
+        if(intval($item->id) == intval($slotid)){
+            $rowclass = 'table-info';
+        }
+
+        $out.= '<tr id="slotid'.$item->id.'" class="'.$rowclass.'" >';
+
         $date_session = dol_print_date($item->date_session, '%d/%m/%Y');
         $out.= ' <td data-order="'.$item->date_session.'" data-search="'.$date_session.'" >'.$date_session.'</td>';
 
@@ -954,7 +963,7 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
             foreach ($stagiaireheures->lines as $line){
                 if($line->fk_stagiaire == $trainee->id){
                     $heures = doubleval($line->heures);
-                    $plannedAbsence = $line->planned_absence;
+                    $plannedAbsence = intval($line->planned_absence);
                 }
             }
         }
@@ -971,7 +980,6 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
         if (($item->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED
             || $item->status == Agefoddsessionformateurcalendrier::STATUS_FINISH
             )
-            && $item->heuref < time()
         )
         {
             $out.= '<div class="btn-group">';
@@ -980,32 +988,34 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
                 $class= 'btn btn-info btn-xs';
                 $out.= '<button type="button" disabled class="btn btn-info btn-xs" ><i class="fa fa-calendar-times-o" aria-hidden="true"></i> '.$langs->trans('AgfTraineePlannedAbsence').'</span>';
             }
-            elseif(empty($heures) && empty($plannedAbsence)){
+            elseif(empty($heures) && empty($plannedAbsence) && $item->heuref < time()){
                 $class= 'btn btn-danger btn-xs';
                 $out.= '<button type="button" disabled class="btn btn-danger btn-xs" ><i class="fa fa-user-times" aria-hidden="true"></i> '.$langs->trans('AgfTraineeMissing').'</span>';
             }
-            elseif($heures < $duree ){
+            elseif($heures < $duree && $item->heuref < time()){
                 $class= 'btn btn-warning btn-xs';
                 $out.= '<button type="button" disabled class="btn btn-warning btn-xs" ><i class="fa fa-user-times"></i> '.$langs->trans('AgfTraineePartialyPresent').' : '.$heuresLabel.'</span>';
             }
-            else{
+            elseif($item->heuref < time()){
                 $class= 'btn btn-success btn-xs';
                 $out.= '<button type="button" disabled class="btn btn-success btn-xs" ><i class="fa fa-check"></i> '.$langs->trans('AgfTraineePresent').'</span>';
             }
+            else{
+                $out.= '<button type="button" disabled class="btn btn-primary btn-xs" ><i class="fa fa-calendar-check-o"></i> '.$langs->trans('AgfTraineePlanedPresent').'</span>';
+                $class= 'btn btn-primary btn-xs';
+            }
 
-            if(!empty($conf->global->AGF_NUMBER_OF_DAYS_BEFOR_LOCKING_ABSENCE_REQUESTS)
-                //&& $item->heured > time() - intval($conf->global->AGF_NUMBER_OF_DAYS_BEFOR_LOCKING_ABSENCE_REQUESTS) * 86400
-            )
+            if(traineeCanChangeAbsenceStatus($item->heured))
             {
                 $out.= '<button type="button" class="'.$class.' dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>';
                 $out.= '<ul class="dropdown-menu">';
                 $out.= '<li>';
-                $url = $context->getRootUrl('agefodd_trainee_session_card').'&sessid='.$agsession->id.'&slotid='.$item->id;
-                if($plannedAbsence){
-                    $out.= '<a href="'.$url.'&action=setplannedAbsence&plannedAbsence=present" >'.$langs->trans('AgfSetTrainneePresent').'</a>';
+                $url = $context->getRootUrl('agefodd_trainee_session_card').'&sessid='.$agsession->id.'&slotid='.$item->id.'&save_lastsearch_values=1';
+                if(!empty($plannedAbsence)){
+                    $out.= '<a href="'.$url.'&action=setplannedAbsence&plannedAbsence=present#slotid'.$item->id.'" >'.$langs->trans('AgfSetTrainneePresent').'</a>';
                 }
                 else{
-                    $out.= '<a href="'.$url.'&action=setplannedAbsence&plannedAbsence=missing" >'.$langs->trans('AgfSetTrainneeMissing').'</a>';
+                    $out.= '<a href="'.$url.'&action=setplannedAbsence&plannedAbsence=missing#slotid'.$item->id.'" >'.$langs->trans('AgfSetTrainneeMissing').'</a>';
                 }
                 $out.= '</li>';
             }
@@ -1052,6 +1062,7 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
 							"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 						},
 						responsive: true,
+						pageLength: 100,
 						order: [[ 1, "desc" ]],
 						columnDefs: [{
 							orderable: false,
@@ -2632,5 +2643,144 @@ function downloadAgefoddTrainneeDoc(){
                 }
             }
         }
+    }
+}
+
+/**
+ * Send email alert to trainer when a trainee change absence status
+ * @param $user User
+ * @param $agsession Agsession
+ * @param $trainee Agefodd_stagiaire
+ * @param $sessionStagiaire Agefodd_session_stagiaire
+ * @param $calendrier Agefoddcalendrier
+ * @param $sessionstagiaireheures Agefoddsessionstagiaireheures
+ */
+function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionStagiaire, $calendrier, $sessionstagiaireheures, &$errorsMsg = array())
+{
+    global $conf, $langs, $user, $db;
+
+    $nbMailSend = 0;
+    $error = 0;
+
+    // Check conf of module
+    if(empty($conf->global->AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL) || empty($conf->global->AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL)) {
+        $errorsMsg[]= $langs->trans('TemplateMailNotExist');
+        return -1;
+    }
+
+    $fk_mailModel= $conf->global->AGF_SEND_TRAINEE_ABSENCE_ALERT_MAILMODEL;
+
+    require_once (DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
+
+
+    if ($trainee->id <= 0){
+        $errorsMsg[] = $langs->trans('AgfWarningStagiaireNoId');
+        return -1;
+    }
+
+    $sessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
+    $result = $sessionstagiaireheures->fetch_by_session($agsession->id, $trainee->id, $calendrier->id);
+    if ($result < 0){
+        $errorsMsg[] = $langs->trans('AgfErrorFetchingAgefoddsessionstagiaireheures');
+        $error++;
+    }else {
+
+        $mailTpl = agf_getMailTemplate($fk_mailModel);
+        if($mailTpl < 1){
+            $errorsMsg[] = $langs->trans('AgfEMailTemplateNotExist');
+            return -2;
+        }
+
+        if($agsession->fetchTrainers() < 1)
+        {
+            $errorsMsg[] = $langs->trans('AgfFetchTrainersError');
+            return -3;
+        }
+
+        if(empty($agsession->TTrainer)){
+            $errorsMsg[] = $langs->trans('AgfNoTrainerFoundCallYourContact');
+            return 0;
+        }
+
+
+        // PREPARE EMAIL
+        $from = $user->email;
+
+        if (! isset($arrayoffamiliestoexclude)) $arrayoffamiliestoexclude=null;
+
+        // Make substitution in email content
+        $substitutionarray = getCommonSubstitutionArray($langs, 0, $arrayoffamiliestoexclude, $agsession);
+
+        complete_substitutions_array($substitutionarray, $langs, $agsession);
+
+        $thisSubstitutionarray = $substitutionarray;
+
+        $thisSubstitutionarray['__agfsendall_nom__'] = $trainee->nom;
+        $thisSubstitutionarray['__agfsendall_prenom__'] = $trainee->prenom;
+        $thisSubstitutionarray['__agfsendall_civilite__'] = $trainee->civilite;
+        $thisSubstitutionarray['__agfsendall_socname__'] = $trainee->socname;
+        $thisSubstitutionarray['__agfsendall_email__'] = $trainee->email;
+
+
+
+        $thisSubstitutionarray['__agfcreneau_heured__'] = date('H:i', $calendrier->heured);
+        $thisSubstitutionarray['__agfcreneau_heuref__'] = date('H:i', $calendrier->heured);
+        $thisSubstitutionarray['__agfcreneau_datesession__'] = dol_print_date($calendrier->date_session);
+        $thisSubstitutionarray['__agfcreneau_status__'] = $calendrier->getLibStatut();
+
+
+        // Tableau des substitutions
+        if (! empty($agsession->intitule_custo)) {
+            $thisSubstitutionarray['__FORMINTITULE__'] = $agsession->intitule_custo;
+        } else {
+            $thisSubstitutionarray['__FORMINTITULE__'] = $agsession->formintitule;
+        }
+
+        $date_conv = $agsession->libSessionDate('daytext');
+        $thisSubstitutionarray['__FORMDATESESSION__'] = $date_conv;
+
+        $sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
+        $sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
+
+        foreach ($agsession->TTrainer as $trainer){
+            $to = $trainer->email;
+
+            if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+                // is not a valid email address
+                $toMsg = empty($to)?$langs->trans('AgfMailEmpty'):$to;
+                $errorsMsg[] = $langs->trans('AgfInvalidAddressEmail', $toMsg);
+                $error++;
+            }
+
+            // hidden conf
+            if(!empty($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO) && filter_var($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO, FILTER_VALIDATE_EMAIL)){
+                $to = $conf->global->AGF_CRENEAU_FORCE_EMAIL_TO;
+            }
+
+            $cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "",  0, 1, $from);
+
+            if($cMailFile->sendfile()){
+                $nbMailSend++;
+            }
+            else{
+                $errorsMsg[] =  $cMailFile->error .' : '.$to;
+                $error++;
+            }
+        }
+    }
+
+
+    return $nbMailSend;
+}
+
+function traineeCanChangeAbsenceStatus($heured)
+{
+    global $conf;
+
+    if(!empty($conf->global->AGF_NUMBER_OF_DAYS_BEFORE_LOCKING_ABSENCE_REQUESTS)){
+        return (intval($heured) - intval($conf->global->AGF_NUMBER_OF_DAYS_BEFORE_LOCKING_ABSENCE_REQUESTS) * 86400) > time();
+    }
+    else{
+        return false;
     }
 }
