@@ -2728,6 +2728,14 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
         $thisSubstitutionarray['__agfcreneau_datesession__'] = dol_print_date($calendrier->date_session);
         $thisSubstitutionarray['__agfcreneau_status__'] = $calendrier->getLibStatut();
 
+        if(empty($sessionstagiaireheures->planned_absence)){
+            $thisSubstitutionarray['__agfcreneau_planned_absence__'] = $langs->trans('AgfTraineeMailPlanedPresentStatus');
+        }
+        else{
+            $thisSubstitutionarray['__agfcreneau_planned_absence__'] = $langs->trans('AgfTraineeMailPlanedMissingStatus');
+        }
+
+        $sessionstagiaireheures->planned_absence = 0;
 
         // Tableau des substitutions
         if (! empty($agsession->intitule_custo)) {

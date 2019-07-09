@@ -34,6 +34,10 @@ AgfNoEmailSended=Aucun email envoyé
 AgfFetchTrainersError=Erreur lors de la récupération des formateurs
 AgfNoTrainerFoundCallYourContact=Aucun formateur trouvé, contactez directement votre "interlocuteur formation"
 
+# in Email messages
+AgfTraineeMailPlanedPresentStatus=sera présent
+AgfTraineeMailPlanedMissingStatus=sera absent
+
 # Trainee
 AgfErrorAccessTraineeNotActivated=L'accès externe stagiaire doit être activé pour accéder à cette section
 AgfErrorCurrentUserIsntTrainee=L'utilisateur courant n'est pas un stagiaire
