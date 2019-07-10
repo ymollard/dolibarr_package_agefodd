@@ -481,6 +481,10 @@ foreach ( $search_array_options as $key => $val ) {
 	)) || $crit != '0') && (! in_array($typ, array(
 			'link'
 	)) || $crit != '-1')) {
+
+	    if(is_array($crit)){
+            $crit = implode(',',$crit);
+        }
 		$filter['ef.' . $tmpkey] = natural_search('ef.' . $tmpkey, $crit, $mode_search);
 		$option .= '&search_options_' . $tmpkey . '=' . $crit;
 	}
