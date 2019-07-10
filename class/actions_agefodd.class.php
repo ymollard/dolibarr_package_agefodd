@@ -643,6 +643,13 @@ class ActionsAgefodd
                     $event->percentage = -1;
 					$event->type_code = $event->code ;
 					$event->label = $typeTitle;
+
+
+					if($event->type_code == 'AC_AGF_NOTAV' && $trainer->id > 0)
+                    {
+                        $event->label.= ' : '.$trainer->firstname.' '.$trainer->name;
+                    }
+
 					$event->note = GETPOST('note', 'nohtml');
 
 					// Get start date
@@ -869,12 +876,15 @@ class ActionsAgefodd
 				$teacher = new Agefodd_teacher($db);
 				$teacher->fetchByUser($user);
 
-				if($agendaType == 'session'){
+				if($agendaType == 'session' && $teacher->id > 0){
 					print getAgefoddJsonAgendaFormateur($teacher->id, $range_start->getTimestamp(), $range_end->getTimestamp());
 				}
-				elseif($agendaType == 'notAvailableRange'){
+				elseif($agendaType == 'notAvailableRange' && $teacher->id > 0){
 					print getAgefoddJsonAgendaFormateurNotAvailable($teacher->id, $range_start->getTimestamp(), $range_end->getTimestamp());
 				}
+				else{
+				    print json_encode(array());
+                }
 
 
 
