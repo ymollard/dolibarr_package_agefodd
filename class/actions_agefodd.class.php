@@ -779,13 +779,15 @@ class ActionsAgefodd
                                         $successMsg = $langs->trans('AgfSetPlannedAbsencePresent');
                                     }
 
+                                    // on re-crédite les heures disponibles au participants
+                                    $sessionstagiaireheures->heures = 0;
+
                                     if($needCreate){
 
                                         $sessionstagiaireheures->entity = $conf->entity;
                                         $sessionstagiaireheures->fk_stagiaire = $trainee->id;
                                         $sessionstagiaireheures->fk_session = $agsession->id;
                                         $sessionstagiaireheures->fk_calendrier = $slotid;
-                                        $sessionstagiaireheures->heures = 0;
                                         $sessionstagiaireheures->fk_user_author = $user->id;
                                         $sessionstagiaireheures->mail_sended = 0;
 
