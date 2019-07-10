@@ -2788,8 +2788,8 @@ function traineeCanChangeAbsenceStatus($heured)
 {
     global $conf;
 
-    if(!empty($conf->global->AGF_NUMBER_OF_DAYS_BEFORE_LOCKING_ABSENCE_REQUESTS)){
-        return (intval($heured) - intval($conf->global->AGF_NUMBER_OF_DAYS_BEFORE_LOCKING_ABSENCE_REQUESTS) * 86400) > time();
+    if(!empty($conf->global->AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS)){
+        return (intval($heured) - intval($conf->global->AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS) * 3600) > time();
     }
     else{
         return false;

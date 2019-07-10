@@ -85,7 +85,7 @@ if ($action == 'setvarother') {
     if (! $res > 0)
         $error ++;
 
-    $confKey = 'AGF_NUMBER_OF_DAYS_BEFORE_LOCKING_ABSENCE_REQUESTS';
+    $confKey = 'AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS';
     $mailmodel = GETPOST($confKey, 'alpha');
     $res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
     if (! $res > 0)
@@ -321,10 +321,10 @@ print '<tr class="liste_titre" >';
 print '<th colspan="3" class="left">' . $langs->trans("AgfEATraineeTitle") . '</th>';
 print '</tr>';
 
-print '<tr  class="oddeven"><td>' . $langs->trans("AgfNumberOfDaysBeforeLockingAbsenceRequests"). ' '. img_help(1,$langs->trans('AgfNumberOfDaysBeforeLockingAbsenceRequestsHelp')) . '</td>';
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfNumberOfHoursBeforeLockingAbsenceRequests"). ' '. img_help(1,$langs->trans('AgfNumberOfHoursBeforeLockingAbsenceRequestsHelp')) . '</td>';
 print '<td align="left">';
 
-print '<input type="nSumber" step="1" min="0" name="AGF_NUMBER_OF_DAYS_BEFORE_LOCKING_ABSENCE_REQUESTS" value="'.$conf->global->AGF_NUMBER_OF_DAYS_BEFORE_LOCKING_ABSENCE_REQUESTS.'"  >';
+print '<input type="nSumber" step="1" min="0" name="AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS" value="'.$conf->global->AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS.'"  >';
 
 
 print '</td>';
