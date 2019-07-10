@@ -34,6 +34,10 @@ AgfNoEmailSended=Aucun email envoyé
 AgfFetchTrainersError=Erreur lors de la récupération des formateurs
 AgfNoTrainerFoundCallYourContact=Aucun formateur trouvé, contactez directement votre "interlocuteur formation"
 
+
+# Creneaux
+AgfCantDeleteBilledElement=Un créneau facturé ne peut pas être supprimé
+
 # in Email messages
 AgfTraineeMailPlanedPresentStatus=sera présent
 AgfTraineeMailPlanedMissingStatus=sera absent
