@@ -340,6 +340,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 
 		$total_line = count($this->lines);
 
+        $requestername = false;
 		if (count($this->lines) > 0) {
 			foreach ( $this->lines as $line ) {
 
@@ -969,7 +970,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 													$is_not_frais = false;
 												}
 											} else {
-												$this->error = "Error " . $this->db->lasterror();
+												$this->error = '#'.__LINE__ . " Error " . $this->db->lasterror();
 												dol_syslog(get_class($this) . "::write_file " . $this->error, LOG_ERR);
 												return - 1;
 											}
@@ -1167,8 +1168,12 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 										$is_not_frais = true;
 										if (! empty($propal_lines->fk_product)) {
 											$sql = " SELECT prod.rowid FROM " . MAIN_DB_PREFIX . "product as prod";
-											$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "categorie_product as catprod ON prod.rowid=catprod.fk_product AND catprod.fk_categorie IN (".$conf->global->AGF_CAT_PRODUCT_CHARGES.")";
-											$sql .= " WHERE  prod.rowid=" . $propal_lines->fk_product;
+											$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "categorie_product as catprod ON prod.rowid=catprod.fk_product ";
+                                            if(!empty($conf->global->AGF_CAT_PRODUCT_CHARGES) && !ctype_space($conf->global->AGF_CAT_PRODUCT_CHARGES))
+                                            {
+                                                $sql .= " AND catprod.fk_categorie IN (".$conf->global->AGF_CAT_PRODUCT_CHARGES.") ";
+                                            }
+											$sql .= " WHERE prod.rowid=" . $propal_lines->fk_product;
 											dol_syslog(get_class($this) . "::write_file sql=" . $sql, LOG_DEBUG);
 											$result = $this->db->query($sql);
 											if ($result) {
@@ -1176,7 +1181,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
 													$is_not_frais = false;
 												}
 											} else {
-												$this->error = "Error " . $this->db->lasterror();
+												$this->error = '#'.__LINE__ . " Error " . $this->db->lasterror();
 												dol_syslog(get_class($this) . "::write_file " . $this->error, LOG_ERR);
 												return - 1;
 											}
@@ -1355,7 +1360,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer {
     									$is_not_frais = false;
     								}
     							} else {
-    								$this->error = "Error " . $this->db->lasterror();
+    								$this->error = '#'.__LINE__ . " Error " . $this->db->lasterror();
     								dol_syslog(get_class($this) . "::write_file " . $this->error, LOG_ERR);
     								return - 1;
     							}
