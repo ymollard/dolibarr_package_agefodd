@@ -24,3 +24,4 @@ ValidationDate=Date de validation réponses
 AgfToStartLinkYourFirstQuestionnaire=Pour commencer vous devez lier un questionnaire à cette session
 agfQuestAnswerShort=Réponses
 agfQuestAnswerShortHelp=Afficher la liste des invitations et réponses
+AgfSessionQuestionaire=Evaluation de la session
