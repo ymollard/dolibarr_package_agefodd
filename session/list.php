@@ -871,6 +871,7 @@ if ($resql != - 1) {
 
 	// Extra fields
 	if (file_exists(DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php')) {
+        $extrafieldsobjectkey = 'agefodd_session';
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php';
 	} else {
 		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
