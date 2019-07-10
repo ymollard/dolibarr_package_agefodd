@@ -268,14 +268,27 @@ class ActionsAgefodd
 								}
 								else
 								{
+								    $billed = 0;
 									$agf_calendrier = $TCalendrier[0];
 									if (!empty($agf_calendrier)){
-									    $r=$agf_calendrier->delete($user);
-									    if ($r < 0) $error++;
+
+                                        $billed = $agf_calendrier->billed; // pour un test un peu plus loin
+
+									    if(empty($agf_calendrier->billed))
+                                        {
+                                            $r=$agf_calendrier->delete($user);
+                                            if ($r < 0) $error++;
+                                        }
+
 									}
 
-									$r=$agf_calendrier_formateur->delete($user);
-									if ($r < 0) $error++;
+									if(empty($billed)){
+                                        $r=$agf_calendrier_formateur->delete($user);
+                                        if ($r < 0) $error++;
+                                    }else{
+									    $context->setEventMessages($langs->trans('AgfCantDeleteBilledElement'), 'errors');
+                                        $error++;
+                                    }
 								}
 							}
 
