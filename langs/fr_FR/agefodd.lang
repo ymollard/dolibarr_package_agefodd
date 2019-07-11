@@ -1614,3 +1614,6 @@ setStatus_CONFIRMED=Appliquer l'état "Confirmé"
 setStatus_MISSING=Appliquer l'état "Absent"
 setStatus_FINISH=Appliquer l'état "Réalisé"
 setStatus_CANCELED=Appliquer l'état "Annulé"
+
+AgfNbTiersPart=Tiers des inscrits
+AgfNbSessEffective=Sessions effectives
