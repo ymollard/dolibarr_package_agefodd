@@ -459,15 +459,20 @@ class ActionsAgefodd
 									else
 									{
 										$duree = 0;
+                                        // Si l'absence est planifiée alors on ne decompte pas les heures
+										if(!empty($agfssh->planned_absence)){
+                                            continue;
+                                        }
 										// Si le statut passe à "absent", alors je force la saisie du compteur d'heure car c'est du consommé
-										if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING)
+										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING)
 										{
 											$duree = $duree_session;
 										}
 										// si on passe le status du créneaux en confirmer sans saisir de temps stagiaire, on met le max
 										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED
 										    && $agf_calendrier_formateur->status !== $old_status
-										    && $THour[$stagiaire->id] == '00:00')
+										    && $THour[$stagiaire->id] == '00:00'
+                                        )
 										{
 										    $duree = $duree_session;
 										}

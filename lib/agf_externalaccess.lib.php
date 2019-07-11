@@ -1641,10 +1641,52 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 					} else {
 						$("#code_c_session_calendrier_type").prop(\'required\',false);
 					}
+					
+					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'\' 
+					|| formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_FINISH.'\')
+					{
+						// auto update Hours
+						var start = document.getElementById("heured").value;
+                        var end = document.getElementById("heuref").value;
+						var duration = agfTimeDiff(start, end);
+                        $(".traineeHourSpended").each(function( index ) {
+                            
+                            if($( this ).data("plannedabsence") == 0)
+                            {
+                                 if($(this).val() == "00:00") // != duration
+                                 {
+                                     $(this).val(duration);
+                                     $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
+                                 }
+                                 
+                            }
+                        });
+					}
+					
+					// Si le statut passe à annulé, les heures participants doivent passer à 0 car la session n\'a pas eu lieu
+					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'\')
+					{
+					    $(".traineeHourSpended").each(function( index ) {
+                            $(this).val("00:00");
+                            $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
+                        });
+					}
 
 				});
 			});
 
+			function agfTimeDiff(start, end) {
+                start = start.split(":");
+                end = end.split(":");
+                var startDate = new Date(0, 0, 0, start[0], start[1], 0);
+                var endDate = new Date(0, 0, 0, end[0], end[1], 0);
+                var diff = endDate.getTime() - startDate.getTime();
+                var hours = Math.floor(diff / 1000 / 60 / 60);
+                diff -= hours * 1000 * 60 * 60;
+                var minutes = Math.floor(diff / 1000 / 60);
+                
+                return (hours < 9 ? "0" : "") + hours + ":" + (minutes < 9 ? "0" : "") + minutes;
+            }
 			</script>
 			';
 
@@ -1686,16 +1728,40 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			}
 
 			$secondes = 0;
+			$planned_absence = 0;
 			if (!empty($TCalendrier))
 			{
 				$result = $agfssh->fetch_by_session($agsession->id, $stagiaire->id, $TCalendrier[0]->id);
 				$secondes = $agfssh->heures * 60 * 60;
+
+				if(!empty($agfssh->planned_absence))
+                {
+                    $planned_absence = $agfssh->planned_absence;
+                }
 			}
+
+			$inputValue = (!empty($secondes) ? convertSecondToTime($secondes) : '00:00');
+            $inputDisabled = $planned_absence?' readonly ':'';
+
+            $inputReadonly = 0;
+            $inputReadonly = $action == 'view' || $agf_calendrier_formateur->date_session > dol_now() ? 1 : $inputReadonly;
+            $inputReadonly = $planned_absence ? 1 : $inputReadonly;
+
+
+            $inputMore = '';
+            $inputClass = '';
+            $inputTitle = '';
+
+            if($planned_absence){
+                $inputMore.= ' data-toggle="tooltip" data-placement="bottom" ';
+                $inputTitle = $langs->trans('AgfTraineePlannedAbsence');
+                $inputClass.= ' is-valid';
+            }
 
 			$out.= '
 				<div class="form-group">
 					<label for="stagiaire_'.$stagiaire->id.'">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</label>
-					<input '.($action == 'view' || $agf_calendrier_formateur->date_session > dol_now() ? 'readonly' : '').' type="time" step="900" class="form-control" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.(!empty($secondes) ? convertSecondToTime($secondes) : '00:00').'" />
+					<input '.$inputMore.' title="'.$inputTitle.'" data-plannedabsence="'.$planned_absence.'" '.($inputReadonly?' readonly ':'').' type="time" step="900" class="form-control traineeHourSpended '.$inputClass.'" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.$inputValue.'" />
 				</div>';
 		}
 	}
