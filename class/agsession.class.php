@@ -95,6 +95,7 @@ class Agsession extends CommonObject
 	public $status;
 	public $statuscode;
 	public $statuslib;
+	public $status_before_archive;
 	public $contactcivilite;
 	public $duree_session;
 	public $intitule_custo;
@@ -624,6 +625,7 @@ class Agsession extends CommonObject
 		$sql .= " t.intitule_custo,";
 		$sql .= " t.trainer_ext_information,";
 		$sql .= " t.status,dictstatus.intitule as statuslib, dictstatus.code as statuscode,";
+		$sql .= " t.status_before_archive,";
 		$sql .= " p.rowid as placeid, p.ref_interne as placecode,";
 		$sql .= " us.lastname as commercialname, us.firstname as commercialfirstname, ";
 		$sql .= " us.email as commercialemail, ";
@@ -746,6 +748,7 @@ class Agsession extends CommonObject
 					$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 				}
 				$this->statuslib = $label;
+				$this->status_before_archive = $obj->status_before_archive;
 				$this->intitule_custo = $obj->intitule_custo;
 				$this->trainer_ext_information = $obj->trainer_ext_information;
 				$this->duree_session = $obj->duree_session;
@@ -791,6 +794,7 @@ class Agsession extends CommonObject
 		$sql .= " c.ref_interne,";
 		$sql .= " s.color,";
 		$sql .= " s.status,";
+		$sql .= " s.status_before_archive,";
 		$sql .= " ss.status_in_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
@@ -824,6 +828,7 @@ class Agsession extends CommonObject
 				$line->socid = $obj->socid;
                 $line->sessionref = $obj->sessionref;
 				$line->status = $obj->status;
+				$line->status_before_archive = $obj->status_before_archive;
 				$line->socname = $obj->socname;
                 $line->duree_session = $obj->duree_session;
 				$line->type_session = $obj->type_session;
@@ -1716,7 +1721,8 @@ class Agsession extends CommonObject
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session SET";
 		$sql .= " fk_user_mod=" . $this->db->escape($user->id) . ",";
-		$sql .= " status=" . (isset($this->status) ? $this->status : "1") . "";
+		$sql .= " status=" . (isset($this->status) ? $this->status : "1") . ",";
+		$sql .= " status_before_archive=" . (isset($this->status_before_archive) ? $this->status_before_archive : null) . "";
 		$sql .= " WHERE rowid=" . $this->id;
 
 		$this->db->begin();
@@ -1747,6 +1753,21 @@ class Agsession extends CommonObject
 
 		global $conf, $langs;
 		$error = 0;
+
+		// enregistrer le statut avant archivage
+		if ($this->status == 4)
+		{
+			$tmpsess = new self($this->db);
+			$tmpsess->fetch($this->id);
+			if ($tmpsess->status != $this->status) // au moment de l'archivage
+			{
+				$this->status_before_archive = $tmpsess->status;
+			}
+		}
+		else
+		{
+			$this->status_before_archive = null;
+		}
 
 		// Clean parameters
 		if (isset($this->fk_soc))
@@ -1813,6 +1834,8 @@ class Agsession extends CommonObject
 			$this->fk_product = trim($this->fk_product);
 		if (isset($this->status))
 			$this->status = trim($this->status);
+		if (isset($this->status_before_archive))
+			$this->status_before_archive = trim($this->status_before_archive);
 		if (isset($this->duree_session))
 			$this->duree_session = trim($this->duree_session);
 		if (isset($this->intitule_custo))
@@ -1892,6 +1915,7 @@ class Agsession extends CommonObject
 			$sql .= " fk_user_mod=" . $this->db->escape($user->id) . ",";
 			$sql .= " fk_product=" . (! empty($this->fk_product) ? $this->fk_product : "null") . ",";
 			$sql .= " status=" . (isset($this->status) ? $this->status : "null") . ",";
+			$sql .= " status_before_archive=" . (isset($this->status_before_archive) ? $this->status_before_archive : "null") . ",";
 			$sql .= " duree_session=" . (! empty($this->duree_session) ? price2num($this->duree_session) : "0") . ",";
 			$sql .= " intitule_custo=" . (! empty($this->intitule_custo) ? "'" . $this->db->escape($this->intitule_custo) . "'" : "null") . ",";
 			$sql .= " trainer_ext_information=" . (! empty($this->trainer_ext_information) ? "'" . $this->db->escape($this->trainer_ext_information) . "'" : "null") . "";
@@ -3896,6 +3920,7 @@ class Agsession extends CommonObject
 		// Update request
 		if (! $error) {
 			$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session SET";
+			$sql .= " status_before_archive=status,";
 			$sql .= " status=4,";
 			$sql .= " fk_user_mod=" . $user->id . " ";
 			$sql .= " WHERE YEAR(dated)='" . $year . "'";
@@ -5879,6 +5904,7 @@ class AgfSessionLine
 	public $cost_trip_planned;
 	public $sell_price_planned;
 	public $cost_other_planned;
+	public $status_before_archive;
 	public function __construct() {
 		return 1;
 	}

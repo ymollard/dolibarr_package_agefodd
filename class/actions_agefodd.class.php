@@ -1773,7 +1773,7 @@ class ActionsAgefodd
 			$boxstat.=$this->getStatBox($url, $nb, $text);
 		}
 
-		// nd de sessions effectives => /!\ spécifique à mettre en master différemment
+		// TODO A modifier pour nouvelle structure nb de sessions effectives => /!\ spécifique à mettre en master différemment
 		// nb session excluant les non-réalisées et prenant en compte les anciens status des session archivées
 		$sql = "SELECT SUM(IF(s.status <> 4, 1, IF(se.status_before_arch IN(1, 2, 5, 6), 1, 0))) as nb";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session AS s";
