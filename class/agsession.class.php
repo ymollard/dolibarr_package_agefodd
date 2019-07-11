@@ -781,7 +781,9 @@ class Agsession extends CommonObject
 		$sql .= " so.rowid as socid,";
 		$sql .= " so.nom as socname,";
 		$sql .= " s.type_session,";
-		$sql .= " s.fk_session_place,";
+        $sql .= " s.ref as sessionref,";
+        $sql .= " s.fk_session_place,";
+        $sql .= " s.duree_session,";
 		$sql .= " s.dated,";
 		$sql .= " s.datef,";
 		$sql .= " c.intitule,";
@@ -820,8 +822,10 @@ class Agsession extends CommonObject
 
 				$line->rowid = $obj->sessid;
 				$line->socid = $obj->socid;
+                $line->sessionref = $obj->sessionref;
 				$line->status = $obj->status;
 				$line->socname = $obj->socname;
+                $line->duree_session = $obj->duree_session;
 				$line->type_session = $obj->type_session;
 				$line->fk_session_place = $obj->fk_session_place;
 				$line->dated = $this->db->jdate($obj->dated);

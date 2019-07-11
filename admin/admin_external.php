@@ -73,11 +73,24 @@ if ($action == 'setvarother') {
 	if (! $res > 0)
 		$error ++;
 
-	$confKey = 'AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL';
-	$mailmodel = GETPOST($confKey, 'alpha');
-	$res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
-	if (! $res > 0)
-		$error ++;
+    $confKey = 'AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL';
+    $mailmodel = GETPOST($confKey, 'alpha');
+    $res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
+
+    $confKey = 'AGF_SEND_TRAINEE_ABSENCE_ALERT_MAILMODEL';
+    $mailmodel = GETPOST($confKey, 'alpha');
+    $res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
+
+    $confKey = 'AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS';
+    $mailmodel = GETPOST($confKey, 'alpha');
+    $res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
+
     
     // Vue éclatée des heures participant sur la liste des sessions
     $heuresEclateeExclues = serialize(GETPOST('AGF_EA_ECLATE_HEURES_EXCLUES'));
@@ -130,7 +143,7 @@ print '<table class="noborder" width="100%">';
 $var = true;
 
 print '<tr class="liste_titre" >';
-print '<th colspan="3" class="left">' . $langs->trans("Options") . '</th>';
+print '<th colspan="3" class="left"><i class="fa fa-power-off" aria-hidden="true"></i> ' . $langs->trans("Options") . '</th>';
 print '</tr>';
 
 // configuration external access
@@ -177,7 +190,7 @@ if(!empty($conf->externalaccess->enabled))
     print '<table class="noborder" width="100%" id="externaloption">';
 
 	print '<tr class="liste_titre" >';
-	print '<th colspan="3" class="left">' . $langs->trans("Options")." ".$langs->trans('AgfExternalAccess') . '</th>';
+	print '<th colspan="3" class="left"><i class="fa fa-cog" aria-hidden="true"></i> ' . $langs->trans("Options")." ".$langs->trans('AgfExternalAccess') . '</th>';
 	print '</tr>';
 
     // Active l'accés formateur
@@ -238,6 +251,23 @@ if(!empty($conf->externalaccess->enabled))
     print '</td>';
     print '<td></td>';
     print '</tr>';
+
+
+    // Active l'accés stagiaire
+    print '<tr  class="oddeven"><td>' . $langs->trans("AgfActivateAccessForTrainees") . '</td>';
+    print '<td align="left">';
+    if ($conf->use_javascript_ajax) {
+        print ajax_constantonoff('AGF_EA_TRAINEE_ENABLED');
+    } else {
+        $arrval = array (
+            '0' => $langs->trans("No"),
+            '1' => $langs->trans("Yes")
+        );
+        print $form->selectarray("AGF_EA_TRAINEE_ENABLED", $arrval, $conf->global->AGF_EA_TRAINEE_ENABLED);
+    }
+    print '</td>';
+    print '<td></td>';
+    print '</tr>';
 }
 
 print '</table>';
@@ -265,7 +295,18 @@ if($models>0)
 }
 
 print '<tr class="liste_titre" >';
-print '<th colspan="3" class="left">' . $langs->trans("AgfSendNotification") . '</th>';
+print '<th colspan="3" class="left"><i class="fa fa-envelope" aria-hidden="true"></i> ' . $langs->trans("AgfSendNotification") . '</th>';
+print '</tr>';
+/*
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfUserForMailSending") . '</td>';
+print '<td align="left">';
+print $form->select_dolusers($conf->global->AGF_EXTERNAL_MAIL_SENDER_USER,'AGF_EXTERNAL_MAIL_SENDER_USER', 1);
+print '</td>';
+print '<td></td>';
+print '</tr>';*/
+
+print '<tr  >';
+print '<th colspan="3" class="left">' . $langs->trans("AgfEATrainerTitle") . '</th>';
 print '</tr>';
 
 print '<tr  class="oddeven"><td>' . $langs->trans("AgfSendCreateCreneauxToTraineeMailModel") . '<br/><em><small>(' . $langs->trans('AgfMailToSendTrainee').')</small></em></td>';
@@ -281,6 +322,63 @@ print '<tr  class="oddeven" ><td>' . $langs->trans("AgfSendSaveCreneauxToTrainee
 print '<td align="left">';
 
 print $formMail->selectarray('AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL', $modelmail_array, $conf->global->AGF_SEND_SAVE_CRENEAU_TO_TRAINEE_MAILMODEL, 1);
+
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
+// Send to trainee checkbox
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfCheckedCheckboxByDefaultForSendAlertToTrainee") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+    print ajax_constantonoff('AGF_DONT_SEND_EMAIL_TO_TRAINEE_BY_DEFAULT');
+} else {
+    $arrval = array (
+        '0' => $langs->trans("No"),
+        '1' => $langs->trans("Yes")
+    );
+    print $form->selectarray("AGF_DONT_SEND_EMAIL_TO_TRAINEE_BY_DEFAULT", $arrval, $conf->global->AGF_DONT_SEND_EMAIL_TO_TRAINEE_BY_DEFAULT);
+}
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
+// Send copy email
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfSendCopyOfTraineeEmailToTrainer") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+    print ajax_constantonoff('AGF_SEND_COPY_EMAIL_TO_TRAINER');
+} else {
+    $arrval = array (
+        '0' => $langs->trans("No"),
+        '1' => $langs->trans("Yes")
+    );
+    print $form->selectarray("AGF_SEND_COPY_EMAIL_TO_TRAINER", $arrval, $conf->global->AGF_SEND_COPY_EMAIL_TO_TRAINER);
+}
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
+
+print '<tr  >';
+print '<th colspan="3" class="left">' . $langs->trans("AgfEATraineeTitle") . '</th>';
+print '</tr>';
+
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfNumberOfHoursBeforeLockingAbsenceRequests"). ' '. img_help(1,$langs->trans('AgfNumberOfHoursBeforeLockingAbsenceRequestsHelp')) . '</td>';
+print '<td align="left">';
+
+print '<input type="nSumber" step="1" min="0" name="AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS" value="'.$conf->global->AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS.'"  >';
+
+
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
+
+print '<tr  class="oddeven" ><td>' . $langs->trans("AgfSendTraineeAbsenceMailModel") . '<br/><em><small>(' . $langs->trans('AgfMailToSendTrainee').')</small></em></td>';
+print '<td align="left">';
+
+print $formMail->selectarray('AGF_SEND_TRAINEE_ABSENCE_ALERT_MAILMODEL', $modelmail_array, $conf->global->AGF_SEND_TRAINEE_ABSENCE_ALERT_MAILMODEL, 1);
 
 print '</td>';
 print '<td></td>';

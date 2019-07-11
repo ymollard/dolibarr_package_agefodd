@@ -192,10 +192,44 @@ class Agefodd_stagiaire extends CommonObject {
 		}
 	}
 
+
+    /**
+     * Load object in memory from database
+     *
+     * @param int $id object
+     * @return int <0 if KO, >0 if OK
+     */
+    public function fetch_by_contact($id) {
+
+        $sql = "SELECT";
+        $sql .= " s.rowid as id";
+        $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
+        $sql .= " WHERE s.fk_socpeople = " . intval($id);
+        $sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+
+        dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
+        $resql = $this->db->query($sql);
+
+        if ($resql) {
+            if ($this->db->num_rows($resql)) {
+                $obj = $this->db->fetch_object($resql);
+                return $this->fetch($obj->id);
+            }
+            else{
+                return 0;
+            }
+        } else {
+            $this->error = "Error " . $this->db->lasterror();
+            dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+            return - 1;
+        }
+    }
+
+
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $id object
+	 * @param  int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {

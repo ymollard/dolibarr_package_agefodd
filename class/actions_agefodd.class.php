@@ -554,12 +554,18 @@ class ActionsAgefodd
 				}
 
 			}
-			elseif($context->controller == 'agefodd_trainer_agenda')
-			{
-				$context->title = $langs->trans('AgfExternalAccess_PageTitle_Agenda');
-				$context->desc = $langs->trans('AgfExternalAccess_PageDesc_Agenda');
-				$context->menu_active[] = 'invoices';
-			}
+            elseif($context->controller == 'agefodd_trainee_session_list' || $context->controller == 'agefodd_trainee_session_card')
+            {
+                $context->title = $langs->trans('AgfExternalAccess_PageTitle_TraineeSessions');
+                $context->desc = $langs->trans('AgfExternalAccess_PageDesc_TraineeSessions');
+                $context->menu_active[] = 'invoices';
+            }
+            elseif($context->controller == 'agefodd_trainer_agenda')
+            {
+                $context->title = $langs->trans('AgfExternalAccess_PageTitle_My');
+                $context->desc = $langs->trans('AgfExternalAccess_PageDesc_Agenda');
+                $context->menu_active[] = 'invoices';
+            }
 			elseif ($context->controller == 'agefodd_event_other')
 			{
                 if($context->action == 'delete')
@@ -735,6 +741,109 @@ class ActionsAgefodd
 				}
 			}
 
+            if ($context->controller == 'agefodd_trainee_session_card' && in_array($action, array('setplannedAbsence')) && GETPOST('sessid','int') > 0) {
+
+                include_once __DIR__ . '/agefodd_session_stagiaire.class.php';
+                include_once __DIR__ . '/agefodd_stagiaire.class.php';
+                include_once __DIR__ . '/agefodd_calendrier.class.php';
+
+                $agsession = new Agsession($this->db);
+                $sessid = GETPOST('sessid', 'int');
+                $slotid = GETPOST('slotid', 'int');
+                if ($agsession->fetch($sessid) > 0) // Vérification que la session existe
+                {
+                    // Trainee exist ?
+                    $trainee = new Agefodd_stagiaire($this->db);
+                    if($trainee->fetch_by_contact($user->contactid) > 0)
+                    {
+                        // Trainee is in session ?
+                        $sessionStagiaire = new Agefodd_session_stagiaire($this->db);
+                        if($sessionStagiaire->fetch_by_trainee($agsession->id, $trainee->id) > 0)
+                        {
+                            $needCreate = true;
+                            $sessionstagiaireheures = new Agefoddsessionstagiaireheures($this->db);
+                            if($sessionstagiaireheures->fetch_by_session($agsession->id, $trainee->id, $slotid) > 0) {
+                                $needCreate = false;
+                            }
+
+                            // vérification de la configuration
+                            $calendrier = new Agefodd_sesscalendar($this->db);
+                            if($calendrier->fetch($slotid)>0) {
+                                if (traineeCanChangeAbsenceStatus($calendrier->heured)) {
+
+                                    if (GETPOST('plannedAbsence') == 'missing') {
+                                        $sessionstagiaireheures->planned_absence = 1;
+                                        $successMsg = $langs->trans('AgfSetPlannedAbsenceMissing');
+                                    } else {
+                                        $sessionstagiaireheures->planned_absence = 0;
+                                        $successMsg = $langs->trans('AgfSetPlannedAbsencePresent');
+                                    }
+
+                                    // on re-crédite les heures disponibles au participants
+                                    $sessionstagiaireheures->heures = 0;
+
+                                    if($needCreate){
+
+                                        $sessionstagiaireheures->entity = $conf->entity;
+                                        $sessionstagiaireheures->fk_stagiaire = $trainee->id;
+                                        $sessionstagiaireheures->fk_session = $agsession->id;
+                                        $sessionstagiaireheures->fk_calendrier = $slotid;
+                                        $sessionstagiaireheures->fk_user_author = $user->id;
+                                        $sessionstagiaireheures->mail_sended = 0;
+
+                                        $res = $sessionstagiaireheures->create($user);
+                                    }
+                                    else{
+                                        $res = $sessionstagiaireheures->update($user);
+                                    }
+
+                                    if ($res > 0) {
+                                        $context->setEventMessages($successMsg);
+
+
+                                        // SEND EMAIL
+                                        $errorsMsg = array();
+                                        $sendRes = traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionStagiaire, $calendrier, $sessionstagiaireheures, $errorsMsg);
+
+                                        if($sendRes > 0){
+                                            $context->setEventMessages($langs->trans('AgfNbEmailSended', $sendRes));
+                                        }elseif($sendRes < 0){
+                                            $context->setEventMessages($langs->trans('AgfEmailSendError').$sendRes, 'errors');
+                                        }
+                                        else{
+                                            $context->setEventMessages($langs->trans('AgfNoEmailSended'), 'warnings');
+                                        }
+
+                                        if(!empty($errorsMsg) and is_array($errorsMsg)){
+                                            $context->setEventMessages($errorsMsg, 'errors');
+                                        }
+
+                                        $redirect = $context->getRootUrl('agefodd_trainee_session_card').'&sessid='.$agsession->id.'&slotid='.$slotid.'&save_lastsearch_values=1';
+                                        header('Location: '.$redirect);
+                                        exit;
+
+                                    } else {
+                                        $context->setEventMessages($langs->trans('AgfSetPlannedAbsenceError'), 'errors');
+                                    }
+                                } else {
+                                    $context->setEventMessages($langs->trans('AgfSetPlannedAbsenceErrorNotAllowed', 'errors'));
+                                }
+                            }
+                            else{
+                                $context->setEventMessages($langs->trans('AgfSessionCreneauNotFound'), 'errors');
+                            }
+
+                        }else{
+                            $context->setEventMessages($langs->trans('AgfContactNotInSession'), 'errors');
+                        }
+                    }else{
+                        $context->setEventMessages($langs->trans('AgfTraineeNotExistOrUserNoTrainee'), 'errors');
+                    }
+                }else{
+                    $context->setEventMessages($langs->trans('AgfSessionNotExist'), 'errors');
+                }
+            }
+
 			return 1;
 		}
 
@@ -796,9 +905,16 @@ class ActionsAgefodd
 
 				exit;
 			}
+            elseif($action === 'downloadAgefoddTrainneeDoc')
+            {
+                downloadAgefoddTrainneeDoc();
+            }
 
 	    }
 	}
+
+
+
 	/**
 	 * Mes nouvelles pages pour l'accés au portail externe
 	 * For external Access module
@@ -832,13 +948,13 @@ class ActionsAgefodd
 				$context->setControllerFound();
 				print getMenuAgefoddExternalAccess();
 			}
-			else if ($context->controller == 'agefodd_session_list')
-			{
-				$context->setControllerFound();
-				print getPageViewSessionListExternalAccess();
-
-			}
-			else if ($context->controller == 'agefodd_session_card' && GETPOST('sessid', 'int') > 0)
+            elseif ($context->controller == 'agefodd_session_list')
+            {
+                // Trainer sessions list
+                $context->setControllerFound();
+                print getPageViewSessionListExternalAccess();
+            }
+			elseif ($context->controller == 'agefodd_session_card' && GETPOST('sessid', 'int') > 0)
 			{
 
 				// CLOSE IFRAME
@@ -862,7 +978,17 @@ class ActionsAgefodd
 				}
 
 			}
-			else if ($context->controller == 'agefodd_session_card_time_slot' && $sessid > 0)
+            elseif ($context->controller == 'agefodd_trainee_session_list')
+            {
+                // Trainee sessions list
+                $context->setControllerFound();
+                print getPageViewTraineeSessionListExternalAccess();
+            }
+            elseif ($context->controller == 'agefodd_trainee_session_card' && GETPOST('sessid', 'int') > 0)
+            {
+                print getPageViewTraineeSessionCardExternalAccess();
+            }
+			elseif ($context->controller == 'agefodd_session_card_time_slot' && $sessid > 0)
 			{
 				$agsession = new Agsession($this->db);
 				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
@@ -900,7 +1026,7 @@ class ActionsAgefodd
 					}
 				}
 			}
-			else if ($context->controller == 'agefodd_session_card_time_slot' && empty($sessid))
+			elseif ($context->controller == 'agefodd_session_card_time_slot' && empty($sessid))
 			{
 				print getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess($sessid, $action);
 				$context->setControllerFound();
@@ -947,13 +1073,15 @@ class ActionsAgefodd
 	        'url' => $context->getRootUrl('agefodd'),
 	        'name' => $langs->trans('AgfTraining')
 	    );
-	    
-	    $this->results['agefodd']['children']['agefodd_session_list'] = array(
-	        'id' => 'agefodd',
-	        'rank' => 20,
-	        'url' => $context->getRootUrl('agefodd_session_list'),
-	        'name' => $langs->trans('AgfMenuSess')
-	    );
+
+        if($user->rights->agefodd->external_trainer_read) {
+            $this->results['agefodd']['children']['agefodd_session_list'] = array(
+                'id' => 'agefodd',
+                'rank' => 20,
+                'url' => $context->getRootUrl('agefodd_session_list'),
+                'name' => $langs->trans('AgfMenuSess')
+            );
+        }
 
 	    if($user->rights->agefodd->external_trainer_agenda){
 			$this->results['agefodd']['children']['agefodd_trainer_agenda'] = array(
@@ -963,6 +1091,15 @@ class ActionsAgefodd
 				'name' => $langs->trans('AgfMenuAgendaFormateur')
 			);
 		}
+
+        if($user->rights->agefodd->external_trainee_read){
+            $this->results['agefodd']['children']['agefodd_trainee_session_list'] = array(
+                'id' => 'agefodd',
+                'rank' => 30,
+                'url' => $context->getRootUrl('agefodd_trainee_session_list'),
+                'name' => $langs->trans('AgfMenuSessTrainee')
+            );
+        }
 
 	    
 	    return 0;

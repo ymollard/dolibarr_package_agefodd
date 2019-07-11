@@ -522,32 +522,32 @@ function agefodd_admin_prepare_head() {
 	$head = array ();
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_agefodd.php", 1);
-	$head [$h] [1] = $langs->trans("Settings");
+	$head [$h] [1] = '<i class="fa fa-graduation-cap" aria-hidden="true"></i> '.$langs->trans("Settings");
 	$head [$h] [2] = 'settings';
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_options.php", 1);
-	$head [$h] [1] = $langs->trans("Options");
+	$head [$h] [1] = '<i class="fa fa-cogs" aria-hidden="true"></i> '.$langs->trans("Options");
 	$head [$h] [2] = 'options';
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_administrativetasks.php", 1);
-	$head [$h] [1] = $langs->trans("AgftrainingAdmTask");
+	$head [$h] [1] = '<i class="fa fa-tasks" aria-hidden="true"></i> '.$langs->trans("AgftrainingAdmTask");
 	$head [$h] [2] = 'administrativetasks';
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_session_time.php", 1);
-	$head [$h] [1] = $langs->trans("AgfAdmSessionTime");
+	$head [$h] [1] = '<i class="fa fa-clock-o" aria-hidden="true"></i> '.$langs->trans("AgfAdmSessionTime");
 	$head [$h] [2] = 'sessiontime';
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/formation_catalogue_extrafields.php", 1);
-	$head [$h] [1] = $langs->trans("ExtraFieldsTraining");
+	$head [$h] [1] = '<i class="fa fa-list" aria-hidden="true"></i> '.$langs->trans("ExtraFieldsTraining");
 	$head [$h] [2] = 'attributetraining';
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/session_extrafields.php", 1);
-	$head [$h] [1] = $langs->trans("ExtraFieldsSessions");
+	$head [$h] [1] = '<i class="fa fa-list" aria-hidden="true"></i> '.$langs->trans("ExtraFieldsSessions");
 	$head [$h] [2] = 'attributesession';
 	$h ++;
 
@@ -559,12 +559,12 @@ function agefodd_admin_prepare_head() {
 	}
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/stagiaire_extrafields.php", 1);
-	$head [$h] [1] = $langs->trans("ExtraFieldsTrainee");
+	$head [$h] [1] = '<i class="fa fa-list" aria-hidden="true"></i> '.$langs->trans("ExtraFieldsTrainee");
 	$head [$h] [2] = 'attributetrainee';
 	$h ++;
 
 	$head [$h] [0] = dol_buildpath("/agefodd/admin/admin_catcost.php", 1);
-	$head [$h] [1] = $langs->trans("AgfCategCostCateg");
+	$head [$h] [1] = '<i class="fa fa-money" aria-hidden="true"></i> '.$langs->trans("AgfCategCostCateg");
 	$head [$h] [2] = 'catcost';
 	$h ++;
 	if(!empty($conf->multicompany->enabled)){
@@ -582,7 +582,7 @@ function agefodd_admin_prepare_head() {
 	if (!empty($conf->externalaccess->enabled))
 	{
 	    $head [$h] [0] = dol_buildpath("/agefodd/admin/admin_external.php", 1);
-	    $head [$h] [1] = $langs->trans("AgfExternalAccess");
+	    $head [$h] [1] = '<i class="fa fa-globe" aria-hidden="true"></i> ' .$langs->trans("AgfExternalAccess");
 	    $head [$h] [2] = 'external';
 	    $h ++;
 	}
