@@ -4168,7 +4168,7 @@ class Agsession extends CommonObject
 								$error ++;
 							}
 							$order_line->desc .= $this->avgpricedesc;
-							$result = $order_line->update(1);
+							$result = $order_line->update($user);
 							if ($result < 0) {
 								$this->errors[] = $order_line->error;
 								$error ++;
