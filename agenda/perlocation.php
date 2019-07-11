@@ -311,7 +311,7 @@ $canedit = 1;
 // TODO agf_calendars_prepare_head($paramnoaction); pour la version master
 $head = agf_calendars_prepare_head($paramnoaction);
 
-dol_fiche_head($head, $tabactive, $langs->trans('Agenda'), 0, 'action');
+dol_fiche_head($head, $tabactive, $langs->trans('AgfMenuAgenda'), 0, 'action');
 $formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action, $filter_session_status, $filter_trainee, $filter_control_occupation, true, $filter_customer_place);
 
 // TODO remove si intégration dans master
