@@ -151,7 +151,7 @@ class Agefoddcalendrier extends CommonObject {
 		$sql .= " AND t.entity IN (" . getEntity('agefodd'/*'agsession'*/) . ")";
 
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
-		var_dump($sql);
+
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
