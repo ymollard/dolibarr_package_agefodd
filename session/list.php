@@ -481,6 +481,10 @@ foreach ( $search_array_options as $key => $val ) {
 	)) || $crit != '0') && (! in_array($typ, array(
 			'link'
 	)) || $crit != '-1')) {
+
+	    if(is_array($crit)){
+            $crit = implode(',',$crit);
+        }
 		$filter['ef.' . $tmpkey] = natural_search('ef.' . $tmpkey, $crit, $mode_search);
 		$option .= '&search_options_' . $tmpkey . '=' . $crit;
 	}
@@ -871,6 +875,7 @@ if ($resql != - 1) {
 
 	// Extra fields
 	if (file_exists(DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php')) {
+        $extrafieldsobjectkey = 'agefodd_session';
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php';
 	} else {
 		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
