@@ -1651,7 +1651,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 						var duration = agfTimeDiff(start, end);
                         $(".traineeHourSpended").each(function( index ) {
                             
-                            if($( this ).data("plannedabsence") == 0)
+                            if($( this ).data("plannedabsence") == 0 && !$( this ).prop("readonly"))
                             {
                                  if($(this).val() == "00:00") // != duration
                                  {
@@ -1667,8 +1667,11 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'\')
 					{
 					    $(".traineeHourSpended").each(function( index ) {
-                            $(this).val("00:00");
-                            $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
+					        if(!$( this ).prop("readonly"))
+                            {
+                                $(this).val("00:00");
+                                $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
+                            }
                         });
 					}
 
