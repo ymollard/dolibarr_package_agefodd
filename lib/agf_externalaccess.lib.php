@@ -2793,15 +2793,16 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
             }
 
             if (!empty($TTo)) {
-                foreach ($TTo as $to) {
-                    $cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "", 0, 1, $from);
 
-                    if ($cMailFile->sendfile()) {
-                        $nbMailSend++;
-                    } else {
-                        $errorsMsg[] = $cMailFile->error . ' : ' . $to;
-                        $error++;
-                    }
+                $to = implode(',', $TTo);
+
+                $cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "", 0, 1, $from);
+
+                if ($cMailFile->sendfile()) {
+                    $nbMailSend++;
+                } else {
+                    $errorsMsg[] = $cMailFile->error . ' : ' . $to;
+                    $error++;
                 }
             } else {
                 $errorsMsg[] = $langs->trans('AgfNoEmailToSend');
