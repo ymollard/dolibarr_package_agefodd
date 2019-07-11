@@ -130,7 +130,7 @@ if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
 
             $subject = $langs->transnoentitiesnoconv('MailSubjQuest', $objQuestionnaire->title);
 
-            $content = prepareMailContent($invuser, $id);
+            $content = prepareMailContent($invuser, $idQuestionnaire);
             include_once DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php';
 
             $mailfile = new CMailFile($subject, $invuser->email, $conf->email_from, $content);
