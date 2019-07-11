@@ -1631,6 +1631,25 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				} else {
 					$("#code_c_session_calendrier_type").prop(\'required\',false);
 				}
+				
+				
+				$(".setTraineePresent").click(function() {
+				
+                    // auto update Hours
+                    var start = document.getElementById("heured").value;
+                    var end = document.getElementById("heuref").value;
+                    var duration = agfTimeDiff(start, end);
+               
+                    $($(this).data("target")).val(duration);
+				});
+				
+				$(".setTraineeAbsent").click(function() {
+                    // auto update Hours
+                    $($(this).data("target")).val("00:00");
+				});
+				
+				
+				
 				$("#status").change(function() {
 
 				   	var formStatus = $(this).val();
@@ -1762,12 +1781,24 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
             }
 
 			$out.= '
-				<div class="form-group">
-					<label for="stagiaire_'.$stagiaire->id.'">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</label>
-					<input '.$inputMore.' title="'.$inputTitle.'" data-plannedabsence="'.$planned_absence.'" '.($inputReadonly?' readonly ':'').' type="time" step="900" class="form-control traineeHourSpended '.$inputClass.'" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.$inputValue.'" />
-				</div>';
+			<label for="stagiaire_'.$stagiaire->id.'">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</label>
+				<div class="input-group">';
+
+            $out.= '<input '.$inputMore.' title="'.$inputTitle.'" data-plannedabsence="'.$planned_absence.'" '.($inputReadonly?' readonly ':'').' type="time" step="900" class="form-control traineeHourSpended '.$inputClass.'" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.$inputValue.'" />';
+
+            if(!$inputReadonly)
+            {
+                $out .= '<div class="input-group-append">
+                        <button data-target="#stagiaire_' . $stagiaire->id . '" class="setTraineePresent btn btn-outline-success" type="button"><i class="fa fa-check-circle-o" aria-hidden="true"></i></button>
+                        <button data-target="#stagiaire_' . $stagiaire->id . '" class="setTraineeAbsent btn btn-outline-danger" type="button"><i class="fa fa-ban" aria-hidden="true"></i></button>
+                    </div>';
+            }
+            $out.= '</div>';
+
 		}
 	}
+
+	$out.= '<div style="height:30px;" ></div>';
 
 
     $parameters=array(
