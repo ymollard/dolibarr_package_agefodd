@@ -143,7 +143,7 @@ print '<table class="noborder" width="100%">';
 $var = true;
 
 print '<tr class="liste_titre" >';
-print '<th colspan="3" class="left">' . $langs->trans("Options") . '</th>';
+print '<th colspan="3" class="left"><i class="fa fa-power-off" aria-hidden="true"></i> ' . $langs->trans("Options") . '</th>';
 print '</tr>';
 
 // configuration external access
@@ -190,7 +190,7 @@ if(!empty($conf->externalaccess->enabled))
     print '<table class="noborder" width="100%" id="externaloption">';
 
 	print '<tr class="liste_titre" >';
-	print '<th colspan="3" class="left">' . $langs->trans("Options")." ".$langs->trans('AgfExternalAccess') . '</th>';
+	print '<th colspan="3" class="left"><i class="fa fa-cog" aria-hidden="true"></i> ' . $langs->trans("Options")." ".$langs->trans('AgfExternalAccess') . '</th>';
 	print '</tr>';
 
     // Active l'accés formateur
@@ -295,7 +295,18 @@ if($models>0)
 }
 
 print '<tr class="liste_titre" >';
-print '<th colspan="3" class="left">' . $langs->trans("AgfSendNotification") . '</th>';
+print '<th colspan="3" class="left"><i class="fa fa-envelope" aria-hidden="true"></i> ' . $langs->trans("AgfSendNotification") . '</th>';
+print '</tr>';
+/*
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfUserForMailSending") . '</td>';
+print '<td align="left">';
+print $form->select_dolusers($conf->global->AGF_EXTERNAL_MAIL_SENDER_USER,'AGF_EXTERNAL_MAIL_SENDER_USER', 1);
+print '</td>';
+print '<td></td>';
+print '</tr>';*/
+
+print '<tr  >';
+print '<th colspan="3" class="left">' . $langs->trans("AgfEATrainerTitle") . '</th>';
 print '</tr>';
 
 print '<tr  class="oddeven"><td>' . $langs->trans("AgfSendCreateCreneauxToTraineeMailModel") . '<br/><em><small>(' . $langs->trans('AgfMailToSendTrainee').')</small></em></td>';
@@ -316,8 +327,40 @@ print '</td>';
 print '<td></td>';
 print '</tr>';
 
+// Send to trainee checkbox
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfCheckedCheckboxByDefaultForSendAlertToTrainee") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+    print ajax_constantonoff('AGF_DONT_SEND_EMAIL_TO_TRAINEE_BY_DEFAULT');
+} else {
+    $arrval = array (
+        '0' => $langs->trans("No"),
+        '1' => $langs->trans("Yes")
+    );
+    print $form->selectarray("AGF_DONT_SEND_EMAIL_TO_TRAINEE_BY_DEFAULT", $arrval, $conf->global->AGF_DONT_SEND_EMAIL_TO_TRAINEE_BY_DEFAULT);
+}
+print '</td>';
+print '<td></td>';
+print '</tr>';
 
-print '<tr class="liste_titre" >';
+// Send copy email
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfSendCopyOfTraineeEmailToTrainer") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+    print ajax_constantonoff('AGF_SEND_COPY_EMAIL_TO_TRAINER');
+} else {
+    $arrval = array (
+        '0' => $langs->trans("No"),
+        '1' => $langs->trans("Yes")
+    );
+    print $form->selectarray("AGF_SEND_COPY_EMAIL_TO_TRAINER", $arrval, $conf->global->AGF_SEND_COPY_EMAIL_TO_TRAINER);
+}
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
+
+print '<tr  >';
 print '<th colspan="3" class="left">' . $langs->trans("AgfEATraineeTitle") . '</th>';
 print '</tr>';
 

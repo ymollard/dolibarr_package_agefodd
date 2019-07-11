@@ -2660,7 +2660,7 @@ function downloadAgefoddTrainneeDoc(){
  */
 function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionStagiaire, $calendrier, $sessionstagiaireheures, &$errorsMsg = array())
 {
-    global $conf, $langs, $user, $db;
+    global $conf, $langs, $user, $db, $hookmanager;
 
     $nbMailSend = 0;
     $error = 0;
@@ -2753,31 +2753,62 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
         $sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
         $sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
 
-        foreach ($agsession->TTrainer as $trainer){
-            $to = $trainer->email;
+        $TTo = array();
 
+        // Add trainer emails
+        foreach ($agsession->TTrainer as $trainer){
+            $TTo[] = $trainer->email;
+        }
+
+        foreach ($TTo as $key => $to){
             if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+                unset($TTo[$key]);
                 // is not a valid email address
                 $toMsg = empty($to)?$langs->trans('AgfMailEmpty'):$to;
                 $errorsMsg[] = $langs->trans('AgfInvalidAddressEmail', $toMsg);
                 $error++;
             }
+        }
+
+        $parameters=array(
+            'TTo' =>& $TTo,
+            'user' => $user,
+            'agsession' => $agsession,
+            'sessionStagiaire' => $sessionStagiaire,
+            'calendrier' => $calendrier,
+            'sessionstagiaireheures' => $sessionstagiaireheures,
+            'errorsMsg' =>& $errorsMsg,
+            'sendTopic' =>& $sendTopic,
+            'from' =>& $from,
+            'sendContent' =>& $sendContent
+        );
+        $reshook=$hookmanager->executeHooks('agf_traineeSendMailAlertForAbsence', $parameters, $trainee);
+
+        if (empty($reshook)) {
+            // override full output
 
             // hidden conf
-            if(!empty($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO) && filter_var($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO, FILTER_VALIDATE_EMAIL)){
-                $to = $conf->global->AGF_CRENEAU_FORCE_EMAIL_TO;
+            if (!empty($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO) && filter_var($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO, FILTER_VALIDATE_EMAIL)) {
+                $TTo = array($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO);
             }
 
-            $cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "",  0, 1, $from);
+            if (!empty($TTo)) {
+                foreach ($TTo as $to) {
+                    $cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "", 0, 1, $from);
 
-            if($cMailFile->sendfile()){
-                $nbMailSend++;
-            }
-            else{
-                $errorsMsg[] =  $cMailFile->error .' : '.$to;
+                    if ($cMailFile->sendfile()) {
+                        $nbMailSend++;
+                    } else {
+                        $errorsMsg[] = $cMailFile->error . ' : ' . $to;
+                        $error++;
+                    }
+                }
+            } else {
+                $errorsMsg[] = $langs->trans('AgfNoEmailToSend');
                 $error++;
             }
         }
+
     }
 
 

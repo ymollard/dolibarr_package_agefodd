@@ -9,6 +9,10 @@ AgfSendCreateCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une 
 AgfSendSaveCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une notification de modification de créneau
 AgfSendNotification=Notifications EMAILS
 AgfSendTraineeAbsenceMailModel=Modèle email utilisé pour envoyer une notification de modification d'absence de la part du stagiaire
+AgfCheckedCheckboxByDefaultForSendAlertToTrainee=Ne pas précocher par défaut la case "Envoyer une alerte email au(x) stagiaire(s)" sur la fiche d'un créneau
+AgfSendCopyOfTraineeEmailToTrainer=Envoyer une copie du mail au formateur
+AgfEATrainerTitle=Configuration des formateurs
+AgfUserForMailSending=Compte utilisateur à utiliser pour envoyer les emails depuis le portail client
 
 AgfActivateAccessForTrainees=Activer l'accès externe pour les stagiaires (il est nécessaire d'attribuer des droits utilisateurs au contacts liées aux stagiaires)
 AgfEATraineeTitle=Configurations des stagiaires
