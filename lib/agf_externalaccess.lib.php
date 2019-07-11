@@ -1641,11 +1641,13 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
                     var duration = agfTimeDiff(start, end);
                
                     $($(this).data("target")).val(duration);
+                    $($(this).data("target")).css("outline", "none");
 				});
 				
 				$(".setTraineeAbsent").click(function() {
                     // auto update Hours
                     $($(this).data("target")).val("00:00");
+                    $($(this).data("target")).css("outline", "none");
 				});
 				
 				
