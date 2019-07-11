@@ -567,7 +567,7 @@ class ActionsAgefodd
             }
             elseif($context->controller == 'agefodd_trainer_agenda')
             {
-                $context->title = $langs->trans('AgfExternalAccess_PageTitle_My');
+                $context->title = $langs->trans('AgfExternalAccess_PageTitle_Agenda');
                 $context->desc = $langs->trans('AgfExternalAccess_PageDesc_Agenda');
                 $context->menu_active[] = 'invoices';
             }
