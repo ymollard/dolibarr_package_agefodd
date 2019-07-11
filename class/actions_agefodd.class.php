@@ -1629,6 +1629,18 @@ class ActionsAgefodd
 
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
 
+        // copy email to
+        $addr_cc = "";
+        if(!empty($conf->global->AGF_SEND_COPY_EMAIL_TO_TRAINER))
+        {
+            $formateur = new Agefodd_teacher($this->db);
+            $formateur->fetchByUser($user);
+            if(!empty($formateur->id))
+            {
+                $addr_cc = $formateur->email;
+            }
+        }
+
 		foreach ($stagiaires->lines as &$stagiaire) {
 			if ($stagiaire->id <= 0){
 				$errorsMsg[] = $langs->trans('AgfWarningStagiaireNoId');
@@ -1704,12 +1716,18 @@ class ActionsAgefodd
 					continue;
 				}
 
-				// hidden conf
+
 				if(!empty($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO) && filter_var($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO, FILTER_VALIDATE_EMAIL)){
 					$to = $conf->global->AGF_CRENEAU_FORCE_EMAIL_TO;
+
+					if(!empty($addr_cc)){
+                        $addr_cc = $conf->global->AGF_CRENEAU_FORCE_EMAIL_TO;
+                    }
 				}
 
-				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "",  0, 1, $from);
+
+
+				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, "",  0, 1, $from);
 
 				if($cMailFile->sendfile()){
 					$nbMailSend++;
