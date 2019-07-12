@@ -1773,11 +1773,9 @@ class ActionsAgefodd
 			$boxstat.=$this->getStatBox($url, $nb, $text);
 		}
 
-		// TODO A modifier pour nouvelle structure nb de sessions effectives => /!\ spécifique à mettre en master différemment
 		// nb session excluant les non-réalisées et prenant en compte les anciens status des session archivées
-		$sql = "SELECT SUM(IF(s.status <> 4, 1, IF(se.status_before_arch IN(1, 2, 5, 6), 1, 0))) as nb";
+		$sql = "SELECT SUM(IF(s.status <> 4, 1, IF(s.status_before_archive IN(1, 2, 5, 6), 1, 0))) as nb";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session AS s";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_extrafields AS se ON s.rowid = se.fk_object";
 		$sql.= " WHERE s.status <> 3 AND s.entity IN(". getEntity('agefodd') . ")";
 		$resql = $this->db->query($sql);
 		if ($resql)
