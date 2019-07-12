@@ -459,15 +459,20 @@ class ActionsAgefodd
 									else
 									{
 										$duree = 0;
+                                        // Si l'absence est planifiée alors on ne decompte pas les heures
+										if(!empty($agfssh->planned_absence)){
+                                            continue;
+                                        }
 										// Si le statut passe à "absent", alors je force la saisie du compteur d'heure car c'est du consommé
-										if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING)
+										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING)
 										{
 											$duree = $duree_session;
 										}
 										// si on passe le status du créneaux en confirmer sans saisir de temps stagiaire, on met le max
 										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED
 										    && $agf_calendrier_formateur->status !== $old_status
-										    && $THour[$stagiaire->id] == '00:00')
+										    && $THour[$stagiaire->id] == '00:00'
+                                        )
 										{
 										    $duree = $duree_session;
 										}
@@ -1629,6 +1634,18 @@ class ActionsAgefodd
 
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
 
+        // copy email to
+        $addr_cc = "";
+        if(!empty($conf->global->AGF_SEND_COPY_EMAIL_TO_TRAINER))
+        {
+            $formateur = new Agefodd_teacher($this->db);
+            $formateur->fetchByUser($user);
+            if(!empty($formateur->id))
+            {
+                $addr_cc = $formateur->email;
+            }
+        }
+
 		foreach ($stagiaires->lines as &$stagiaire) {
 			if ($stagiaire->id <= 0){
 				$errorsMsg[] = $langs->trans('AgfWarningStagiaireNoId');
@@ -1704,12 +1721,18 @@ class ActionsAgefodd
 					continue;
 				}
 
-				// hidden conf
+
 				if(!empty($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO) && filter_var($conf->global->AGF_CRENEAU_FORCE_EMAIL_TO, FILTER_VALIDATE_EMAIL)){
 					$to = $conf->global->AGF_CRENEAU_FORCE_EMAIL_TO;
+
+					if(!empty($addr_cc)){
+                        $addr_cc = $conf->global->AGF_CRENEAU_FORCE_EMAIL_TO;
+                    }
 				}
 
-				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "",  0, 1, $from);
+
+
+				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, "",  0, 1, $from);
 
 				if($cMailFile->sendfile()){
 					$nbMailSend++;
