@@ -1773,4 +1773,100 @@ class ActionsAgefodd
 
 		return $nbMailSend;
 	}
+
+	function addStatisticLine($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs;
+
+		$boxstat = '';
+
+		// nb stagiaires inscrits aux sessions
+		$sql = "SELECT SUM(s.nb_stagiaire) as nb FROM ".MAIN_DB_PREFIX."agefodd_session s WHERE s.entity in (". getEntity('agefodd') . ")";
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$obj = $this->db->fetch_object($resql);
+			$nb = $obj->nb;
+			$text = $langs->trans('AgfNbreParticipants');
+			$url = dol_buildpath('agefodd/session/list.php', 2);
+
+			$boxstat.=$this->getStatBox($url, $nb, $text);
+		}
+
+		// nb total de participants en bdd
+		$sql = "SELECT COUNT(rowid) as nb FROM ".MAIN_DB_PREFIX."agefodd_stagiaire WHERE entity in (". getEntity('agefodd') . ")";
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$obj = $this->db->fetch_object($resql);
+			$nb = $obj->nb;
+			$text = $langs->trans('AgfReportBPFNbPart');
+			$url = dol_buildpath('agefodd/trainee/list.php', 2);
+
+			$boxstat.=$this->getStatBox($url, $nb, $text);
+		}
+
+		// nb tiers ayant déjà inscrits un participant à une session
+		$sql = "SELECT count(DISTINCT s.rowid) as nb";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire as ass";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_stagiaire as stag ON stag.rowid = ass.fk_stagiaire";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON s.rowid = stag.fk_soc";
+		$sql.= " WHERE stag.entity in (". getEntity('agefodd') . ")";
+		$resql= $this->db->query($sql);
+		if ($resql)
+		{
+			$obj = $this->db->fetch_object($resql);
+			$nb = $obj->nb;
+			$text = $langs->trans('AgfNbTiersPart');
+			$url = dol_buildpath('agefodd/trainee/list.php', 2);
+
+			$boxstat.=$this->getStatBox($url, $nb, $text);
+		}
+
+		// nb session excluant les non-réalisées et prenant en compte les anciens status des session archivées
+		/*
+		 * Status :
+		 * 1 => Envisagée
+		 * 2 => Confirmée
+		 * 3 => Non réalisée
+		 * 4 => Archivée
+		 * 5 => Réalisée
+		 * 6 => En Cours
+		 */
+		$sql = "SELECT
+					SUM(
+						CASE 
+							WHEN s.status <> 4 THEN 1
+							WHEN s.status_before_archive IN (1, 2, 5, 6) THEN 1
+							ELSE 0
+						END
+					) AS nb";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session AS s";
+		$sql.= " WHERE s.status <> 3 AND s.entity IN(". getEntity('agefodd') . ")";
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$obj = $this->db->fetch_object($resql);
+			$nb = $obj->nb;
+			$text = $langs->trans('AgfNbSessEffective');
+			$url = dol_buildpath('agefodd/session/list.php', 2);
+
+			$boxstat.=$this->getStatBox($url, $nb, $text);
+		}
+
+		$this->resprints=$boxstat;
+	}
+
+	function getStatBox($url = '#', $nb = 0, $text = '')
+	{
+		$box = '';
+		$box.= '<a href="'.$url.'" class="boxstatsindicator thumbstat nobold nounderline">';
+		$box.='<div class="boxstats">';
+		$box.='<span class="boxstatstext" title="'.dol_escape_htmltag($text).'">'.img_object("",'generic').' '.$text.'</span><br>';
+		$box.='<span class="boxstatsindicator">'.($nb?$nb:0).'</span>';
+		$box.='</div>';
+		$box.='</a>';
+
+		return $box;
+	}
 }

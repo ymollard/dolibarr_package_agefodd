@@ -211,7 +211,9 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer) {
 
 		if (empty($arch)) {
 			$agf->status = 1;
+			if (!empty($agf->status_before_archive)) $agf->status = $agf->status_before_archive;
 		} else {
+			$agf->status_before_archive = $agf->status;
 			$agf->status = 4;
 		}
 
@@ -219,10 +221,10 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer) {
 
 		if ($result > 0) {
 			// If update are OK we delete related files
-			foreach ( glob($conf->agefodd->dir_output . "/*_" . $id . "_*.pdf") as $filename ) {
-				if (is_file($filename))
-					unlink("$filename");
-			}
+//			foreach ( glob($conf->agefodd->dir_output . "/*_" . $id . "_*.pdf") as $filename ) {
+//				if (is_file($filename))
+//					unlink("$filename");
+//			}
 
 			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 			exit();
