@@ -1824,7 +1824,15 @@ class ActionsAgefodd
 		}
 
 		// nb session excluant les non-réalisées et prenant en compte les anciens status des session archivées
-		$sql = "SELECT SUM(IF(s.status <> 4, 1, IF(s.status_before_archive IN(1, 2, 5, 6), 1, 0))) as nb";
+		//$sql = "SELECT SUM(IF(s.status <> 4, 1, IF(s.status_before_archive IN(1, 2, 5, 6), 1, 0))) as nb";
+		$sql = "SELECT
+					SUM(
+						CASE 
+							WHEN s.status <> 4 THEN 1
+							WHEN s.status_before_archive IN (1, 2, 5, 6) THEN 1
+							ELSE 0
+						END
+					) AS nb";
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session AS s";
 		$sql.= " WHERE s.status <> 3 AND s.entity IN(". getEntity('agefodd') . ")";
 		$resql = $this->db->query($sql);
