@@ -218,6 +218,21 @@ if ($action == 'setvarother') {
         if (! $res > 0) {
         	$error ++;
         }  else {
+
+            $extrafield = new ExtraFields($db);
+            $extrafield->fetch_name_optionals_label('actioncomm', true);
+            $key = 'agf_site';
+
+            if(empty($extrafield->attributes['actioncomm']['type'][$key]))
+            {
+                // Ajout d’un champs
+                $e=new ExtraFields($db);
+                $param= unserialize('a:1:{s:7:"options";a:1:{s:33:"agefodd_place:ref_interne:rowid::";N;}}');
+                $label = 'Lieu de formation';
+
+                $e->addExtraField($key, $label, 'sellist', 100, '', 'actioncomm',0,0,'',$param, 1);
+            }
+
         	if (empty($usesiteinagenda)) {
 
         	    if(floatval(DOL_VERSION) < 9 ){
