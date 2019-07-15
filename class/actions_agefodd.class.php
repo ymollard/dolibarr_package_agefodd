@@ -465,35 +465,41 @@ class ActionsAgefodd
 									else
 									{
 										$duree = 0;
+                                        $forceHoursSum = 0;
+										if(!empty($conf->global->AGF_EA_FORCE_HOURS_ON_SAVE)){
+                                            $forceHoursSum = 1;
+                                        }
+
                                         // Si l'absence est planifiée alors on ne decompte pas les heures
-										if(!empty($agfssh->planned_absence)){
+                                        if (!empty($agfssh->planned_absence)) {
                                             continue;
                                         }
-										// Si le statut passe à "absent", alors je force la saisie du compteur d'heure car c'est du consommé
-										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING)
-										{
-											$duree = $duree_session;
-										}
-										// si on passe le status du créneaux en confirmer sans saisir de temps stagiaire, on met le max
-										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED
-										    && $agf_calendrier_formateur->status !== $old_status
-										    && $THour[$stagiaire->id] == '00:00'
-                                        )
-										{
-										    $duree = $duree_session;
-										}
-										// Si le statut passe à annulé, les heures participants doivent passer à 0 car la session n'a pas eu lieu
-										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED)
-										{
-										    $duree = 0;
-										}
-										else if ($agf_calendrier->date_session < $now && !empty($THour[$stagiaire->id]))
-										{
-											$tmp = explode(':', $THour[$stagiaire->id]);
-											$hours = $tmp[0];
-											$minutes = $tmp[1];
-											$duree = $hours + $minutes / 60;
-										}
+
+										if($forceHoursSum) {
+										    // Si le statut passe à "absent", alors je force la saisie du compteur d'heure car c'est du consommé
+                                            if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING) {
+                                                $duree = $duree_session;
+                                            } // si on passe le status du créneaux en confirmer sans saisir de temps stagiaire, on met le max
+                                            elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED
+                                                && $agf_calendrier_formateur->status !== $old_status
+                                                && $THour[$stagiaire->id] == '00:00'
+                                            ) {
+                                                $duree = $duree_session;
+                                            } // Si le statut passe à annulé, les heures participants doivent passer à 0 car la session n'a pas eu lieu
+                                            elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED) {
+                                                $duree = 0;
+                                            } else if ($agf_calendrier->date_session < $now && !empty($THour[$stagiaire->id])) {
+                                                $forceHoursSum = 0;
+                                            }
+                                        }
+
+										if(empty($forceHoursSum))
+                                        {
+                                            $tmp = explode(':', $THour[$stagiaire->id]);
+                                            $hours = $tmp[0];
+                                            $minutes = $tmp[1];
+                                            $duree = $hours + $minutes / 60;
+                                        }
 
 										$agfssh->heures = (float) $duree;
 										if ($result) $r=$agfssh->update($user);
