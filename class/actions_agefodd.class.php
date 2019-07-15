@@ -1824,7 +1824,15 @@ class ActionsAgefodd
 		}
 
 		// nb session excluant les non-réalisées et prenant en compte les anciens status des session archivées
-		//$sql = "SELECT SUM(IF(s.status <> 4, 1, IF(s.status_before_archive IN(1, 2, 5, 6), 1, 0))) as nb";
+		/*
+		 * Status :
+		 * 1 => Envisagée
+		 * 2 => Confirmée
+		 * 3 => Non réalisée
+		 * 4 => Archivée
+		 * 5 => Réalisée
+		 * 6 => En Cours
+		 */
 		$sql = "SELECT
 					SUM(
 						CASE 
