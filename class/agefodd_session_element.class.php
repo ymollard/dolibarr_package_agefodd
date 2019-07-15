@@ -260,10 +260,10 @@ class Agefodd_session_element extends CommonObject {
 			$sql .= " f.rowid, f.fk_soc,  f.datec, f.total_ttc as amount, soc.nom as socname";
 
             if(floatval(DOL_VERSION) > 9){
-                $sql .= " f.ref as ref,";
+                $sql .= " ,f.ref as ref";
             }
             else{
-                $sql .= " f.facnumber as ref,";
+                $sql .= " ,f.facnumber as ref";
             }
 
 			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
@@ -280,7 +280,7 @@ class Agefodd_session_element extends CommonObject {
 		}
 		$sql .= " WHERE (fk_soc = " . $socid . " OR fk_soc IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid . "))";
 
-		dol_syslog(get_class($this) . "::fetch_element_per_soc", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -321,7 +321,7 @@ class Agefodd_session_element extends CommonObject {
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_element_per_soc " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__.' '. $this->error, LOG_ERR);
 			return - 1;
 		}
 	}

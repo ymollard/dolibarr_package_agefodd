@@ -51,6 +51,7 @@ if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
 
+
 $hookmanager->initHooks(array(
 		'agefoddsessionlinkedfiles'
 ));

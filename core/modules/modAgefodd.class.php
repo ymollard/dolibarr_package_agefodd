@@ -127,7 +127,9 @@ class modAgefodd extends DolibarrModules
 						'agendaexport',
 						'contactcard',
 						'agenda',
-						'index'
+						'index',
+                        			'fileupload',
+                        			'main'
 				),
 				'substitutions' => '/agefodd/core/substitutions/',
 				'models' => 1,

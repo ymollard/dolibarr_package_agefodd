@@ -46,6 +46,7 @@ class Agefodd_teacher extends CommonObject {
 	public $dict_categories = array ();
 	public $trainings = array ();
 	public $thirdparty;
+	public $email;
 
 	/**
 	 * Constructor

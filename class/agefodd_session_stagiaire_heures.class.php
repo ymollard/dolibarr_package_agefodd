@@ -358,6 +358,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $sql .= " t.fk_user_author,";
 	    $sql .= " t.datec,";
 	    $sql .= " t.tms,";
+	    $sql .= " t.planned_absence,";
 	    $sql .= " CONCAT(a.nom,' ', a.prenom) as nom_stagiaire";
 	    $sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element . " as t";
 	    $sql .= " LEFT JOIN " .MAIN_DB_PREFIX . "agefodd_stagiaire as a ON a.rowid = t.fk_stagiaire";
@@ -381,6 +382,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	            $this->fk_user_author = $obj->fk_user_author;
 	            $this->datec = $this->db->jdate($obj->datec);
 	            $this->tms = $this->db->jdate($obj->tms);
+	            $this->planned_absence = $obj->planned_absence;
 	        } else {
 	            return 0;
 	        }
