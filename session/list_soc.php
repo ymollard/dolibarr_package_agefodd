@@ -39,6 +39,9 @@ require_once ('../class/html.formagefodd.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/html.formcompany.class.php');
 require_once ('../class/agefodd_formateur.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
+require_once ('../class/agefodd_session_element.class.php');
+require_once (DOL_DOCUMENT_ROOT . '/fourn/class/fournisseur.facture.class.php');
+
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -380,6 +383,46 @@ if ($result >= 0) {
 		$agf->fetch($line->rowid);
 		$coutTotalLigne = $agf->cost_trainer + $agf->cost_site + $agf->cost_trip;
 
+		if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee')
+		{
+			// on recalcule les couts
+			$agf_fin = new Agefodd_session_element($db);
+			$agf_fin->fetch_by_session_by_thirdparty($line->rowid, '', array('\'invoice_supplier_trainer\'', '\'invoice_supplierline_trainer\''));
+			if (!empty($agf_fin->lines))
+			{
+				$coutTotalLigne = 0;
+				foreach ( $agf_fin->lines as $line_fin ) {
+					switch ($line_fin->element_type)
+					{
+						case 'invoice_supplier_trainer':
+						case 'invoice_supplier_room':
+						case 'invoice_supplier_missions':
+							$agf->fetch_all_by_order_invoice_propal('', '','','','','','',$line_fin->fk_element,'');
+							$suplier_invoice = new FactureFournisseur($db);
+							$suplier_invoice->fetch($line_fin->fk_element);
+							$count = count($agf->lines);
+
+							if ($count > 1){
+								$coutTotalLigne += $suplier_invoice->total_ht/$count;
+							}
+							else
+							{
+								$coutTotalLigne += $suplier_invoice->total_ht;
+							}
+							break;
+
+						case 'invoice_supplierline_trainer':
+						case 'invoice_supplierline_room':
+						case 'invoice_supplierline_missions':
+							$supplier_invoiceline = new SupplierInvoiceLine($db);
+							$supplier_invoiceline->fetch($line_fin->fk_element);
+							$coutTotalLigne += $supplier_invoiceline->total_ht;
+
+					}
+				}
+			}
+		}
+
 		// Retrouve tous les stagiaires d'une même société présents à une session de formation
 		$agfS = new Agefodd_session_stagiaire($db);
 		$agfS->fetch_stagiaire_per_session($line->rowid, $socid);
@@ -450,15 +493,15 @@ if ($result >= 0) {
 			print '<td>' . stripslashes($line->ref_interne) . '</td>';
 			print '<td>' . stripslashes($line->statuslib) . '</td>';
 			if(! empty($conf->global->AGF_ADD_CUSTOM_COLUMNS_ON_FILTER) && $search_type_affect == 'trainee') {
-				$coutTotalLigne /= $line->nb_stagiaire;
+				$pertrainee = $coutTotalLigne / $line->nb_stagiaire;
 			//	$coutTotalLigne *= $nbSocParticipant;
 				$total += $coutTotalLigne;
-				$totalforthirdparty += $nbSocParticipant * $coutTotalLigne;
+				$totalforthirdparty += $coutTotalLigne;
 
 				print '<td>' . $nbSocParticipant . ' / ' . $line->nb_stagiaire . '</td>';
-				print '<td>' . price(round($coutTotalLigne,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
+				print '<td>' . price(round($pertrainee,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
 
-				print '<td>' . price(round($coutTotalLigne,2) * $nbSocParticipant) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
+				print '<td>' . price(round($coutTotalLigne,2) ) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
 			}
 			print '<td></td>';
 			print "</tr>\n";
