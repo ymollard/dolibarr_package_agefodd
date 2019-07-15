@@ -3746,7 +3746,7 @@ class Agsession extends CommonObject
 		$alertday = false;
 		if ($blocNumber < 1) {
 			print '<td  width="20%" valign="top" >' . $langs->trans("AgfCalendrier") . '</td>';
-			print '<td colspan="' . $colspan . '" style="color:red;">' . $langs->trans("AgfNoCalendar") . '</td></tr>';
+			print '<td colspan="' . $colspan . '" style="color:#313335;">' . $langs->trans("AgfNoCalendar") . '</td></tr>';
 		} else {
 			print '<td  width="20%" valign="top" style="border-bottom:0px;">' . $langs->trans("AgfCalendrier") . '</td>';
 			$old_date = 0;
@@ -4070,10 +4070,7 @@ class Agsession extends CommonObject
 
 				// multiprix
 				if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($order->thirdparty->price_level)) {
-					$pu_ht = $prod->multiprices[$order->thirdparty->price_level];
-					$pu_ttc = $prod->multiprices_ttc[$order->thirdparty->price_level];
-					$price_min = $prod->multiprices_min[$order->thirdparty->price_level];
-					$price_base_type = $prod->multiprices_base_type[$order->thirdparty->price_level];
+					$pu_ht = $product->multiprices[$order->thirdparty->price_level];
 				} elseif (! empty($conf->global->PRODUIT_CUSTOMER_PRICES)) {
 					$sql = "SELECT ";
 					$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
@@ -4085,28 +4082,16 @@ class Agsession extends CommonObject
 						if ($this->db->num_rows($resql)) {
 							$obj = $this->db->fetch_object($resql);
 							$pu_ht = $obj->custprice;
-							$pu_ttc = $obj->custprice_ttc;
-							$price_min = $obj->custprice_min;
-							$price_base_type = $obj->custprice_base_type;
 							$tva_tx = $obj->custtva_tx;
 						} else {
 							$pu_ht = $product->price;
-							$pu_ttc = $product->price_ttc;
-							$price_min = $product->price_min;
-							$price_base_type = $product->price_base_type;
 						}
 						$this->db->free($resql);
 					} else {
 						$pu_ht = $product->price;
-						$pu_ttc = $product->price_ttc;
-						$price_min = $product->price_min;
-						$price_base_type = $product->price_base_type;
 					}
 				} else {
 					$pu_ht = $product->price;
-					$pu_ttc = $product->price_ttc;
-					$price_min = $product->price_min;
-					$price_base_type = $product->price_base_type;
 				}
 
 				$order->lines[0]->subprice = $pu_ht;
@@ -4173,7 +4158,7 @@ class Agsession extends CommonObject
 								$error ++;
 							}
 							$order_line->desc .= $this->avgpricedesc;
-							$result = $order_line->update(1);
+							$result = $order_line->update($user);
 							if ($result < 0) {
 								$this->errors[] = $order_line->error;
 								$error ++;
@@ -4361,9 +4346,6 @@ class Agsession extends CommonObject
 			// multiprix
 			if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($propal->thirdparty->price_level)) {
 				$pu_ht = $product->multiprices[$propal->thirdparty->price_level];
-				$pu_ttc = $product->multiprices_ttc[$propal->thirdparty->price_level];
-				$price_min = $product->multiprices_min[$propal->thirdparty->price_level];
-				$price_base_type = $product->multiprices_base_type[$propal->thirdparty->price_level];
 			} elseif (! empty($conf->global->PRODUIT_CUSTOMER_PRICES)) {
 				$sql = "SELECT ";
 				$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
@@ -4375,28 +4357,16 @@ class Agsession extends CommonObject
 					if ($this->db->num_rows($resql)) {
 						$obj = $this->db->fetch_object($resql);
 						$pu_ht = $obj->custprice;
-						$pu_ttc = $obj->custprice_ttc;
-						$price_min = $obj->custprice_min;
-						$price_base_type = $obj->custprice_base_type;
 						$tva_tx = $obj->custtva_tx;
 					} else {
 						$pu_ht = $product->price;
-						$pu_ttc = $product->price_ttc;
-						$price_min = $product->price_min;
-						$price_base_type = $product->price_base_type;
 					}
 					$this->db->free($resql);
 				} else {
 					$pu_ht = $product->price;
-					$pu_ttc = $product->price_ttc;
-					$price_min = $product->price_min;
-					$price_base_type = $product->price_base_type;
 				}
 			} else {
 				$pu_ht = $product->price;
-				$pu_ttc = $product->price_ttc;
-				$price_min = $product->price_min;
-				$price_base_type = $product->price_base_type;
 			}
 
 			$propal->lines[0]->subprice = $pu_ht;
@@ -4568,12 +4538,16 @@ class Agsession extends CommonObject
 			$error ++;
 		}
 
+		$desc_trainee='';
+		$desc_OPCA='';
+
 		$this->db->begin();
 
 		$invoice->thirdparty = $soc;
 
 		$invoice->socid = $socid;
 		$invoice->date = dol_now();
+
 		if (! empty($soc->cond_reglement_id)) {
 			$invoice->cond_reglement_id = $soc->cond_reglement_id;
 		} else {
@@ -4582,7 +4556,20 @@ class Agsession extends CommonObject
 		if (! empty($soc->mode_reglement_id)) {
 			$invoice->mode_reglement_id = $soc->mode_reglement_id;
 		} else {
-			$invoice->mode_reglement_id = 1;
+			$defaultmode_reglement_id=1;
+			//Find first payment mode active
+			$sql='SELECT id FROM '.MAIN_DB_PREFIX.'c_paiement WHERE active=1 ORDER BY id LIMIT 1';
+			$resqlmr = $this->db->query($sql);
+			if ($resqlmr) {
+				if ($this->db->num_rows($resqlmr)) {
+					$objmr = $this->db->fetch_object($resqlmr);
+					$defaultmode_reglement_id = $objmr->id;
+				}
+			} else {
+				$this->error = $this->db->lasterror();
+				$error ++;
+			}
+			$invoice->mode_reglement_id = $defaultmode_reglement_id;
 		}
 		// $invoice->duree_validite = $conf->global->PROPALE_VALIDITY_DURATION;
 		$invoice->modelpdf = $conf->global->FACTURE_ADDON_PDF;
@@ -4621,7 +4608,7 @@ class Agsession extends CommonObject
 			if (empty($conf->global->AGF_MANAGE_OPCA) || $this->type_session == 0) {
 				// For Intra entreprise you take all trainne
 				$find_trainee_by_OPCA = false;
-				$sessionOPCA->num_OPCA_file = $agf->num_OPCA_file;
+				$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
 				$invoice_soc_id = null;
 			} elseif ($this->type_session == 1) {
 
@@ -4667,6 +4654,10 @@ class Agsession extends CommonObject
 								$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
 								$socsatic = new Societe($this->db);
 								$result = $socsatic->fetch($this->socid);
+								if ($result < 0) {
+									$this->errors[] = $invoice->error;
+									$error ++;
+								}
 								$soc_name = $socsatic->name;
 							}
 							if (! empty($sessionOPCA->num_OPCA_file) && ! empty($conf->global->AGF_MANAGE_OPCA)) {
@@ -4754,8 +4745,6 @@ class Agsession extends CommonObject
 				if (! empty($conf->global->PRODUIT_MULTIPRICES) && ! empty($financial_doc->thirdparty->price_level)) {
 					$pu_ht = $product->multiprices[$invoice->thirdparty->price_level];
 					$pu_ttc = $product->multiprices_ttc[$invoice->thirdparty->price_level];
-					$price_min = $product->multiprices_min[$invoice->thirdparty->price_level];
-					$price_base_type = $product->multiprices_base_type[$invoice->thirdparty->price_level];
 				} elseif (! empty($conf->global->PRODUIT_CUSTOMER_PRICES)) {
 					$sql = "SELECT ";
 					$sql .= ' pcp.rowid as idprodcustprice, pcp.price as custprice, pcp.price_ttc as custprice_ttc, pcp.price_min as custprice_min,';
@@ -4768,16 +4757,12 @@ class Agsession extends CommonObject
 							$obj = $this->db->fetch_object($resql);
 							$pu_ht = $obj->custprice;
 							$pu_ttc = $obj->custprice_ttc;
-							$price_min = $obj->custprice_min;
-							$price_base_type = $obj->custprice_base_type;
 							$tva_tx = $obj->custtva_tx;
 
 							// dol_syslog ( get_class ( $this ) . "::createInvoice PRODUIT_CUSTOMER_PRICE pu_ttc=" . $pu_ttc, LOG_DEBUG );
 						} else {
 							$pu_ht = $product->price;
 							$pu_ttc = $product->price_ttc;
-							$price_min = $product->price_min;
-							$price_base_type = $product->price_base_type;
 
 							// dol_syslog ( get_class ( $this ) . "::createInvoice product=" . var_export ( $product, true ), LOG_DEBUG );
 						}
@@ -4785,22 +4770,16 @@ class Agsession extends CommonObject
 					} else {
 						$pu_ht = $product->price;
 						$pu_ttc = $product->price_ttc;
-						$price_min = $product->price_min;
-						$price_base_type = $product->price_base_type;
 						// dol_syslog ( get_class ( $this ) . "::createInvoice si PRODUIT_CUSTOMER_PRICE resql=false pu_ttc=" . $pu_ttc, LOG_DEBUG );
 					}
 				} else {
 					$pu_ht = $product->price;
 					$pu_ttc = $product->price_ttc;
-					$price_min = $product->price_min;
-					$price_base_type = $product->price_base_type;
 					// dol_syslog ( get_class ( $this ) . "::createInvoice si NON PRODUIT_CUSTOMER_PRICE pu_ttc=" . $pu_ttc, LOG_DEBUG );
 				}
 			} else {
 				$pu_ht = price2num($amount, 'MU');
 				$pu_ttc = price2num(price2num($amount) + (($tva_tx * price2num($amount)) / 100), 'MU');
-				$price_min = $product->price_min;
-				$price_base_type = $product->price_base_type;
 				// dol_syslog ( get_class ( $this ) . "::createInvoice si amount non empty comme from propal tva_tx=".$tva_tx." price2num(amount)=".price2num($amount)." pu_ttc=" . $pu_ttc, LOG_DEBUG );
 			}
 
@@ -4852,8 +4831,8 @@ class Agsession extends CommonObject
 				$financial_doc->fetch($from_financial_id);
 			}
 
-			if (! empty($financial_doc->id) && is_array($financial_doc->lines) && count($financial_doc->lines) > 0) {
-				foreach ( $financial_doc->lines as $line ) {
+			if (!empty($financial_doc->id) && is_array($financial_doc->lines) && count($financial_doc->lines) > 0) {
+				foreach ($financial_doc->lines as $line) {
 					if ($line->fk_product != $product->id || empty($this->fk_product)) {
 						$invoiceline = new FactureLigne($this->db);
 						$invoiceline->fk_product = $line->fk_product;
@@ -4865,10 +4844,10 @@ class Agsession extends CommonObject
 						$invoiceline->total_tva = $line->total_tva;
 						$invoiceline->subprice = $line->subprice;
 
-                                                $invoiceline->multicurrency_total_ht = $line->multicurrency_total_ht;
-                                                $invoiceline->multicurrency_total_ttc = $line->multicurrency_total_ttc;
-                                                $invoiceline->multicurrency_total_tva = $line->multicurrency_total_tva;
-                                                $invoiceline->multicurrency_subprice = $line->multicurrency_subprice;
+						$invoiceline->multicurrency_total_ht = $line->multicurrency_total_ht;
+						$invoiceline->multicurrency_total_ttc = $line->multicurrency_total_ttc;
+						$invoiceline->multicurrency_total_tva = $line->multicurrency_total_tva;
+						$invoiceline->multicurrency_subprice = $line->multicurrency_subprice;
 
 						$invoiceline->tva_tx = $line->tva_tx;
 						$invoiceline->vat_src_code = $line->vat_src_code;
@@ -5409,6 +5388,17 @@ class Agsession extends CommonObject
 		        }
 		    }
 		}
+
+		if(empty($this->TStagiairesSessionSocConfirm) && !empty($this->TStagiairesSessionSoc)) {
+			if (is_array($this->TStagiairesSessionSoc) && count($this->TStagiairesSessionSoc)>0) {
+				foreach($this->TStagiairesSessionSoc as $linesta) {
+					if ($linesta->status_in_session == 2) {
+						$this->TStagiairesSessionSocConfirm[]=$linesta;
+					}
+				}
+			}
+		}
+
 		//Trainee link to the company convention
 		if (!empty($this->contactname)) {
 			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
