@@ -1601,7 +1601,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		<div class="col">
 			<div class="form-group">
 				<label for="heured">Date</label>
-				<input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="date_session" required name="date_session" value="'.$date_session.'">
+				<input '.($action == 'view' ? 'readonly' : '').' min="'.date('Y-m-d', $agsession->dated).'" max="'.date('Y-m-d', $agsession->datef).'" type="date" class="form-control" id="date_session" required name="date_session" value="'.$date_session.'">
 			</div>
 		</div>
 		<div class="col">
