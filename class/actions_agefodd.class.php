@@ -1532,6 +1532,18 @@ class ActionsAgefodd
 			$this->resprints = $sql;
 			return 1;
 		}
+
+        if(in_array('agendalist', $TContext)){
+            $sql = '';
+            $actioncode = GETPOST('search_actioncode',"alpha");
+            if ($actioncode == 'AC_NON_AUTO')
+            {
+                $sql.= " AND c.code NOT IN ('AC_AGF_CONVO', 'AC_AGF_SESST', 'AC_AGF_SESS') ";
+            }
+
+            $this->resprints = $sql;
+            return 1;
+        }
 	}
 
     /**
