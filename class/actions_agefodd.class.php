@@ -476,6 +476,7 @@ class ActionsAgefodd
                                         }
 
 										if($forceHoursSum) {
+										    // CETTE PARTIE EST DEJA GEREE PAR LE JS MAIS JE GARDE LE CODE SOUS LE COUDE AU CAS OU
 										    // Si le statut passe à "absent", alors je force la saisie du compteur d'heure car c'est du consommé
                                             if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING) {
                                                 $duree = $duree_session;

@@ -1622,7 +1622,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		<div class="col">
 		
 			<div class="form-group">
-				<label for="status">Status</label>
+				<label for="status">Status <i class="fa fa-question-circle" data-toggle="tooltip" title="'.htmlentities($langs->trans('AgfExternalAccessSessionCardDeclareHoursInfo')).'" data-html="true" aria-hidden="true"></i></label>
 				<select '.($action == 'view' ? 'disabled' : '').' class="form-control" id="status" name="status" >
 					'.$statusOptions.'
 				</select>
@@ -1676,15 +1676,15 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 						$("#code_c_session_calendrier_type").prop(\'required\',false);
 					}
 					
+					// get Hours
+                    var start = document.getElementById("heured").value;
+                    var end = document.getElementById("heuref").value;
+                    var duration = agfTimeDiff(start, end);
+					
 					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'\' 
 					|| formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_FINISH.'\')
 					{
-						// auto update Hours
-						var start = document.getElementById("heured").value;
-                        var end = document.getElementById("heuref").value;
-						var duration = agfTimeDiff(start, end);
                         $(".traineeHourSpended").each(function( index ) {
-                            
                             if($( this ).data("plannedabsence") == 0 && !$( this ).prop("readonly"))
                             {
                                  if($(this).val() == "00:00") // != duration
@@ -1692,7 +1692,17 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
                                      $(this).val(duration);
                                      $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
                                  }
-                                 
+                            }
+                        });
+					}
+					
+					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_MISSING.'\')
+					{
+                        $(".traineeHourSpended").each(function( index ) {
+                            if($( this ).data("plannedabsence") == 0 && !$( this ).prop("readonly"))
+                            {
+                                 $(this).val(duration);
+                                 $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
                             }
                         });
 					}
@@ -1701,11 +1711,8 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'\')
 					{
 					    $(".traineeHourSpended").each(function( index ) {
-					        if(!$( this ).prop("readonly"))
-                            {
-                                $(this).val("00:00");
-                                $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
-                            }
+                             $(this).val("00:00");
+                             $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
                         });
 					}
 
@@ -1748,10 +1755,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 		$out.= '<h4>'.$langs->trans('AgfExternalAccessSessionCardDeclareHours').'</h4>';
 
-		$out.= '
-			<div class="alert alert-secondary" role="alert">
-				'.$langs->trans('AgfExternalAccessSessionCardDeclareHoursInfo').'
-			</div>';
+
 
 		foreach ($stagiaires->lines as &$stagiaire)
 		{
