@@ -1371,7 +1371,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 
 function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess($action='')
 {
-	global $db,$langs, $hookmanager, $user;
+	global $db,$langs, $hookmanager, $user, $conf;
 
 	$context = Context::getInstance();
 	$trainer = new Agefodd_teacher($db);
@@ -1412,22 +1412,33 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
 		$agsession = new Agsession($db);
 		$agsession->fetch_session_per_trainer($trainer->id);
 		$optionSessions = '';
+		$countNbSessionAvailable = 0;
 		if (!empty($agsession->lines)) {
 			foreach ($agsession->lines as $line) {
-				$optionSessions .= '<option value="' . $line->rowid . '">' . $line->sessionref . ' : ' . $line->intitule . '</option>';
+			    if( ($line->datef >= $endDate->getTimestamp() && $line->dated <= $startDate->getTimestamp())
+                    || !empty($conf->global->AGF_CAN_ADD_SESSION_CRENEAU_OUT_SESSION_DATE)
+                )
+                {
+                    $countNbSessionAvailable++;
+                    $optionSessions .= '<option value="' . $line->rowid . '">' . $line->sessionref . ' : ' . $line->intitule . '</option>';
+                }
 			}
 		}
 
-		$out .= '<div class="form-group">';
-		$out .= '<label for="sessid">' . $langs->trans('AgfSelectSession') . '</label>';
-		$out .= '<select class="form-control" name="sessid">' . $optionSessions . '</select>';
-		$out .= '</div>';
+		if(empty($countNbSessionAvailable)){
+		    $out.= '<div class="alert alert-info" >'.$langs->trans('AgfNoAvailableSessionInDateRange').'</div>' ;
+        }
+        else{
+
+            $out .= '<div class="form-group">';
+            $out .= '<label for="sessid">' . $langs->trans('AgfSelectSession') . '</label>';
+            $out .= '<select class="form-control selectsearchable" data-live-search="true" name="sessid">' . $optionSessions . '</select>';
+            $out .= '</div>';
 
 
-		$out .= '<button type="submit" class="btn btn-primary pull-right" >' . $langs->trans('Next') . '</button>';
-
+		    $out .= '<button type="submit" class="btn btn-primary pull-right" >' . $langs->trans('Next') . '</button>';
+        }
 		$out .= '</form>';
-
 
 		// Others options
 		$out .= '<div class="or">' . $langs->trans('OrSeparator') . '</div>';
