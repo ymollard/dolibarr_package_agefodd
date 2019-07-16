@@ -753,6 +753,9 @@ if (! empty($id)) {
 				$formmail->substit ['__FORMINTITULE__'] = $agf->formintitule;
 			}
 
+                        $date_conv = $agf->libSessionDate('daytext');
+                        $formmail->substit['__FORMDATESESSION__'] = $date_conv;
+
 			if (is_array($withtocompanyname) && count($withtocompanyname)>0) {
 				if (! empty($conf->global->FCKEDITOR_ENABLE_MAIL)) {
 					$formmail->substit['__THIRDPARTY_NAME__'] = implode('<BR>',$withtocompanyname);
