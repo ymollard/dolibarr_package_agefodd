@@ -5093,7 +5093,7 @@ class Agsession extends CommonObject
 				$sql .= " WHERE ag.fk_session_place=" . $this->fk_session_place;
 				$sql .= " AND ((ag.datef >= '" . $this->db->idate($date_data['dated']) . "') ";
 				$sql .= " AND (ag.dated <= '" . $this->db->idate($date_data['datef']) . "') )";
-
+                $sql .= " AND agcal.fk_agefodd_session!=" . $this->id;
 				dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
