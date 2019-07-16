@@ -1535,14 +1535,16 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	}
 	$out.= getEaNavbar($backUrl, '', $editUrl);
 
-
-    $isTrainerFree = Agefoddsessionformateurcalendrier::isTrainerFree($trainer->id, $agf_calendrier_formateur->heured, $agf_calendrier_formateur->heuref, $agf_calendrier_formateur->id, 'default', array());
-    if(!$isTrainerFree->isFree)
+    if(!empty($agf_calendrier_formateur->heured) && !empty($agf_calendrier_formateur->heuref))
     {
-        if($isTrainerFree->errors > 0){
-            $out.= '<div class="alert alert-danger" >'.$langs->trans('TrainerNotFree').'</div>';
-        } elseif ($isTrainerFree->warnings > 0){
-            $out.= '<div class="alert alert-warning" >'.$langs->trans('TrainerCouldBeNotFree').'</div>';
+        $isTrainerFree = Agefoddsessionformateurcalendrier::isTrainerFree($trainer->id, $agf_calendrier_formateur->heured, $agf_calendrier_formateur->heuref, $agf_calendrier_formateur->id, 'default', array());
+        if(!$isTrainerFree->isFree)
+        {
+            if($isTrainerFree->errors > 0){
+                $out.= '<div class="alert alert-danger" >'.$langs->trans('TrainerNotFree').'</div>';
+            } elseif ($isTrainerFree->warnings > 0){
+                $out.= '<div class="alert alert-warning" >'.$langs->trans('TrainerCouldBeNotFree').'</div>';
+            }
         }
     }
 
