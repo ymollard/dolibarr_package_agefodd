@@ -90,7 +90,7 @@ class Agefodd_sessadm extends CommonObject {
 		$sql .= $this->fk_agefodd_session . ", ";
 		$sql .= "'" . $this->intitule . "', ";
 		$sql .= $this->delais_alerte . ", ";
-		$sql .= $this->delais_alerte_end . ", ";
+		$sql .= intval($this->delais_alerte_end) . ", ";
 		$sql .= $this->indice . ", ";
 		$sql .= $this->level_rank . ", ";
 		$sql .= $this->fk_parent_level . ", ";
