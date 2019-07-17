@@ -1719,7 +1719,6 @@ class ActionsAgefodd
 
 
 				// PREPARE EMAIL
-				$from = $user->email;
 
 				if (! isset($arrayoffamiliestoexclude)) $arrayoffamiliestoexclude=null;
 
@@ -1777,8 +1776,11 @@ class ActionsAgefodd
 				}
 
 
+                $from = getExternalAccessSendEmailFrom($user->email);
+                $replyto = $user->email;
+                $errors_to = $conf->global->MAIN_MAIL_ERRORS_TO;
 
-				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, "",  0, 1, $from);
+				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, "",  0, 1, $errors_to, '', '', '', getExternalAccessSendEmailContext(), $replyto);
 
 				if($cMailFile->sendfile()){
 					$nbMailSend++;

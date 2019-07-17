@@ -2826,7 +2826,9 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
 
 
         // PREPARE EMAIL
-        $from = $user->email;
+        $from = getExternalAccessSendEmailFrom($user->email);
+        $replyto = $user->email;
+        $errors_to = $conf->global->MAIN_MAIL_ERRORS_TO;
 
         if (! isset($arrayoffamiliestoexclude)) $arrayoffamiliestoexclude=null;
 
@@ -2872,6 +2874,9 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
         $sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
         $sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
 
+        $addr_cc = '';
+        $addr_bcc = '';
+
         $TTo = array();
 
         // Add trainer emails
@@ -2890,16 +2895,20 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
         }
 
         $parameters=array(
-            'TTo' =>& $TTo,
-            'user' => $user,
-            'agsession' => $agsession,
-            'sessionStagiaire' => $sessionStagiaire,
-            'calendrier' => $calendrier,
+            'TTo'               =>& $TTo,
+            'user'              => $user,
+            'agsession'         => $agsession,
+            'sessionStagiaire'  => $sessionStagiaire,
+            'calendrier'        => $calendrier,
             'sessionstagiaireheures' => $sessionstagiaireheures,
-            'errorsMsg' =>& $errorsMsg,
-            'sendTopic' =>& $sendTopic,
-            'from' =>& $from,
-            'sendContent' =>& $sendContent
+            'errorsMsg'         =>& $errorsMsg,
+            'sendTopic'         =>& $sendTopic,
+            'from'              =>& $from,
+            'sendContent'       =>& $sendContent,
+            'addr_cc'           =>& $addr_cc,
+            'addr_bcc'          =>& $addr_bcc,
+            'replyto'           =>& $replyto,
+            'errors_to'         =>& $errors_to
         );
         $reshook=$hookmanager->executeHooks('agf_traineeSendMailAlertForAbsence', $parameters, $trainee);
 
@@ -2915,7 +2924,7 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
 
                 $to = implode(',', $TTo);
 
-                $cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "", 0, 1, $from);
+                $cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, $addr_bcc,  0, 1, $errors_to, '', '', '', getExternalAccessSendEmailContext(), $replyto);
 
                 if ($cMailFile->sendfile()) {
                     $nbMailSend++;
@@ -2945,4 +2954,30 @@ function traineeCanChangeAbsenceStatus($heured)
     else{
         return false;
     }
+}
+
+
+function getExternalAccessSendEmailContext(){
+    global $conf;
+    $sendcontext='emailing';
+    if(!empty($conf->global->AGF_SEND_EMAIL_CONTEXT_STANDARD))
+    {
+        $sendcontext='standard';
+    }
+
+    return $sendcontext;
+}
+
+function getExternalAccessSendEmailFrom($default){
+    global $conf;
+    $mail=$default;
+    if(!empty($conf->global->AGF_EA_SEND_EMAIL_FROM))
+    {
+        $mail=$conf->global->AGF_EA_SEND_EMAIL_FROM;
+    }
+    elseif(!empty($conf->global->MAIN_MAIL_EMAIL_FROM)){
+        $mail=$conf->MAIN_MAIL_EMAIL_FROM;
+    }
+
+    return $mail;
 }

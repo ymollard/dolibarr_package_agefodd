@@ -67,6 +67,20 @@ if ($action == 'setvarother') {
         
     }
 
+
+    // Utilisation des config de mail par defaut
+    $confSend = GETPOST('AGF_SEND_EMAIL_CONTEXT_STANDARD');
+    $res = dolibarr_set_const($db, 'AGF_SEND_EMAIL_CONTEXT_STANDARD', $confSend, 'chaine', 0, '', $conf->entity);
+    if ($res < 0) $error++;
+
+
+    // Email from
+    $confSend = GETPOST('AGF_EA_SEND_EMAIL_FROM');
+    $res = dolibarr_set_const($db, 'AGF_EA_SEND_EMAIL_FROM', $confSend, 'chaine', 0, '', $conf->entity);
+    if ($res < 0) $error++;
+
+
+
     $confKey = 'AGF_SEND_CREATE_CRENEAU_TO_TRAINEE_MAILMODEL';
 	$mailmodel = GETPOST($confKey, 'alpha');
 	$res = dolibarr_set_const($db, $confKey, $mailmodel, 'chaine', 0, '', $conf->entity);
@@ -305,6 +319,33 @@ print $form->select_dolusers($conf->global->AGF_EXTERNAL_MAIL_SENDER_USER,'AGF_E
 print '</td>';
 print '<td></td>';
 print '</tr>';*/
+
+
+
+// Type envoi email
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfEAUseUserEmailSmptConf") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+    print ajax_constantonoff('AGF_SEND_EMAIL_CONTEXT_STANDARD');
+} else {
+    $arrval = array (
+        '0' => $langs->trans("No"),
+        '1' => $langs->trans("Yes")
+    );
+    print $form->selectarray("AGF_SEND_EMAIL_CONTEXT_STANDARD", $arrval, $conf->global->AGF_SEND_EMAIL_CONTEXT_STANDARD);
+}
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
+
+print '<tr  class="oddeven"><td>' . $langs->trans("AgfEASendEmailFrom").' '. img_help(1,$langs->trans('AgfEASendEmailFromHelp')) . '</td>';
+print '<td align="left">';
+print '<input type="email" name="AGF_EA_SEND_EMAIL_FROM" value="'.$conf->global->AGF_EA_SEND_EMAIL_FROM.'"  >';
+print '</td>';
+print '<td></td>';
+print '</tr>';
+
 
 print '<tr  >';
 print '<th colspan="3" class="left">' . $langs->trans("AgfEATrainerTitle") . '</th>';
