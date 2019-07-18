@@ -115,6 +115,7 @@ $search_soc_employer = GETPOST('search_soc_employer', 'alpha');
 $search_soc_requester = GETPOST('search_soc_requester', 'alpha');
 $search_session_status = GETPOST('search_session_status');
 $search_product = GETPOST('search_product');
+$search_intitule_custo = GETPOST('search_intitule_custo');
 
 $search_sale = GETPOST('search_sale', 'int');
 
@@ -175,6 +176,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_soc_requester = '';
 	$search_session_status = '';
 	$search_product = '';
+	$search_intitule_custo = '';
 }
 
 $hookmanager->initHooks(array(
@@ -212,6 +214,10 @@ $arrayfields = array(
 		'c.intitule' => array(
 				'label' => "AgfIntitule",
 				'checked' => 1
+		),
+		's.intitule_custo' => array(
+			'label' => "AgfFormIntituleCust",
+			'checked' => 0
 		),
 		'c.ref' => array(
 				'label' => "Ref",
@@ -367,6 +373,10 @@ $option = '';
 if (! empty($search_trainning_name)) {
 	$filter['c.intitule'] = $search_trainning_name;
 	$option .= '&search_trainning_name=' . $search_trainning_name;
+}
+if (! empty($search_intitule_custo)) {
+	$filter['s.intitule_custo'] = $search_intitule_custo;
+	$option .= '&search_intitule_custo=' . $search_intitule_custo;
 }
 if (! empty($search_soc)) {
 	$filter['so.nom'] = $search_soc;
@@ -759,6 +769,11 @@ if ($resql != - 1) {
 		print '<input type="text" class="flat" name="search_trainning_name" id="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
 		print '</td>';
 	}
+	if (array_key_exists('s.intitule_custo', $arrayfields) && ! empty($arrayfields['s.intitule_custo']['checked'])) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_intitule_custo" id="search_intitule_custo" value="' . $search_intitule_custo . '" size="20">';
+		print '</td>';
+	}
 	if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_training_ref" id="search_training_ref" value="' . $search_training_ref . '" size="10">';
@@ -942,6 +957,9 @@ if ($resql != - 1) {
 	if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
 		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
 	}
+	if (array_key_exists('s.intitule_custo', $arrayfields) && ! empty($arrayfields['s.intitule_custo']['checked'])) {
+		print_liste_field_titre($langs->trans("AgfFormIntituleCust"), $_SERVER['PHP_SELF'], "s.intitule_custo", "", $option, '', $sortfield, $sortorder);
+	}
 	if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
 		print_liste_field_titre($langs->trans("Ref"), $_SERVER['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
 	}
@@ -1108,6 +1126,9 @@ if ($resql != - 1) {
 				}
 
 				print '<td ' . $color_training . '>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
+			}
+			if (array_key_exists('s.intitule_custo', $arrayfields) && ! empty($arrayfields['s.intitule_custo']['checked'])) {
+				print '<td>' . stripslashes($line->intitule_custo) . '</td>';
 			}
 			if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
 				print '<td>' . $line->ref . '</td>';
@@ -1357,6 +1378,9 @@ if ($resql != - 1) {
 			if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
 				print '<td></td>';
 			}
+			if (array_key_exists('s.intitule_custo', $arrayfields) && ! empty($arrayfields['s.intitule_custo']['checked'])) {
+				print '<td></td>';
+			}
 			if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
 				print '<td></td>';
 			}
@@ -1472,6 +1496,9 @@ if ($resql != - 1) {
 		print '<td></td>';
 	}
 	if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
+		print '<td></td>';
+	}
+	if (array_key_exists('s.intitule_custo', $arrayfields) && ! empty($arrayfields['s.intitule_custo']['checked'])) {
 		print '<td></td>';
 	}
 	if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
