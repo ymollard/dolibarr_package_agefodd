@@ -108,6 +108,7 @@ llxHeader('', $langs->trans("AgfSessionDetail"), '', '', 0, 0, $morejs, $morecss
 $head = session_prepare_head($object);
 dol_fiche_head($head, 'scheduler', $langs->trans('AgfSessionDetail'), 0, 'action');
 
+dol_agefodd_banner_tab($object, 'id');
 
 echo '<div id="agf_session_scheduler"></div>';
 

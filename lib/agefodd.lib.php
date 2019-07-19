@@ -2014,6 +2014,9 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
         $foramtion = new Formation($db);
         $foramtion->fetch($object->formid);
         $morehtmlref.= $foramtion->getNomUrl('intitule');
+        if ($object->intitule_custo!==$foramtion->intitule) {
+	        $morehtmlref.='<br/>'.$object->intitule_custo;
+        }
 
         if (!empty($object->fk_soc)){
             dol_include_once('/societe/class/societe.class.php');
