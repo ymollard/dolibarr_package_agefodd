@@ -906,7 +906,7 @@ class Agefodd extends DolibarrApi
         if((int)$this->session->status !== 4) $this->session->status = 4;
         else $this->session->status = 1;
         
-        if($this->session->updateArchive(DolibarrApiAccess::$user))
+        if($this->session->update(DolibarrApiAccess::$user))
             return $this->getSession($id);
             
             return false;
