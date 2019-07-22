@@ -834,9 +834,41 @@ elseif (empty($search_fourninvoiceref)) {
 			setEventMessage($soc->error, 'errors');
 		}
 
-		foreach ( $agf_session->lines as $line_session ) {
-			!empty($line_session->training_ref_interne)?$training_ref_interne= ' - (' .$line_session->training_ref_interne.')': $training_ref_interne='';
-			$sessions [$line_session->rowid] = $line_session->rowid.' '. $line_session->ref_interne.$training_ref_interne. ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session	->dated, 'daytext');
+		foreach ( $agf_session->lines as $line_session )
+		{
+			$objcount = new stdClass;
+			$objcount->nb_confirm = 0;
+			$objcount->nb_inscrits = 0;
+
+			// CASE au lieu de IF pour compatibilité postGreSQL
+			$sqlcount = '
+                SELECT SUM(CASE WHEN COALESCE(status_in_session, 0) = 0 THEN 1 ELSE 0 END) AS nb_prospect
+                , SUM(CASE WHEN status_in_session > 0 AND status_in_session < 4 THEN 1 ELSE 0 END) AS nb_confirm
+                , SUM(CASE WHEN status_in_session > 3 THEN 1 ELSE 0 END) AS nb_cancelled
+
+                FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire
+
+                WHERE fk_session_agefodd = ' . $line_session->rowid;
+
+			$resqlcount = $db->query($sqlcount);
+
+			if($resqlcount)
+			{
+				$objcount = $db->fetch_object($resqlcount);
+				$objcount->nb_inscrits = $objcount->nb_confirm + $objcount->nb_cancelled;
+			}
+
+			$sessionLabel = $line_session->rowid.' '. $line_session->ref_interne;
+
+			if(! empty($line_session->training_ref_interne))
+            {
+                $sessionLabel .= ' (' .$line_session->training_ref_interne . ')';
+            }
+
+			$sessionLabel .= ' - ' . $line_session->intitule . ' - ' . dol_print_date($line_session	->dated, 'daytext');
+			$sessionLabel .= ' - ' . $line_session->statuslib . ' - ' . $langs->trans('AgfTraineesRegisteredPresent', intval($objcount->nb_inscrits), intval($objcount->nb_confirm));
+
+			$sessions[$line_session->rowid] = $sessionLabel;
 		}
 	}
 
@@ -845,23 +877,72 @@ elseif (empty($search_fourninvoiceref)) {
 	    foreach ($agf->lines as $line) $excludeSessions[] = (int)$line->rowid;
 	    $excludeSessions = array_merge($excludeSessions, array_keys($sessions));
 
-	    $sql = "SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated
+	    $sql = "
+            SELECT s.rowid, c.intitule, c.ref_interne as trainingrefinterne, p.ref_interne, s.dated
+            , dictstatus.intitule as statuslib, dictstatus.code as statuscode
             FROM ".MAIN_DB_PREFIX."agefodd_session as s
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             LEFT JOIN ".MAIN_DB_PREFIX."agefodd_place as p ON p.rowid = s.fk_session_place
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status IN (1,2)";
-	    if (is_array($excludeSessions) && count($excludeSessions)>0) {
-	    	$sql .=" AND s.rowid NOT IN (".implode(",", $excludeSessions).")";
+            LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus ON s.status = dictstatus.rowid
+
+            WHERE s.entity IN (0,". getEntity('agefodd') .")
+            AND s.status IN (1,2)";
+
+	    if (is_array($excludeSessions) && count($excludeSessions) > 0)
+	    {
+	    	$sql .= "
+	    	AND s.rowid NOT IN (".implode(",", $excludeSessions).")";
 	    }
-	    $sql .=" GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne
+
+	    $sql .="
+	        GROUP BY s.rowid, s.dated, s.status, p.ref_interne, c.intitule, c.ref_interne
             ORDER BY s.dated ASC";
 
 	    $resql = $db->query($sql);
 	    if($resql){
-	        while ($obj = $db->fetch_object($resql)){
-	            !empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' .$obj->trainingrefinterne.')': $training_ref_interne='';
-	            $sessions [$obj->rowid] = ' - '.$obj->rowid.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
-	            //var_dump($obj->rowid);
+	        while ($obj = $db->fetch_object($resql))
+            {
+	            $label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
+
+	            if ($obj->statuslib == $label)
+	            {
+		            $label = stripslashes($obj->statuslib);
+	            }
+
+	            $obj->statuslib = $label;
+
+                $objcount = new stdClass;
+                $objcount->nb_confirm = 0;
+                $objcount->nb_inscrits = 0;
+
+	            // CASE au lieu de IF pour compatibilité postGreSQL
+		        $sqlcount = '
+                    SELECT SUM(CASE WHEN COALESCE(status_in_session, 0) = 0 THEN 1 ELSE 0 END) AS nb_prospect
+                    , SUM(CASE WHEN status_in_session > 0 AND status_in_session < 4 THEN 1 ELSE 0 END) AS nb_confirm
+                    , SUM(CASE WHEN status_in_session > 3 THEN 1 ELSE 0 END) AS nb_cancelled
+
+                    FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire
+
+                    WHERE fk_session_agefodd = ' . $obj->rowid;
+
+		        $resqlcount = $db->query($sqlcount);
+
+		        if($resqlcount)
+		        {
+			        $objcount = $db->fetch_object($resqlcount);
+			        $objcount->nb_inscrits = $objcount->nb_confirm + $objcount->cancelled;
+		        }
+
+		        $sessionLabel = $obj->rowid.' '. $obj->ref_interne;
+		        if(! empty($obj->trainingrefinterne))
+                {
+                    $sessionLabel .= ' (' .$obj->trainingrefinterne.')';
+                }
+
+		        $sessionLabel.= ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+		        $sessionLabel.= ' - ' . $obj->statuslib . ' - ' . $langs->trans('AgfTraineesRegisteredPresent', intval($objcount->nb_inscrits), intval($objcount->nb_confirm));
+
+	            $sessions[$obj->rowid] = $sessionLabel;
 	        }
 	    }
 	}
