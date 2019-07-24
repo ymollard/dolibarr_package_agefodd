@@ -312,6 +312,7 @@ if ($resql != - 1) {
 
 
 	$var = true;
+    $oldid = null;
 	foreach ( $agf->lines as $line ) {
 
 		if ($line->rowid != $oldid) {
@@ -372,8 +373,10 @@ if ($resql != - 1) {
 			print '<td>' . $line->morethanzday . '</td>';
 			print '<td>' . $line->task3 . '</td>';
 
+            $line->type_session = intval($line->type_session);
+
 			print '<td>' . $line->nb_stagiaire . '</td>';
-			print '<td>' . (empty($line->type_session) ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td>';
+			print '<td>' . (!empty($line->type_session) ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td>';
 			print '<td title="' . stripslashes($line->notes) . '">' . stripslashes(dol_trunc($line->notes, 60)) . '</td>';
 
 			print "</tr>\n";

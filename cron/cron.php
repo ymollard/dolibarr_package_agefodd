@@ -250,8 +250,9 @@ class cron_agefodd
 									}
 									else{
 										// PREPARE EMAIL
-
-										$from = $user->email;
+                                        $from = getExternalAccessSendEmailFrom($user->email);
+                                        $replyto = $user->email;
+                                        $errors_to = $conf->global->MAIN_MAIL_ERRORS_TO;
 
 										//$arrayoffamiliestoexclude=array('system', 'mycompany', 'object', 'objectamount', 'date', 'user', ...);
 										if (! isset($arrayoffamiliestoexclude)) $arrayoffamiliestoexclude=null;
@@ -298,7 +299,7 @@ class cron_agefodd
 											$to = $conf->global->AGF_CRON_FORCE_EMAIL_TO;
 										}
 
-										$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "",  0, 1, $from);
+										$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, "",  0, 1, $errors_to, '', '', '', getExternalAccessSendEmailContext(), $replyto);
 
 										if($cMailFile->sendfile()){
 											$sended++;

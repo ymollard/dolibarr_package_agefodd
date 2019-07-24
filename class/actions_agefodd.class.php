@@ -465,35 +465,42 @@ class ActionsAgefodd
 									else
 									{
 										$duree = 0;
+                                        $forceHoursSum = 0;
+										if(!empty($conf->global->AGF_EA_FORCE_HOURS_ON_SAVE)){
+                                            $forceHoursSum = 1;
+                                        }
+
                                         // Si l'absence est planifiée alors on ne decompte pas les heures
-										if(!empty($agfssh->planned_absence)){
+                                        if (!empty($agfssh->planned_absence)) {
                                             continue;
                                         }
-										// Si le statut passe à "absent", alors je force la saisie du compteur d'heure car c'est du consommé
-										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING)
-										{
-											$duree = $duree_session;
-										}
-										// si on passe le status du créneaux en confirmer sans saisir de temps stagiaire, on met le max
-										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED
-										    && $agf_calendrier_formateur->status !== $old_status
-										    && $THour[$stagiaire->id] == '00:00'
-                                        )
-										{
-										    $duree = $duree_session;
-										}
-										// Si le statut passe à annulé, les heures participants doivent passer à 0 car la session n'a pas eu lieu
-										elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED)
-										{
-										    $duree = 0;
-										}
-										else if ($agf_calendrier->date_session < $now && !empty($THour[$stagiaire->id]))
-										{
-											$tmp = explode(':', $THour[$stagiaire->id]);
-											$hours = $tmp[0];
-											$minutes = $tmp[1];
-											$duree = $hours + $minutes / 60;
-										}
+
+										if($forceHoursSum) {
+										    // CETTE PARTIE EST DEJA GEREE PAR LE JS MAIS JE GARDE LE CODE SOUS LE COUDE AU CAS OU
+										    // Si le statut passe à "absent", alors je force la saisie du compteur d'heure car c'est du consommé
+                                            if ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_MISSING) {
+                                                $duree = $duree_session;
+                                            } // si on passe le status du créneaux en confirmer sans saisir de temps stagiaire, on met le max
+                                            elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED
+                                                && $agf_calendrier_formateur->status !== $old_status
+                                                && $THour[$stagiaire->id] == '00:00'
+                                            ) {
+                                                $duree = $duree_session;
+                                            } // Si le statut passe à annulé, les heures participants doivent passer à 0 car la session n'a pas eu lieu
+                                            elseif ($agf_calendrier_formateur->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED) {
+                                                $duree = 0;
+                                            } else if ($agf_calendrier->date_session < $now && !empty($THour[$stagiaire->id])) {
+                                                $forceHoursSum = 0;
+                                            }
+                                        }
+
+										if(empty($forceHoursSum))
+                                        {
+                                            $tmp = explode(':', $THour[$stagiaire->id]);
+                                            $hours = $tmp[0];
+                                            $minutes = $tmp[1];
+                                            $duree = $hours + $minutes / 60;
+                                        }
 
 										$agfssh->heures = (float) $duree;
 										if ($result) $r=$agfssh->update($user);
@@ -573,7 +580,7 @@ class ActionsAgefodd
             }
             elseif($context->controller == 'agefodd_trainer_agenda')
             {
-                $context->title = $langs->trans('AgfExternalAccess_PageTitle_My');
+                $context->title = $langs->trans('AgfExternalAccess_PageTitle_Agenda');
                 $context->desc = $langs->trans('AgfExternalAccess_PageDesc_Agenda');
                 $context->menu_active[] = 'invoices';
             }
@@ -1525,6 +1532,18 @@ class ActionsAgefodd
 			$this->resprints = $sql;
 			return 1;
 		}
+
+        if(in_array('agendalist', $TContext)){
+            $sql = '';
+            $actioncode = GETPOST('search_actioncode',"alpha");
+            if ($actioncode == 'AC_NON_AUTO')
+            {
+                $sql.= " AND c.code NOT IN ('AC_AGF_CONVO', 'AC_AGF_SESST', 'AC_AGF_SESS') ";
+            }
+
+            $this->resprints = $sql;
+            return 1;
+        }
 	}
 
     /**
@@ -1700,7 +1719,6 @@ class ActionsAgefodd
 
 
 				// PREPARE EMAIL
-				$from = $user->email;
 
 				if (! isset($arrayoffamiliestoexclude)) $arrayoffamiliestoexclude=null;
 
@@ -1758,8 +1776,11 @@ class ActionsAgefodd
 				}
 
 
+                $from = getExternalAccessSendEmailFrom($user->email);
+                $replyto = $user->email;
+                $errors_to = $conf->global->MAIN_MAIL_ERRORS_TO;
 
-				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, "",  0, 1, $from);
+				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, "",  0, 1, $errors_to, '', '', '', getExternalAccessSendEmailContext(), $replyto);
 
 				if($cMailFile->sendfile()){
 					$nbMailSend++;

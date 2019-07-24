@@ -1371,7 +1371,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 
 function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess($action='')
 {
-	global $db,$langs, $hookmanager, $user;
+	global $db,$langs, $hookmanager, $user, $conf;
 
 	$context = Context::getInstance();
 	$trainer = new Agefodd_teacher($db);
@@ -1412,22 +1412,33 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
 		$agsession = new Agsession($db);
 		$agsession->fetch_session_per_trainer($trainer->id);
 		$optionSessions = '';
+		$countNbSessionAvailable = 0;
 		if (!empty($agsession->lines)) {
 			foreach ($agsession->lines as $line) {
-				$optionSessions .= '<option value="' . $line->rowid . '">' . $line->sessionref . ' : ' . $line->intitule . '</option>';
+			    if( ($line->datef >= $endDate->getTimestamp() && $line->dated <= $startDate->getTimestamp())
+                    || !empty($conf->global->AGF_CAN_ADD_SESSION_CRENEAU_OUT_SESSION_DATE)
+                )
+                {
+                    $countNbSessionAvailable++;
+                    $optionSessions .= '<option value="' . $line->rowid . '">' . $line->sessionref . ' : ' . $line->intitule . '</option>';
+                }
 			}
 		}
 
-		$out .= '<div class="form-group">';
-		$out .= '<label for="sessid">' . $langs->trans('AgfSelectSession') . '</label>';
-		$out .= '<select class="form-control" name="sessid">' . $optionSessions . '</select>';
-		$out .= '</div>';
+		if(empty($countNbSessionAvailable)){
+		    $out.= '<div class="alert alert-info" >'.$langs->trans('AgfNoAvailableSessionInDateRange').'</div>' ;
+        }
+        else{
+
+            $out .= '<div class="form-group">';
+            $out .= '<label for="sessid">' . $langs->trans('AgfSelectSession') . '</label>';
+            $out .= '<select class="form-control selectsearchable" data-live-search="true" name="sessid">' . $optionSessions . '</select>';
+            $out .= '</div>';
 
 
-		$out .= '<button type="submit" class="btn btn-primary pull-right" >' . $langs->trans('Next') . '</button>';
-
+		    $out .= '<button type="submit" class="btn btn-primary pull-right" >' . $langs->trans('Next') . '</button>';
+        }
 		$out .= '</form>';
-
 
 		// Others options
 		$out .= '<div class="or">' . $langs->trans('OrSeparator') . '</div>';
@@ -1524,14 +1535,16 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	}
 	$out.= getEaNavbar($backUrl, '', $editUrl);
 
-
-    $isTrainerFree = Agefoddsessionformateurcalendrier::isTrainerFree($trainer->id, $agf_calendrier_formateur->heured, $agf_calendrier_formateur->heuref, $agf_calendrier_formateur->id, 'default', array());
-    if(!$isTrainerFree->isFree)
+    if(!empty($agf_calendrier_formateur->heured) && !empty($agf_calendrier_formateur->heuref))
     {
-        if($isTrainerFree->errors > 0){
-            $out.= '<div class="alert alert-danger" >'.$langs->trans('TrainerNotFree').'</div>';
-        } elseif ($isTrainerFree->warnings > 0){
-            $out.= '<div class="alert alert-warning" >'.$langs->trans('TrainerCouldBeNotFree').'</div>';
+        $isTrainerFree = Agefoddsessionformateurcalendrier::isTrainerFree($trainer->id, $agf_calendrier_formateur->heured, $agf_calendrier_formateur->heuref, $agf_calendrier_formateur->id, 'default', array());
+        if(!$isTrainerFree->isFree)
+        {
+            if($isTrainerFree->errors > 0){
+                $out.= '<div class="alert alert-danger" >'.$langs->trans('TrainerNotFree').'</div>';
+            } elseif ($isTrainerFree->warnings > 0){
+                $out.= '<div class="alert alert-warning" >'.$langs->trans('TrainerCouldBeNotFree').'</div>';
+            }
         }
     }
 
@@ -1588,7 +1601,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		<div class="col">
 			<div class="form-group">
 				<label for="heured">Date</label>
-				<input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="date_session" required name="date_session" value="'.$date_session.'">
+				<input '.($action == 'view' ? 'readonly' : '').' min="'.date('Y-m-d', $agsession->dated).'" max="'.date('Y-m-d', $agsession->datef).'" type="date" class="form-control" id="date_session" required name="date_session" value="'.$date_session.'">
 			</div>
 		</div>
 		<div class="col">
@@ -1609,7 +1622,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		<div class="col">
 		
 			<div class="form-group">
-				<label for="status">Status</label>
+				<label for="status">Status <i class="fa fa-question-circle" data-toggle="tooltip" title="'.htmlentities($langs->trans('AgfExternalAccessSessionCardDeclareHoursInfo')).'" data-html="true" aria-hidden="true"></i></label>
 				<select '.($action == 'view' ? 'disabled' : '').' class="form-control" id="status" name="status" >
 					'.$statusOptions.'
 				</select>
@@ -1663,15 +1676,15 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 						$("#code_c_session_calendrier_type").prop(\'required\',false);
 					}
 					
+					// get Hours
+                    var start = document.getElementById("heured").value;
+                    var end = document.getElementById("heuref").value;
+                    var duration = agfTimeDiff(start, end);
+					
 					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'\' 
 					|| formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_FINISH.'\')
 					{
-						// auto update Hours
-						var start = document.getElementById("heured").value;
-                        var end = document.getElementById("heuref").value;
-						var duration = agfTimeDiff(start, end);
                         $(".traineeHourSpended").each(function( index ) {
-                            
                             if($( this ).data("plannedabsence") == 0 && !$( this ).prop("readonly"))
                             {
                                  if($(this).val() == "00:00") // != duration
@@ -1679,7 +1692,17 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
                                      $(this).val(duration);
                                      $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
                                  }
-                                 
+                            }
+                        });
+					}
+					
+					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_MISSING.'\')
+					{
+                        $(".traineeHourSpended").each(function( index ) {
+                            if($( this ).data("plannedabsence") == 0 && !$( this ).prop("readonly"))
+                            {
+                                 $(this).val(duration);
+                                 $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
                             }
                         });
 					}
@@ -1688,11 +1711,8 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'\')
 					{
 					    $(".traineeHourSpended").each(function( index ) {
-					        if(!$( this ).prop("readonly"))
-                            {
-                                $(this).val("00:00");
-                                $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
-                            }
+                             $(this).val("00:00");
+                             $(this).css("outline", "4px solid rgba(66, 170, 245, .5)");
                         });
 					}
 
@@ -1735,10 +1755,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 		$out.= '<h4>'.$langs->trans('AgfExternalAccessSessionCardDeclareHours').'</h4>';
 
-		$out.= '
-			<div class="alert alert-secondary" role="alert">
-				'.$langs->trans('AgfExternalAccessSessionCardDeclareHoursInfo').'
-			</div>';
+
 
 		foreach ($stagiaires->lines as &$stagiaire)
 		{
@@ -2809,7 +2826,9 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
 
 
         // PREPARE EMAIL
-        $from = $user->email;
+        $from = getExternalAccessSendEmailFrom($user->email);
+        $replyto = $user->email;
+        $errors_to = $conf->global->MAIN_MAIL_ERRORS_TO;
 
         if (! isset($arrayoffamiliestoexclude)) $arrayoffamiliestoexclude=null;
 
@@ -2855,6 +2874,9 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
         $sendTopic =make_substitutions($mailTpl->topic, $thisSubstitutionarray);
         $sendContent =make_substitutions($mailTpl->content, $thisSubstitutionarray);
 
+        $addr_cc = '';
+        $addr_bcc = '';
+
         $TTo = array();
 
         // Add trainer emails
@@ -2873,16 +2895,20 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
         }
 
         $parameters=array(
-            'TTo' =>& $TTo,
-            'user' => $user,
-            'agsession' => $agsession,
-            'sessionStagiaire' => $sessionStagiaire,
-            'calendrier' => $calendrier,
+            'TTo'               =>& $TTo,
+            'user'              => $user,
+            'agsession'         => $agsession,
+            'sessionStagiaire'  => $sessionStagiaire,
+            'calendrier'        => $calendrier,
             'sessionstagiaireheures' => $sessionstagiaireheures,
-            'errorsMsg' =>& $errorsMsg,
-            'sendTopic' =>& $sendTopic,
-            'from' =>& $from,
-            'sendContent' =>& $sendContent
+            'errorsMsg'         =>& $errorsMsg,
+            'sendTopic'         =>& $sendTopic,
+            'from'              =>& $from,
+            'sendContent'       =>& $sendContent,
+            'addr_cc'           =>& $addr_cc,
+            'addr_bcc'          =>& $addr_bcc,
+            'replyto'           =>& $replyto,
+            'errors_to'         =>& $errors_to
         );
         $reshook=$hookmanager->executeHooks('agf_traineeSendMailAlertForAbsence', $parameters, $trainee);
 
@@ -2898,7 +2924,7 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
 
                 $to = implode(',', $TTo);
 
-                $cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), "", "", 0, 1, $from);
+                $cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, $addr_bcc,  0, 1, $errors_to, '', '', '', getExternalAccessSendEmailContext(), $replyto);
 
                 if ($cMailFile->sendfile()) {
                     $nbMailSend++;
@@ -2928,4 +2954,30 @@ function traineeCanChangeAbsenceStatus($heured)
     else{
         return false;
     }
+}
+
+
+function getExternalAccessSendEmailContext(){
+    global $conf;
+    $sendcontext='emailing';
+    if(!empty($conf->global->AGF_SEND_EMAIL_CONTEXT_STANDARD))
+    {
+        $sendcontext='standard';
+    }
+
+    return $sendcontext;
+}
+
+function getExternalAccessSendEmailFrom($default){
+    global $conf;
+    $mail=$default;
+    if(!empty($conf->global->AGF_EA_SEND_EMAIL_FROM))
+    {
+        $mail=$conf->global->AGF_EA_SEND_EMAIL_FROM;
+    }
+    elseif(!empty($conf->global->MAIN_MAIL_EMAIL_FROM)){
+        $mail=$conf->MAIN_MAIL_EMAIL_FROM;
+    }
+
+    return $mail;
 }
