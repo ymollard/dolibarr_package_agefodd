@@ -154,7 +154,7 @@ class InterfaceAgefodd {
 
 						$agf_cal = new Agefodd_sesscalendar($this->db);
 						$result = $agf_cal->fetch_by_action($action->id);
-						if ($result != - 1) {
+						if ($result > 0) {
 
 							$dt_array = getdate($action->datep);
 							$agf_cal->date_session = dol_mktime(0, 0, 0, $dt_array['mon'], $dt_array['mday'], $dt_array['year']);
@@ -168,6 +168,14 @@ class InterfaceAgefodd {
 								return - 1;
 							}
 						}
+						elseif(empty($result))
+                        {
+                            setEventMessage('ActionComAssociatedSessionNotFound', 'warnings');
+                        }
+						else{
+                            dol_syslog(get_class($this) . "::run_trigger " . $agf_cal->error, LOG_ERR);
+                            return - 1;
+                        }
 					}
 				}
 			}
@@ -182,7 +190,7 @@ class InterfaceAgefodd {
 
 						$agf_cal = new Agefoddsessionformateurcalendrier($this->db);
 						$result = $agf_cal->fetch_by_action($action->id);
-						if ($result != - 1) {
+                        if ($result > 0) {
 
 							$dt_array = getdate($action->datep);
 							$agf_cal->date_session = dol_mktime(0, 0, 0, $dt_array['mon'], $dt_array['mday'], $dt_array['year']);
@@ -197,6 +205,14 @@ class InterfaceAgefodd {
 								return - 1;
 							}
 						}
+                        elseif(empty($result))
+                        {
+                            setEventMessage('ActionComAssociatedSessionNotFound', 'warnings');
+                        }
+                        else{
+                            dol_syslog(get_class($this) . "::run_trigger " . $agf_cal->error, LOG_ERR);
+                            return - 1;
+                        }
 					}
 				}
 			}
