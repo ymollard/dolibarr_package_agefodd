@@ -1568,3 +1568,5 @@ AgfQuestionnaireLinkRight=Voir les questionnaires
 SessionOneParticipant=(1 participant)
 SessionMoreThanOneParticipants=(%d participants)
 AgfQuestionnaireSendRight=Envoyer des questionnaires
+
+AgfCreateContactDefautNewTrainee = Sur le formulaire de création d'un participant : Creer un contact : Oui ou Non par defaut
