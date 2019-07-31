@@ -17,6 +17,7 @@ AgfMenuCat=Recueil des formations
 AgfTraining=Formation
 AgfMenuCatListActivees=Formations actives
 AgfMenuCatListArchivees=Formations archivées
+ActionComAssociatedSessionNotFound=La session associée n'a pas était trouvée. Note: les évènements de type "Session de formation" et "Session de formation des formateurs" ne doivent pas être créés manuellement.
 AgfCatActive=Active
 AgfCatArchivee=Archivée
 AgfCatActif=Actif
