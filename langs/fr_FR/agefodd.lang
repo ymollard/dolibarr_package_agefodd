@@ -54,7 +54,6 @@ AgfShowDetails=Consulter/Modifier la fiche
 AgfObjPeda=Objectifs pédagogiques
 AgfCatalogDetail=Détail formation
 AgfDeleteOps=Confirmation de suppression
-AgfCreneauDeleted=Créneau supprimé
 AgfConfirmDeleteOps=ATTENTION : Les sessions liées à cette formation ne seront plus accessibles. Souhaitez-vous vraiment supprimer cette formation ?
 AgfConfirmDeleteSession=ATTENTION : Les évemenents de l'agenda liés à cette session ne seront plus accessibles. Souhaitez-vous vraiment supprimer cette session ?
 AgfConfirmDeleteAction=Souhaitez-vous vraiment supprimer cette action ?
@@ -1595,26 +1594,4 @@ SessionOneParticipant=(1 participant)
 SessionMoreThanOneParticipants=(%d participants)
 AgfQuestionnaireSendRight=Envoyer des questionnaires
 
-# list session by trainer
-AgfSessionHours=Nombres d'heures sur la session
-AgfTotalCalendrierHour=Total heures sur calendrier
-AgfTotalCalendrierHourPlanned=Heures planifiées
-AgfTotalCalendrierHourConfirmed=Heures confirmées
-AgfTotalCalendrierHourRealised=Heures réalisées
-
-TrainerNotFree=Le formateur n'est pas libre ou le créneau chevauche un autre créneau
-TrainerCouldBeNotFree=Le formateur n'est potentielement pas libre ou le créneau chevauche un autre créneau
-
-# CRON TASK
-CronTaskAutoStatusAgefoddCalendar=Workflow des statut des créneaux de sessions
-CronTaskAutoStatusAgefoddCalendarDesc=Passer au statut Réalisé automatique par un traitement journalier si la date est dans le passé et que le statut est confirmé
-CronTaskSendAgendaToTraineeLabel=Envoi de mail de rappel aux stagiaires
-
-setStatus_DRAFT=Appliquer l'état "Prévisionnel"
-setStatus_CONFIRMED=Appliquer l'état "Confirmé"
-setStatus_MISSING=Appliquer l'état "Absent"
-setStatus_FINISH=Appliquer l'état "Réalisé"
-setStatus_CANCELED=Appliquer l'état "Annulé"
-
-AgfNbTiersPart=Tiers des inscrits
-AgfNbSessEffective=Sessions effectives
+AgfCreateContactDefautNewTrainee = Sur le formulaire de création d'un participant : Creer un contact : Oui ou Non par defaut

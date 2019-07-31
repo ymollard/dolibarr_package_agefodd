@@ -554,7 +554,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print img_picto($langs->trans("CreateANewContactFromTraineeFormInfo"), 'help');
 	print '</td>';
 	print '<td colspan="3">';
-	if (GETPOST('create_contact', 'int') > 0) {
+	if (GETPOST('create_contact', 'int') > 0 || !empty($conf->global->AGF_NEW_TRAINEE_CREATE_CONTACT_DEFAULT)) {
 		$checkedYes = 'checked="checked"';
 		$checkedNo = '';
 	} else {
