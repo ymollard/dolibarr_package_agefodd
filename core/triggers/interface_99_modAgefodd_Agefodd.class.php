@@ -826,7 +826,7 @@ class InterfaceAgefodd {
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
 			dol_include_once('/compta/facture/class/facture.class.php');
 
-			if ($object->type!=Facture::TYPE_DEPOSIT) {
+			if ($object->type!=Facture::TYPE_DEPOSIT && empty($conf->global->AGF_GET_ORIGIN_LINE_INFO)) {
 				// Retrieve all inforamtion form session to update invoice line with current session inforamtion
 				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 				$agf_fin = new Agefodd_session_element($this->db);
