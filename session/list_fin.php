@@ -1040,9 +1040,9 @@ elseif (empty($search_fourninvoiceref)) {
         WHERE p.entity IN (4,1)
         AND p.fk_societe = ".$object_socid;
     if (is_array($session_array_id) && count($session_array_id)>0) {
-    	$sql .= " AND s.rowid NOT IN (".implode(",", $session_array_id).")";
+    	$sql2 .= " AND s.rowid NOT IN (".implode(",", $session_array_id).")";
     }
-    $sql .= " ORDER BY sess.rowid ASC";
+    $sql2 .= " ORDER BY sess.rowid ASC";
 
     $resql2 = $db->query($sql2);
     if($resql2){
