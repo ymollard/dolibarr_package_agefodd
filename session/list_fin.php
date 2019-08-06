@@ -1026,7 +1026,6 @@ elseif (empty($search_fourninvoiceref)) {
 
             $sessionsForm[$obj->sessid] =  $sessionLabel;
             $sessids[$obj->sessid] = $obj->opsid;
-            //var_dump($obj->rowid);
         }
     }
 
@@ -1091,7 +1090,6 @@ elseif (empty($search_fourninvoiceref)) {
 			$sessionLabel.= ' - ' . $obj->statuslib . ' - ' . $langs->trans('AgfTraineesRegisteredPresent', intval($objcount->nb_inscrits), intval($objcount->nb_confirm));
 
             $sessionsSite[$obj->sessid] = $sessionLabel;
-            //var_dump($obj->rowid);
         }
     }
 
