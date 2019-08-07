@@ -73,7 +73,8 @@ $parameters = array(
 		'confirm' => $confirm,
 		'arch' => $arch
 );
-$reshook = $hookmanager->executeHooks('doActions', $parameters, $agf, $action); // Note that $action and $object may have been modified by some hooks
+//var_dump($agf->context->action); exit;
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $agf, $action);// Note that $action and $object may have been modified by some hooks
 if ($reshook < 0)
 	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 if (empty($reshook)){
@@ -88,6 +89,53 @@ $saveandclose = GETPOST('saveandclose');
 $modperiod = GETPOST('modperiod', 'int');
 $period_remove = GETPOST('period_remove', 'int');
 $period_remove_all = GETPOST('period_remove_all', 'int');
+
+if ($action == 'confirm_validateregistrants' && $confirm == "yes" && $user->rights->agefodd->creer) {
+
+
+	//On récupère tous les formateurs de la session courante
+	$formateurs = new Agefodd_session_formateur($db);
+	$resultsf = $formateurs->fetch_formateur_per_session($id);
+
+	//On récupère tous les stagiaires de la session courante
+	$stagiaires = new Agefodd_session_stagiaire($db);
+	$resultss = $stagiaires->fetch_stagiaire_per_session($id);
+
+//	var_dump(!empty($resultsf) && !empty($resultss)); exit;
+
+	if(!empty($resultsf) && !empty($resultss)) {		//On confirme tous les inscrits seulement si il y a au moins un stagiaire et un formateur
+
+		foreach ($formateurs->lines as $formateurlines) {
+			$sessionformateur = new Agefodd_session_formateur($db);
+			$sessionformateur->fetch($formateurlines->opsid);
+			$sessionformateur->trainer_status = '2';	//Statut "2" correspond à "Confirmé"
+			$sessionformateur->opsid = $formateurlines->opsid;
+			$sessionformateur->update($user);
+		}
+
+		foreach ($stagiaires->lines as $stagiairelines) {
+			$sessionstagiaire = new Agefodd_session_stagiaire($db);
+			$sessionstagiaire->fetch($stagiairelines->stagerowid);
+			$sessionstagiaire->status_in_session = '2';		//Statut "2" correspond à "Confirmé"
+			$sessionstagiaire->update($user);
+		}
+
+		seteventMessage($langs->trans('SessionRegistrantsConfirm'));
+		Header("Location: card.php?id=" . $id);
+		exit();
+
+	} else {	//Sinon on affiche les erreurs
+
+		if(empty($resultss) && !empty($resultsf)){
+			setEventMessage($langs->trans('AgfErrorSessionNoTrainee'), 'errors');
+		}
+		elseif(!empty($resultss) && empty($resultsf)){
+			setEventMessage($langs->trans('AgfErrorSessionNoTrainer'), 'errors');
+		} else {
+			setEventMessage($langs->trans('AgfErrorSessionNoRegistrant'), 'errors');
+		}
+	}
+}
 
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer) {
 	$agf = new Agsession($db);
@@ -1255,6 +1303,13 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '<div class="underbanner clearboth"></div>';
 
 					/*
+					 * Confirm validate
+					 */
+					if ($action == 'validateregistrants') {
+						print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfValidateRegistrantsOps"), $langs->trans("AgfConfirmValidateRegistrantsSession"), "confirm_validateregistrants", '', '', 1);
+					}
+
+					/*
 					 * Confirm delete
 					 */
 					if ($action == 'delete') {
@@ -1741,6 +1796,11 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 	$parameters = array();
 	$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $agf, $action); // Note that $action and $object may have been modified by hook
 	if (empty($reshook)) {
+		if ($user->rights->agefodd->creer) {
+			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=validateregistrants&id=' . $id . '">' . $langs->trans('AgfValidateRegistrants') . '</a>';
+		} else {
+			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfValidateRegistrants') . '</a>';
+		}
 		if ($user->rights->agefodd->modifier && ! $user->rights->agefodd->session->trainer) {
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
 		} else {
