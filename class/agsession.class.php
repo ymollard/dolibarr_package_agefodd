@@ -3342,7 +3342,7 @@ class Agsession extends CommonObject
 						}
 					}
 
-					$totalline=+$num;
+					$totalline+=$num;
 				} else {
 					$this->error = "Error " . $this->db->lasterror();
 					dol_syslog(get_class($this) . "::fetch_all_by_order_invoice " . $this->error, LOG_ERR);
