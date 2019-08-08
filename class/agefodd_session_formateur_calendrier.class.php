@@ -677,6 +677,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			require_once DOL_DOCUMENT_ROOT.'/comm/action/class/actioncomm.class.php';
 			$action = new ActionComm($this->db);
 			$action->id = $this->fk_actioncomm;
+			$action->fetch($action->id);
 			$r=$action->delete();
 			if ($r < 0) $error++;
 		}
