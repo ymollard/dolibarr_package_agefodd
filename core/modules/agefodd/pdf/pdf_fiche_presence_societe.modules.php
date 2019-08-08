@@ -265,8 +265,7 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 			$session_hours[]=$agf_date->lines;
 		}
 
-		//On récupère les sociétés d'où proviennent les participants
-
+		//On récupère l'id des sociétés des participants
 		$agfsta = new Agefodd_session_stagiaire($this->db);
 		$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
 		$socstagiaires = array();
@@ -276,7 +275,7 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 			}
 		}
 
-		//Pour chaque société, on créé une série de feuille de présence
+		//Pour chaque société, on crée une série de feuilles de présence
 		foreach($socstagiaires as $key=>$socstagiaires_id) {
 
 			foreach ($session_hours as $key => $lines_array) {
@@ -609,7 +608,7 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 				/**
 				 * *** Bloc stagiaire ****
 				 */
-				$agfsta = new Agefodd_session_stagiaire($this->db);
+//				$agfsta = new Agefodd_session_stagiaire($this->db);
 				$resql = $agfsta->fetch_stagiaire_per_session($agf->id, $socstagiaires_id);
 
 				$pdf->SetXY($posX - 2, $posY);

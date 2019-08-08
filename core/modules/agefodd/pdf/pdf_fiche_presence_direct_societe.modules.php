@@ -153,8 +153,7 @@ class pdf_fiche_presence_direct_societe extends ModelePDFAgefodd {
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 
-			//On récupère les sociétés d'où proviennent les participants
-
+			//On récupère l'id des sociétés des participants
 			$agfsta = new Agefodd_session_stagiaire($this->db);
 			$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
 			$socstagiaires = array();
@@ -164,7 +163,7 @@ class pdf_fiche_presence_direct_societe extends ModelePDFAgefodd {
 				}
 			}
 
-			//Pour chaque société, on créé une série de feuille de présence
+			//Pour chaque société, on crée une série de feuilles de présence
 			foreach($socstagiaires as $key=>$socstagiaires_id) {
 
 				// New page
@@ -208,7 +207,7 @@ class pdf_fiche_presence_direct_societe extends ModelePDFAgefodd {
 				/**
 				 * *** Bloc stagiaire ****
 				 */
-				$agfsta = new Agefodd_session_stagiaire($this->db);
+//				$agfsta = new Agefodd_session_stagiaire($this->db);
 				$resql = $agfsta->fetch_stagiaire_per_session($agf->id, $socstagiaires_id);
 
 				$posY = $pdf->GetY() + 25;
