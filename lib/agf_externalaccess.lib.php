@@ -1681,8 +1681,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
                     var end = document.getElementById("heuref").value;
                     var duration = agfTimeDiff(start, end);
 					
-					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'\' 
-					|| formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_FINISH.'\')
+					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_FINISH.'\')
 					{
                         $(".traineeHourSpended").each(function( index ) {
                             if($( this ).data("plannedabsence") == 0 && !$( this ).prop("readonly"))
