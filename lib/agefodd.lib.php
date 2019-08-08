@@ -1418,8 +1418,7 @@ function pdf_agfpagefoot(&$pdf,$outputlangs,$paramfreetext,$fromcompany,$marge_b
 		// Address
 		if ($fromcompany->address)
 		{
-			$fromcompany->address = str_replace(array( '<br>', '<br />', "\n", "\r" ), array( ' ', ' ', ' ', ' ' ), $fromcompany->address);
-			$line2.=($line2?" - ":"").$fromcompany->address;
+			$line2.=($line2?" - ":"").str_replace(array( '<br>', '<br />', "\n", "\r" ), array( ' ', ' ', ' ', ' ' ), $fromcompany->address);
 		}
 		// Zip code
 		if ($fromcompany->zip)

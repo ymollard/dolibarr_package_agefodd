@@ -1627,3 +1627,5 @@ setStatus_CANCELED=Appliquer l'état "Annulé"
 
 AgfNbTiersPart=Tiers des inscrits
 AgfNbSessEffective=Sessions effectives
+
+AgfHideCompanyFichePres = Masquer la colonne société dans les feuilles d'émargements pour l'ajouter dans le nom du participants

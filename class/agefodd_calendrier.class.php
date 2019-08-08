@@ -44,7 +44,8 @@ class Agefoddcalendrier extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function __construct($db) {
+	public function __construct($db)
+	{
 		$this->db = $db;
 		return 1;
 	}
@@ -55,8 +56,10 @@ class Agefoddcalendrier extends CommonObject {
 	 * @param User $user that create
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
+	 * @throws Exception
 	 */
-	public function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0)
+	{
 		global $conf, $langs;
 		$error = 0;
 
