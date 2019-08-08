@@ -746,7 +746,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 	$out.= '<thead>';
 
 	$out.= '<tr>';
-	$out.= ' <th class="text-center" >'.$langs->trans('ID').'</th>';
+	// $out.= ' <th class="text-center" >'.$langs->trans('ID').'</th>';
 	$out.= ' <th class="" >'.$langs->trans('AgfDateSession').'</th>';
 	$out.= ' <th class="" >'.$langs->trans('AgfPeriodTimeB').'</th>';
 	$out.= ' <th class="" >'.$langs->trans('AgfPeriodTimeE').'</th>';
@@ -783,22 +783,22 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 
 		$out.= '<tr>';
 		// TODO replace $item->id by $item->ref when merge master
-		$out.= ' <td class="text-center"><a href="'.$url.'&action=view">'.$item->id.'</a></td>';
+		// $out.= ' <td class="text-center"><a href="'.$url.'&action=view">'.$item->id.'</a></td>';
 		$date_session = dol_print_date($item->date_session, '%d/%m/%Y');
-		$out.= ' <td data-order="'.$item->date_session.'" data-search="'.$date_session.'" >'.$date_session.'</td>';
+		$out.= ' <td data-order="'.$item->date_session.'" data-search="'.$date_session.'" ><a href="'.$url.'&action=view">'.$date_session.'</a></td>';
 
 		$heured = dol_print_date($item->heured, '%H:%M');
-		$out.= ' <td data-order="'.$heured.'" data-search="'.$heured.'" >'.$heured.'</td>';
+		$out.= ' <td data-order="'.$heured.'" data-search="'.$heured.'" ><a href="'.$url.'&action=view">'.$heured.'</a></td>';
 		$heuref = dol_print_date($item->heuref, '%H:%M');
-		$out.= ' <td data-order="'.$heuref.'" data-search="'.$heuref.'" >'.$heuref.'</td>';
+		$out.= ' <td data-order="'.$heuref.'" data-search="'.$heuref.'" ><a href="'.$url.'&action=view">'.$heuref.'</a></td>';
 		$duree = ($item->heuref - $item->heured) / 60 / 60;
-		$out.= ' <td class="text-center" data-order="'.$duree.'" data-search="'.$duree.'" >'.$duree.'</td>';
+		$out.= ' <td class="text-center" data-order="'.$duree.'" data-search="'.$duree.'" ><a href="'.$url.'&action=view">'.$duree.'</a></td>';
 		if ($item->status == Agefoddsessionformateurcalendrier::STATUS_DRAFT) $statut = $langs->trans('AgfStatusCalendar_previsionnel');
 		else $statut = Agefoddsessionformateurcalendrier::getStaticLibStatut($item->status, 0);
-		$out.= ' <td class="text-center" data-order="'.$statut.'" data-search="'.$statut.'" >'.$statut.'</td>';
+		$out.= ' <td class="text-center" data-order="'.$statut.'" data-search="'.$statut.'" ><a href="'.$url.'&action=view">'.$statut.'</a></td>';
 
 		$calendrier_type_label = !empty($agf_calendrier) ? $agf_calendrier->calendrier_type_label : '';
-		$out.= ' <td class="text-center" data-order="'.$calendrier_type_label.'" data-search="'.$calendrier_type_label.'" >'.$calendrier_type_label.'</td>';
+		$out.= ' <td class="text-center" data-order="'.$calendrier_type_label.'" data-search="'.$calendrier_type_label.'" ><a href="'.$url.'&action=view">'.$calendrier_type_label.'</a></td>';
 
 
 
