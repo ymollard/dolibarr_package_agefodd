@@ -553,7 +553,7 @@ class ActionsAgefodd
 								}
 
 								$redirect = $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id);
-								if($context->iframe){
+								if($context->iframe || empty($conf->global->AGF_EA_FORCE_REDIRECT_TO_LIST_AFTER_SAVE_CRENEAU)){
 									$redirect = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid='.$agf_calendrier_formateur->id);
 								}
 
