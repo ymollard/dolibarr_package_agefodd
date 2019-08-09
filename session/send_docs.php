@@ -617,31 +617,57 @@ if (! empty($id)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
+					$filename = 'fiche_presence_societe_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_presence_direct_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
+					$filename = 'fiche_presence_direct_societe_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_trainee_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_trainee_direct_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_landscape_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
+					$filename = 'fiche_presence_landscape_societe_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
