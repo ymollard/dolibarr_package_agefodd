@@ -521,54 +521,90 @@ if (! empty($id)) {
 						}
 					}
 
+					$filename = 'convocation_' . $agf->id . '_' . $socid . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_presence_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
+					$filename = 'fiche_presence_societe_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_presence_direct_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
+					$filename = 'fiche_presence_direct_societe_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_trainee_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_trainee_direct_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_landscape_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
+					$filename = 'fiche_presence_landscape_societe_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_remise_eval_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 				} elseif ($action == 'presend_presence') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 					$file_array[]=$file;
@@ -2037,7 +2073,7 @@ if (! empty($id)) {
 			$trainneExtrafields->fetch_name_optionals_label($contact_table_element);
 
 			$TExtrafields = array();
-			if(!empty($trainneExtrafields->attributes[$contact_table_element])) {
+			if(!empty($trainneExtrafields->attributes[$contact_table_element]['elementtype'] )) {
 				foreach ($trainneExtrafields->attributes[$contact_table_element]['elementtype'] as $extrafieldKey => $extrafieldElementType) {
 					$TExtrafields[] = $extrafieldKey;
 				}
@@ -2047,7 +2083,7 @@ if (! empty($id)) {
 			// Load users extrafields list
 			$trainneExtrafields = new ExtraFields($db);
 			$trainneExtrafields->fetch_name_optionals_label($user->table_element);
-			if(!empty($trainneExtrafields->attributes[$user->table_element])) {
+			if(!empty($trainneExtrafields->attributes[$user->table_element]['elementtype'])) {
 				foreach ($trainneExtrafields->attributes[$user->table_element]['elementtype'] as $extrafieldKey => $extrafieldElementType) {
 					$TExtrafields[] = $extrafieldKey;
 				}
