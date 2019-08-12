@@ -25,6 +25,14 @@
  * \class ActionsAnnonce
  * \brief Class to manage Annonce
  */
+
+dol_include_once('/agefodd/class/agsession.class.php');
+dol_include_once('/agefodd/class/agefodd_opca.class.php');
+dol_include_once('/agefodd/class/agefodd_place.class.php');
+dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+dol_include_once('/agefodd/class/agefodd_convention.class.php');
+
 class ActionsAgefodd
 {
 	protected $db;
@@ -1889,5 +1897,98 @@ class ActionsAgefodd
 		$box.='</a>';
 
 		return $box;
+	}
+
+	function replaceThirdparty($parameters, &$object, &$action, $hookmanager){
+
+    	global $user;
+
+
+    	//Societe qui effetue la session
+    	$sql = "SELECT * FROM ".MAIN_DB_PREFIX."agefodd_session WHERE fk_soc=".$parameters['soc_origin'].";";
+    	$resql = $this->db->query($sql);
+    	if($resql){
+			while ($obj = $this->db->fetch_object($resql)){
+				$session = new Agsession($this->db);
+				$session->fetch($obj->rowid);
+				$session->fk_soc = intval($parameters['soc_dest']);
+				$session->update($user);
+
+				//Conventions liés à chaque session de la societe concernée
+				$convention = new Agefodd_convention($this->db);
+				if($convention->fetch($obj->rowid, $parameters['soc_origin'])) {
+					$convention->socid = $parameters['soc_dest'];
+					$convention->update($user);
+				}
+			}
+		}
+
+    	//Societe qui demande la session
+		$sql = "SELECT * FROM ".MAIN_DB_PREFIX."agefodd_session WHERE fk_soc_requester=".$parameters['soc_origin'].";";
+		$resql = $this->db->query($sql);
+		if($resql){
+			while ($obj = $this->db->fetch_object($resql)){
+				$session = new Agsession($this->db);
+				$session->fetch($obj->rowid);
+				$session->fk_soc_requester = intval($parameters['soc_dest']);
+				$session->update($user);
+			}
+		}
+
+		//
+		$sql = "SELECT * FROM ".MAIN_DB_PREFIX."agefodd_session_element WHERE fk_soc=".$parameters['soc_origin'].";";
+		$resql = $this->db->query($sql);
+		if($resql){
+			while ($obj = $this->db->fetch_object($resql)){
+				$session = new Agefodd_session_element($this->db);
+				$session->fetch($obj->rowid);
+				$session->fk_soc = intval($parameters['soc_dest']);
+				$session->update($user);
+			}
+		}
+
+		$sql = "SELECT * FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire WHERE fk_soc_requester=".$parameters['soc_origin'].";";
+		$resql = $this->db->query($sql);
+		if($resql){
+			while ($obj = $this->db->fetch_object($resql)){
+				$session = new Agefodd_session_stagiaire($this->db);
+				$session->fetch($obj->rowid);
+				$session->fk_soc_requester = intval($parameters['soc_dest']);
+				$session->update($user);
+			}
+		}
+
+		$sql = "SELECT * FROM ".MAIN_DB_PREFIX."agefodd_opca WHERE fk_soc_trainee=".$parameters['soc_origin'].";";
+		$resql = $this->db->query($sql);
+		if($resql){
+			while ($obj = $this->db->fetch_object($resql)){
+				$session = new Agefodd_opca ($this->db);
+				$session->fetch($obj->rowid);
+				$session->fk_soc_trainee = intval($parameters['soc_dest']);
+				$session->update($user);
+			}
+		}
+
+		$sql = "SELECT * FROM ".MAIN_DB_PREFIX."agefodd_opca WHERE fk_soc_OPCA=".$parameters['soc_origin'].";";
+		$resql = $this->db->query($sql);
+		if($resql){
+			while ($obj = $this->db->fetch_object($resql)){
+				$session = new Agefodd_opca ($this->db);
+				$session->fetch($obj->rowid);
+				$session->fk_soc_OPCA = intval($parameters['soc_dest']);
+				$session->update($user);
+			}
+		}
+
+		$sql = "SELECT * FROM ".MAIN_DB_PREFIX."agefodd_place WHERE fk_societe=".$parameters['soc_origin'].";";
+		$resql = $this->db->query($sql);
+		if($resql){
+			while ($obj = $this->db->fetch_object($resql)){
+				$session = new Agefodd_place ($this->db);
+				$session->fetch($obj->rowid);
+				$session->fk_societe = intval($parameters['soc_dest']);
+				$session->update($user);
+			}
+		}
 	}
 }
