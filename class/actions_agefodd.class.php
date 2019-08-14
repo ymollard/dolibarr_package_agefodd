@@ -34,6 +34,7 @@ dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 dol_include_once('/agefodd/class/agefodd_convention.class.php');
 dol_include_once('/comm/propal/class/propal.class.php');
+dol_include_once( '/agefodd/core/modules/agefodd/modules_agefodd.php');
 
 class ActionsAgefodd
 {
@@ -1779,7 +1780,7 @@ class ActionsAgefodd
 	function replaceThirdparty($parameters, &$object, &$action, $hookmanager)
 	{
 
-		global $user;
+		global $user, $conf, $langs;
 
 		//Modifie la société d'une session et ses éléments lors d'une fusion d'un tiers
 
@@ -1874,10 +1875,9 @@ class ActionsAgefodd
 		if ($resql) {
 			while ($obj = $this->db->fetch_object($resql)) {
 				$agf = new Agsession($this->db);
-				$agf->fetch($obj->rowid);
+				$result = $agf->fetch($obj->rowid);
 
-
-				//DOCUMENTS LIES A LA SESSION
+				//DOCUMENTS LIES A LA SESSION (ELEMENTS)
 				$sql2 = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_session_element WHERE fk_session_agefodd=" . $obj->rowid . ";";
 				$resql2 = $this->db->query($sql2);
 				if ($resql2) {
@@ -1895,19 +1895,18 @@ class ActionsAgefodd
 							$propal_statut = $obj3->fk_statut;
 
 
-							//Suppression propal existante
+							//Suppression de l'élément propal existant
 							$session_element->delete($user);
 
 							//Création de la nouvelle propal
-							if ($obj3 < 0) {
+							if ($result < 0) {
 								setEventMessage($agf->error, 'errors');
 							} else {
 								$propal_id = $agf->createProposal($user, $parameters['soc_dest']);
 
 								//Si la propal existante n'est pas un brouillon
-								if($propal_statut != 0) {
+								if ($propal_statut != 0) {
 
-									//Nouvelle propal
 									$sql4 = "SELECT * FROM " . MAIN_DB_PREFIX . "propal WHERE rowid=" . $propal_id . ";";
 									$resql4 = $this->db->query($sql4);
 
@@ -1916,9 +1915,9 @@ class ActionsAgefodd
 										$propal = new Propal($this->db);
 										$propal->fetch($obj4->rowid);
 
-										if ($propal_statut == 1) {								//Propal validée
+										if ($propal_statut == 1) {                                //Propal validée
 											$propal->valid($user);
-										} else {												//Propal cloturée
+										} else {                                                //Propal cloturée
 											$propal->valid($user);
 											$propal->cloture($user, $propal_statut);
 										}
@@ -1931,12 +1930,78 @@ class ActionsAgefodd
 							}
 						}
 
-//						if($session_element->element_type == ''){
-//
-//						}
+						if ($session_element->element_type == 'order') {
+
+							//Suppression de l'élément propal existant
+							$session_element->delete($user);
+
+							//Création nouvelle commande
+							if ($result < 0) {
+								setEventMessage($agf->error, 'errors');
+							} else {
+								$order_id = $agf->createOrder($user, $parameters['soc_dest']);
+								if ($order_id < 0) {
+									setEventMessage($agf->error, 'errors');
+								}
+							}
+
+						}
+
 					}
 				}
+
+				//DOCUMENTS LIES A LA SESSION (PDF)
+				$outputlangs = $langs;
+				$newlang = $object->thirdparty->default_lang;
+				if (!empty($newlang)) {
+					$outputlangs = new Translate("", $conf);
+					$outputlangs->setDefaultLang($newlang);
+				}
+				$id_tmp = $agf->id;
+				$socid = $parameters['soc_dest'];
+
+				if (file_exists($conf->agefodd->dir_output . '/convocation_' . $agf->id . '_' . $parameters['soc_origin'] . '.pdf')) {
+					$model = 'convocation';
+					$file = 'convocation_' . $agf->id . '_' . $parameters['soc_dest'] . '.pdf';
+					$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, '', '', '', '');
+				}
+				if (file_exists($conf->agefodd->dir_output . '/courrier-convention_' . $agf->id . '_' . $parameters['soc_origin'] . '.pdf')) {
+					$model = 'courrier';
+					$file = 'courrier-convention_' . $agf->id . '_' . $parameters['soc_dest'] . '.pdf';
+					$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, 'convention', '', '', '');
+				}
+				if (file_exists($conf->agefodd->dir_output . '/courrier-accueil_' . $agf->id . '_' . $parameters['soc_origin'] . '.pdf')) {
+					$model = 'courrier';
+					$file = 'courrier-accueil_' . $agf->id . '_' . $parameters['soc_dest'] . '.pdf';
+					$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, 'accueil', '', '', '');
+				}
+				if (file_exists($conf->agefodd->dir_output . '/attestationendtraining_' . $agf->id . '_' . $parameters['soc_origin'] . '.pdf')) {
+					$model = 'attestationendtraining';
+					$file = 'attestationendtraining_' . $agf->id . '_' . $parameters['soc_dest'] . '.pdf';
+					$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, '', '', '', '');
+				}
+				if (file_exists($conf->agefodd->dir_output . '/attestationpresencetraining_' . $agf->id . '_' . $parameters['soc_origin'] . '.pdf')) {
+					$model = 'attestationpresencetraining';
+					$file = 'attestationpresencetraining_' . $agf->id . '_' . $parameters['soc_dest'] . '.pdf';
+					$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, '', '', '', '');
+				}
+				if (file_exists($conf->agefodd->dir_output . '/attestationpresencecollective_' . $agf->id . '_' . $parameters['soc_origin'] . '.pdf')) {
+					$model = 'attestationpresencecollective';
+					$file = 'attestationpresencecollective_' . $agf->id . '_' . $parameters['soc_dest'] . '.pdf';
+					$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, '', '', '', '');
+				}
+				if (file_exists($conf->agefodd->dir_output . '/attestation_' . $agf->id . '_' . $parameters['soc_origin'] . '.pdf')) {
+					$model = 'attestation';
+					$file = 'attestation_' . $agf->id . '_' . $parameters['soc_dest'] . '.pdf';
+					$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, '', '', '', '');
+				}
+				if (file_exists($conf->agefodd->dir_output . '/courrier-cloture_' . $agf->id . '_' . $parameters['soc_origin'] . '.pdf')) {
+					$model = 'courrier';
+					$file = 'courrier-cloture_' . $agf->id . '_' . $parameters['soc_dest'] . '.pdf';
+					$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, 'cloture', '', '', '');
+				}
 			}
+
 		}
 	}
 }
