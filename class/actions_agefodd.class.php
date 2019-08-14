@@ -2000,6 +2000,29 @@ class ActionsAgefodd
 					$file = 'courrier-cloture_' . $agf->id . '_' . $parameters['soc_dest'] . '.pdf';
 					$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, 'cloture', '', '', '');
 				}
+
+				//CONVENTION
+				$sql4 = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_convention WHERE fk_societe=" . $parameters['soc_origin'] . ";";
+				$resql4 = $this->db->query($sql4);
+				if ($resql4) {
+					while ($obj4 = $this->db->fetch_object($resql4)) {
+						$convention = new Agefodd_convention($this->db);
+						$convention->fetch($agf->id, $parameters['soc_origin']);
+						$convention->socid = $parameters['soc_dest'];
+						$convention->update($user);
+
+						if (file_exists($conf->agefodd->dir_output . '/convention_' . $agf->id . '_' . $parameters['soc_origin'] . '_' . $obj4->rowid . '.pdf')) {
+							$id_tmp = $obj4->rowid;
+							$model = 'convention';
+							$file = 'convention_' . $agf->id . '_' . $parameters['soc_dest'] . '_' . $obj4->rowid . '.pdf';
+							$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, '', '', '', $convention);
+						}
+
+					}
+				}
+
+				//FACTURE
+
 			}
 
 		}
