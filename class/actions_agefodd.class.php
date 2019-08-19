@@ -1777,14 +1777,13 @@ class ActionsAgefodd
 		return $box;
 	}
 
-	function replaceThirdparty($parameters, &$object, &$action, $hookmanager)
+	function replaceThirdparty($parameters, &$object, &$action, $hookmanager)		//Modifie la société des sessions liées au tiers fusionné
 	{
 
 		global $user, $conf, $langs;
 
-		//Modifie la société d'une session et ses éléments lors d'une fusion d'un tiers
 
-		//Societe qui effetue la session
+		//SOCIETE CHARGEE DE LA SESSION
 		$sql = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_session WHERE fk_soc=" . $parameters['soc_origin'] . ";";
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -1796,7 +1795,7 @@ class ActionsAgefodd
 			}
 		}
 
-		//Societe qui demande la session
+		//SOCIETE DEMANDEUSE
 		$sql = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_session WHERE fk_soc_requester=" . $parameters['soc_origin'] . ";";
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -1808,149 +1807,87 @@ class ActionsAgefodd
 			}
 		}
 
-
-		//Stagiaires des sessions
+		//STAGIAIRES LIES AUX SESSIONS
 		$sql = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE fk_soc_requester=" . $parameters['soc_origin'] . ";";
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			while ($obj = $this->db->fetch_object($resql)) {
-				$session = new Agefodd_session_stagiaire($this->db);
-				$session->fetch($obj->rowid);
-				$session->fk_soc_requester = intval($parameters['soc_dest']);
-				$session->update($user);
+				$agf_stagiaire = new Agefodd_session_stagiaire($this->db);
+				$agf_stagiaire->fetch($obj->rowid);
+				$agf_stagiaire->fk_soc_requester = intval($parameters['soc_dest']);
+				$agf_stagiaire->update($user);
 			}
 		}
 
-		//Tous les stagiaires
+		//TOUS LES STAGIAIRES
 		$sql = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire WHERE fk_soc=" . $parameters['soc_origin'] . ";";
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			while ($obj = $this->db->fetch_object($resql)) {
-				$session = new Agefodd_stagiaire($this->db);
-				$session->fetch($obj->rowid);
-				$session->socid = intval($parameters['soc_dest']);
-				$session->update($user);
+				$agf_stagiaire = new Agefodd_stagiaire($this->db);
+				$agf_stagiaire->fetch($obj->rowid);
+				$agf_stagiaire->socid = intval($parameters['soc_dest']);
+				$agf_stagiaire->update($user);
 			}
 		}
 
-		//OPCA stagiaires
+		//OPCA STAGIAIRES
 		$sql = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_opca WHERE fk_soc_trainee=" . $parameters['soc_origin'] . ";";
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			while ($obj = $this->db->fetch_object($resql)) {
-				$session = new Agefodd_opca ($this->db);
-				$session->fetch($obj->rowid);
-				$session->fk_soc_trainee = intval($parameters['soc_dest']);
-				$session->update($user);
+				$agf_opca = new Agefodd_opca ($this->db);
+				$agf_opca->fetch($obj->rowid);
+				$agf_opca->fk_soc_trainee = intval($parameters['soc_dest']);
+				$agf_opca->update($user);
 			}
 		}
 
-		//OPCA société
+		//OPCA SOCIETE
 		$sql = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_opca WHERE fk_soc_OPCA=" . $parameters['soc_origin'] . ";";
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			while ($obj = $this->db->fetch_object($resql)) {
-				$session = new Agefodd_opca ($this->db);
-				$session->fetch($obj->rowid);
-				$session->fk_soc_OPCA = intval($parameters['soc_dest']);
-				$session->update($user);
+				$agf_opca = new Agefodd_opca ($this->db);
+				$agf_opca->fetch($obj->rowid);
+				$agf_opca->fk_soc_OPCA = intval($parameters['soc_dest']);
+				$agf_opca->update($user);
 			}
 		}
 
-		//Lieu de formation
+		//LIEUX DE FORMATION
 		$sql = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_place WHERE fk_societe=" . $parameters['soc_origin'] . ";";
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			while ($obj = $this->db->fetch_object($resql)) {
-				$session = new Agefodd_place ($this->db);
-				$session->fetch($obj->rowid);
-				$session->fk_societe = intval($parameters['soc_dest']);
-				$session->update($user);
+				$agf_place = new Agefodd_place ($this->db);
+				$agf_place->fetch($obj->rowid);
+				$agf_place->fk_societe = intval($parameters['soc_dest']);
+				$agf_place->update($user);
 			}
 		}
 
-		//SESSIONS DU TIERS
+		// DOCUMENTS LIES (par session)
 		$sql = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_session WHERE fk_soc=" . $parameters['soc_dest'] . ";";
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			while ($obj = $this->db->fetch_object($resql)) {
 				$agf = new Agsession($this->db);
-				$result = $agf->fetch($obj->rowid);
+				$session = $agf->fetch($obj->rowid);
 
-				//DOCUMENTS LIES A LA SESSION (ELEMENTS)
+				// ELEMENTS
 				$sql2 = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_session_element WHERE fk_session_agefodd=" . $obj->rowid . ";";
 				$resql2 = $this->db->query($sql2);
 				if ($resql2) {
 					while ($obj2 = $this->db->fetch_object($resql2)) {
 						$session_element = new Agefodd_session_element($this->db);
 						$session_element->fetch($obj2->rowid);
-
-						//DOCUMENT "PROPAL"
-						if ($session_element->element_type == 'propal') {
-
-							//Propal existante
-							$sql3 = "SELECT * FROM " . MAIN_DB_PREFIX . "propal WHERE rowid=" . $session_element->fk_element . ";";
-							$resql3 = $this->db->query($sql3);
-							$obj3 = $this->db->fetch_object($resql3);
-							$propal_statut = $obj3->fk_statut;
-
-
-							//Suppression de l'élément propal existant
-							$session_element->delete($user);
-
-							//Création de la nouvelle propal
-							if ($result < 0) {
-								setEventMessage($agf->error, 'errors');
-							} else {
-								$propal_id = $agf->createProposal($user, $parameters['soc_dest']);
-
-								//Si la propal existante n'est pas un brouillon
-								if ($propal_statut != 0) {
-
-									$sql4 = "SELECT * FROM " . MAIN_DB_PREFIX . "propal WHERE rowid=" . $propal_id . ";";
-									$resql4 = $this->db->query($sql4);
-
-									if ($resql4) {
-										$obj4 = $this->db->fetch_object($resql4);
-										$propal = new Propal($this->db);
-										$propal->fetch($obj4->rowid);
-
-										if ($propal_statut == 1) {                                //Propal validée
-											$propal->valid($user);
-										} else {                                                //Propal cloturée
-											$propal->valid($user);
-											$propal->cloture($user, $propal_statut);
-										}
-									}
-								}
-
-								if ($propal_id < 0) {
-									setEventMessage($agf->error, 'errors');
-								}
-							}
-						}
-
-						if ($session_element->element_type == 'order') {
-
-							//Suppression de l'élément propal existant
-							$session_element->delete($user);
-
-							//Création nouvelle commande
-							if ($result < 0) {
-								setEventMessage($agf->error, 'errors');
-							} else {
-								$order_id = $agf->createOrder($user, $parameters['soc_dest']);
-								if ($order_id < 0) {
-									setEventMessage($agf->error, 'errors');
-								}
-							}
-
-						}
-
+						$session_element->fk_soc = intval($parameters['soc_dest']);
+						$session_element->update($user);
 					}
 				}
 
-				//DOCUMENTS LIES A LA SESSION (PDF)
+				// PDF
 				$outputlangs = $langs;
 				$newlang = $object->thirdparty->default_lang;
 				if (!empty($newlang)) {
@@ -2001,30 +1938,26 @@ class ActionsAgefodd
 					$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, 'cloture', '', '', '');
 				}
 
-				//CONVENTION
-				$sql4 = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_convention WHERE fk_societe=" . $parameters['soc_origin'] . ";";
-				$resql4 = $this->db->query($sql4);
-				if ($resql4) {
-					while ($obj4 = $this->db->fetch_object($resql4)) {
+				// CONVENTION
+				$sql2 = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_convention WHERE fk_societe=" . $parameters['soc_origin'] . ";";
+				$resql2 = $this->db->query($sql2);
+				if ($resql2) {
+					while ($obj2 = $this->db->fetch_object($resql2)) {
 						$convention = new Agefodd_convention($this->db);
 						$convention->fetch($agf->id, $parameters['soc_origin']);
 						$convention->socid = $parameters['soc_dest'];
 						$convention->update($user);
 
-						if (file_exists($conf->agefodd->dir_output . '/convention_' . $agf->id . '_' . $parameters['soc_origin'] . '_' . $obj4->rowid . '.pdf')) {
-							$id_tmp = $obj4->rowid;
+						if (file_exists($conf->agefodd->dir_output . '/convention_' . $agf->id . '_' . $parameters['soc_origin'] . '_' . $obj2->rowid . '.pdf')) {
+							$id_tmp = $obj2->rowid;
 							$model = 'convention';
-							$file = 'convention_' . $agf->id . '_' . $parameters['soc_dest'] . '_' . $obj4->rowid . '.pdf';
+							$file = 'convention_' . $agf->id . '_' . $parameters['soc_dest'] . '_' . $obj2->rowid . '.pdf';
 							$result = agf_pdf_create($this->db, $id_tmp, '', $model, $outputlangs, $file, $socid, '', '', '', $convention);
 						}
 
 					}
 				}
-
-				//FACTURE
-
 			}
-
 		}
 	}
 }
