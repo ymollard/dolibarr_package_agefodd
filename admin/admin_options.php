@@ -1303,7 +1303,6 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
-
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfSendAgendaToTraineeDefaultMailModel") . '</td>';
 print '<td align="left">';
 

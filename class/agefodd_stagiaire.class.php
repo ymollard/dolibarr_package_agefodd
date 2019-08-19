@@ -338,9 +338,12 @@ class Agefodd_stagiaire extends CommonObject {
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
-
-		$array_options_keys=array_keys($extrafields->attribute_label);
-
+		$array_options_keys=array();
+		foreach($extrafields->attribute_type as $name=>$type) {
+			if ($type!='separate') {
+				$array_options_keys[]=$name;
+			}
+		}
 		$sql = "SELECT";
 		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilitecode,";
@@ -383,7 +386,7 @@ class Agefodd_stagiaire extends CommonObject {
 			$sql .= $this->db->plimit($limit + 1, $offset);
 		}
 
-		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -477,7 +480,7 @@ class Agefodd_stagiaire extends CommonObject {
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::". __METHOD__. ' '. $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -499,7 +502,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " ON s.civilite = civ.code";
 		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
-		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql)
 		{
@@ -512,7 +515,7 @@ class Agefodd_stagiaire extends CommonObject {
 			return $TRes;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__.' '. $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -531,7 +534,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " WHERE s.rowid = " . $id;
 
-		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -547,7 +550,7 @@ class Agefodd_stagiaire extends CommonObject {
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__ .' '. $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
