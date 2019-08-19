@@ -122,6 +122,8 @@ class InterfaceAgefodd {
 
 		global $conf, $mc;
 
+		if (empty($conf->agefodd->enabled)) return 0;
+
 		// multicompagny tweak
 		if (is_object($mc))
 		{
