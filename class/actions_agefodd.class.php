@@ -246,7 +246,7 @@ class ActionsAgefodd
 
 			// TODO gérer ici les actions de mes pages pour update les données
 			$context = Context::getInstance();
-			
+
 			if ($context->controller == 'agefodd_session_card')
 			{
 				if ($action == 'deleteCalendrierFormateur' && GETPOST('sessid') > 0 && GETPOST('fk_agefodd_session_formateur_calendrier') > 0)
@@ -312,7 +312,7 @@ class ActionsAgefodd
 				        {
 				            if (is_array($_FILES['userfile']['tmp_name'])) $userfiles=$_FILES['userfile']['tmp_name'];
 				            else $userfiles=array($_FILES['userfile']['tmp_name']);
-				            
+
 				            foreach($userfiles as $key => $userfile)
 				            {
 				                if (empty($_FILES['userfile']['tmp_name'][$key]))
@@ -326,7 +326,7 @@ class ActionsAgefodd
 				                    }
 				                }
 				            }
-				            
+
 				            if (! $error)
 				            {
 				                if (! empty($upload_dirold) && ! empty($conf->global->PRODUCT_USE_OLD_PATH_FOR_PHOTO))
@@ -531,11 +531,11 @@ class ActionsAgefodd
 	{
 	    $error = 0; // Error counter
 	    global $langs, $db, $conf, $user;
-	    
+
 	    if (in_array('externalaccessinterface', explode(':', $parameters['context'])))
 	    {
 	        dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
-	        
+
 	        if ($action == "downloadSessionFile")
 	        {
 	            $file = GETPOST('file');
@@ -639,7 +639,7 @@ class ActionsAgefodd
 	}
 
 	/**
-	 * 
+	 *
 	 * @param unknown $parameters
 	 * @param unknown $object
 	 * @param unknown $action
@@ -648,33 +648,33 @@ class ActionsAgefodd
 	public function PrintTopMenu($parameters, &$object, &$action, $hookmanager)
 	{
 	    global $langs, $conf;
-	    
+
 	    if (empty($conf->global->AGF_EACCESS_ACTIVATE)) return 0;
-	    
+
 	    $context = Context::getInstance();
-	    
+
 	    $this->results['agefodd'] = array(
 	        'id' => 'agefodd',
 	        'rank' => 90,
 	        'url' => $context->getRootUrl('agefodd'),
 	        'name' => $langs->trans('AgfTraining')
 	    );
-	    
+
 	    $this->results['agefodd']['children']['global'] = array(
 	        'id' => 'agefodd',
 	        'rank' => 10,
 	        'url' => $context->getRootUrl('agefodd'),
 	        'name' => $langs->trans('AgfTraining')
 	    );
-	    
+
 	    $this->results['agefodd']['children']['agefodd_session_list'] = array(
 	        'id' => 'agefodd',
 	        'rank' => 20,
 	        'url' => $context->getRootUrl('agefodd_session_list'),
 	        'name' => $langs->trans('AgfMenuSess')
 	    );
-	    
-	    
+
+
 	    return 0;
 	}
 
@@ -999,7 +999,7 @@ class ActionsAgefodd
 						}
 
 					} else {
-						dol_print_error('', $agfsess->error);
+						dol_print_error('', $sessiondetail->error);
 					}
 				}
 			} else {
@@ -1024,12 +1024,12 @@ class ActionsAgefodd
 
 		return 0;
 	}
-	
+
 	function _downloadSessionFile($filename)
 	{
 	    dol_include_once('/externalaccess/lib/externalaccess.lib.php');
 	    $forceDownload = GETPOST('forcedownload','int');
-	    
+
 	    downloadFile($filename, $forceDownload);
 	}
 
