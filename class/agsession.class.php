@@ -3343,7 +3343,12 @@ class Agsession extends CommonObject
 		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne, ord_inv.rowid";
 
 		if (! empty($invoiceid)) {
-			$sql .= " ,invoice.facnumber ";
+			if(floatval(DOL_VERSION) > 9){
+				$sql .= " ,invoice.ref ";
+			}
+			else{
+				$sql .= " ,invoice.facnumber ";
+			}
 		}
 
 		if (! empty($fourninvoiceid)) {
@@ -5587,24 +5592,24 @@ class Agsession extends CommonObject
 			    $trainee = new Agefodd_stagiaire($db);
 			    $trainee->fetch($trainee_session->fk_stagiaire);
 			    $this->stagiaire = $trainee;
-			    
+
 			    /***************Gestion des heures du participant sur la session (Pour les documents par participant)**************/
-					
+
 				dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
 				dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
-		    	
+
 		    	if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar')) {
-		    		
+
 					$agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
 					$agefoddsessionstagiaireheures->fetch_all_by_session($this->id, $trainee->id);
-					
+
 					if(!empty($agefoddsessionstagiaireheures->lines)) {
 						$hPresenceTotal = 0;
 						foreach ($agefoddsessionstagiaireheures->lines as $heures) {
-							
+
 							$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
 							if($agefodd_sesscalendar->fetch($heures->fk_calendrier)>0) {
-								
+
 								if(!empty($heures->heures)) {
 									// start by converting to seconds
 									$seconds = floor($heures->heures * 3600);
@@ -5614,17 +5619,17 @@ class Agsession extends CommonObject
 									$seconds -= $hours * 3600;
 									// calculate minutes left
 									$minutes = floor($seconds / 60);
-		    						
+
 									$hPresenceTotal+= $heures->heures;
-		    						
+
 									$this->stagiaire_presence_bloc.= (!empty($this->stagiaire_presence_bloc)?', ':'');
-									
+
 									// return the time formatted HH:MM
 									$this->stagiaire_presence_bloc.= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u",$minutes).')';
 								}
 							}
 						}
-						
+
 						// TOTAL DES HEURES PASSEES
 						// start by converting to seconds
 						$seconds = floor($hPresenceTotal * 3600);
@@ -5635,11 +5640,11 @@ class Agsession extends CommonObject
 						// calculate minutes left
 						$minutes = floor($seconds / 60);
 						$this->stagiaire_presence_total= $hours."H".sprintf("%02u",$minutes);
-		    			
+
 					}
 				}
 			 	/******************************************************************************************************************/
-			    
+
 		    }
 		}
 
