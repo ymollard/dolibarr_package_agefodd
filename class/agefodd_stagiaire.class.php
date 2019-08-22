@@ -39,6 +39,7 @@ class Agefodd_stagiaire extends CommonObject {
 	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $nom;
 	public $prenom;
+	public $civilite;
 	public $fonction;
 	public $tel1;
 	public $tel2;
@@ -266,7 +267,7 @@ class Agefodd_stagiaire extends CommonObject {
 						$this->ref = $obj->rowid; // use for next prev refs
 						$this->nom = $contact->lastname;
 						$this->prenom = $contact->firstname;
-						$this->civilite = $contact->civility_id;
+						$this->civilite = $contact->civility_code;
 						$this->socid = $contact->socid;
 						$this->socname = $contact->socname;
 						$this->fonction = $contact->poste;
@@ -484,17 +485,17 @@ class Agefodd_stagiaire extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	public function fetch_all_id_by($attribute)
 	{
 		$TRes = array();
-		
+
 		$sql = "SELECT";
 		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilitecode,";
 		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
 		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
-		
+
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON s.fk_soc = so.rowid";
@@ -510,7 +511,7 @@ class Agefodd_stagiaire extends CommonObject {
 			{
 				$TRes[$obj->{$attribute}] = $obj->rowid;
 			}
-			
+
 			$this->db->free($resql);
 			return $TRes;
 		} else {
