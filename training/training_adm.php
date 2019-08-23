@@ -235,10 +235,10 @@ if ($result0 > 0) {
 
 		print '<td>';
 		if ($line->indice != ebi_get_adm_training_indice_per_rank($line->level_rank, $line->fk_parent_level, 'MIN')) {
-			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/1uparrow.png" border="0" name="sesslevel_up" alt="' . $langs->trans("Save") . '">';
+			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/sort_asc.png" border="0" name="sesslevel_up" alt="' . $langs->trans("Up") . '">';
 		}
 		if ($line->indice != ebi_get_adm_training_indice_per_rank($line->level_rank, $line->fk_parent_level, 'MAX')) {
-			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/1downarrow.png" border="0" name="sesslevel_down" alt="' . $langs->trans("Save") . '">';
+			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/sort_desc.png" border="0" name="sesslevel_down" alt="' . $langs->trans("Down") . '">';
 		}
 		print '</td>';
 
