@@ -261,7 +261,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-5);
 				$this->str = $line->nom . ' ' . $line->prenom;
-				if (! empty($line->poste)) {
+				if (! empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
 					$this->str .= ' (' . $line->poste . ')';
 				}
 				$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 0, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');

@@ -704,7 +704,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 					}
 				}
 				$str .= $line->nom . ' ' . $line->prenom;
-				if (! empty($line->poste)) {
+				if (! empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
 					$str .= ' (' . $line->poste . ')';
 				}
 				if (! empty($line->date_birth) && !empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
