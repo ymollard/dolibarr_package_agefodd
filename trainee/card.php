@@ -143,6 +143,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 				Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 				exit();
 			} else {
+				$action='edit';
 				setEventMessage($agf->error, 'errors');
 			}
 		} else {

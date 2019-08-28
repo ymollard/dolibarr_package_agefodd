@@ -119,20 +119,20 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 				foreach ( $agfssh->lines as $heures ) {
 				    if ($agfsta->status_in_session == 3 )
 				    {
-				        
+
 				        $TCal = array();
 				        if (!in_array($heures->fk_calendrier, $TCal))
 				        {
 				            $cal = new Agefodd_sesscalendar($db);
 				            $cal->fetch($heures->fk_calendrier);
-				            
+
 				            $TCal[$heures->fk_calendrier] = ($cal->heuref - $cal->heured) / 3600;
 				        }
-				        
+
 				        if (floatval($heures->heures) !== $TCal[$heures->fk_calendrier])
 				        {
     				        $new_heures = new Agefoddsessionstagiaireheures($db);
-    				        
+
     				        $new_heures->fk_stagiaire = $heures->fk_stagiaire;
     				        $new_heures->nom_stagiaire = $heures->nom_stagiaire;
     				        $new_heures->fk_user_author = $heures->fk_user_author;
@@ -140,9 +140,9 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
     				        $new_heures->fk_session = $heures->fk_session;
     				        $new_heures->heures = $TCal[$heures->fk_calendrier];
     				        $new_heures->datec = $heures->datec;
-    				        
+
     				        $res = $new_heures->create($user);
-    				        
+
     				        if ($res) $heures->delete($user);
     				        else setEventMessage($langs->trans('ErrUpdateHeures'), 'errors');
 				        }
@@ -472,12 +472,12 @@ if ($action == 'updatetraineestatus') {
 					       {
 					            $cal = new Agefodd_sesscalendar($db);
 					            $cal->fetch($creneaux->fk_calendrier);
-					            
+
 					            $TCal[$creneaux->fk_calendrier] = ($cal->heuref - $cal->heured) / 3600;
 							}
 
 					        $new_heures = new Agefoddsessionstagiaireheures($db);
-					        
+
 					        $new_heures->fk_stagiaire = $creneaux->fk_stagiaire;
 					        $new_heures->nom_stagiaire = $creneaux->nom_stagiaire;
 					        $new_heures->fk_user_author = $creneaux->fk_user_author;
@@ -485,9 +485,9 @@ if ($action == 'updatetraineestatus') {
 					        $new_heures->fk_session = $creneaux->fk_session;
 					        $new_heures->heures = $TCal[$creneaux->fk_calendrier];
 					        $new_heures->datec = $creneaux->datec;
-					        
+
 					        $res = $new_heures->create($user);
-					        
+
 					        if ($res) $creneaux->delete($user);
 					        else setEventMessage($langs->trans('ErrUpdateHeures'), 'errors');
 					    }
