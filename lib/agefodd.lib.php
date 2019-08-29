@@ -1490,11 +1490,6 @@ function pdf_agfpagefoot(&$pdf, $outputlangs, $paramfreetext, $fromcompany, $mar
 	// Line 3 of company infos
 	$line3 = "";
 
-	if ($fromcompany->forme_juridique_code) {
-		$line3 .= ($line3 ? " - " : "") . $outputlangs->convToOutputCharset(getFormeJuridiqueLabel($fromcompany->forme_juridique_code));
-	}
-
-	// Prof Id 1
 	if ($fromcompany->idprof1 && ($fromcompany->country_code != 'FR' || !$fromcompany->idprof2)) {
 		$field = $outputlangs->transcountrynoentities("ProfId1", $fromcompany->country_code);
 		if (preg_match('/\((.*)\)/i', $field, $reg))
