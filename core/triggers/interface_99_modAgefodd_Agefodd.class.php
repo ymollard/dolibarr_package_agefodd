@@ -544,7 +544,7 @@ class InterfaceAgefodd {
 
 					$sta->nom = $object->lastname;
 					$sta->prenom = $object->firstname;
-					$sta->civilite = $object->civility_id;
+					$sta->civilite = (empty($object->civility_id)?$object->civility_code:$object->civility_id);
 					$sta->socid = $object->socid;
 					$sta->fonction = $object->poste;
 					$sta->tel1 = $object->phone_pro;
