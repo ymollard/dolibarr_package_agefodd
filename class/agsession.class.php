@@ -4685,7 +4685,7 @@ class Agsession extends CommonObject
 								// For Intra entreprise get OPCA and customer of trainning
 								$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
 								$socsatic = new Societe($this->db);
-								$result = $socsatic->fetch($this->socid);
+								$result = $socsatic->fetch($line->socid);
 								if ($result < 0) {
 									$this->errors[] = $invoice->error;
 									$error ++;
@@ -4977,7 +4977,7 @@ class Agsession extends CommonObject
 		} else {
 			$this->db->rollback();
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::createProposal " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::createInvoice " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			return - 1 * $error;
