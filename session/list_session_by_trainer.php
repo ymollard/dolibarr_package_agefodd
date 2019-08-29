@@ -106,7 +106,7 @@ if (empty($reshook))
 * View
 */
 
-llxHeader('', $langs->trans("AgefoddSessionTrainerList"));
+llxHeader('', $langs->trans("AgfMenuSessListTrainer"));
 
 
 $form = new Form($db);
