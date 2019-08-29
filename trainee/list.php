@@ -350,6 +350,7 @@ if ($result >= 0) {
 		if (! empty($arrayfields['civ.code']['checked'])) {
 			$contact_static = new Contact($db);
 			$contact_static->civility_id = $line->civilite;
+			$contact_static->civility_code = $line->civilite;
 
 			print '<td>' . $contact_static->getCivilityLabel() . '</td>';
 		}

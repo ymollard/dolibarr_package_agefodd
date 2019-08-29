@@ -864,6 +864,7 @@ else
 
 				$contact_static = new Contact($db);
 				$contact_static->civility_id = $agf->civilite;
+				$contact_static->civility_code = $agf->civilite;
 
 				print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
 
