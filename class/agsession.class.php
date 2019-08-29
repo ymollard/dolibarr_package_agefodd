@@ -4055,7 +4055,7 @@ class Agsession extends CommonObject
 					$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $this->duree_session . ' ' . $langs->trans('Hour') . 's';
 				}
 				if (! empty($this->placecode)) {
-					$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode;
+					$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode."\n";
 				}
 				$session_trainee = new Agefodd_session_stagiaire($this->db);
 				$session_trainee->fetch_stagiaire_per_session($this->id, $socid, 1);
@@ -4325,7 +4325,7 @@ class Agsession extends CommonObject
 				$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $this->duree_session . ' ' . $langs->trans('Hour') . 's';
 			}
 			if (! empty($this->placecode)) {
-				$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode;
+				$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode."\n";
 			}
 			$session_trainee = new Agefodd_session_stagiaire($this->db);
 			$session_trainee->fetch_stagiaire_per_session($this->id, $socid, 1);
@@ -4631,7 +4631,7 @@ class Agsession extends CommonObject
 				$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $this->duree_session . ' ' . $langs->trans('Hour') . '(s)';
 			}
 			if (! empty($this->placecode)) {
-				$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode;
+				$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode."\n";
 			}
 
 			// Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
