@@ -254,16 +254,14 @@ class Agefodd_stagiaire extends CommonObject {
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			if ($this->db->num_rows($resql)) {
+			if ($this->db->num_rows($resql)>0) {
 				$obj = $this->db->fetch_object($resql);
 
 				if (! (empty($obj->fk_socpeople))) {
 					$contact = new Contact($this->db);
 					$result = $contact->fetch($obj->fk_socpeople);
-
+					$this->id = $obj->rowid;
 					if ($result > 0) {
-
-						$this->id = $obj->rowid;
 						$this->ref = $obj->rowid; // use for next prev refs
 						$this->nom = $contact->lastname;
 						$this->prenom = $contact->firstname;
