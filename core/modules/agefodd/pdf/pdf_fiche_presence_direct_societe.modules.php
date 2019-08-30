@@ -20,7 +20,7 @@
  */
 
 /**
- * \file agefodd/core/modules/agefodd/pdf/pdf_fiche_presence.modules.php
+ * \file agefodd/core/modules/agefodd/pdf/pdf_fiche_presence_societe.modules.php
  * \ingroup agefodd
  * \brief PDF for attendees sheet
  */
@@ -35,7 +35,7 @@ require_once (DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php');
 dol_include_once('/agefodd/lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php');
 dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-class pdf_fiche_presence_direct extends ModelePDFAgefodd {
+class pdf_fiche_presence_direct_societe extends ModelePDFAgefodd {
 	var $emetteur; // Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
@@ -63,8 +63,8 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		$this->page_largeur = $formatarray ['width']; // use standard but reverse width and height to get Landscape format
 		$this->page_hauteur = $formatarray ['height']; // use standard but reverse width and height to get Landscape format
 		$this->format = array (
-				$this->page_largeur,
-				$this->page_hauteur
+			$this->page_largeur,
+			$this->page_hauteur
 		);
 		$this->marge_gauche = 10;
 		$this->marge_droite = 10;
@@ -153,138 +153,152 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 
-			// New page
-			$pdf->AddPage();
-			$pagenb ++;
-			$this->_pagehead($pdf, $agf, 1, $outputlangs);
-
-			// Output Rect
-			$this->_tableau($pdf, $tab_top, 40, 0, $outputlangs, 0, 0);
-
-			//signature and tampon
-			$this->_agreement($pdf, $agf, $posy, $outputlangs);
-
-			// Pied de page
-			$this->_pagefoot($pdf, $agf, $outputlangs);
-			if (method_exists($pdf, 'AliasNbPages')) {
-				$pdf->AliasNbPages();
-			}
-
-			$tab_height=30;
-			$tab_top=80;
-
-
-			$posX = $this->marge_gauche;
-			$posY = $tab_top;
-			$posYintitule = $posY;
-
-			$larg_col1 = $this->posxsecondcolumn-$this->marge_gauche;
-			$larg_col2 = $this->posxtrainingaddress-$this->posxsecondcolumn;
-			$larg_col3 = $this->posxforthcolumn-$this->posxtrainingaddress;
-			$larg_col4 = 50;
-			$haut_col2 = 0;
-			$haut_col4 = 0;
-
-			/**
-			 * *** Bloc formation ****
-			 */
-
-			$this->_training($pdf, $agf, $posy, $outputlangs);
-
-			/**
-			 * *** Bloc stagiaire ****
-			 */
+			//On récupère l'id des sociétés des participants
 			$agfsta = new Agefodd_session_stagiaire($this->db);
 			$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
-
-			$posY = $pdf->GetY() + 25;
-
-			$larg_col1 = 40;
-			$larg_col2 = 40;
-			$larg_col3 = 50;
-			$larg_col4 = 112;
-			$haut_col2 = 0;
-			$haut_col4 = 0;
-			$h_ligne = 8;
-
-			$posY += $h_ligne;
-
-			// Date
-			$agf_date = new Agefodd_sesscalendar($this->db);
-			$resql = $agf_date->fetch_all($agf->id);
-			$largeur_date = 18;
-			for($y = 0; $y < 6; $y ++) {
-				// Jour
-				$pdf->SetXY($posX + $larg_col1 + $larg_col2 + (20 * $y), $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-4);
-				if ($agf_date->lines [$y]->date_session) {
-					$date = dol_print_date($agf_date->lines [$y]->date_session, 'daytextshort');
-				} else {
-					$date = '';
+			$socstagiaires = array();
+			foreach ($agfsta->lines as $line){
+				if (!in_array($line->socid, $socstagiaires)) {
+					$socstagiaires[] = $line->socid;
 				}
-				$this->str = $date;
-				if ($last_day == $agf_date->lines [$y]->date_session) {
-					$same_day += 1;
-					$pdf->SetFillColor(255, 255, 255);
-				} else {
-					$same_day = 0;
-				}
-				$pdf->SetXY($posX + $larg_col1 + $larg_col2 + ($largeur_date * $y) - ($largeur_date * ($same_day)), $posY);
-				//$pdf->Cell($largeur_date * ($same_day + 1), 4, $outputlangs->convToOutputCharset($this->str), 1, 2, "C", $same_day);
-
-				// horaires
-				$pdf->SetXY($posX + $larg_col1 + $larg_col2 + ($largeur_date * $y), $posY + 4);
-				if ($agf_date->lines [$y]->heured && $agf_date->lines [$y]->heuref) {
-					$this->str = dol_print_date($agf_date->lines [$y]->heured, 'hour') . ' - ' . dol_print_date($agf_date->lines [$y]->heuref, 'hour');
-				} else {
-					$this->str = '';
-				}
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-5);
-				//$pdf->Cell($largeur_date, 4, $outputlangs->convToOutputCharset($this->str), 1, 2, "C", 0);
-
-				$last_day = $agf_date->lines [$y]->date_session;
 			}
-			// lines
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-3);
-			$posY = $pdf->GetY();
-			$posYstart=$posY;
 
-			foreach ( $agfsta->lines as $line ) {
+			//Pour chaque société, on crée une série de feuilles de présence
+			foreach($socstagiaires as $key=>$socstagiaires_id) {
 
-                                if(!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
-                                        $TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
-					$status_stagiaire = (int)$line->status_in_session;
-                                        if(in_array($status_stagiaire, $TStagiaireStatusToExclude)) continue;
-                                }
+				// New page
+				$pdf->AddPage();
+				$pagenb++;
+				$this->_pagehead($pdf, $agf, 1, $outputlangs);
 
-				// Nom
-				$pdf->SetXY($posX, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-5);
-				$this->str = $line->nom . ' ' . $line->prenom;
-				if (! empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
-					$this->str .= ' (' . $line->poste . ')';
+				// Output Rect
+				$this->_tableau($pdf, $tab_top, 40, 0, $outputlangs, 0, 0);
+
+				//signature and tampon
+				$this->_agreement($pdf, $agf, $posy, $outputlangs);
+
+				// Pied de page
+				$this->_pagefoot($pdf, $agf, $outputlangs);
+				if (method_exists($pdf, 'AliasNbPages')) {
+					$pdf->AliasNbPages();
 				}
-				$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 0, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
-				//Loop for lines
-				$nexY = $pdf->GetY();
-				$pdf->line($this->marge_gauche, $nexY, $this->page_largeur-$this->marge_droite, $nexY);
 
+				$tab_height = 30;
+				$tab_top = 80;
+
+
+				$posX = $this->marge_gauche;
+				$posY = $tab_top;
+				$posYintitule = $posY;
+
+				$larg_col1 = $this->posxsecondcolumn - $this->marge_gauche;
+				$larg_col2 = $this->posxtrainingaddress - $this->posxsecondcolumn;
+				$larg_col3 = $this->posxforthcolumn - $this->posxtrainingaddress;
+				$larg_col4 = 50;
+				$haut_col2 = 0;
+				$haut_col4 = 0;
+
+				/**
+				 * *** Bloc formation ****
+				 */
+
+				$this->_training($pdf, $agf, $posy, $outputlangs);
+
+				/**
+				 * *** Bloc stagiaire ****
+				 */
+//				$agfsta = new Agefodd_session_stagiaire($this->db);
+				$resql = $agfsta->fetch_stagiaire_per_session($agf->id, $socstagiaires_id);
+
+				$posY = $pdf->GetY() + 25;
+
+				$larg_col1 = 40;
+				$larg_col2 = 40;
+				$larg_col3 = 50;
+				$larg_col4 = 112;
+				$haut_col2 = 0;
+				$haut_col4 = 0;
+				$h_ligne = 8;
+
+				$posY += $h_ligne;
+
+				// Date
+				$agf_date = new Agefodd_sesscalendar($this->db);
+				$resql = $agf_date->fetch_all($agf->id);
+				$largeur_date = 18;
+				for ($y = 0; $y < 6; $y++) {
+					// Jour
+					$pdf->SetXY($posX + $larg_col1 + $larg_col2 + (20 * $y), $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size - 4);
+					if ($agf_date->lines [$y]->date_session) {
+						$date = dol_print_date($agf_date->lines [$y]->date_session, 'daytextshort');
+					} else {
+						$date = '';
+					}
+					$this->str = $date;
+					if ($last_day == $agf_date->lines [$y]->date_session) {
+						$same_day += 1;
+						$pdf->SetFillColor(255, 255, 255);
+					} else {
+						$same_day = 0;
+					}
+					$pdf->SetXY($posX + $larg_col1 + $larg_col2 + ($largeur_date * $y) - ($largeur_date * ($same_day)), $posY);
+					//$pdf->Cell($largeur_date * ($same_day + 1), 4, $outputlangs->convToOutputCharset($this->str), 1, 2, "C", $same_day);
+
+					// horaires
+					$pdf->SetXY($posX + $larg_col1 + $larg_col2 + ($largeur_date * $y), $posY + 4);
+					if ($agf_date->lines [$y]->heured && $agf_date->lines [$y]->heuref) {
+						$this->str = dol_print_date($agf_date->lines [$y]->heured, 'hour') . ' - ' . dol_print_date($agf_date->lines [$y]->heuref, 'hour');
+					} else {
+						$this->str = '';
+					}
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size - 5);
+					//$pdf->Cell($largeur_date, 4, $outputlangs->convToOutputCharset($this->str), 1, 2, "C", 0);
+
+					$last_day = $agf_date->lines [$y]->date_session;
+				}
+				// lines
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size - 3);
 				$posY = $pdf->GetY();
-				if ($posY >= 215) {
-					$pdf->AddPage();
-					$this->_pagehead($pdf, $agf, 1, $outputlangs);
-					$this->_tableau($pdf, $tab_top, 40, 0, $outputlangs, 0, 0);
-					$this->_training($pdf, $agf, $posy, $outputlangs);
-					$this->_agreement($pdf, $agf, $posy, $outputlangs);
-					$pagenb ++;
-					$posY = $posYstart;
-				}
-			}
+				$posYstart = $posY;
 
-			// Pied de page
-			$this->_pagefoot($pdf, $agf, $outputlangs);
-			if (method_exists($pdf, 'AliasNbPages')) {
-				$pdf->AliasNbPages();
+				foreach ($agfsta->lines as $line) {
+
+					if (!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
+						$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+						$status_stagiaire = (int)$line->status_in_session;
+						if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) continue;
+					}
+
+					// Nom
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size - 5);
+					$this->str = $line->nom . ' ' . $line->prenom;
+					if (!empty($line->poste)) {
+						$this->str .= ' (' . $line->poste . ')';
+					}
+					$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($this->str), 0, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
+					//Loop for lines
+					$nexY = $pdf->GetY();
+					$pdf->line($this->marge_gauche, $nexY, $this->page_largeur - $this->marge_droite, $nexY);
+
+					$posY = $pdf->GetY();
+					if ($posY >= 215) {
+						$pdf->AddPage();
+						$this->_pagehead($pdf, $agf, 1, $outputlangs);
+						$this->_tableau($pdf, $tab_top, 40, 0, $outputlangs, 0, 0);
+						$this->_training($pdf, $agf, $posy, $outputlangs);
+						$this->_agreement($pdf, $agf, $posy, $outputlangs);
+						$pagenb++;
+						$posY = $posYstart;
+					}
+				}
+
+				// Pied de page
+				$this->_pagefoot($pdf, $agf, $outputlangs);
+				if (method_exists($pdf, 'AliasNbPages')) {
+					$pdf->AliasNbPages();
+				}
 			}
 
 			$pdf->Close();
@@ -508,7 +522,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		}
 	}
 
-		/**
+	/**
 	 *	Show tampon and signature
 	 *
 	 *	@param	PDF			&$pdf           Object PDF
@@ -516,7 +530,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 	 *	@param	int			$posy			Position depart
 	 *	@param	Translate	$outputlangs	Objet langs
 	 *	@return int							Position pour suite
-		 */
+	 */
 	function _agreement(&$pdf, $agf, $posy, $outputlangs)
 	{
 		global $conf,$langs;
@@ -664,7 +678,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 			// Sender properties
 			// Show sender
 			$posy=$this->marge_haute;
-		 	$posx=$this->marge_gauche;
+			$posx=$this->marge_gauche;
 
 			$hautcadre=30;
 			$pdf->SetXY($posx,$posy);

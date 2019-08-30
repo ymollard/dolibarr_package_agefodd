@@ -40,7 +40,7 @@ $langs->load('agefodd@agefodd');
 
 if (! $user->rights->agefodd->admin && ! $user->admin)
     accessforbidden();
-    
+
 $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 
@@ -48,15 +48,15 @@ llxHeader('', $langs->trans('AgefoddSetupDesc'));
 
 if ($action == 'sessionlevel_create') {
     $agf = new Agefodd_session_admlevel($db);
-    
+
     $parent_level = GETPOST('parent_level', 'int');
-    
+
     if (! empty($parent_level)) {
         $agf->fk_parent_level = $parent_level;
-        
+
         $agf_static = new Agefodd_session_admlevel($db);
         $result_stat = $agf_static->fetch($agf->fk_parent_level);
-        
+
         if ($result_stat > 0) {
             if (! empty($agf_static->id)) {
                 $agf->level_rank = $agf_static->level_rank + 1;
@@ -74,20 +74,20 @@ if ($action == 'sessionlevel_create') {
         $agf->indice = (ebi_get_adm_level_number() + 1) . '00';
         $agf->level_rank = 0;
     }
-    
+
     $agf->intitule = GETPOST('intitule', 'alpha');
     $agf->delais_alerte = GETPOST('delai', 'int');
     $agf->delais_alerte_end = GETPOST('delai_end', 'int');
-    
+
     // prevent mysql error
     if(empty($agf->delais_alerte)){ $agf->delais_alerte = 0 ; }
     if(empty($agf->delais_alerte_end)){ $agf->delais_alerte_end= 0 ; }
-    
+
     if ($agf->level_rank > 3) {
         setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"), 'errors');
     } else {
         $result = $agf->create($user);
-        
+
         if ($result1 != 1) {
             setEventMessage($agf->error, 'errors');
         }
@@ -96,14 +96,14 @@ if ($action == 'sessionlevel_create') {
 
 if ($action == 'sessionlevel_update') {
     $agf = new Agefodd_session_admlevel($db);
-    
+
     $id = GETPOST('id', 'int');
     $parent_level = GETPOST('parent_level', 'int');
-    
+
     $result = $agf->fetch($id);
-    
+
     if ($result > 0) {
-        
+
         // Up level of action
         if (GETPOST('sesslevel_up_x')) {
             $result2 = $agf->shift_indice($user, 'less');
@@ -111,7 +111,7 @@ if ($action == 'sessionlevel_update') {
                 setEventMessage($agf->error, 'errors');
             }
         }
-        
+
         // Down level of action
         if (GETPOST('sesslevel_down_x')) {
             $result1 = $agf->shift_indice($user, 'more');
@@ -119,29 +119,29 @@ if ($action == 'sessionlevel_update') {
                 setEventMessage($agf->error, 'errors');
             }
         }
-        
+
         // Update action
         if (GETPOST('sesslevel_update_x')) {
             $agf->intitule = GETPOST('intitule', 'alpha');
             $agf->delais_alerte = GETPOST('delai', 'int');
             $agf->delais_alerte_end = GETPOST('delai_end', 'int');
-            
+
             // prevent mysql error
             if(empty($agf->delais_alerte)){ $agf->delais_alerte = 0 ; }
             if(empty($agf->delais_alerte_end)){ $agf->delais_alerte_end= 0 ; }
-            
+
             if (! empty($parent_level)) {
                 if ($parent_level != $agf->fk_parent_level) {
                     $agf->fk_parent_level = $parent_level;
-                    
+
                     $agf_static = new Agefodd_session_admlevel($db);
                     $result_stat = $agf_static->fetch($agf->fk_parent_level);
-                    
+
                     if ($result_stat > 0) {
                         if (! empty($agf_static->id)) {
                             $agf->level_rank = $agf_static->level_rank + 1;
                             $agf->indice = ebi_get_adm_get_next_indice_action($agf_static->id);
-                            
+
                         } else { // no parent : This case may not occur but we never know
                             $agf->indice = (ebi_get_adm_level_number() + 1) . '00';
                             $agf->level_rank = 0;
@@ -155,7 +155,7 @@ if ($action == 'sessionlevel_update') {
                 $agf->fk_parent_level = 0;
                 $agf->level_rank = 0;
             }
-            
+
             if ($agf->level_rank > 3) {
                 setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"), 'errors');
             } else {
@@ -165,7 +165,7 @@ if ($action == 'sessionlevel_update') {
                 }
             }
         }
-        
+
         // Delete action
         if (GETPOST('sesslevel_remove_x')) {
             print $form->formconfirm($_SERVER['PHP_SELF'] ."?id=".$agf->id, $langs->trans("AgfDeleteOps"), $langs->trans("AgfConfirmDeleteAction"), "confirm_sessionlevel_delete", '', '', 1);
@@ -177,11 +177,11 @@ if ($action == 'sessionlevel_update') {
 
 if ($action == 'confirm_sessionlevel_delete' && $confirm == 'yes'){
     $agf = new Agefodd_session_admlevel($db);
-    
+
     $id = GETPOST('id', 'int');
 
     $result = $agf->fetch($id);
-    
+
     if ($result > 0) {
         $result = $agf->delete($user);
         if ($result != 1) {
@@ -227,7 +227,7 @@ if ($result0 > 0) {
     print '<td>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</td>';
     print '<td></td>';
     print "</tr>\n";
-    
+
     $var = true;
     foreach ( $admlevel->lines as $line ) {
         $var = ! $var;
@@ -237,21 +237,21 @@ if ($result0 > 0) {
         print '<input type="hidden" name="id" value="' . $line->rowid . '">' . "\n";
         print '<input type="hidden" name="action" value="sessionlevel_update">' . "\n";
         print '<tr ' . $bc[$var] . '>';
-        
+
         print '<td>';
         if ($line->indice != ebi_get_adm_indice_per_rank($line->level_rank, $line->fk_parent_level, 'MIN')) {
-            print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/1uparrow.png" border="0" name="sesslevel_up" alt="' . $langs->trans("Save") . '">';
+            print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/sort_asc.png" border="0" name="sesslevel_up" alt="' . $langs->trans("Up") . '">';
         }
         if ($line->indice != ebi_get_adm_indice_per_rank($line->level_rank, $line->fk_parent_level, 'MAX')) {
-            print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/1downarrow.png" border="0" name="sesslevel_down" alt="' . $langs->trans("Save") . '">';
+            print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/sort_desc.png" border="0" name="sesslevel_down" alt="' . $langs->trans("Down") . '">';
         }
         print '</td>';
-        
+
         print '<td>' . str_repeat('&nbsp;&nbsp;&nbsp;', $line->level_rank) . '<input type="text" name="intitule" value="' . $line->intitule . '" size="30"/></td>';
         print '<td>' . $formAgefodd->select_action_session_adm($line->fk_parent_level, 'parent_level', $line->rowid) . '</td>';
         print '<td><input type="text" name="delai" value="' . $line->alerte . '" size="2"/></td>';
         print '<td><input type="text" name="delai_end" value="' . $line->alerte_end . '" size="2"/></td>';
-        print '<td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
+        print '<td><input type="image" src="' . dol_buildpath('/agefodd/img/save.png', 1) . '" border="0" name="sesslevel_update" alt="' . $langs->trans("Down") . '">';
         print '<input type="image" src="' . img_picto($langs->trans("Delete"), 'delete','',false,1).'" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
         print '</tr>';
         print '</form>';

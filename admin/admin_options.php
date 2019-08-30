@@ -1201,6 +1201,14 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHideCompanyFichePres") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_HIDE_SOCIETE_FICHEPRES');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
 if (!empty($conf->multicompany->enabled)){
     print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDisplayEntityNameFichePres") . '</td>';
     print '<td align="left">';
@@ -1295,7 +1303,6 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
-
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfSendAgendaToTraineeDefaultMailModel") . '</td>';
 print '<td align="left">';
 
@@ -1331,8 +1338,6 @@ print '</td>';
 print '<td></td>';
 print '</tr>';
 $var=!$var;
-
-
 
 print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
 

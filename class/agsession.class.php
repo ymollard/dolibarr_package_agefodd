@@ -2740,6 +2740,7 @@ class Agsession extends CommonObject
 		$sql .= " ,s.duree_session";
 		$sql .= " ,s.fk_soc_requester";
 		$sql .= " ,s.fk_soc_employer";
+		$sql .= " ,s.ref as sessionref";
 		$sql .= " ,sorequester.nom as socrequestername,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (datea - INTERVAL " . $interval0day . ") <= NOW() AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu) AND archive <> 1) as task0,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu WHERE (  NOW() BETWEEN (datea - INTERVAL " . $interval3day . ") AND datea ) AND fk_agefodd_session=s.rowid AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu)) as task1,";
@@ -2816,7 +2817,7 @@ class Agsession extends CommonObject
 			}
 		}
 
-		$sql .= " GROUP BY s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+		$sql .= " GROUP BY s.rowid,s.ref, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code, s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid, sorequester.nom";
 		if (! empty($sortfield)) {
 			$sql .= $this->db->order($sortfield, $sortorder);
@@ -2852,6 +2853,7 @@ class Agsession extends CommonObject
 					$line->datef = $this->db->jdate($obj->datef);
 					$line->intitule = $obj->intitule;
 					$line->ref = $obj->ref;
+					$line->sessionref = $obj->sessionref;
 					$line->training_ref_interne = $obj->trainingrefinterne;
 					$line->ref_interne = $obj->ref_interne;
 					$line->color = $obj->color;
@@ -3343,7 +3345,12 @@ class Agsession extends CommonObject
 		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne, ord_inv.rowid";
 
 		if (! empty($invoiceid)) {
-			$sql .= " ,invoice.facnumber ";
+			if(floatval(DOL_VERSION) > 9){
+				$sql .= " ,invoice.ref ";
+			}
+			else{
+				$sql .= " ,invoice.facnumber ";
+			}
 		}
 
 		if (! empty($fourninvoiceid)) {
@@ -4048,7 +4055,7 @@ class Agsession extends CommonObject
 					$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $this->duree_session . ' ' . $langs->trans('Hour') . 's';
 				}
 				if (! empty($this->placecode)) {
-					$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode;
+					$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode."\n";
 				}
 				$session_trainee = new Agefodd_session_stagiaire($this->db);
 				$session_trainee->fetch_stagiaire_per_session($this->id, $socid, 1);
@@ -4318,7 +4325,7 @@ class Agsession extends CommonObject
 				$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $this->duree_session . ' ' . $langs->trans('Hour') . 's';
 			}
 			if (! empty($this->placecode)) {
-				$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode;
+				$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode."\n";
 			}
 			$session_trainee = new Agefodd_session_stagiaire($this->db);
 			$session_trainee->fetch_stagiaire_per_session($this->id, $socid, 1);
@@ -4624,7 +4631,7 @@ class Agsession extends CommonObject
 				$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $this->duree_session . ' ' . $langs->trans('Hour') . '(s)';
 			}
 			if (! empty($this->placecode)) {
-				$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode;
+				$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $this->placecode."\n";
 			}
 
 			// Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
@@ -4678,7 +4685,7 @@ class Agsession extends CommonObject
 								// For Intra entreprise get OPCA and customer of trainning
 								$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
 								$socsatic = new Societe($this->db);
-								$result = $socsatic->fetch($this->socid);
+								$result = $socsatic->fetch($line->socid);
 								if ($result < 0) {
 									$this->errors[] = $invoice->error;
 									$error ++;
@@ -4970,7 +4977,7 @@ class Agsession extends CommonObject
 		} else {
 			$this->db->rollback();
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::createProposal " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::createInvoice " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			return - 1 * $error;
@@ -5587,24 +5594,24 @@ class Agsession extends CommonObject
 			    $trainee = new Agefodd_stagiaire($db);
 			    $trainee->fetch($trainee_session->fk_stagiaire);
 			    $this->stagiaire = $trainee;
-			    
+
 			    /***************Gestion des heures du participant sur la session (Pour les documents par participant)**************/
-					
+
 				dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
 				dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
-		    	
+
 		    	if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar')) {
-		    		
+
 					$agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
 					$agefoddsessionstagiaireheures->fetch_all_by_session($this->id, $trainee->id);
-					
+
 					if(!empty($agefoddsessionstagiaireheures->lines)) {
 						$hPresenceTotal = 0;
 						foreach ($agefoddsessionstagiaireheures->lines as $heures) {
-							
+
 							$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
 							if($agefodd_sesscalendar->fetch($heures->fk_calendrier)>0) {
-								
+
 								if(!empty($heures->heures)) {
 									// start by converting to seconds
 									$seconds = floor($heures->heures * 3600);
@@ -5614,17 +5621,17 @@ class Agsession extends CommonObject
 									$seconds -= $hours * 3600;
 									// calculate minutes left
 									$minutes = floor($seconds / 60);
-		    						
+
 									$hPresenceTotal+= $heures->heures;
-		    						
+
 									$this->stagiaire_presence_bloc.= (!empty($this->stagiaire_presence_bloc)?', ':'');
-									
+
 									// return the time formatted HH:MM
 									$this->stagiaire_presence_bloc.= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u",$minutes).')';
 								}
 							}
 						}
-						
+
 						// TOTAL DES HEURES PASSEES
 						// start by converting to seconds
 						$seconds = floor($hPresenceTotal * 3600);
@@ -5635,11 +5642,11 @@ class Agsession extends CommonObject
 						// calculate minutes left
 						$minutes = floor($seconds / 60);
 						$this->stagiaire_presence_total= $hours."H".sprintf("%02u",$minutes);
-		    			
+
 					}
 				}
 			 	/******************************************************************************************************************/
-			    
+
 		    }
 		}
 

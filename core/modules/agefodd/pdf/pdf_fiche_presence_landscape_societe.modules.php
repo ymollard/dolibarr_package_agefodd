@@ -19,14 +19,14 @@
  */
 
 /**
- * \file agefodd/core/modules/agefodd/pdf/pdf_fiche_presence_landscape.module.php
+ * \file agefodd/core/modules/agefodd/pdf/pdf_fiche_presence_landscape_societe.module.php
  * \ingroup agefodd
  * \brief PDF for landscape format training attendees session sheet
  */
 
-dol_include_once('/agefodd/core/modules/agefodd/pdf/pdf_fiche_presence.modules.php');
+dol_include_once('/agefodd/core/modules/agefodd/pdf/pdf_fiche_presence_societe.modules.php');
 
-class pdf_fiche_presence_landscape extends pdf_fiche_presence
+class pdf_fiche_presence_landscape_societe extends pdf_fiche_presence_societe
 {
 	var $emetteur; // Objet societe qui emet
 
@@ -48,7 +48,7 @@ class pdf_fiche_presence_landscape extends pdf_fiche_presence
 		global $conf, $langs;
 
 		parent::__construct($db);
-		$this->name = "fiche_presence_landscape";
+		$this->name = "fiche_presence_landscape_societe";
 		$this->description = $langs->trans('AgfModPDFFichePres');
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray ['height']; // use standard but reverse width and height to get Landscape format

@@ -100,7 +100,9 @@ if (is_array($extrafields->attribute_label) && count($extrafields->attribute_lab
 {
 	foreach($extrafields->attribute_label as $key => $val)
 	{
-		$arrayfields["ef.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>$extrafields->attribute_list[$key], 'position'=>$extrafields->attribute_pos[$key]);
+		if ($extrafields->attribute_type[$key]!='separate') {
+			$arrayfields["ef.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>$extrafields->attribute_list[$key], 'position'=>$extrafields->attribute_pos[$key]);
+		}
 	}
 }
 
@@ -348,6 +350,7 @@ if ($result >= 0) {
 		if (! empty($arrayfields['civ.code']['checked'])) {
 			$contact_static = new Contact($db);
 			$contact_static->civility_id = $line->civilite;
+			$contact_static->civility_code = $line->civilite;
 
 			print '<td>' . $contact_static->getCivilityLabel() . '</td>';
 		}

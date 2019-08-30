@@ -122,6 +122,8 @@ class InterfaceAgefodd {
 
 		global $conf, $mc;
 
+		if (empty($conf->agefodd->enabled)) return 0;
+
 		// multicompagny tweak
 		if (is_object($mc))
 		{
@@ -542,7 +544,7 @@ class InterfaceAgefodd {
 
 					$sta->nom = $object->lastname;
 					$sta->prenom = $object->firstname;
-					$sta->civilite = $object->civility_id;
+					$sta->civilite = (empty($object->civility_id)?$object->civility_code:$object->civility_id);
 					$sta->socid = $object->socid;
 					$sta->fonction = $object->poste;
 					$sta->tel1 = $object->phone_pro;
@@ -840,136 +842,139 @@ class InterfaceAgefodd {
 		} elseif ($action == 'LINEBILL_INSERT') {
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
+			dol_include_once('/compta/facture/class/facture.class.php');
 
-			// Retrieve all inforamtion form session to update invoice line with current session inforamtion
-			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
-			$agf_fin = new Agefodd_session_element($this->db);
-			$agf_fin->fetch_element_by_id($object->fk_facture, 'fac');
-			if (is_array($agf_fin->lines) && count($agf_fin->lines) > 0) {
-				dol_include_once('/agefodd/class/agsession.class.php');
-				dol_include_once('/agefodd/class/agefodd_opca.class.php');
-				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-				$agfsession = new Agsession($this->db);
-				$agfsession->fetch($agf_fin->lines[0]->fk_session_agefodd);
+			if ($object->type!=Facture::TYPE_DEPOSIT && empty($conf->global->AGF_GET_ORIGIN_LINE_INFO)) {
+				// Retrieve all inforamtion form session to update invoice line with current session inforamtion
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+				$agf_fin = new Agefodd_session_element($this->db);
+				$agf_fin->fetch_element_by_id($object->fk_facture, 'fac');
+				if (is_array($agf_fin->lines) && count($agf_fin->lines) > 0) {
+					dol_include_once('/agefodd/class/agsession.class.php');
+					dol_include_once('/agefodd/class/agefodd_opca.class.php');
+					dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+					$agfsession = new Agsession($this->db);
+					$agfsession->fetch($agf_fin->lines[0]->fk_session_agefodd);
 
-				if ($object->fk_product == $agfsession->fk_product && (! empty($agfsession->id)) && !empty($agfsession->fk_product)) {
-					$desc = '';
-					if (! empty($agfsession->intitule_custo)) {
-						$desc = $agfsession->intitule_custo . "\n";
-					} else {
-						$desc = $agfsession->formintitule . "\n";
-					}
-
-					if (empty($conf->global->AGF_HIDE_REF_INVOICE_DT_INFO)) {
-						$desc .= "\n" . dol_print_date($agfsession->dated, 'day');
-						if ($agfsession->datef != $agfsession->dated) {
-							$desc .= '-' . dol_print_date($agfsession->datef, 'day');
-						}
-					}
-					if (! empty($agfsession->duree_session)) {
-						$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $agfsession->duree_session . ' ' . $langs->trans('Hour') . '(s)';
-					}
-					if (! empty($agfsession->placecode)) {
-						$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $agfsession->placecode;
-					}
-					$session_trainee = new Agefodd_session_stagiaire($this->db);
-
-					//Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
-					// For Intra entreprise you take all trainne
-					$sessionOPCA = new Agefodd_opca($this->db);
-					if (empty($conf->global->AGF_MANAGE_OPCA) || $agfsession->type_session == 0) {
-						// For Intra entreprise you take all trainne
-						$find_trainee_by_OPCA=false;
-						$sessionOPCA->num_OPCA_file = $agfsession->num_OPCA_file;
-
-					} elseif ($agfsession->type_session == 1) {
-						// For inter entreprise you tkae only trainee link with this OPCA
-						dol_include_once('/compta/facture/class/facture.class.php');
-						$invoice= new Facture($this->db);
-						$result=$invoice->fetch($object->fk_facture);
-						if ($result<0) {
-							$this->error = $invoice->error;
-							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
-							return - 1;
-						}
-
-						$result = $sessionOPCA->getOpcaSession($agf_fin->lines[0]->fk_session_agefodd);
-						if ($result<0) {
-							$this->error = $sessionOPCA->error;
-							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
-							return - 1;
-						}
-						if (is_array($sessionOPCA->lines) && count($sessionOPCA->lines)>0) {
-							foreach($sessionOPCA->lines as $line) {
-								if ($line->fk_soc_OPCA==$invoice->socid) {
-									$find_trainee_by_OPCA=true;
-									break;
-								}
-							}
-						}
-					}
-
-					if ($find_trainee_by_OPCA) {
-						$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $invoice->socid);
-					} else {
-						$session_trainee->fetch_stagiaire_per_session($agfsession->id, $invoice->socid, 1);
-					}
-
-					if (count($session_trainee->lines) > 0) {
-
-						if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
-							$desc_trainee = "\n";
-							$nbtrainee = 0;
-							$num_OPCA_file_array=array();
-							foreach ( $session_trainee->lines as $line ) {
-
-								// Do not output not present or cancelled trainee
-								if ($line->status_in_session != 5 && $line->status_in_session != 6) {
-									if ($find_trainee_by_OPCA) {
-										$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id,$line->stagerowid);
-									}
-									if (! empty($sessionOPCA->num_OPCA_file)) {
-										if (!array_key_exists($sessionOPCA->num_OPCA_file, $num_OPCA_file_array)) {
-											$desc_OPCA .= "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $line->socname;
-											$num_OPCA_file_array[$sessionOPCA->num_OPCA_file]=$line->socname;
-										}
-									}
-									$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
-									$nbtrainee ++;
-								}
-							}
-						}
-
-						$desc_trainee_head = "\n" . $nbtrainee . ' ';
-						if ($nbtrainee > 1) {
-							$desc_trainee_head .= $langs->trans('AgfParticipants');
+					if ($object->fk_product == $agfsession->fk_product && (!empty($agfsession->id)) && !empty($agfsession->fk_product)) {
+						$desc = '';
+						if (!empty($agfsession->intitule_custo)) {
+							$desc = $agfsession->intitule_custo . "\n";
 						} else {
-							$desc_trainee_head .= $langs->trans('AgfParticipant');
+							$desc = $agfsession->formintitule . "\n";
 						}
 
-						$desc .= ' ' . $desc_OPCA . $desc_trainee_head . $desc_trainee;
-					}
+						if (empty($conf->global->AGF_HIDE_REF_INVOICE_DT_INFO)) {
+							$desc .= "\n" . dol_print_date($agfsession->dated, 'day');
+							if ($agfsession->datef != $agfsession->dated) {
+								$desc .= '-' . dol_print_date($agfsession->datef, 'day');
+							}
+						}
+						if (!empty($agfsession->duree_session)) {
+							$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $agfsession->duree_session . ' ' . $langs->trans('Hour') . '(s)';
+						}
+						if (!empty($agfsession->placecode)) {
+							$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $agfsession->placecode;
+						}
+						$session_trainee = new Agefodd_session_stagiaire($this->db);
+
+						//Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
+						// For Intra entreprise you take all trainne
+						$sessionOPCA = new Agefodd_opca($this->db);
+						if (empty($conf->global->AGF_MANAGE_OPCA) || $agfsession->type_session == 0) {
+							// For Intra entreprise you take all trainne
+							$find_trainee_by_OPCA = false;
+							$sessionOPCA->num_OPCA_file = $agfsession->num_OPCA_file;
+
+						} elseif ($agfsession->type_session == 1) {
+							// For inter entreprise you tkae only trainee link with this OPCA
+
+							$invoice = new Facture($this->db);
+							$result = $invoice->fetch($object->fk_facture);
+							if ($result < 0) {
+								$this->error = $invoice->error;
+								dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
+								return -1;
+							}
+
+							$result = $sessionOPCA->getOpcaSession($agf_fin->lines[0]->fk_session_agefodd);
+							if ($result < 0) {
+								$this->error = $sessionOPCA->error;
+								dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
+								return -1;
+							}
+							if (is_array($sessionOPCA->lines) && count($sessionOPCA->lines) > 0) {
+								foreach ($sessionOPCA->lines as $line) {
+									if ($line->fk_soc_OPCA == $invoice->socid) {
+										$find_trainee_by_OPCA = true;
+										break;
+									}
+								}
+							}
+						}
+
+						if ($find_trainee_by_OPCA) {
+							$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $invoice->socid);
+						} else {
+							$session_trainee->fetch_stagiaire_per_session($agfsession->id, $invoice->socid, 1);
+						}
+
+						if (count($session_trainee->lines) > 0) {
+
+							if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
+								$desc_trainee = "\n";
+								$nbtrainee = 0;
+								$num_OPCA_file_array = array();
+								foreach ($session_trainee->lines as $line) {
+
+									// Do not output not present or cancelled trainee
+									if ($line->status_in_session != 5 && $line->status_in_session != 6) {
+										if ($find_trainee_by_OPCA) {
+											$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id, $line->stagerowid);
+										}
+										if (!empty($sessionOPCA->num_OPCA_file)) {
+											if (!array_key_exists($sessionOPCA->num_OPCA_file, $num_OPCA_file_array)) {
+												$desc_OPCA .= "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $line->socname;
+												$num_OPCA_file_array[$sessionOPCA->num_OPCA_file] = $line->socname;
+											}
+										}
+										$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
+										$nbtrainee++;
+									}
+								}
+							}
+
+							$desc_trainee_head = "\n" . $nbtrainee . ' ';
+							if ($nbtrainee > 1) {
+								$desc_trainee_head .= $langs->trans('AgfParticipants');
+							} else {
+								$desc_trainee_head .= $langs->trans('AgfParticipant');
+							}
+
+							$desc .= ' ' . $desc_OPCA . $desc_trainee_head . $desc_trainee;
+						}
 
 
-					// Add average price on all line concern by session training product
-					if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
-						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
+						// Add average price on all line concern by session training product
+						if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
+							$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
+							if ($result < 0) {
+								$error++;
+							}
+							$desc .= $agfsession->avgpricedesc;
+						}
+
+
+						$object->desc = $desc;
+
+						$result = $object->update($user, 1);
 						if ($result < 0) {
-							$error ++;
+							$error = "Failed to update invoice line : " . $object->error . " ";
+							$this->error = $error;
+
+							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $object->error, LOG_ERR);
+							return -1;
 						}
-						$desc .= $agfsession->avgpricedesc;
-					}
-
-
-					$object->desc = $desc;
-
-					$result = $object->update($user, 1);
-					if ($result < 0) {
-						$error = "Failed to update invoice line : " . $object->error . " ";
-						$this->error = $error;
-
-						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $object->error, LOG_ERR);
-						return - 1;
 					}
 				}
 			}

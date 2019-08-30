@@ -24,14 +24,44 @@
  * \brief File that contain parent class for projects models
  * and parent class for projects numbering models
  */
-require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
+require_once DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php";
 
 /**
  * \class ModelePDFCommandes
  * \brief Classe mere des modeles de commandes
  */
-abstract class ModelePDFAgefodd extends CommonDocGenerator {
-	var $error = '';
+abstract class ModelePDFAgefodd extends CommonDocGenerator
+{
+	public $error = '';
+	public $name='';
+	public $description='';
+	public $type='';
+	public $page_largeur;
+	public $page_hauteur;
+	public $format=array();
+	public $marge_gauche = 0;
+	public $marge_droite = 0;
+	public $marge_haute = 0;
+	public $marge_basse = 0;
+	public $unit = 'mm';
+	public $oriantation = '';
+	public $espaceH_dispo = 0;
+	public $milieu = 0;
+	public $espaceV_dispo = 0;
+	public $default_font_size=12;
+	public $header_vertical_margin=0;
+	public $formation_widthcol1 = 0;
+	public $formation_widthcol2 = 0;
+	public $formation_widthcol3 = 0;
+	public $formation_widthcol4 = 0;
+	public $trainer_widthcol1 = 0;
+	public $trainer_widthcol2 = 0;
+	public $trainer_widthtimeslot = 0;
+	public $trainee_widthcol1 = 0;
+	public $trainee_widthcol2 = 0;
+	public $trainee_widthtimeslot = 0;
+	public $nbtimeslots = 0;
+
 
 	/**
 	 * Return list of active generation modules

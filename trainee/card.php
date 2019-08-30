@@ -143,6 +143,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 				Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 				exit();
 			} else {
+				$action='edit';
 				setEventMessage($agf->error, 'errors');
 			}
 		} else {
@@ -302,7 +303,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 
 				$agf->nom = $contact->lastname;
 				$agf->prenom = $contact->firstname;
-				$agf->civilite = $contact->civility_id;
+				$agf->civilite = $contact->civility_code;
 				$agf->socid = $contact->socid;
 				$agf->fonction = $contact->poste;
 				$agf->tel1 = $contact->phone_pro;
@@ -673,13 +674,16 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</table>';
 	print '</div>';
 
-	print '<table style=noborder align="right">';
-	print '<tr><td align="center" colspan=2>';
+	print '<div class="tabsAction">';
+	print '<table style="noborder" align="right">';
+	print '<tr><td align="center">';
 	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
 	print '<input type="submit" class="butAction" name="saveandstay" value="' . $langs->trans("AgfSaveAndStay") . '"> &nbsp; ';
 	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 	print '</td></tr>';
 	print '</table>';
+	print '</div>';
+
 	print '</form>';
 }
 else
@@ -832,8 +836,10 @@ else
 
 				print '</table>';
 				print '</div>';
-				print '<table style=noborder align="right">';
-				print '<tr><td align="center" colspan=2>';
+
+				print '<div class="tabsAction">';
+				print '<table style="noborder" align="right">';
+				print '<tr><td align="center">';
 				print '<input type="submit" class="butAction" name="save" value="' . $langs->trans("Save") . '"> &nbsp; ';
 				print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 				if (! empty($agf->fk_socpeople)) {
@@ -841,6 +847,9 @@ else
 				}
 				print '</td></tr>';
 				print '</table>';
+				print '</div>';
+
+
 				print '</form>';
 
 				print '</div>' . "\n";
@@ -863,6 +872,7 @@ else
 
 				$contact_static = new Contact($db);
 				$contact_static->civility_id = $agf->civilite;
+				$contact_static->civility_code = $agf->civilite;
 
 				print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
 

@@ -1648,6 +1648,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								$trainee_info .= strtoupper($stagiaires->lines[$i]->nom) . ' ' . ucfirst($stagiaires->lines[$i]->prenom) . '</a>';
 								$contact_static = new Contact($db);
 								$contact_static->civility_id = $stagiaires->lines[$i]->civilite;
+								$contact_static->civility_code = $stagiaires->lines[$i]->civilite;
 								$trainee_info .= ' (' . $contact_static->getCivilityLabel() . ')';
 
 								if ($agf->type_session == 1 && ! empty($conf->global->AGF_MANAGE_OPCA)) {

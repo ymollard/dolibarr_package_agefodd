@@ -516,7 +516,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	}
 	$art1 .= "\n" . "\n";
 
-	$art1 .= $langs->trans('AgfConvArt1_14') . ' Nb_participants ';
+	$art1 .= $langs->trans('AgfConvArt1_14') . ' Nb_participants';
 	$art1 .= $langs->trans('AgfConvArt1_17') . "\n" . "\n";
 	// Adresse lieu de formation
 	$agf_place = new Agefodd_place($db);

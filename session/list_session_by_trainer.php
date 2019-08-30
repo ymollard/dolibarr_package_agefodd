@@ -106,7 +106,7 @@ if (empty($reshook))
 * View
 */
 
-llxHeader('', $langs->trans("AgefoddSessionTrainerList"));
+llxHeader('', $langs->trans("AgfMenuSessListTrainer"));
 
 
 $form = new Form($db);
@@ -184,9 +184,9 @@ $param = array(
 ,'hide'=> array('rowid')
 ,'title'=>array(
 	'intituleformation'  => $langs->trans('Formation')
-	,'fk_agefodd_formateur'  => $langs->trans('Trainer')
+	,'fk_agefodd_formateur'  => $langs->trans('AgfTrainer')
 	,'status'  => $langs->trans('Status')
-	,'refsession' => $langs->trans('AgfRefSession')
+	,'refsession' => $langs->trans('SessionRef')
 	,'duree_session' => $langs->trans('AgfDuree')
 	,'totalHour' => $langs->trans('AgfTotalCalendrierHour')
 	,'totalHourPlanned' => $langs->trans('AgfTotalCalendrierHourPlanned')
@@ -225,8 +225,12 @@ function _getTrainerUrl($id) {
 	global $db;
 
 	$obj = new Agefodd_teacher($db);
-	$obj->fetch($id);
-	return $obj->getNomUrl();
+	if (!empty($id)) {
+		$obj->fetch($id);
+		return $obj->getNomUrl();
+	} else {
+		return '';
+	}
 }
 
 
