@@ -5584,7 +5584,6 @@ class Agsession extends CommonObject
 			$this->formateur_session_societe = $formateurs->thirdparty;
 		}
 
-
 		if(!empty($id_session_trainee)) {
 		    dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 		    dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
