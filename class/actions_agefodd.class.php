@@ -347,6 +347,28 @@ class ActionsAgefodd
 									$result = dol_add_file_process($upload_dir, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
 								}
 							}
+
+							$createShareLink=GETPOST("createsharelink_hid",'int');
+							if($createShareLink) {
+								require_once DOL_DOCUMENT_ROOT . '/ecm/class/ecmfiles.class.php';
+								$ecmfile = new ECMFiles($this->db);
+								$result=$ecmfile->fetch(0, '', '', md5_file(dol_osencode($upload_dir.'/'.$_FILES['userfile']['name'][0])));
+								if ($result > 0)
+								{
+									if (empty($ecmfile->share))
+									{
+										require_once DOL_DOCUMENT_ROOT.'/core/lib/security2.lib.php';
+										$ecmfile->share = getRandomPassword(true);
+									}
+									$result = $ecmfile->update($user);
+									if ($result < 0)
+									{
+										$context->setError($ecmfile->error);
+									}
+								} else {
+									$context->setError($langs->trans("FailedToAddFileIntoDatabaseIndex"));
+								}
+							}
 						}
 					}
 				}
@@ -833,6 +855,18 @@ class ActionsAgefodd
 				$filename = $conf->agefodd->dir_output . '/' . $file;
 // 	            var_dump($file, $filename); exit;
 				$this->_downloadSessionFile($filename);
+			}
+
+			if ($action == "downloadSessionAttachement") {
+				require_once DOL_DOCUMENT_ROOT . '/ecm/class/ecmfiles.class.php';
+				$ecmfile = new ECMFiles($db);
+				$result=$ecmfile->fetch(0, '', '', '', GETPOST('hashp','alpha'));
+				if ($result > 0) {
+					if (!empty($ecmfile->share)) {
+						$filename = $conf->agefodd->dir_output . '/' . str_replace('agefodd/','', $ecmfile->filepath).'/'.$ecmfile->filename;
+						$this->_downloadSessionFile($filename);
+					}
+				}
 			}
 
 			if ($action == "getSessionAgenda") {

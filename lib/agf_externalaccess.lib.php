@@ -502,15 +502,12 @@ function getPageViewTraineeSessionCardExternalAccess()
             $calendrier = new Agefodd_sesscalendar($db);
             $calendrier->fetch_all($agsession->id);
 
-
             $tab = GETPOST('tab');
-
 
             $out = '<!-- getPageViewSessionCardExternalAccess -->';
             $out.= '<section id="section-session-card" class="py-5"><div class="container">';
 
             $out.= getEaNavbar($context->getRootUrl('agefodd_trainee_session_list', '&save_lastsearch_values=1'));
-
 
             $out.= '<h4>'.$agsession->ref.' : '.$agsession->formintitule.'</h4>';
 
@@ -521,10 +518,6 @@ function getPageViewTraineeSessionCardExternalAccess()
             $out.= ' &nbsp;&nbsp; '.$langs->trans('AgfSessionBalanceOfHours').' : '.convertHundredthHoursToReadable($agsession->duree_session - $sumDureePresence);
             $out.= '</p>';
 
-
-
-
-
             $tabTitle= '
     <ul class="nav nav-tabs mb-3" id="section-session-card-calendrier-formateur-tab" role="tablist">
         <li class="nav-item">
@@ -534,7 +527,6 @@ function getPageViewTraineeSessionCardExternalAccess()
             <a class="nav-link'.($tab == 'download-tab' ? ' active' : '').'" id="download-tab" data-toggle="tab" href="#nav-download" role="tab" aria-controls="download" aria-selected="'.($tab == 'download-tab' ? 'true' : 'false').'"><i class="fa fa-download" aria-hidden="true"></i> '.$langs->trans('AgfTraineeSessionDownload').'</a>
         </li>
 ';
-
 
             $parameters=array(
                 'agsession' =>& $agsession,
@@ -576,8 +568,6 @@ function getPageViewTraineeSessionCardExternalAccess()
             }
 
             $out.= $tabContent;
-
-
 
             $out.= '</div>';
 
@@ -1341,17 +1331,45 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 	    0
 	    );
 	$out.= ob_get_clean();
+	if(floatval(DOL_VERSION) > 9){
+		$out.= 'Rendre disponible au téléchargement : <input type="checkbox" name="createsharelink" id="createsharelink">';
+		$out.= "\n".'<script type="text/javascript">
+			$(document).ready(function() {
+				$(\'#createsharelink\').change(function() {
+					let hiddenInput =  $(\'#createsharelink_hid\');
+					
+					if (hiddenInput.length == 0) {
+						$(\'#formuserfile\').prepend(\'<input type="hidden" name="createsharelink_hid" id="createsharelink_hid" value="" />\');
+						hiddenInput =  $(\'#createsharelink_hid\');
+					}
+					hiddenInput.val(this.checked | 0);
+				});
+			});
+		</script>';
+	}
 	$out.= '				<h5>Liste des fichiers déposés pour cette session</h5><br>';
 	$upload_dir = $conf->agefodd->dir_output . "/" .$agsession->id;
 	$filearray=dol_dir_list($upload_dir,"files",0,'','',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
 
 	if(count($filearray))
 	{
+		require_once DOL_DOCUMENT_ROOT . '/ecm/class/ecmfiles.class.php';
+
 	    foreach ($filearray as $file)
 	    {
-	        $out.="<p>";
-	        $out.= $file['name'];
-	        $out.= "</p>";
+		    $filename=$file['name'];
+
+		    $ecmfile = new ECMFiles($db);
+		    $result=$ecmfile->fetch(0, '', '', md5_file(dol_osencode($conf->agefodd->dir_output . "/" .$agsession->id . "/" .$filename)));
+		    if ($result > 0) {
+			    if (!empty($ecmfile->share)) {
+				    $dowloadUrl = $context->getRootUrl().'script/interface.php?action=downloadSessionAttachement&hashp='.$ecmfile->share;
+				    $filename = '<p><a class="btn btn-xs btn-primary" href="'.$dowloadUrl.'&amp;forcedownload=1" target="_blank" ><i class="fa fa-download"></i> '.$langs->trans('Download').'</a>&nbsp;&nbsp;'.$filename.'</p>';
+			    }
+		    }
+		    $out.= "<p>";
+		    $out.= $filename;
+		    $out.= "</p>";
 	    }
 	}
 	else
@@ -1610,31 +1628,31 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				<label for="heured">Heure début:</label>
 				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heured" required name="heured" value="'.$heured.'">
 			</div>
-		</div>	
+		</div>
 		<div class="col">
 			<div class="form-group">
 				<label for="heuref">Heure fin:</label>
 				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heuref" required name="heuref" value="'.$heuref.'">
 			</div>
-		</div>	
+		</div>
 	</div>
-	
+
 	<div class="form-row">
 		<div class="col">
-		
+
 			<div class="form-group">
 				<label for="status">Status <i class="fa fa-question-circle" data-toggle="tooltip" title="'.htmlentities($langs->trans('AgfExternalAccessSessionCardDeclareHoursInfo')).'" data-html="true" aria-hidden="true"></i></label>
 				<select '.($action == 'view' ? 'disabled' : '').' class="form-control" id="status" name="status" >
 					'.$statusOptions.'
 				</select>
 			</div>
-		</div>	
+		</div>
 		<div class="col">
 			<div class="form-group">
 				<label for="status">Type</label>
 				'.$formAgefodd->select_calendrier_type($calendrier_type, 'code_c_session_calendrier_type', true, ($action == 'view' ? 'disabled' : ''), 'form-control').'
 			</div>
-		</div>	
+		</div>
 	</div>
 
 			<script>
@@ -1645,27 +1663,27 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				} else {
 					$("#code_c_session_calendrier_type").prop(\'required\',false);
 				}
-				
-				
+
+
 				$(".setTraineePresent").click(function() {
-				
+
                     // auto update Hours
                     var start = document.getElementById("heured").value;
                     var end = document.getElementById("heuref").value;
                     var duration = agfTimeDiff(start, end);
-               
+
                     $($(this).data("target")).val(duration);
                     $($(this).data("target")).css("outline", "none");
 				});
-				
+
 				$(".setTraineeAbsent").click(function() {
                     // auto update Hours
                     $($(this).data("target")).val("00:00");
                     $($(this).data("target")).css("outline", "none");
 				});
-				
-				
-				
+
+
+
 				$("#status").change(function() {
 
 				   	var formStatus = $(this).val();
