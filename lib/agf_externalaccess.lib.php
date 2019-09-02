@@ -1591,12 +1591,6 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			</div>';
 	}
 
-	$TStatus = Agefoddsessionformateurcalendrier::getListStatus();
-	$statusOptions = '';
-	foreach ($TStatus as $statusKey => $label)
-	{
-		$statusOptions.= '<option '.($agf_calendrier_formateur->status == $statusKey ? 'selected' : '').' value="'.$statusKey.'">'.$label.'</option>';
-	}
 
 
 	$date_session = (($action == 'update' || $action == 'view') ? date('Y-m-d', $agf_calendrier_formateur->date_session) : date('Y-m-d'));
@@ -1614,6 +1608,18 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		$heuref = GETPOST('heuref');
 	}
 
+	$TStatus = Agefoddsessionformateurcalendrier::getListStatus();
+	$statusOptions = '';
+	foreach ($TStatus as $statusKey => $label)
+	{
+		$inputDisabled = '';
+		if( $agf_calendrier_formateur->heuref > time()
+			&& in_array($statusKey, array(Agefoddsessionformateurcalendrier::STATUS_FINISH, Agefoddsessionformateurcalendrier::STATUS_MISSING))
+		){
+			$inputDisabled = 'disabled';
+		}
+		$statusOptions.= '<option '.($agf_calendrier_formateur->status == $statusKey ? 'selected' : '').' value="'.$statusKey.'" '.$inputDisabled.'>'.$label.'</option>';
+	}
 
 	$out.='
 	<div class="form-row">
