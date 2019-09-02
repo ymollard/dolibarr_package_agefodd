@@ -814,7 +814,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 		<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
         <a  class="dropdown-item" href="'.$url.'"><i class="fa fa-edit"> Editer</i></a>';
 
-		if ((empty($agf_calendrier) || empty($agf_calendrier->billed)) && $user->rights->agefodd->external_trainer_write)
+		if ((empty($agf_calendrier) || empty($agf_calendrier->billed)) && !empty($user->rights->agefodd->external_trainer_time_slot_delete))
 		  $out.= '<button type="button" class="dropdown-item" data-id="'.$item->id.'" data-toggle="modal" data-target="#session-card-delete-time-slot" onclick="$(\'#session-card-delete-time-slot\').find(\'[name=fk_agefodd_session_formateur_calendrier]\').val(this.dataset.id)" >'.$delete.' </button>';
 
 		$out.= '
@@ -1901,7 +1901,10 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
         $buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />';
 	}
 
-	if($billed && !empty($agf_calendrier_formateur->id)) {
+	if(empty($user->rights->agefodd->external_trainer_time_slot_delete)){
+		$buttons .= '';
+	}
+	elseif($billed && !empty($agf_calendrier_formateur->id)) {
         $buttons .= '<button data-toggle="tooltip" data-placement="bottom"  title="'.$langs->trans('AgfCantDeleteBilledElement').'" type="button"  class="btn btn-grey" ><i class="fa fa-trash"></i>  Supprimer </button>';
     }
 	elseif(!empty($agf_calendrier_formateur->id)) {
