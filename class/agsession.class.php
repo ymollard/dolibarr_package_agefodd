@@ -348,7 +348,7 @@ class Agsession extends CommonObject
 		$duree = 0;
 
 
-		$sql = "SELECT SUM(TIMESTAMPDIFF(MINUTE,s.heured,s.heuref)) as minutePlanned "; // use MINUTE not HOURS because TIMESTAMPDIFF doesn't round, it's like use floor
+		$sql = "SELECT s.heured, s.heuref "; // pas d'utilistation de  TIMESTAMPDIFF car pas compatible postgre
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier as s";
 		if (isset($filters['formateur']))
 		{
@@ -392,12 +392,12 @@ class Agsession extends CommonObject
 
 		$resql = $db->query($sql);
 		if ($resql) {
-			$obj = $db->fetch_object($resql);
-			$duree = $obj->minutePlanned/60;
+			while($obj = $db->fetch_object($resql)){
+				$duree+= abs($db->jdate($obj->heuref) - $db->jdate($obj->heured)) / 3600; // C'est pas opti merci postgres...
+			}
 		} else {
 			dol_syslog('Error:'.__METHOD__ . $db->lasterror(), LOG_ERR);
 		}
-
 
 		return $duree;
 	}
