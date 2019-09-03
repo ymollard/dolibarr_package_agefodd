@@ -348,7 +348,7 @@ class Agsession extends CommonObject
 		$duree = 0;
 
 
-		$sql = "SELECT SUM(TIMESTAMPDIFF(HOUR,s.heured,s.heuref)) as hourPlanned ";
+		$sql = "SELECT SUM(TIMESTAMPDIFF(MINUTE,s.heured,s.heuref)) as minutePlanned "; // use MINUTE not HOURS because TIMESTAMPDIFF doesn't round, it's like use floor
 		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier as s";
 		if (isset($filters['formateur']))
 		{
@@ -364,18 +364,36 @@ class Agsession extends CommonObject
 
 		if (isset($filters['calendrier_type']))
 		{
-			$sql.= " AND calendrier_type IN (".$db->escape($filters['calendrier_type']).") ";
+			if(is_array($filters['calendrier_type'])){
+				foreach($filters['calendrier_type'] as $index => $type){
+					$filters['calendrier_type'][$index] = $db->escape($type);
+				}
+				$val = implode(',', $filters['calendrier_type']);
+			}else{
+				$val = $db->escape($filters['calendrier_type']);
+			}
+
+			$sql.= " AND calendrier_type IN (".$val.") ";
 		}
 
 		if (isset($filters['!calendrier_type']) )
 		{
-			$sql.= " AND calendrier_type NOT IN (".$db->escape($filters['!calendrier_type']).") ";
+			if(is_array($filters['!calendrier_type'])){
+				foreach($filters['!calendrier_type'] as $index => $type){
+					$filters['!calendrier_type'][$index] = $db->escape($type);
+				}
+				$val = implode(',', $filters['!calendrier_type']);
+			}else{
+				$val = $db->escape($filters['!calendrier_type']);
+			}
+
+			$sql.= " AND calendrier_type NOT IN (".$val.") ";
 		}
 
 		$resql = $db->query($sql);
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
-			$duree+= $obj->hourPlanned;
+			$duree = $obj->minutePlanned/60;
 		} else {
 			dol_syslog('Error:'.__METHOD__ . $db->lasterror(), LOG_ERR);
 		}
