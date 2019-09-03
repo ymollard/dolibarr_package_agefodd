@@ -335,6 +335,55 @@ class Agsession extends CommonObject
 		}
 	}
 
+
+	/**
+	 *
+	 * @param int $fk_agsession
+	 * @param array $filters
+	 * @return number
+	 */
+	public static function getStaticSumDuree($fk_agsession, $filters = array()) {
+		global $db;
+
+		$duree = 0;
+
+
+		$sql = "SELECT SUM(TIMESTAMPDIFF(HOUR,s.heured,s.heuref)) as hourPlanned ";
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier as s";
+		if (isset($filters['formateur']))
+		{
+			$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur as sf ON sf.fk_session = s.fk_agefodd_session";
+			$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur_calendrier as fc on fc.fk_agefodd_session_formateur = sf.rowid";
+		}
+		$sql.= " WHERE s.fk_agefodd_session = ". $db->escape($fk_agsession);
+		if (isset($filters['formateur']))
+		{
+			$sql.= " AND sf.rowid = ".$db->escape($filters['formateur']);
+		}
+		if (isset($filters['excludeCanceled'])) $sql.= " AND s.status <> '-1'";
+
+		if (isset($filters['calendrier_type']))
+		{
+			$sql.= " AND calendrier_type IN (".$db->escape($filters['calendrier_type']).") ";
+		}
+
+		if (isset($filters['!calendrier_type']) )
+		{
+			$sql.= " AND calendrier_type NOT IN (".$db->escape($filters['!calendrier_type']).") ";
+		}
+
+		$resql = $db->query($sql);
+		if ($resql) {
+			$obj = $db->fetch_object($resql);
+			$duree+= $obj->hourPlanned;
+		} else {
+			dol_syslog('Error:'.__METHOD__ . $db->lasterror(), LOG_ERR);
+		}
+
+
+		return $duree;
+	}
+
 	/**
 	 *
 	 * @param int $fk_agsession
@@ -364,6 +413,16 @@ class Agsession extends CommonObject
 		        $sql.= " AND sf.rowid = ".$db->escape($filters['formateur']);
 		    }
 		    if (isset($filters['excludeCanceled'])) $sql.= " AND s.status <> '-1'";
+
+			if (isset($filters['calendrier_type']) )
+			{
+				$sql.= " AND calendrier_type IN (".$db->escape($filters['calendrier_type']).") ";
+			}
+
+			if (isset($filters['!calendrier_type']) )
+			{
+				$sql.= " AND calendrier_type NOT IN (".$db->escape($filters['!calendrier_type']).") ";
+			}
 
 		    $resql = $db->query($sql);
 		    if ($resql) {
