@@ -112,7 +112,7 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 		$result = $agf->fetch($id);
 
-		$intitule = GETPOST('intitule', 'alpha');
+		$intitule = GETPOST('intitule', 'no_html');
 		$agf->intitule = $intitule;
 		if (empty($agf->intitule)) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("AgfIntitule")), 'errors');
@@ -197,7 +197,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_formation_cat
 	if (! $_POST["cancel"]) {
 		$agf = new Formation($db);
 
-		$intitule = GETPOST('intitule', 'alpha');
+		$intitule = GETPOST('intitule', 'no_html');
 		$agf->intitule = $intitule;
 		if (empty($agf->intitule)) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("AgfIntitule")), 'errors');
@@ -500,7 +500,9 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 	print '<table class="border" width="100%">';
 
 	print '<tr><td width="20%"><span class="fieldrequired">' . $langs->trans("AgfIntitule") . '</span></td><td>';
-	print '<input name="intitule" class="flat" size="50" value="'.GETPOST('intitule', 'alpha').'"></td></tr>';
+
+	$intitule = GETPOST('intitule', 'no_html');
+	print '<input name="intitule" class="flat" size="50" value="'.dol_htmlentities($intitule, ENT_QUOTES).'"></td></tr>';
 
 	$agf = new Formation($db);
 
@@ -673,7 +675,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '</td></tr>';
 
 				print '<tr><td width="20%" class="fieldrequired">' . $langs->trans("AgfIntitule") . '</td><td>';
-				print '<input name="intitule" class="flat" size="50" value="' . stripslashes($agf->intitule) . '"></td></tr>';
+				print '<input name="intitule" class="flat" size="50" value="' . dol_htmlentities($agf->intitule, ENT_QUOTES) . '"></td></tr>';
 
 				print '<tr><td width="20%" class="fieldrequired">' . $langs->trans("Ref") . '</td><td>';
 				print '<input name="ref" class="flat" size="50" value="' . $agf->ref_obj . '"></td></tr>';
