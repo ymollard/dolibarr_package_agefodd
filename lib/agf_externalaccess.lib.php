@@ -287,7 +287,7 @@ function getPageViewSessionListExternalAccess()
 			if (!empty($trainerinsessionid)) $filters['formateur'] = $trainerinsessionid;
 
 			$filters['!calendrier_type'] = 'AGF_TYPE_PLATF';
-			$duree_offPlatform = Agsession::getStaticSumDuree($item->rowid, null, $filters);
+			$duree_offPlatform = Agsession::getStaticSumTimeSlot($item->rowid, null, $filters);
 			$out.= ' <td class="text-center" data-order="'.$duree_offPlatform.'">'.$duree_offPlatform.'</td>';
 
 

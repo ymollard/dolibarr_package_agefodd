@@ -342,7 +342,7 @@ class Agsession extends CommonObject
 	 * @param array $filters
 	 * @return number
 	 */
-	public static function getStaticSumDuree($fk_agsession, $filters = array()) {
+	public static function getStaticSumTimeSlot($fk_agsession, $filters = array()) {
 		global $db;
 
 		$duree = 0;
