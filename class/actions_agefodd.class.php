@@ -248,8 +248,29 @@ class ActionsAgefodd
 			$mc->setValues($conf);
 		}
 
-		// For external Access module
 		$TContext = explode(':', $parameters['context']);
+
+		// AGENDA SECURITY CHECK For Dolibarr >= V9 only
+		if (in_array('agendaexport', $TContext)) {
+			$agftraineeid = GETPOST('agftraineeid', "int");
+			$agftrainerid = GETPOST('agftrainerid', "int");
+			$exportkey = GETPOST('exportkey');
+
+			// replace dolibarr security check for ageffod agenda
+			if(!empty($agftraineeid) || !empty($agftrainerid))
+			{
+				if(!empty($agftrainerid) && md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftrainerid'.$agftrainerid) === $exportkey){
+					return 1;
+				}
+				elseif(!empty($agftraineeid) && md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftraineeid'.$agftraineeid) === $exportkey){
+					return 1;
+				}
+			}
+
+			return 0;
+		}
+
+		// EXTERNAL ACCESS MODULE : CUSTOMER GATE
 		if (in_array('externalaccesspage', $TContext)) {
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
 			dol_include_once('/agefodd/lib/agefodd.lib.php');
