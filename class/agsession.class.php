@@ -3158,7 +3158,10 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-		$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
+		if (!empty($sortfield)) {
+			$sql .=  $this->db->order($sortfield, $sortorder);
+		}
+
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
