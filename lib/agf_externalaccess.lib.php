@@ -237,6 +237,7 @@ function getPageViewSessionListExternalAccess()
 		$out.= ' <th class="" >'.$langs->trans('DateStart').'</th>';
 		$out.= ' <th class="" >'.$langs->trans('DateEnd').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDuree').'</th>';
+		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeOffPlatform').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeDeclared').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeSolde').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('Status').'</th>';
@@ -284,6 +285,12 @@ function getPageViewSessionListExternalAccess()
 			}
 
 			if (!empty($trainerinsessionid)) $filters['formateur'] = $trainerinsessionid;
+
+			$filters['!calendrier_type'] = 'AGF_TYPE_PLATF';
+			$duree_offPlatform = Agsession::getStaticSumTimeSlot($item->rowid, null, $filters);
+			$out.= ' <td class="text-center" data-order="'.$duree_offPlatform.'">'.$duree_offPlatform.'</td>';
+
+
 			$duree_declared = Agsession::getStaticSumDureePresence($item->rowid, null, $filters);
 			if (!empty($duree_declared) && !empty($conf->global->AGF_EA_ECLATE_HEURES_PAR_TYPE))
 			{
@@ -310,7 +317,7 @@ function getPageViewSessionListExternalAccess()
 			    $plus = '';
 			}
 			$out.= ' <td class="text-center" data-order="'.$duree_declared.'">'.$duree_declared.$plus.'</td>';
-			$solde = $item->duree_session - $duree_declared;
+			$solde = $duree_offPlatform - $duree_declared;
 			$out.= ' <td class="text-center" data-order="'.$solde.'">'.$solde.'</td>';
 			$statut = Agsession::getStaticLibStatut($item->status, 0);
 			$out.= ' <td class="text-center" data-search="'.$statut.'" data-order="'.$statut.'" >'.$statut.'</td>';
