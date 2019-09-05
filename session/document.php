@@ -222,9 +222,9 @@ if (($action == 'create' || $action == 'refresh') && ($user->rights->agefodd->cr
 
 	if (!empty($id_external_model) || strpos($model, 'rfltr_agefodd') !== false) {
 		$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
-		if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
+		if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int) strtr($model, array('rfltr_agefodd_'=>''));
 	}
-	if (strpos($model, 'fiche_pedago') !== false){
+	if (strpos($model, 'fiche_pedago') !== false) {
 		$agf = new Agsession($db);
 		$agf->fetch($id);
 		$agfTraining = new Formation($db);

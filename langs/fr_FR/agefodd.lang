@@ -1540,6 +1540,7 @@ AgfSessionSummaryTotalHours=Total heures de formation
 AgfSessionSummaryTotalScheduled=Total heures programmées pour la session
 AgfSessionSummaryTotalScheduledTrainer=Total heures programmées pour le formateur
 AgfSessionSummaryTotalLeft=Totale heures restantes
+AgfSessionSummaryTotalLeftTotal=Totale heures restantes ((Duréée session * Nb Participant) - Total heures programmées pour la session)
 
 AgfSessionSummaryTotalPresence=Total heures déclarée (participants - tout statut)
 AgfSessionSummaryTauxAssiduite=Taux d'assiduité

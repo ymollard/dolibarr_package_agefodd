@@ -1124,7 +1124,9 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	    $duree_declared = $tmparr[0];
 	    $duree_max = $tmparr[1];
 
-	    if ((int)$agf_calendrier->status !== Agefodd_sesscalendar::STATUS_CANCELED && $agf_calendrier->calendrier_type !== 'AGF_TYPE_PLATF') $duree_scheduled_total += ($agf_calendrier->heuref - $agf_calendrier->heured)/3600;
+	    if ((int) $agf_calendrier->status !== Agefodd_sesscalendar::STATUS_CANCELED && $agf_calendrier->calendrier_type !== 'AGF_TYPE_PLATF')  {
+	    	$duree_scheduled_total += ($agf_calendrier->heuref - $agf_calendrier->heured)/3600;
+	    }
 
 		if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CONFIRMED)
 		{
@@ -1152,6 +1154,14 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 				<div class="panel-body">
 					<div class="row clearfix">
 						<div class="col-md-6">
+							<div class="form-group">
+								<label class="col-md-7 px-0" for="AgfSessionSummaryTotalHours">'.$langs->trans('AgfDuree').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', price($agsession->duree_session, 0, '', 1, -1, 2)).'</span>
+							</div>
+							<div class="form-group">
+								<label class="col-md-7 px-0" for="AgfSessionSummaryTotalHours">'.$langs->trans('AgfSessionSummaryTotalLeft').'</label>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', price($agsession->duree_session - $duree_scheduled, 0, '', 1, -1, 2)).'</span>
+							</div>
 							<div class="form-group">
 								<label class="col-md-7 px-0" for="AgfSessionSummaryTotalHours">'.$langs->trans('AgfSessionSummaryTotalHours').'</label>
 								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', price($agsession->duree_session * $nbstag, 0, '', 1, -1, 2)).'</span>
