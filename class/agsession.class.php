@@ -335,6 +335,73 @@ class Agsession extends CommonObject
 		}
 	}
 
+
+	/**
+	 *
+	 * @param int $fk_agsession
+	 * @param array $filters
+	 * @return number
+	 */
+	public static function getStaticSumTimeSlot($fk_agsession, $filters = array()) {
+		global $db;
+
+		$duree = 0;
+
+
+		$sql = "SELECT s.heured, s.heuref "; // pas d'utilistation de  TIMESTAMPDIFF car pas compatible postgre
+		$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier as s";
+		if (isset($filters['formateur']))
+		{
+			$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur as sf ON sf.fk_session = s.fk_agefodd_session";
+			$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_formateur_calendrier as fc on fc.fk_agefodd_session_formateur = sf.rowid";
+		}
+		$sql.= " WHERE s.fk_agefodd_session = ". $db->escape($fk_agsession);
+		if (isset($filters['formateur']))
+		{
+			$sql.= " AND sf.rowid = ".$db->escape($filters['formateur']);
+		}
+		if (isset($filters['excludeCanceled'])) $sql.= " AND s.status <> '-1'";
+
+		if (isset($filters['calendrier_type']))
+		{
+			if(is_array($filters['calendrier_type'])){
+				foreach($filters['calendrier_type'] as $index => $type){
+					$filters['calendrier_type'][$index] = $db->escape($type);
+				}
+				$val = implode(',', $filters['calendrier_type']);
+			}else{
+				$val = $db->escape($filters['calendrier_type']);
+			}
+
+			$sql.= " AND calendrier_type IN (".$val.") ";
+		}
+
+		if (isset($filters['!calendrier_type']) )
+		{
+			if(is_array($filters['!calendrier_type'])){
+				foreach($filters['!calendrier_type'] as $index => $type){
+					$filters['!calendrier_type'][$index] = $db->escape($type);
+				}
+				$val = implode(',', $filters['!calendrier_type']);
+			}else{
+				$val = $db->escape($filters['!calendrier_type']);
+			}
+
+			$sql.= " AND calendrier_type NOT IN (".$val.") ";
+		}
+
+		$resql = $db->query($sql);
+		if ($resql) {
+			while($obj = $db->fetch_object($resql)){
+				$duree+= abs($db->jdate($obj->heuref) - $db->jdate($obj->heured)) / 3600; // C'est pas opti merci postgres...
+			}
+		} else {
+			dol_syslog('Error:'.__METHOD__ . $db->lasterror(), LOG_ERR);
+		}
+
+		return $duree;
+	}
+
 	/**
 	 *
 	 * @param int $fk_agsession
@@ -364,6 +431,16 @@ class Agsession extends CommonObject
 		        $sql.= " AND sf.rowid = ".$db->escape($filters['formateur']);
 		    }
 		    if (isset($filters['excludeCanceled'])) $sql.= " AND s.status <> '-1'";
+
+			if (isset($filters['calendrier_type']) )
+			{
+				$sql.= " AND calendrier_type IN (".$db->escape($filters['calendrier_type']).") ";
+			}
+
+			if (isset($filters['!calendrier_type']) )
+			{
+				$sql.= " AND calendrier_type NOT IN (".$db->escape($filters['!calendrier_type']).") ";
+			}
 
 		    $resql = $db->query($sql);
 		    if ($resql) {

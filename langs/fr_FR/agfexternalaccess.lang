@@ -80,3 +80,5 @@ AgfSessionNotExist=La session de formation n'existe pas
 AgfSetPlannedAbsenceErrorNotAllowed=Vous n'êtes pas ou plus autorisé à faire cette modification
 AgfSessionCreneauNotFound=Créneau non trouvé
 AgfTraineePlanedPresent=sera présent
+AgfDureeOffPlatform=Heures planifiées hors platforme
+AgfOffPlatform=Hors plateforme
