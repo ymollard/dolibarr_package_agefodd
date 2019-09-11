@@ -1165,3 +1165,5 @@ SendEmailToAll=Send mail to all person conern by this session
 AgfModifyCalendar=Update Calendar
 AgfStatusSession_ONGOING=On going
 SessionRef=Session Ref.
+AgfUpdatesCalendarDates=Update time slots
+AgfCalendarDates=Date and Time slots
