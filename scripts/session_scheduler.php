@@ -346,6 +346,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 						$calendrier->heured = !empty($TFormateurHeured[$fk_trainer]) ? strtotime(date('Y-m-d '.$TFormateurHeured[$fk_trainer], $time_start)) : $time_start;
 						$calendrier->heuref = !empty($TFormateurHeuref[$fk_trainer]) ? strtotime(date('Y-m-d '.$TFormateurHeuref[$fk_trainer], $time_start)) : $time_end;
 						$calendrier->trainercost = 0;
+						$calendrier->status=$calendrier_status;
 						$calendrier->sessid = $fk_agefodd_session;
 						$is_update = 1;
 						$calendrier->update($user);
@@ -361,6 +362,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 				$agftrainercalendar->heured = !empty($TFormateurHeured[$fk_trainer]) ? strtotime(date('Y-m-d '.$TFormateurHeured[$fk_trainer], $time_start)) : $time_start;
 				$agftrainercalendar->heuref = !empty($TFormateurHeuref[$fk_trainer]) ? strtotime(date('Y-m-d '.$TFormateurHeuref[$fk_trainer], $time_start)) : $time_end;
 				$agftrainercalendar->trainercost = 0;
+				$agftrainercalendar->status=$calendrier_status;
 				$agftrainercalendar->sessid = $fk_agefodd_session;
 				//$agftrainercalendar->fk_actioncomm = 5;
 				$agftrainercalendar->create($user);
