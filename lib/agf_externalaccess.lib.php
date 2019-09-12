@@ -607,17 +607,19 @@ function getPageViewTraineeSessionCardExternalAccess()
  */
 function getPageViewTraineeSessionCardExternalAccess_downloads($agsession, $trainee)
 {
-    global $langs;
+    global $langs, $conf, $db;
+
+	$langs->load('agfexternalaccess@agefodd');
 
     $context = Context::getInstance();
 
-    $out = '';
+    $out = '<!-- getPageViewTraineeSessionCardExternalAccess_downloads -->'."\n";
+
+	$out.= '<div class="row">';
+	$out.= '<div class="col-md-6">';
+	$out.= '<h5>'.$langs->trans('AgfDownloadFilesTrainee').'</h5>';
 
     $downloadUrl = $context->getRootUrl().'script/interface.php?action=downloadAgefoddTrainneeDoc&session='.$agsession->id.'&model=';
-
-
-
-
     $attestationendtraining_trainee = getAgefoddTraineeDocumentPath($agsession, $trainee, 'attestationendtraining_trainee');
     $downloadLink = '';
     if(!empty($attestationendtraining_trainee)){
@@ -633,7 +635,34 @@ function getPageViewTraineeSessionCardExternalAccess_downloads($agsession, $trai
     }
     $out.= getAgefoddDownloadTpl($langs->trans('AgfAttestationTraining'), $langs->trans('AgfDownloadDescAttestationTraining'), $downloadLink);
 
+	$out.= '</div>';
+	$out.= '<div class="col-md-6">';
+	$out.= '<h5>'.$langs->trans('AgfDownloadDocumentsTrainee').'</h5>';
+	$upload_dir = $conf->agefodd->dir_output . "/" .$agsession->id;
+	$filearray=dol_dir_list($upload_dir, "files", 0, '', '', '', SORT_ASC, 1);
 
+	if(count($filearray))
+	{
+		require_once DOL_DOCUMENT_ROOT . '/ecm/class/ecmfiles.class.php';
+
+		foreach ($filearray as $file)
+		{
+			$filename=$file['name'];
+
+			$ecmfile = new ECMFiles($db);
+			$result=$ecmfile->fetch(0, '', '', md5_file(dol_osencode($conf->agefodd->dir_output . "/" .$agsession->id . "/" .$filename)));
+			if ($result > 0) {
+				if (!empty($ecmfile->share)) {
+					$dowloadUrl = $context->getRootUrl().'script/interface.php?action=downloadSessionAttachement&hashp='.$ecmfile->share;
+					$out.=getAgefoddDownloadTpl($filename, $langs->trans('Download'), $dowloadUrl);
+				}
+			}
+
+		}
+	}
+
+	$out.= '</div>';
+	$out.= '</div>';
 
     return $out;
 }
@@ -646,7 +675,6 @@ function getAgefoddDownloadTpl($title, $desc = '', $downloadLink = '', $fileType
     if(empty($imageUrl)){
         $imageUrl = $context->getRootUrl().'/img/mime/'.$fileType.'.png';
     }
-
 
     $out = '<!-- Left-aligned -->';
     $out.= '<div class="media">';
@@ -1238,11 +1266,14 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 {
     global $langs, $db, $conf, $user;
+
+	$langs->load('agfexternalaccess@agefodd');
+
     $context = Context::getInstance();
     if (!validateFormateur($context)) return '';
 
     $upload_dir = $conf->agefodd->dir_output;
-    $filearray=dol_dir_list($upload_dir,"files",0,'','',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
+    $filearray=dol_dir_list($upload_dir, "files", 0, '', '', '', SORT_ASC, 1);
 
     $files = array();
     if (!empty($filearray)){
@@ -1292,12 +1323,10 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 				<div class="panel-body">
 					<div class="row clearfix">
 						<div class="col-md-6">
-                            <h5>Liste des fichiers générés pour cette session</h5>
+                            <h5>'.$langs->trans('AgfDownloadFilesTrainer').'</h5>
                             <br>';
     if (empty($user->rights->agefodd->external_trainer_download)){
-        $out.='<div class="alert alert-secondary" role="alert">
-				Vous n\'avez pas le droit nécessaire au téléchargement de fichiers
-			</div>';
+        $out.='<div class="alert alert-secondary" role="alert">'.$langs->trans('AgfDownloadRightPb').'</div>';
     }
     if (count($files))
     {
@@ -1316,21 +1345,19 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
     else
     {
         $out.= "<p>";
-        $out.= "Aucun fichier disponible pour le moment";
+        $out.= $langs->trans('AgfNoFilesDownload');
         $out.= "</p>";
     }
 	$out.= '
 						</div>
 
 						<div class="col-md-6">
-                            <h5>Déposer un fichier pour cette session</h5><br>';
+                            <h5>'.$langs->trans('AgfUploadFileTrainer').'</h5><br>';
 	dol_include_once('/core/class/html.formfile.class.php');
 	$formfile = new FormFile($db);
 
 	if (empty($user->rights->agefodd->external_trainer_upload)){
-	    $out.='<div class="alert alert-secondary" role="alert">
-				Vous n\'avez pas le droit nécessaire au dépot de fichiers
-			</div>';
+	    $out.='<div class="alert alert-secondary" role="alert">'.$langs->trans('AgfDownloadRightPb').'</div>';
 	}
 	// Show upload form (document)
 	ob_start();
@@ -1349,7 +1376,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 	    );
 	$out.= ob_get_clean();
 	if(floatval(DOL_VERSION) > 9){
-		$out.= 'Rendre disponible au téléchargement : <input type="checkbox" name="createsharelink" id="createsharelink">';
+		$out.= $langs->trans('AgfAllowLaterDownload').': <input type="checkbox" name="createsharelink" id="createsharelink">';
 		$out.= "\n".'<script type="text/javascript">
 			$(document).ready(function() {
 				$(\'#createsharelink\').change(function() {
@@ -1364,9 +1391,9 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 			});
 		</script>';
 	}
-	$out.= '				<h5>Liste des fichiers déposés pour cette session</h5><br>';
+	$out.= '				<br><br><h5>'.$langs->trans('AgfDownloadDocumentsTrainer').'</h5>';
 	$upload_dir = $conf->agefodd->dir_output . "/" .$agsession->id;
-	$filearray=dol_dir_list($upload_dir,"files",0,'','',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
+	$filearray=dol_dir_list($upload_dir, "files", 0, '', '', '', SORT_ASC, 1);
 
 	if(count($filearray))
 	{
@@ -1392,7 +1419,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 	else
 	{
 	    $out.= "<p>";
-	    $out.= "Aucun fichier déposé pour le moment";
+	    $out.= $langs->trans('AgfNoFilesDownload');
 	    $out.= "</p>";
 	}
 
