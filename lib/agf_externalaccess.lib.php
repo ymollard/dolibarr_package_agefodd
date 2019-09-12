@@ -637,27 +637,32 @@ function getPageViewTraineeSessionCardExternalAccess_downloads($agsession, $trai
 
 	$out.= '</div>';
 	$out.= '<div class="col-md-6">';
-	$out.= '<h5>'.$langs->trans('AgfDownloadDocumentsTrainee').'</h5>';
+
 	$upload_dir = $conf->agefodd->dir_output . "/" .$agsession->id;
 	$filearray=dol_dir_list($upload_dir, "files", 0, '', '', '', SORT_ASC, 1);
 
-	if(count($filearray))
+	if(count($filearray)>0)
 	{
+		$out_file= '<h5>'.$langs->trans('AgfDownloadDocumentsTrainee').'</h5>';
+		$fileAvailable=false;
+
 		require_once DOL_DOCUMENT_ROOT . '/ecm/class/ecmfiles.class.php';
 
 		foreach ($filearray as $file)
 		{
 			$filename=$file['name'];
-
 			$ecmfile = new ECMFiles($db);
-			$result=$ecmfile->fetch(0, '', '', md5_file(dol_osencode($conf->agefodd->dir_output . "/" .$agsession->id . "/" .$filename)));
+			$result=$ecmfile->fetch(0, '', dol_osencode("agefodd/" .$agsession->id . "/" .$filename));
 			if ($result > 0) {
 				if (!empty($ecmfile->share)) {
 					$dowloadUrl = $context->getRootUrl().'script/interface.php?action=downloadSessionAttachement&hashp='.$ecmfile->share;
-					$out.=getAgefoddDownloadTpl($filename, $langs->trans('Download'), $dowloadUrl);
+					$out_file.=getAgefoddDownloadTpl($filename, $langs->trans('Download'), $dowloadUrl, pathinfo($file['fullname'], PATHINFO_EXTENSION));
+					$fileAvailable=true;
 				}
 			}
-
+		}
+		if ($fileAvailable) {
+			$out.=$out_file;
 		}
 	}
 
@@ -1404,11 +1409,12 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 		    $filename=$file['name'];
 
 		    $ecmfile = new ECMFiles($db);
-		    $result=$ecmfile->fetch(0, '', '', md5_file(dol_osencode($conf->agefodd->dir_output . "/" .$agsession->id . "/" .$filename)));
+		    $result=$ecmfile->fetch(0, '', dol_osencode("agefodd/" .$agsession->id . "/" .$filename));
 		    if ($result > 0) {
 			    if (!empty($ecmfile->share)) {
 				    $dowloadUrl = $context->getRootUrl().'script/interface.php?action=downloadSessionAttachement&hashp='.$ecmfile->share;
-				    $filename = '<p><a class="btn btn-xs btn-primary" href="'.$dowloadUrl.'&amp;forcedownload=1" target="_blank" ><i class="fa fa-download"></i> '.$langs->trans('Download').'</a>&nbsp;&nbsp;'.$filename.'</p>';
+				    //$filename = '<p><a class="btn btn-xs btn-primary" href="'.$dowloadUrl.'&amp;forcedownload=1" target="_blank" ><i class="fa fa-download"></i> '.$langs->trans('Download').'</a>&nbsp;&nbsp;'.$filename.'</p>';
+				    $filename=getAgefoddDownloadTpl($filename, $langs->trans('Download'), $dowloadUrl, pathinfo($file['fullname'], PATHINFO_EXTENSION));
 			    }
 		    }
 		    $out.= "<p>";
