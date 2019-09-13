@@ -1187,11 +1187,11 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 		}
 		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
 			$duree_timeDone += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
+			$duree_presence_max_comptabilise += $duree_max;
 		}
 		else $duree_presence_draft += $duree_declared;
 	}
 
-	$total_duree_comptabilise = $duree_presence_comptabilise+$duree_presence_comptabilise_cancel;
 	if ($agsession->duree_session > 0) $tx_assi = 100 - ($duree_timeMissing * 100 / $agsession->duree_session);
 	else $tx_assi = 0;
 
