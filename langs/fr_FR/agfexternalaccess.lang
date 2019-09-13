@@ -90,3 +90,6 @@ AgfNoFilesDownload=Aucun fichier disponible pour le moment
 AgfAllowLaterDownload=Rendre disponible au téléchargement
 AgfDownloadDocumentsTrainer=Liste des fichiers déposés pour cette session
 AgfUploadFileTrainer=Déposer un fichier pour cette session
+AgfCrenaux=Créneaux
+AgfRecap=Récapitulatif
+AgfSessionSummaryTimeDone=Total des créneaux réalisés

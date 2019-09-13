@@ -1544,7 +1544,7 @@ AgfSessionSummaryTotalScheduledTrainer=Total heures programmées pour le formate
 AgfSessionSummaryTotalLeft=Totale heures restantes
 AgfSessionSummaryTotalLeftTotal=Totale heures restantes ((Duréée session * Nb Participant) - Total heures programmées pour la session)
 
-AgfSessionSummaryTotalPresence=Total heures déclarée (participants - tout statut)
+AgfSessionSummaryTotalPresence=Total heures confirmé (participants - tout statut)
 AgfSessionSummaryTauxAssiduite=Taux d'assiduité
 AgfSessionSummaryTotalHoursMaxComptabilise=Total heures déclaration maximal
 AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisée effectuées
