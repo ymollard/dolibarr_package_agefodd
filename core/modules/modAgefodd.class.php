@@ -1783,6 +1783,14 @@ class modAgefodd extends DolibarrModules
 			$this->rights[$r][4] = 'external_trainer_time_slot_delete';
 		}
 
+		$r ++;
+		if (!empty($conf->externalaccess->enabled)) {
+			$this->rights[$r][0] = $this->numero . $r;
+			$this->rights[$r][1] = 'AgfEATrainerAndTraineeAccessSessionLink';
+			$this->rights[$r][3] = 0;
+			$this->rights[$r][4] = 'external_access_link_attatchement';
+		}
+
 		// TODO : Avant d'ajouter un nouveau droit sur le portail, voir pour les regrouper comme ci-dessous avant que ça devienne vraiement impossible...
 		//$this->rights[$r][4] = 'external_trainer et external_trainee';		// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		//$this->rights[$r][5] = 'le droit';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)

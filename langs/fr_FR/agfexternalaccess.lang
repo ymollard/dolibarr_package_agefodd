@@ -92,4 +92,5 @@ AgfDownloadDocumentsTrainer=Liste des fichiers déposés pour cette session
 AgfUploadFileTrainer=Déposer un fichier pour cette session
 AgfCrenaux=Créneaux
 AgfRecap=Récapitulatif
-AgfSessionSummaryTimeDone=Total des créneaux réalisés
+AgfSessionSummaryTimeDone=Total des créneaux au statut réalisés
+AgfLinksExternal=Autre(s) lien(s)

@@ -637,6 +637,20 @@ function getPageViewTraineeSessionCardExternalAccess_downloads($agsession, $trai
     }
     $out.= getAgefoddDownloadTpl($langs->trans('AgfAttestationTraining'), $langs->trans('AgfDownloadDescAttestationTraining'), $downloadLink);
 
+	/*if ($user->rights->agefodd->external_access_link_attatchement) {
+		require_once DOL_DOCUMENT_ROOT . '/core/class/link.class.php';
+		$link = new Link($db);
+		$links = array();
+		$link->fetchAll($links, $agsession->element, $agsession->id, '', '');
+		if (is_array($links) && count($links)>0) {
+			$out .= '				<br><br><h5>' . $langs->trans('AgfLinksExternal') . '</h5>';
+			foreach ($links as $link) {
+				$out .= '<a data-ajax="false" href="' . $link->url . '" target="_blank">';
+				$out .= dol_escape_htmltag($link->label).'<br/>';
+			}
+		}
+	}*/
+
 	$out.= '</div>';
 	$out.= '<div class="col-md-6">';
 
@@ -1174,7 +1188,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	    $duree_max = $tmparr[1];
 
 	    if ($agf_calendrier->calendrier_type !== 'AGF_TYPE_PLATF')  {
-	    	$duree_scheduled_total += ($agf_calendrier->heuref - $agf_calendrier->heured)/3600;
+	    	$duree_scheduled_total += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
 	    }
 
 		if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CONFIRMED)
@@ -1382,6 +1396,21 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
         $out.= $langs->trans('AgfNoFilesDownload');
         $out.= "</p>";
     }
+
+	if ($user->rights->agefodd->external_access_link_attatchement) {
+		require_once DOL_DOCUMENT_ROOT . '/core/class/link.class.php';
+		$link = new Link($db);
+		$links = array();
+		$link->fetchAll($links, $agsession->element, $agsession->id, '', '');
+		if (is_array($links) && count($links)>0) {
+			$out .= '				<br><br><h5>' . $langs->trans('AgfLinksExternal') . '</h5>';
+			foreach ($links as $link) {
+				$out .= '<a data-ajax="false" href="' . $link->url . '" target="_blank">';
+				$out .= dol_escape_htmltag($link->label).'<br/>';
+			}
+		}
+	}
+
 	$out.= '
 						</div>
 
@@ -1442,7 +1471,6 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 		    if ($result > 0) {
 			    if (!empty($ecmfile->share)) {
 				    $dowloadUrl = $context->getRootUrl().'script/interface.php?action=downloadSessionAttachement&hashp='.$ecmfile->share;
-				    //$filename = '<p><a class="btn btn-xs btn-primary" href="'.$dowloadUrl.'&amp;forcedownload=1" target="_blank" ><i class="fa fa-download"></i> '.$langs->trans('Download').'</a>&nbsp;&nbsp;'.$filename.'</p>';
 				    $filename=getAgefoddDownloadTpl($filename, $langs->trans('Download'), $dowloadUrl, pathinfo($file['fullname'], PATHINFO_EXTENSION));
 			    }
 		    }

@@ -59,6 +59,9 @@ $page = GETPOST("page", 'int');
 if ($page == - 1) {
 	$page = 0;
 }
+if ($page===''){
+	$page=0;
+}
 $offset = $conf->liste_limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -105,7 +108,7 @@ if ($object->id) {
 	$head = trainer_prepare_head($object);
 
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfTeacher"), 0, 'bill');
-	
+
 	dol_agefodd_banner_tab($object, 'id');
 	print '<div class="underbanner clearboth"></div>';
 

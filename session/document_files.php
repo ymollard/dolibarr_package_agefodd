@@ -81,7 +81,7 @@ if ($result < 0) {
 }
 //Rename training program file with trim whitespace to be enable to move it as training program pdf
 // do_move user rename php function thaht do not work with white space in name
-if (GETPOST('sendit','alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC) && ! empty($_FILES))
+if (GETPOST('sendit', 'alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC) && ! empty($_FILES))
 {
 	if (is_array($_FILES['userfile']['name'])) $userfiles=$_FILES['userfile']['name'];
 	else $userfiles=array($_FILES['userfile']['name']);

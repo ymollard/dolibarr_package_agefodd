@@ -1539,12 +1539,12 @@ AgfSessionSummary=Formation prévue du <b>%s</b> au <b>%s</b>
 AgfHours=%s heure(s)
 
 AgfSessionSummaryTotalHours=Total heures de formation (heures planifiées * nb participants)
-AgfSessionSummaryTotalScheduled=Total heures programmées pour la session
+AgfSessionSummaryTotalScheduled=Total heures programmées pour la session (tous les creneaux même ceux sur d'autre formateur)
 AgfSessionSummaryTotalScheduledTrainer=Total heures programmées pour le formateur
 AgfSessionSummaryTotalLeft=Totale heures restantes
 AgfSessionSummaryTotalLeftTotal=Totale heures restantes ((Duréée session * Nb Participant) - Total heures programmées pour la session)
 
-AgfSessionSummaryTotalPresence=Total heures creneau(x) confirmé(s)
+AgfSessionSummaryTotalPresence=Total heures creneau(x) au statut confirmé(s)
 AgfSessionSummaryTauxAssiduite=Taux d'assiduité
 AgfSessionSummaryTotalHoursMaxComptabilise=Total heures déclaration (sauf Annulé et Prévisionnel)
 AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisée effectuées
@@ -1636,3 +1636,4 @@ AgfNbTiersPart=Tiers des inscrits
 AgfNbSessEffective=Sessions effectives
 
 AgfHideCompanyFichePres = Masquer la colonne société dans les feuilles d'émargements pour l'ajouter dans le nom du participants
+AgfEATrainerAndTraineeAccessSessionLink=Portail formateur et apprenant - Voir les liens (URL) associé à la session
