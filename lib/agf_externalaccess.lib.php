@@ -1192,7 +1192,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	}
 
 	$total_duree_comptabilise = $duree_presence_comptabilise+$duree_presence_comptabilise_cancel;
-	if ($total_duree_comptabilise > 0) $tx_assi = $duree_timeMissing * 100 / $agsession->duree_session;
+	if ($agsession->duree_session > 0) $tx_assi = 100 - ($duree_timeMissing * 100 / $agsession->duree_session);
 	else $tx_assi = 0;
 
 	$out = '';
