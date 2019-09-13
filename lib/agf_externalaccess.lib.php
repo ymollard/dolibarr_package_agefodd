@@ -1151,6 +1151,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	$duree_presence_comptabilise_cancel = 0;
 	$duree_presence_draft = 0;
 	$duree_timeDone = 0;
+	$duree_timeMissing = 0;
 
 	// somme des heures programmées pour le formateur excluant les horaires annulés et les heures de type "plateforme"
 	foreach ($agf_calendrier_formateur->lines as &$line)
@@ -1181,6 +1182,9 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 			$duree_presence_comptabilise_cancel += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
 			$duree_presence_max_comptabilise += $duree_max;
 		}
+		else if($agf_calendrier->status == Agefodd_sesscalendar::STATUS_MISSING) {
+			$duree_timeMissing += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
+		}
 		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
 			$duree_timeDone += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
 		}
@@ -1188,7 +1192,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	}
 
 	$total_duree_comptabilise = $duree_presence_comptabilise+$duree_presence_comptabilise_cancel;
-	if ($total_duree_comptabilise > 0) $tx_assi = $duree_presence_comptabilise * 100 / $duree_presence_max_comptabilise;
+	if ($total_duree_comptabilise > 0) $tx_assi = $duree_timeMissing * 100 / $agsession->duree_session;
 	else $tx_assi = 0;
 
 	$out = '';
