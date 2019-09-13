@@ -680,7 +680,11 @@ function getAgefoddDownloadTpl($title, $desc = '', $downloadLink = '', $fileType
     $context = Context::getInstance();
 
     if(empty($imageUrl)){
-        $imageUrl = $context->getRootUrl().'/img/mime/'.$fileType.'.png';
+    	if (file_exists($context->tplDir.'img/mime/'.$fileType.'.png')) {
+		    $imageUrl = $context->getRootUrl() . '/img/mime/' . $fileType . '.png';
+	    } else {
+		    $imageUrl = $context->getRootUrl() . '/img/mime/file.png';
+	    }
     }
 
     $out = '<!-- Left-aligned -->';
@@ -1288,6 +1292,11 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	return $out;
 }
 
+/**
+ * @param Agsession $agsession Sesison obejct
+ * @param Agefodd_session_formateur $trainer Trainer object
+ * @return string
+ */
 function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 {
     global $langs, $db, $conf, $user;

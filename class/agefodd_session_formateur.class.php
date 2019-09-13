@@ -28,7 +28,8 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 /**
  * Manage traner session object
  */
-class Agefodd_session_formateur {
+class Agefodd_session_formateur
+{
 	protected $db;
 	public $error;
 	public $errors = array ();
@@ -52,7 +53,8 @@ class Agefodd_session_formateur {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function __construct($db) {
+	public function __construct($db)
+	{
 		global $langs;
 
 		$this->db = $db;
@@ -83,7 +85,8 @@ class Agefodd_session_formateur {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0)
+	{
 		global $conf, $langs;
 		$error = 0;
 

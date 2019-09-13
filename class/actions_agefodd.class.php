@@ -352,7 +352,6 @@ class ActionsAgefodd
 
 							foreach ($userfiles as $key => $userfile) {
 								if (empty($_FILES['userfile']['tmp_name'][$key])) {
-									$error++;
 									if ($_FILES['userfile']['error'][$key] == 1 || $_FILES['userfile']['error'][$key] == 2) {
 										$context->setError($langs->trans('ErrorFileSizeTooLarge'));
 									} else {
@@ -369,11 +368,12 @@ class ActionsAgefodd
 								}
 							}
 
-							$createShareLink=GETPOST("createsharelink_hid",'int');
+							$createShareLink=GETPOST("createsharelink_hid", 'int');
 							if($createShareLink) {
 								require_once DOL_DOCUMENT_ROOT . '/ecm/class/ecmfiles.class.php';
 								$ecmfile = new ECMFiles($this->db);
-								$result=$ecmfile->fetch(0, '', '', md5_file(dol_osencode($upload_dir.'/'.$_FILES['userfile']['name'][0])));
+								$result=$ecmfile->fetch(0, '', dol_osencode("agefodd/" .GETPOST('sessid') . "/" .$_FILES['userfile']['name'][0]));
+
 								if ($result > 0)
 								{
 									if (empty($ecmfile->share))
