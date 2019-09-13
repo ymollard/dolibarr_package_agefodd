@@ -1152,12 +1152,13 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	$duree_presence_draft = 0;
 	$duree_timeDone = 0;
 	$duree_timeMissing = 0;
+	$duree_timeConfirm = 0;
 
 	// somme des heures programmées pour le formateur excluant les horaires annulés et les heures de type "plateforme"
 	foreach ($agf_calendrier_formateur->lines as &$line)
 	{
 	    $TCal = _getCalendrierFromCalendrierFormateur($line, true, true);
-	    if ((int)$line->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED || $TCal[0]->calendrier_type == 'AGF_TYPE_PLATF') continue;
+	    if ((int) $line->status == Agefoddsessionformateurcalendrier::STATUS_CANCELED || $TCal[0]->calendrier_type == 'AGF_TYPE_PLATF') continue;
 		$duree_scheduled += ($line->heuref - $line->heured) / 60 / 60;
 	}
 
@@ -1168,26 +1169,26 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	    $duree_declared = $tmparr[0];
 	    $duree_max = $tmparr[1];
 
-	    if ((int) $agf_calendrier->status !== Agefodd_sesscalendar::STATUS_CANCELED && $agf_calendrier->calendrier_type !== 'AGF_TYPE_PLATF')  {
+	    if ($agf_calendrier->calendrier_type !== 'AGF_TYPE_PLATF')  {
 	    	$duree_scheduled_total += ($agf_calendrier->heuref - $agf_calendrier->heured)/3600;
 	    }
 
 		if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CONFIRMED)
 		{
 			$duree_presence_comptabilise += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
-			$duree_presence_max_comptabilise += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;;
+			$duree_presence_max_comptabilise += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
+			$duree_timeConfirm += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
 		}
 		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CANCELED)
 		{
 			$duree_presence_comptabilise_cancel += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
-			$duree_presence_max_comptabilise += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;;
 		}
 		else if($agf_calendrier->status == Agefodd_sesscalendar::STATUS_MISSING) {
 			$duree_timeMissing += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
 		}
 		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
 			$duree_timeDone += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
-			$duree_presence_max_comptabilise += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;;
+			$duree_presence_max_comptabilise += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
 		}
 		else $duree_presence_draft += $duree_declared;
 	}
@@ -1234,7 +1235,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfHours', price($duree_scheduled, 0, '', 1, -1, 2)).'</span>
 							</div>
 							<div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfSessionSummaryTotalLeft').'</label>
+								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfSessionSummaryTotalLeftTotal').'</label>
 								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfHours', price($duree_scheduled_total - ($agsession->duree_session * $nbstag), 0, '', 1, -1, 2)).'</span>
 							</div>
 						</div>
@@ -1242,7 +1243,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfSessionSummaryTotalPresence').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfHours', price($duree_presence_draft+$duree_presence_comptabilise+$duree_presence_comptabilise_cancel, 0, '', 1, -1, 2)).'</span>
+								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfHours', price($duree_timeConfirm, 0, '', 1, -1, 2)).'</span>
 							</div>
 							<!-- <div class="form-group">
 								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursComptabilise">'.$langs->trans('AgfSessionSummaryTotalHoursComptabilise').'</label>

@@ -1538,15 +1538,15 @@ AgfWarningTheoreticalValue=Attention : valeur théorique non sauvegardée et ni 
 AgfSessionSummary=Formation prévue du <b>%s</b> au <b>%s</b>
 AgfHours=%s heure(s)
 
-AgfSessionSummaryTotalHours=Total heures de formation
+AgfSessionSummaryTotalHours=Total heures de formation (heures planifiées * nb participants)
 AgfSessionSummaryTotalScheduled=Total heures programmées pour la session
 AgfSessionSummaryTotalScheduledTrainer=Total heures programmées pour le formateur
 AgfSessionSummaryTotalLeft=Totale heures restantes
 AgfSessionSummaryTotalLeftTotal=Totale heures restantes ((Duréée session * Nb Participant) - Total heures programmées pour la session)
 
-AgfSessionSummaryTotalPresence=Total heures confirmé (participants - tout statut)
+AgfSessionSummaryTotalPresence=Total heures creneau(x) confirmé(s)
 AgfSessionSummaryTauxAssiduite=Taux d'assiduité
-AgfSessionSummaryTotalHoursMaxComptabilise=Total heures déclaration (sauf Absent et Prévisionnel)
+AgfSessionSummaryTotalHoursMaxComptabilise=Total heures déclaration (sauf Annulé et Prévisionnel)
 AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisée effectuées
 AgfSessionSummaryTotalHoursComptabiliseCancel=Total heures comptabilisée annulées
 
