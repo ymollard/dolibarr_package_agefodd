@@ -1175,19 +1175,19 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 		if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CONFIRMED)
 		{
 			$duree_presence_comptabilise += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
-			$duree_presence_max_comptabilise += $duree_max;
+			$duree_presence_max_comptabilise += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;;
 		}
 		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_CANCELED)
 		{
 			$duree_presence_comptabilise_cancel += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
-			$duree_presence_max_comptabilise += $duree_max;
+			$duree_presence_max_comptabilise += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;;
 		}
 		else if($agf_calendrier->status == Agefodd_sesscalendar::STATUS_MISSING) {
 			$duree_timeMissing += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
 		}
 		else if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
 			$duree_timeDone += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
-			$duree_presence_max_comptabilise += $duree_max;
+			$duree_presence_max_comptabilise += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;;
 		}
 		else $duree_presence_draft += $duree_declared;
 	}

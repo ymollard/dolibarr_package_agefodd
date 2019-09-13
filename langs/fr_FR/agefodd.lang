@@ -1546,7 +1546,7 @@ AgfSessionSummaryTotalLeftTotal=Totale heures restantes ((Duréée session * Nb 
 
 AgfSessionSummaryTotalPresence=Total heures confirmé (participants - tout statut)
 AgfSessionSummaryTauxAssiduite=Taux d'assiduité
-AgfSessionSummaryTotalHoursMaxComptabilise=Total heures déclaration maximal
+AgfSessionSummaryTotalHoursMaxComptabilise=Total heures déclaration (sauf Absent et Prévisionnel)
 AgfSessionSummaryTotalHoursComptabilise=Total heures comptabilisée effectuées
 AgfSessionSummaryTotalHoursComptabiliseCancel=Total heures comptabilisée annulées
 
