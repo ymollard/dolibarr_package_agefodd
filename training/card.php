@@ -500,7 +500,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 	print '<table class="border" width="100%">';
 
 	print '<tr><td width="20%"><span class="fieldrequired">' . $langs->trans("AgfIntitule") . '</span></td><td>';
-	print '<input name="intitule" class="flat" size="50" value="'.GETPOST('intitule', 'alpha').'"></td></tr>';
+	print '<input name="intitule" class="flat" size="50" value="'.dol_escape_htmltag(GETPOST('intitule', 'alpha')).'"></td></tr>';
 
 	$agf = new Formation($db);
 
@@ -673,7 +673,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '</td></tr>';
 
 				print '<tr><td width="20%" class="fieldrequired">' . $langs->trans("AgfIntitule") . '</td><td>';
-				print '<input name="intitule" class="flat" size="50" value="' . stripslashes($agf->intitule) . '"></td></tr>';
+				print '<input name="intitule" class="flat" size="50" value="' . dol_escape_htmltag(stripslashes($agf->intitule)) . '"></td></tr>';
 
 				print '<tr><td width="20%" class="fieldrequired">' . $langs->trans("Ref") . '</td><td>';
 				print '<input name="ref" class="flat" size="50" value="' . $agf->ref_obj . '"></td></tr>';

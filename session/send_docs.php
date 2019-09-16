@@ -493,7 +493,7 @@ if (! empty($id)) {
 
 			// Init list of files
 			if ($mode == 'init') {
-				$formmail->clear_attached_files();
+				if(empty($removedfile) && empty($addfile)) $formmail->clear_attached_files();
 				$file_array=array();
 				if ($action == 'presend_convention') {
 
