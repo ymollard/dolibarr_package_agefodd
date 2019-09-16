@@ -609,7 +609,7 @@ function getPageViewTraineeSessionCardExternalAccess()
  */
 function getPageViewTraineeSessionCardExternalAccess_downloads($agsession, $trainee)
 {
-    global $langs, $conf, $db;
+    global $langs, $conf, $db, $user;
 
 	$langs->load('agfexternalaccess@agefodd');
 
@@ -637,7 +637,7 @@ function getPageViewTraineeSessionCardExternalAccess_downloads($agsession, $trai
     }
     $out.= getAgefoddDownloadTpl($langs->trans('AgfAttestationTraining'), $langs->trans('AgfDownloadDescAttestationTraining'), $downloadLink);
 
-	/*if ($user->rights->agefodd->external_access_link_attatchement) {
+	if ($user->rights->agefodd->external_access_link_attatchement) {
 		require_once DOL_DOCUMENT_ROOT . '/core/class/link.class.php';
 		$link = new Link($db);
 		$links = array();
@@ -649,7 +649,7 @@ function getPageViewTraineeSessionCardExternalAccess_downloads($agsession, $trai
 				$out .= dol_escape_htmltag($link->label).'<br/>';
 			}
 		}
-	}*/
+	}
 
 	$out.= '</div>';
 	$out.= '<div class="col-md-6">';
