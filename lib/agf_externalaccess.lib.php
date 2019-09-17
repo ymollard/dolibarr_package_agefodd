@@ -645,7 +645,7 @@ function getPageViewTraineeSessionCardExternalAccess_downloads($agsession, $trai
 		if (is_array($links) && count($links)>0) {
 			$out .= '				<br><br><h5>' . $langs->trans('AgfLinksExternal') . '</h5>';
 			foreach ($links as $link) {
-				$out .= '<a data-ajax="false" href="' . $link->url . '" target="_blank">';
+				$out .= '<a data-ajax="false" href="' . $link->url . '" target="_blank"><i class="fa fa-link"></i> ';
 				$out .= dol_escape_htmltag($link->label).'</a><br/>';
 			}
 		}
