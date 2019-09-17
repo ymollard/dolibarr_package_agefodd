@@ -36,6 +36,8 @@ require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php');
 require_once (DOL_DOCUMENT_ROOT . "/core/class/html.formother.class.php");
 
+$hookmanager->initHooks(array('agfarchiveyear'));
+
 // Security check
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
@@ -45,34 +47,40 @@ if ($user->societe_id)
 $action = GETPOST("action", "alpha");
 $year = GETPOST("year", "int");
 
+$parameters=array('year'=>$year);
+$reshook=$hookmanager->executeHooks('doActions',$parameters,$agf,$action);     // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
 /*
  * Actions archive
 */
+if (empty($reshook)){
 
-if ($action == 'confirm_archive' && $user->rights->agefodd->creer) {
-	
-	$agf = new Agsession($db);
-	
-	$result = $agf->updateArchiveByYear($year, $user);
-	
-	if ($result > 0) {
-		
-		/* Si la mise a jour s'est bien passée, on effectue le nettoyage des templates pdf
-		 foreach (glob($conf->agefodd->dir_output."/*_".$id."_*.pdf") as $filename) {
-		//echo "$filename effacé <br>";
-		if(is_file($filename)) unlink("$filename");
+	if ($action == 'confirm_archive' && $user->rights->agefodd->creer) {
+
+		$agf = new Agsession($db);
+
+		$result = $agf->updateArchiveByYear($year, $user);
+
+		if ($result > 0) {
+
+			/* Si la mise a jour s'est bien passée, on effectue le nettoyage des templates pdf
+			 foreach (glob($conf->agefodd->dir_output."/*_".$id."_*.pdf") as $filename) {
+			//echo "$filename effacé <br>";
+			if(is_file($filename)) unlink("$filename");
+			}
+			*/
+			setEventMessage($langs->trans('AgfArchiveByYearComplete'), 'mesgs');
+
+			Header("Location: " . $_SERVER ['PHP_SELF']);
+			exit();
+		} else {
+			dol_syslog("agefodd:session:archive_year error=" . $agf->error, LOG_ERR);
+			setEventMessage($agf->error);
 		}
-		*/
-		setEventMessage($langs->trans('AgfArchiveByYearComplete'), 'mesgs');
-		
-		Header("Location: " . $_SERVER ['PHP_SELF']);
-		exit();
-	} else {
-		dol_syslog("agefodd:session:archive_year error=" . $agf->error, LOG_ERR);
-		setEventMessage($agf->error);
 	}
-}
 
+}
 /*
  * View
 */

@@ -1151,7 +1151,7 @@ if ($resql != - 1) {
 			}
 			if (array_key_exists('dicstatus.intitule', $arrayfields) && ! empty($arrayfields['dicstatus.intitule']['checked'])) {
 				print '<td>';
-				print $line->status_lib;
+				print $line->statuslib;
 				print '</td>';
 			}
 
