@@ -1029,7 +1029,7 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
 
         if (($item->status == Agefoddsessionformateurcalendrier::STATUS_CONFIRMED
             || $item->status == Agefoddsessionformateurcalendrier::STATUS_FINISH
-            || $item->status == Agefoddsessionformateurcalendrier::STATUS_DRAFT
+            || ( $item->status == Agefoddsessionformateurcalendrier::STATUS_DRAFT && $item->heuref > time())
             )
         )
         {
