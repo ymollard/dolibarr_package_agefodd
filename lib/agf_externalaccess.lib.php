@@ -624,16 +624,16 @@ function getPageViewTraineeSessionCardExternalAccess_downloads($agsession, $trai
     $downloadUrl = $context->getRootUrl().'script/interface.php?action=downloadAgefoddTrainneeDoc&session='.$agsession->id.'&model=';
     $attestationendtraining_trainee = getAgefoddTraineeDocumentPath($agsession, $trainee, 'attestationendtraining_trainee');
     $downloadLink = '';
-    if(!empty($attestationendtraining_trainee)){
+    if(!empty($attestationendtraining_trainee) && file_exists($attestationendtraining_trainee)){
         $downloadLink = $downloadUrl.'attestationendtraining_trainee';
     }
     $out.= getAgefoddDownloadTpl($langs->trans('AgfAttestationEndTraining'), $langs->trans('AgfDownloadDescAttestationEndTraining'), $downloadLink);
 
 
-    $attestationendtraining_trainee = getAgefoddTraineeDocumentPath($agsession, $trainee, 'attestation_trainee');
+    $attestation_trainee = getAgefoddTraineeDocumentPath($agsession, $trainee, 'attestation_trainee');
     $downloadLink = '';
-    if(!empty($attestationendtraining_trainee)){
-        $downloadLink = $downloadUrl.'attestationendtraining_trainee';
+    if(!empty($attestation_trainee) && file_exists($attestation_trainee)){
+        $downloadLink = $downloadUrl.'attestation_trainee';
     }
     $out.= getAgefoddDownloadTpl($langs->trans('AgfAttestationTraining'), $langs->trans('AgfDownloadDescAttestationTraining'), $downloadLink);
 
@@ -2887,7 +2887,7 @@ function downloadAgefoddTrainneeDoc(){
         {
             $modelsAvailables = array(
                 'attestationendtraining_trainee',
-                'attestationtraining_trainee'
+                'attestation_trainee'
             );
 
             $agsession = new Agsession($db);
