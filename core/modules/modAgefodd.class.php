@@ -894,10 +894,10 @@ class modAgefodd extends DolibarrModules
 		$this->import_icon[$r] = 'contact';
 		$this->import_entities_array[$r] = array(
 				's.fk_session_agefodd' => 'AgefoddMenuAction',
-				's.fk_stagiaire' => 'AgfNbreParticipants',
-				's.fk_agefodd_stagiaire_type' => 'AgfNbreParticipants',
-				's.datec' => 'AgfNbreParticipants',
-				'certif.fk_stagiaire' => 'AgfNbreParticipants',
+				's.fk_stagiaire' => 'agfnbreparticipantsexport',
+				's.fk_agefodd_stagiaire_type' => 'agfnbreparticipantsexport',
+				's.datec' => 'agfnbreparticipantsexport',
+				'certif.fk_stagiaire' => 'agfnbreparticipantsexport',
 				'certif.fk_session_agefodd' => 'AgefoddMenuAction',
 				'certif.certif_code' => 'AgfCertificate',
 				'certif.certif_label' => 'AgfCertificate',
@@ -958,9 +958,9 @@ class modAgefodd extends DolibarrModules
 		$this->import_icon[$r] = 'contact';
 		$this->import_entities_array[$r] = array(
 				's.fk_session_agefodd' => 'AgefoddMenuAction',
-				's.fk_stagiaire' => 'AgfNbreParticipants',
-				's.fk_agefodd_stagiaire_type' => 'AgfNbreParticipants',
-				's.datec' => 'AgfNbreParticipants'
+				's.fk_stagiaire' => 'agfnbreparticipantsexport',
+				's.fk_agefodd_stagiaire_type' => 'agfnbreparticipantsexport',
+				's.datec' => 'agfnbreparticipantsexport'
 		);
 		$this->import_tables_array[$r] = array(
 				's' => MAIN_DB_PREFIX . 'agefodd_session_stagiaire'
@@ -1144,16 +1144,16 @@ class modAgefodd extends DolibarrModules
 		);
 		$this->export_entities_array[$r] = array(
 				'c.nom' => "company",
-				's.rowid' => "AgfNbreParticipants",
-				's.nom' => "AgfNbreParticipants",
-				's.prenom' => "AgfNbreParticipants",
-				's.civilite' => "AgfNbreParticipants",
-				's.tel1' => "AgfNbreParticipants",
-				's.tel2' => "AgfNbreParticipants",
-				's.mail' => "AgfNbreParticipants",
-				's.date_birth' => "AgfNbreParticipants",
-				's.place_birth' => "AgfNbreParticipants",
-				's.datec' => "AgfNbreParticipants"
+				's.rowid' => "user:agfnbreparticipantsexport",
+				's.nom' => "user:agfnbreparticipantsexport",
+				's.prenom' => "user:agfnbreparticipantsexport",
+				's.civilite' => "user:agfnbreparticipantsexport",
+				's.tel1' => "user:agfnbreparticipantsexport",
+				's.tel2' => "user:agfnbreparticipantsexport",
+				's.mail' => "user:agfnbreparticipantsexport",
+				's.date_birth' => "user:agfnbreparticipantsexport",
+				's.place_birth' => "user:agfnbreparticipantsexport",
+				's.datec' => "user:agfnbreparticipantsexport"
 		);
 
 		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
@@ -1196,22 +1196,23 @@ class modAgefodd extends DolibarrModules
 				'c.nom' => "Text",
 				's.nom' => "Text",
 				's.prenom' => "Text",
-				's.civilite' => "Text"
+				's.civilite' => "Text",
+				'certif.certif_code' => "Text",
 		);
 		$this->export_entities_array[$r] = array(
 				'c.nom' => "company",
-				's.nom' => 'AgfNbreParticipants',
-				's.prenom' => 'AgfNbreParticipants',
-				's.civilite' => 'AgfNbreParticipants',
-				's.date_birth' => 'AgfNbreParticipants',
-				's.place_birth' => 'AgfNbreParticipants',
-				'certif.fk_stagiaire' => 'AgfNbreParticipants',
+				's.nom' => 'user:agfnbreparticipantsexport',
+				's.prenom' => 'user:agfnbreparticipantsexport',
+				's.civilite' => 'user:agfnbreparticipantsexport',
+				's.date_birth' => 'user:agfnbreparticipantsexport',
+				's.place_birth' => 'user:agfnbreparticipantsexport',
+				'certif.fk_stagiaire' => 'user:agfnbreparticipantsexport',
 				'certif.fk_session_agefodd' => 'AgefoddMenuAction',
-				'certif.certif_code' => 'AgfCertificate',
-				'certif.certif_label' => 'AgfCertificate',
-				'certif.certif_dt_start' => 'AgfCertificate',
-				'certif.certif_dt_end' => 'AgfCertificate',
-				's.datec' => 'AgfNbreParticipants'
+				'certif.certif_code' => 'list:AgfCertificate',
+				'certif.certif_label' => 'list:AgfCertificate',
+				'certif.certif_dt_start' => 'list:AgfCertificate',
+				'certif.certif_dt_end' => 'list:AgfCertificate',
+				's.datec' => 'user:agfnbreparticipantsexport'
 		);
 
 		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
@@ -1233,12 +1234,13 @@ class modAgefodd extends DolibarrModules
 
 		$this->export_fields_array[$r] = array(
 				's.rowid' => 'Id',
+				's.ref' => 'Ref Session',
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfFormTypeSession',
 				's.dated' => 'AgfDateDebut',
 				's.datef' => 'AgfDateFin',
 				'cal.heured' => 'AgfPeriodTimeB',
 				'cal.heuref' => 'AgfPeriodTimeE',
-				's.nb_stagiaire' => 'AgfNbreParticipants',
+				's.nb_stagiaire' => 'agfnbreparticipantsexport',
 				's.notes' => 'AgfNote',
 				's.cost_trainer' => 'AgfCoutFormateur',
 				's.cost_site' => 'AgfCoutSalle',
@@ -1294,94 +1296,96 @@ class modAgefodd extends DolibarrModules
 		);
 
 		$this->export_TypeFields_array[$r] = array(
-				'c.rowid' => "Text",
-				'c.intitule' => 'Text',
-				'c.ref' => 'Text',
-				'c.ref_interne' => 'Text',
-				's.dated' => 'Date',
-				's.datef' => 'Date',
-				'sosta.nom' => 'Text',
-				'sta.date_birth' => "Date",
+			's.ref' => 'Text',
+			'c.rowid' => "Text",
+			'c.intitule' => 'Text',
+			'c.ref' => 'Text',
+			'c.ref_interne' => 'Text',
+			's.dated' => 'Date',
+			's.datef' => 'Date',
+			'sosta.nom' => 'Text',
+			'sta.date_birth' => "Date",
 		);
 		$this->export_entities_array[$r] = array(
-				's.rowid' => "AgfSessionDetail",
-				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfSessionDetail',
-				's.dated' => 'AgfSessionDetail',
-				's.datef' => 'AgfSessionDetail',
-				'cal.heured' => 'AgfSessionDetail',
-				'cal.heuref' => 'AgfSessionDetail',
-				's.nb_stagiaire' => 'AgfSessionDetail',
-				's.notes' => 'AgfSessionDetail',
-				's.cost_trainer' => 'AgfSessionDetail',
-				's.cost_site' => 'AgfSessionDetail',
-				's.cost_trip' => 'AgfSessionDetail',
-				's.sell_price' => 'AgfSessionDetail',
-				'statusdict.code as sessionstatus' => 'AgfSessionDetail',
-				's.is_opca as sessionisopca' => 'AgfSessionDetail',
-				'socsessopca.nom as sessionsocopca' => 'AgfSessionDetail',
-				'contactsessopca.civility as contactsessopcaciv' => 'AgfSessionDetail',
-				'contactsessopca.lastname as contactsessopcafirstname' => 'AgfSessionDetail',
-				'contactsessopca.firstname as contactsessopcalastname' => 'AgfSessionDetail',
-				'contactsession.firstname as contactsessionfirstname' => 'AgfSessionDetail',
-				'contactsession.lastname as contactsessionlastname' => 'AgfSessionDetail',
-				'contactsession.email as contactsessionemail' => 'AgfSessionDetail',
-				'contactsession.phone as contactsessionphone' => 'AgfSessionDetail',
-				'socpresta.nom as prestanom' => 'AgfSessionDetail',
-				'presta.civility as prestasessciv' => 'AgfSessionDetail',
-				'presta.lastname as prestasesslastname' => 'AgfSessionDetail',
-				'presta.firstname as prestasessfirstname' => 'AgfSessionDetail',
-				'c.intitule' => 'AgfCatalogDetail',
-				'c.ref' => 'AgfCatalogDetail',
-				'c.ref_interne' => 'AgfCatalogDetail',
-				'c.duree' => 'AgfCatalogDetail',
-				'dictcat.code as catcode' => 'AgfCatalogDetail',
-				'dictcat.intitule as catlib' => 'AgfCatalogDetail',
+				's.rowid' => "calendarday:agfsessiondetailexport",
+				's.ref' => "calendarday:agfsessiondetailexport",
+				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'calendarday:agfsessiondetailexport',
+				's.dated' => 'calendarday:agfsessiondetailexport',
+				's.datef' => 'calendarday:agfsessiondetailexport',
+				'cal.heured' => 'calendarday:agfsessiondetailexport',
+				'cal.heuref' => 'calendarday:agfsessiondetailexport',
+				's.nb_stagiaire' => 'calendarday:agfsessiondetailexport',
+				's.notes' => 'calendarday:agfsessiondetailexport',
+				's.cost_trainer' => 'calendarday:agfsessiondetailexport',
+				's.cost_site' => 'calendarday:agfsessiondetailexport',
+				's.cost_trip' => 'calendarday:agfsessiondetailexport',
+				's.sell_price' => 'calendarday:agfsessiondetailexport',
+				'statusdict.code as sessionstatus' => 'calendarday:agfsessiondetailexport',
+				's.is_opca as sessionisopca' => 'calendarday:agfsessiondetailexport',
+				'socsessopca.nom as sessionsocopca' => 'calendarday:agfsessiondetailexport',
+				'contactsessopca.civility as contactsessopcaciv' => 'calendarday:agfsessiondetailexport',
+				'contactsessopca.lastname as contactsessopcafirstname' => 'calendarday:agfsessiondetailexport',
+				'contactsessopca.firstname as contactsessopcalastname' => 'calendarday:agfsessiondetailexport',
+				'contactsession.firstname as contactsessionfirstname' => 'calendarday:agfsessiondetailexport',
+				'contactsession.lastname as contactsessionlastname' => 'calendarday:agfsessiondetailexport',
+				'contactsession.email as contactsessionemail' => 'calendarday:agfsessiondetailexport',
+				'contactsession.phone as contactsessionphone' => 'calendarday:agfsessiondetailexport',
+				'socpresta.nom as prestanom' => 'calendarday:agfsessiondetailexport',
+				'presta.civility as prestasessciv' => 'calendarday:agfsessiondetailexport',
+				'presta.lastname as prestasesslastname' => 'calendarday:agfsessiondetailexport',
+				'presta.firstname as prestasessfirstname' => 'calendarday:agfsessiondetailexport',
+				'c.intitule' => 'label:agfcatalogdetailexport',
+				'c.ref' => 'label:agfcatalogdetailexport',
+				'c.ref_interne' => 'label:agfcatalogdetailexport',
+				'c.duree' => 'label:agfcatalogdetailexport',
+				'dictcat.code as catcode' => 'label:agfcatalogdetailexport',
+				'dictcat.intitule as catlib' => 'label:agfcatalogdetailexport',
 				'product.ref' => 'Product',
 				'product.label' => 'Product',
 				'product.price' => 'Product',
 				'product.accountancy_code_buy' => 'Product',
-				'p.ref_interne' => 'AgfSessPlace',
-				'p.adresse' => 'AgfSessPlace',
-				'p.cp' => 'AgfSessPlace',
-				'p.ville' => 'AgfSessPlace',
-				'p_pays.label as country' => 'AgfSessPlace',
-				'CASE WHEN f.type_trainer=\'user\' THEN fu.civility ELSE fp.civility END as trainerciv' => 'AgfTeacher',
-				'CASE WHEN f.type_trainer=\'user\' THEN fu.lastname ELSE fp.lastname END as trainerlastname' => 'AgfTeacher',
-				'CASE WHEN f.type_trainer=\'user\' THEN fu.firstname ELSE fp.firstname END as trainerfirstname' => 'AgfTeacher',
-				'trainerdicttype.intitule as trainertype' => 'AgfTeacher',
-				'so.nom as cust_name' => 'AgfSessionDetail',
-				'sta.civilite as traineeciv' => 'AgfNbreParticipants',
-				'sta.nom as traineelastname' => 'AgfNbreParticipants',
-				'sta.prenom as traineefirstname' => 'AgfNbreParticipants',
-				'sta.mail as traineemail' => 'AgfNbreParticipants',
-				'sta.date_birth' => "AgfNbreParticipants",
-				'sta.place_birth' => "AgfNbreParticipants",
-				'ssdicttype.intitule as statype' => 'AgfNbreParticipants',
-				'sosta.nom as traineecustomer' => 'AgfNbreParticipants',
-				's.is_opca as staisopca' => 'AgfNbreParticipants',
-				'socstaopca.nom as stasocopca' => 'AgfNbreParticipants',
-				'contactstaopca.civility as contactstaopcaciv' => 'AgfNbreParticipants',
-				'contactstaopca.lastname as contactstaopcalastname' => 'AgfNbreParticipants',
-				'contactstaopca.firstname as contactstaopcafirstname' => 'AgfNbreParticipants'
+				'p.ref_interne' => 'address:agfsessplaceexport',
+				'p.adresse' => 'address:agfsessplaceexport',
+				'p.cp' => 'address:agfsessplaceexport',
+				'p.ville' => 'address:agfsessplaceexport',
+				'p_pays.label as country' => 'address:agfsessplaceexport',
+				'CASE WHEN f.type_trainer=\'user\' THEN fu.civility ELSE fp.civility END as trainerciv' => 'user:agfteacherexport',
+				'CASE WHEN f.type_trainer=\'user\' THEN fu.lastname ELSE fp.lastname END as trainerlastname' => 'user:agfteacherexport',
+				'CASE WHEN f.type_trainer=\'user\' THEN fu.firstname ELSE fp.firstname END as trainerfirstname' => 'user:agfteacherexport',
+				'trainerdicttype.intitule as trainertype' => 'user:agfteacherexport',
+				'so.nom as cust_name' => 'company:agfsessiondetailexport',
+				'sta.civilite as traineeciv' => 'user:agfnbreparticipantsexport',
+				'sta.nom as traineelastname' => 'user:agfnbreparticipantsexport',
+				'sta.prenom as traineefirstname' => 'user:agfnbreparticipantsexport',
+				'sta.mail as traineemail' => 'user:agfnbreparticipantsexport',
+				'sta.date_birth' => "user:agfnbreparticipantsexport",
+				'sta.place_birth' => "user:agfnbreparticipantsexport",
+				'ssdicttype.intitule as statype' => 'user:agfnbreparticipantsexport',
+				'sosta.nom as traineecustomer' => 'user:agfnbreparticipantsexport',
+				's.is_opca as staisopca' => 'user:agfnbreparticipantsexport',
+				'socstaopca.nom as stasocopca' => 'user:agfnbreparticipantsexport',
+				'contactstaopca.civility as contactstaopcaciv' => 'user:agfnbreparticipantsexport',
+				'contactstaopca.lastname as contactstaopcalastname' => 'user:agfnbreparticipantsexport',
+				'contactstaopca.firstname as contactstaopcafirstname' => 'user:agfnbreparticipantsexport'
 		);
 
 		$keyforselect = 'agefodd_stagiaire';
-		$keyforelement = 'AgfMailTypeContactTrainee';
+		$keyforelement = 'user:AgfMailTypeContactTrainee';
 		$keyforaliasextra = 'extratrainee';
 		include DOL_DOCUMENT_ROOT . '/core/extrafieldsinexport.inc.php';
 
 		$keyforselect = 'agefodd_formation_catalogue';
-		$keyforelement = 'AgfCatalogDetail';
+		$keyforelement = 'label:agfcatalogdetailexport';
 		$keyforaliasextra = 'extracatalogue';
 		include DOL_DOCUMENT_ROOT . '/core/extrafieldsinexport.inc.php';
 
 		$keyforselect = 'agefodd_session';
-		$keyforelement = 'AgfSessionDetail';
+		$keyforelement = 'calendarday:agfsessiondetailexport';
 		$keyforaliasextra = 'extrasession';
 		include DOL_DOCUMENT_ROOT . '/core/extrafieldsinexport.inc.php';
 
 		$keyforselect = 'agefodd_stagiaire';
-		$keyforelement = 'AgfNbreParticipants';
+		$keyforelement = 'user:agfnbreparticipantsexport';
 		$keyforaliasextra = 'extratrainee';
 		include DOL_DOCUMENT_ROOT . '/core/extrafieldsinexport.inc.php';
 
