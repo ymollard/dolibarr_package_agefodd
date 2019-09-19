@@ -132,6 +132,21 @@ if (!empty($massaction))
 							setEventMessage($calrem->error, 'errors');
 							$error ++;
 						}
+
+						if (! $error) {
+							//Update also trainer time for status only
+							$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($calrem);
+							if (is_array($TTrainerCalendar) && count($TTrainerCalendar)>0) {
+								foreach($TTrainerCalendar as $tainercal) {
+									$tainercal->status=GETPOST('calendar_status');
+									$result = $tainercal->update($user);
+									if ($result < 0) {
+										$error++;
+										setEventMessage($tainercal->error, 'errors');
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -258,6 +273,8 @@ if ($action == 'confirm_delete_period_all' && $confirm == "yes" && !empty($user-
  */
 if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 
+	$error=0;
+
 	if (! empty($period_update)) {
 
 		$date_session = dol_mktime(0, 0, 0, GETPOST('datemonth', 'int'), GETPOST('dateday', 'int'), GETPOST('dateyear', 'int'));
@@ -293,10 +310,26 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 		$result = $agf->update($user);
 
 		if ($result > 0) {
+			//Update also trainer time for status only
+			$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($agf);
+			if (is_array($TTrainerCalendar) && count($TTrainerCalendar)>0) {
+				foreach($TTrainerCalendar as $tainercal) {
+					$tainercal->status=GETPOST('calendar_status');
+					$result = $tainercal->update($user);
+					if ($result < 0) {
+						$error++;
+						setEventMessage($tainercal->error, 'errors');
+					}
+				}
+			}
+		} else {
+			$error++;
+			setEventMessage($agf->error, 'errors');
+		}
+
+		if (empty($error)) {
 			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . "&anchor=period");
 			exit();
-		} else {
-			setEventMessage($agf->error, 'errors');
 		}
 	}
 
