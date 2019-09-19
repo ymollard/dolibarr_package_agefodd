@@ -252,8 +252,6 @@ if ($action == 'confirm_delete_period' && $confirm == "yes" && !empty($user->rig
 	}
 
 	if (empty($error)) {
-
-
 		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
 		exit();
 	}
@@ -272,7 +270,6 @@ if ($action == 'confirm_delete_period_all' && $confirm == "yes" && !empty($user-
 			if ($result < 0) {
 				setEventMessage($agf_line->error, 'errors');
 			}
-
 
 			//delete also trainer time
 			$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($line);
