@@ -333,6 +333,10 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 				$heure_tmp_arr = explode(':', $tmpl_calendar->heuref);
 				$agf->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($agf->date_session, "%m"), dol_print_date($agf->date_session, "%d"), dol_print_date($agf->date_session, "%Y"));
 
+				if (!empty($conf->global->AGF_DEFAULT_CALENDAR_STATUS)) {
+					$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
+				}
+
 				$result = $agf->create($user);
 				if ($result < 0) {
 					$error ++;
@@ -366,6 +370,10 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 			if (! empty($heuref_tmp)) {
 				$heure_tmp_arr = explode(':', $heuref_tmp);
 				$agf->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, GETPOST('datenewmonth', 'int'), GETPOST('datenewday', 'int'), GETPOST('datenewyear', 'int'));
+			}
+
+			if (!empty($conf->global->AGF_DEFAULT_CALENDAR_STATUS)) {
+				$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
 			}
 
 			if (!$error) $result = $agf->create($user);
@@ -434,6 +442,10 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 						$agf->heured = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
 						$heure_tmp_arr = explode(':', $datedaytodate2f);
 						$agf->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
+
+						if (!empty($conf->global->AGF_DEFAULT_CALENDAR_STATUS)) {
+							$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
+						}
 
 						$result = $agf->create($user);
 						if ($result < 0) {
@@ -678,7 +690,10 @@ if ($id) {
 			}
 
 			if ((($agf->duree_session * 3600) != $duree) && (empty($conf->global->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
-				print '<tr><td colspan="4" align="center">'.img_warning();
+				$colspan=4;
+				if (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION)) $colspan++;
+				if (!empty($user->rights->agefodd->modifier)) $colspan+=3;
+				print '<tr><td colspan="'.$colspan.'" align="center">'.img_warning();
 				if (($agf->duree_session * 3600) < $duree)
 					print $langs->trans("AgfCalendarSup");
 				if (($agf->duree_session * 3600) > $duree)

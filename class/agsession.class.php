@@ -434,14 +434,15 @@ class Agsession extends CommonObject
 
 			if (isset($filters['calendrier_type']) )
 			{
-				$sql.= " AND calendrier_type IN (".$db->escape($filters['calendrier_type']).") ";
+				$sql.= " AND s.calendrier_type IN (".$db->escape($filters['calendrier_type']).") ";
 			}
 
 			if (isset($filters['!calendrier_type']) )
 			{
-				$sql.= " AND calendrier_type NOT IN (".$db->escape($filters['!calendrier_type']).") ";
+				$sql.= " AND s.calendrier_type NOT IN ('".$db->escape($filters['!calendrier_type'])."') ";
 			}
 
+			dol_syslog(__FILE__ . "::".__METHOD__, LOG_DEBUG);
 		    $resql = $db->query($sql);
 		    if ($resql) {
 		        while ($obj = $db->fetch_object($resql)) $qualified[] = $obj->rowid;
@@ -456,8 +457,6 @@ class Agsession extends CommonObject
 			foreach ( $agfssh->lines as &$line ) {
 				if (! empty($fk_stagiaire) && $line->fk_stagiaire != $fk_stagiaire) continue;
 
-				//if ($excludeCanceled && in_array($line->fk_calendrier, $canceled)) continue;
-
 				if (!empty($filters))
 				{
 				    if (in_array($line->fk_calendrier, $qualified)){
@@ -467,6 +466,7 @@ class Agsession extends CommonObject
 				else $duree += $line->heures;
 			}
 		}
+
 
 		return $duree;
 	}

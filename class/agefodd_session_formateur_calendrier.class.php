@@ -153,7 +153,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= ")";
 		$this->db->begin();
 
-		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;

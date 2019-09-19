@@ -1560,7 +1560,7 @@ AgfExternalAccessSessionCardDeclareHoursInfo=Règles de saisies :<br /> - si vou
 AgfExternalAccessSessionCardBilled=Ce créneau horaire ne peut plus être modifié car il a été marqué comme facturé
 AgfSelectSession=Séléctionner une session
 
-AgfDureeDeclared=Heures déclarées
+AgfDureeDeclared=Total des heures de présence stagiaires
 AgfDureeSolde=Solde
 AgfErrNoAdminTasksFound=Aucune tâche administrative trouvée
 OnlyOnTrainingMail= (Uniquement disponible pour les emails de formation)
@@ -1639,3 +1639,6 @@ AgfNbSessEffective=Sessions effectives
 
 AgfHideCompanyFichePres = Masquer la colonne société dans les feuilles d'émargements pour l'ajouter dans le nom du participants
 AgfEATrainerAndTraineeAccessSessionLink=Portail formateur et apprenant - Voir les liens (URL) associé à la session
+
+AgfDefaultCalendarStatus=Statut par defaut des creneaux session
+AgfDefaultTrainerCalendarStatus=Statut par defaut des creneaux session formateur

@@ -259,10 +259,18 @@ if ($action == 'setvar') {
 	if (! $res > 0)
 		$error ++;
 	
-
-
 	$default_training_cat_bpf = GETPOST('AGF_DEFAULT_TRAINNING_CAT_BPF', 'int');
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT_BPF', $default_training_cat_bpf, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$defaultstatuscalendar = GETPOST('AGF_DEFAULT_TRAINER_CALENDAR_STATUS', 'int');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINER_CALENDAR_STATUS', $defaultstatuscalendar, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$defaultstatuscalendartrainer = GETPOST('AGF_DEFAULT_CALENDAR_STATUS', 'int');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_CALENDAR_STATUS', $defaultstatuscalendartrainer, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 
@@ -691,8 +699,8 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 							$htmltooltip = '';
 							$htmltooltip .= '' . $langs->trans("Version") . ': <b>' . $module->getVersion() . '</b><br>';
 							$nextval = $module->getNextValue($mysoc, $agf);
-							if ("$nextval" != $langs->trans("AgfNotAvailable")) // Keep " on nextval
-{
+							// Keep " on nextval
+							if ("$nextval" != $langs->trans("AgfNotAvailable")) {
 								$htmltooltip .= '' . $langs->trans("NextValue") . ': ';
 								if ($nextval) {
 									$htmltooltip .= $nextval . '<br>';
@@ -948,6 +956,25 @@ print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfNbHourInDaysHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
+
+// Default calendar status
+print '<tr class="impair"><td>' . $langs->trans("AgfDefaultCalendarStatus") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_calendrier_status($conf->global->AGF_DEFAULT_CALENDAR_STATUS, "AGF_DEFAULT_CALENDAR_STATUS");
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Default Trainer status
+print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainerCalendarStatus") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_calendrier_status($conf->global->AGF_DEFAULT_TRAINER_CALENDAR_STATUS, "AGF_DEFAULT_TRAINER_CALENDAR_STATUS");
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
 
 // Default training cat
 print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainingCat") . '</td>';

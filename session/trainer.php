@@ -355,6 +355,8 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 				$agf_cal->heured = $line->heured;
 				$agf_cal->heuref = $line->heuref;
 
+				$agf_cal->status = $line->status;
+
 				// Test if trainer is already book for another training
 				$result = $agf_cal->fetch_all_by_trainer(GETPOST('trainerid', 'int'));
 				if ($result < 0) {
@@ -679,6 +681,7 @@ if (! empty($id)) {
                                         $hourDisplay = dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
 										$hourhtml .= _isTrainerFreeBadge($hourDisplay, $trainer_calendar->lines[$j], $formateurs->lines[$i]->formid);
 									}
+									$hourhtml.= '<td>'.Agefodd_sesscalendar::getStaticLibStatut($trainer_calendar->lines[$j]->status, 0).'</td>'."\n";
 									$hourhtml .= '</td></tr>' . "\n";
 								}
 
@@ -1045,7 +1048,7 @@ if (! empty($id)) {
 								print $langs->trans("AgfPeriodTimeE") . ' ';
 								print $formAgefodd->select_time('18:00', 'datef');
 								print '</td>';
-								print '<td>' . $formAgefodd->select_calendrier_status('', 'calendar_trainer_status') . '</td>';
+								print '<td>' . $formAgefodd->select_calendrier_status($conf->global->AGF_DEFAULT_TRAINER_CALENDAR_STATUS, 'calendar_trainer_status') . '</td>';
 								// Trainer cost is fully managed into cost management not here
 								if (empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
 									// Coût horaire

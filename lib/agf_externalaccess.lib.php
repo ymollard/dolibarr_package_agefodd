@@ -238,8 +238,10 @@ function getPageViewSessionListExternalAccess()
 		$out.= ' <th class="" >'.$langs->trans('DateEnd').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDuree').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeOffPlatform').'</th>';
+		$out.= ' <th class="text-center" >'.$langs->trans('AgfSessionSummaryTimeDone').'</th>';
+		$out.= ' <th class="text-center" >'.$langs->trans('AgfSessionSummaryTotalLeft').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeDeclared').'</th>';
-		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeSolde').'</th>';
+		//$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeSoldeTrainee').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('Status').'</th>';
 		$out.= ' <th class="text-center" ></th>';
 		$out.= '</tr>';
@@ -316,9 +318,21 @@ function getPageViewSessionListExternalAccess()
 			{
 			    $plus = '';
 			}
+			$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
+			$agefodd_sesscalendar->fetch_all($item->rowid);
+			$duree_timeDone=0;
+			foreach ($agefodd_sesscalendar->lines as $agf_calendrier)
+			{
+				if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
+					$duree_timeDone += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
+				}
+			}
+			$soldeTotal = ((int) $item->duree_session)-$duree_timeDone;
+			$out.= ' <td class="text-center" data-order="'.$duree_timeDone.'">'.$duree_timeDone.'</td>';
+			$out.= ' <td class="text-center" data-order="'.$soldeTotal.'">'.$soldeTotal.'</td>';
 			$out.= ' <td class="text-center" data-order="'.$duree_declared.'">'.$duree_declared.$plus.'</td>';
-			$solde = $duree_offPlatform - $duree_declared;
-			$out.= ' <td class="text-center" data-order="'.$solde.'">'.$solde.'</td>';
+			//$solde = $duree_offPlatform - $duree_declared;
+			//$out.= ' <td class="text-center" data-order="'.$solde.'">'.$solde.'</td>';
 			$statut = Agsession::getStaticLibStatut($item->status, 0);
 			$out.= ' <td class="text-center" data-search="'.$statut.'" data-order="'.$statut.'" >'.$statut.'</td>';
 
