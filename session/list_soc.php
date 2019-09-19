@@ -277,6 +277,7 @@ if ($result >= 0) {
 	print '<td></td>';
 	print_liste_field_titre($langs->trans("AgfTypeRessource"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "s.ref", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "socpf.lastname", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
@@ -316,6 +317,11 @@ if ($result >= 0) {
 	print '<td class="liste_titre">';
 	print '</td>';
 
+	//Id
+	print '<td class="liste_titre">';
+	print '</td>';
+
+	//Ref
 	print '<td class="liste_titre">';
 	print '</td>';
 
@@ -460,6 +466,7 @@ if ($result >= 0) {
 			}
 
 			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '"' . $target . '>' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->rowid . '"' . $target . '>' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->sessionref . '</a></td>';
 
 			print '<td>';
 

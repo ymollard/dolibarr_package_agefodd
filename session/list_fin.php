@@ -539,6 +539,8 @@ if ($resql != - 1) {
 
 	$menu = $langs->trans("AgfMenuSessAct");
 
+	dol_fiche_end();
+
 	print_barre_liste($menu, $page, $_SERVER['PHP_SELF'], '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid . '&search_fournorderid=' . $search_fournorderid, $sortfield,
 			$sortorder, '', $num);
 

@@ -72,22 +72,24 @@ if ($id) {
 		dol_fiche_head($head, 'sessionlist', $langs->trans("AgfStagiaireDetail"), 0, 'user');
 
 		dol_agefodd_banner_tab($agf, 'id');
-		print '<div class="underbanner clearboth"></div>';
+
+		dol_fiche_end();
 
 		print_barre_liste($langs->trans("AgfSessionDetail"), 0, $_SERVER ['PHP_SELF'], '', '', '', '', $result, $result, 'title_generic.png', 0, '', '', 0, 1);
 
 		if (count($agf_session->lines) > 0) {
 			print '<table class="tagtable liste listwithfilterbefore"  width="100%">';
 			print '<tr class="liste_titre">';
-			print '<th class="liste_titre" width="10%">' . $langs->trans('AgfMenuSess') . '</th>';
-			print '<th class="liste_titre" width="10%">' . $langs->trans('AgfIntitule') . '</th>';
-			print '<th class="liste_titre" width="20%">' . $langs->trans('AgfDebutSession') . '</th>';
-			print '<th class="liste_titre" width="20%">' . $langs->trans('AgfFinSession') . '</th>';
-			print '<th class="liste_titre" width="20%">' . $langs->trans('AgfPDFFichePeda1') . '</th>';
+			print '<td class="liste_titre" width="10%">' . $langs->trans('AgfMenuSess') . '</td>';
+			print '<td class="liste_titre" width="10%">' . $langs->trans('Ref') . '</td>';
+			print '<td class="liste_titre" width="10%">' . $langs->trans('AgfIntitule') . '</td>';
+			print '<td class="liste_titre" width="20%">' . $langs->trans('AgfDebutSession') . '</td>';
+			print '<td class="liste_titre" width="20%">' . $langs->trans('AgfFinSession') . '</td>';
+			print '<td class="liste_titre" width="20%">' . $langs->trans('AgfPDFFichePeda1') . '</td>';
 			if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
-				print '<th class="liste_titre" width="20%">' . $langs->trans('AgfEffectiveDuration') . '</th>';
+				print '<td class="liste_titre" width="20%">' . $langs->trans('AgfEffectiveDuration') . '</td>';
 			}
-			print '<th class="liste_titre" width="20%">' . $langs->trans('Status') . '</th>';
+			print '<td class="liste_titre" width="20%">' . $langs->trans('Status') . '</td>';
 
 			print '</tr>';
 
@@ -110,6 +112,7 @@ if ($id) {
 				print '<tr ' . $style . '>';
 
 				print '<td><a href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $line->rowid . '">' . $line->rowid . '</a></td>';
+				print '<td><a href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $line->rowid . '">' . $line->sessionref . '</a></td>';
 				print '<td><a href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $line->rowid . '">' . $line->intitule . '</a></td>';
 				print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
 				print '<td>' . dol_print_date($line->datef, 'daytext') . '</td>';
@@ -152,6 +155,7 @@ if ($id) {
 			if (! empty($conf->global->AGF_USE_REAL_HOURS)){
 				print '<td>' . $obj_time_effective->heures_stagiaire_totales($agf->id) . '</td>';
 			}
+			print '<td></td>';
 			print '<td></td>';
 			print '</tr>';
 			print '</table>';

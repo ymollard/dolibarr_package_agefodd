@@ -49,6 +49,7 @@ $sortfield = GETPOST('sortfield', 'alpha');
 $page = (int) GETPOST('page', 'int');
 $optioncss = GETPOST('optioncss', 'alpha');
 $search_id = GETPOST('search_id', 'int');
+$search_ref = GETPOST('search_ref', 'alpha');
 $search_intitule = GETPOST('search_intitule', 'alpha');
 $search_month = GETPOST('search_month', 'int');
 $search_year = GETPOST('search_year', 'int');
@@ -87,6 +88,7 @@ $hookmanager->initHooks(array('sessiontrainerlist'));
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_id = '';
+	$search_ref = '';
 	$search_intitule = '';
 	$search_month = "";
 	$search_year = '';
@@ -101,6 +103,10 @@ $filter = array ();
 if (! empty($search_id)) {
 	$filter ['s.rowid'] = $search_id;
 	$option .= '&search_id=' . $search_id;
+}
+if (! empty($search_ref)) {
+	$filter ['s.ref'] = $search_ref;
+	$option .= '&search_ref=' . $search_ref;
 }
 if (! empty($search_intitule)) {
 	$filter ['c.intitule'] = $search_intitule;
@@ -166,7 +172,8 @@ if ($id) {
 		dol_fiche_head($head, 'sessionlist', $langs->trans("AgfTeacher"), 0, 'user');
 
 		dol_agefodd_banner_tab($agf, 'id');
-		print '<div class="underbanner clearboth"></div>';
+
+		dol_fiche_end();
 
 		print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&optioncss=' . GETPOST('optioncss') . '" name="searchFormList" id="searchFormList">' . "\n";
 		print '<input type="hidden" name="optioncss" value="' . $optioncss . '">' . "\n";
@@ -198,6 +205,10 @@ if ($id) {
 		// Id session
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_id" value="' . $search_id . '" size="4">';
+		print '</td>';
+		// Ref
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_ref" value="' . $search_ref . '" size="20">';
 		print '</td>';
 		// intitule
 		print '<td class="liste_titre">';
@@ -247,6 +258,7 @@ if ($id) {
 
 		print '<tr class="liste_titre">';
 		print_liste_field_titre($langs->trans("AgfMenuSess"), $_SERVER ['PHP_SELF'], "s.rowid", '', $option, 'width="10%"', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "s.ref", '', $option, 'width="10%"', $sortfield, $sortorder);
 		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", '', $option, '', $sortfield, $sortorder);
 		print_liste_field_titre($langs->trans("Customer"), $_SERVER ['PHP_SELF'], "so.nom", '', $option, '', $sortfield, $sortorder);
 		print_liste_field_titre($langs->trans("Type"), $_SERVER ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
@@ -281,6 +293,7 @@ if ($id) {
 				print '<tr ' . $style . '>';
 
 				print '<td><a href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $line->rowid . '">' . $line->rowid . '</a></td>';
+				print '<td><a href="' . dol_buildpath('/agefodd/session/card.php', 1) . '?id=' . $line->rowid . '">' . $line->sessionref . '</a></td>';
 				print '<td>'.$line->intitule . '</td>';
 				print '<td>';
 				if (! empty($line->socid) && $line->socid != - 1) {
@@ -401,6 +414,7 @@ if ($id) {
 
 		print '<tr class="liste_total">';
 		print '<td>' . $langs->trans('Total') . '</td>';
+		print '<td></td>';
 		print '<td></td>';
 		print '<td></td>';
 		print '<td></td>';
