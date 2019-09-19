@@ -1305,7 +1305,7 @@ class modAgefodd extends DolibarrModules
 			's.datef' => 'Date',
 			'sosta.nom' => 'Text',
 			'sta.date_birth' => "Date",
-			'so.nom'=> 'Text',
+			'so.nom as cust_name'=> 'Text',
 		);
 		$this->export_entities_array[$r] = array(
 				's.rowid' => "calendarday:agfsessiondetailexport",
