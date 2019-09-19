@@ -216,22 +216,46 @@ if (!empty($massaction))
 
 if ($action == 'confirm_delete_period' && $confirm == "yes" && !empty($user->rights->agefodd->modifier)) {
 
+	$error=0;
+
 	$agf = new Agefodd_sesscalendar($db);
-	$result = $agf->remove($modperiod);
-
+	$result = $agf->fetch($modperiod);
 	if ($result > 0) {
-	    if (! empty($conf->global->AGF_USE_REAL_HOURS)){
-	        // nettoyage des heures réelles
-	        $sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
-	        $sql.= " WHERE fk_calendrier = " . $modperiod;
 
-	        $db->query($sql);
-	    }
+		$result = $agf->remove($modperiod);
+		if ($result > 0) {
+
+			if (! empty($conf->global->AGF_USE_REAL_HOURS)){
+				// nettoyage des heures réelles
+				$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
+				$sql.= " WHERE fk_calendrier = " . $modperiod;
+
+				$db->query($sql);
+			}
+
+			//delete also trainer time
+			$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($agf);
+			if (is_array($TTrainerCalendar) && count($TTrainerCalendar) > 0) {
+				foreach ($TTrainerCalendar as $tainercal) {
+					$result = $tainercal->delete($user);
+					if ($result < 0) {
+						$error++;
+						setEventMessage($tainercal->error, 'errors');
+					}
+				}
+			}
+		} else {
+			setEventMessage($agf->error, 'errors');
+		}
+	} else {
+		setEventMessage($agf->error, 'errors');
+	}
+
+	if (empty($error)) {
+
 
 		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
 		exit();
-	} else {
-		setEventMessage($agf->error, 'errors');
 	}
 }
 
@@ -247,6 +271,19 @@ if ($action == 'confirm_delete_period_all' && $confirm == "yes" && !empty($user-
 			$result = $agf_line->remove($line->id);
 			if ($result < 0) {
 				setEventMessage($agf_line->error, 'errors');
+			}
+
+
+			//delete also trainer time
+			$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($line);
+			if (is_array($TTrainerCalendar) && count($TTrainerCalendar) > 0) {
+				foreach ($TTrainerCalendar as $tainercal) {
+					$result = $tainercal->delete($user);
+					if ($result < 0) {
+						$error++;
+						setEventMessage($tainercal->error, 'errors');
+					}
+				}
 			}
 		}
 	}
@@ -505,10 +542,28 @@ if ($action == 'delete_calsel' && !empty($user->rights->agefodd->modifier)) {
 	if (count($toselect) > 0) {
 		foreach ( $toselect as $lineid ) {
 			$calrem = new Agefodd_sesscalendar($db);
-			$result = $calrem->remove($lineid);
+			$result = $calrem->fetch($lineid);
 			if ($result < 0) {
 				setEventMessage($calrem->error, 'errors');
 				$error ++;
+			} else {
+				$result = $calrem->remove($lineid);
+				if ($result < 0) {
+					setEventMessage($calrem->error, 'errors');
+					$error++;
+				} else {
+					//Update delete trainer time
+					$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($calrem);
+					if (is_array($TTrainerCalendar) && count($TTrainerCalendar) > 0) {
+						foreach ($TTrainerCalendar as $tainercal) {
+							$result = $tainercal->delete($user);
+							if ($result < 0) {
+								$error++;
+								setEventMessage($tainercal->error, 'errors');
+							}
+						}
+					}
+				}
 			}
 		}
 	}
