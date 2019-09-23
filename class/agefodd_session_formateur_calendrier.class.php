@@ -766,7 +766,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 			$error ++;
 		}
 
-		$action->label = $session->formintitule . '(' . $session->formref . ')'.'('.$session->ref.')';
+		$action->label = $session->formintitule .'('.$session->ref.')';
 		$action->location = $session->placecode;
 		$action->datep = $this->heured;
 		$action->datef = $this->heuref;
@@ -866,7 +866,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 
 			if ($action->id == $this->fk_actioncomm) {
 
-				$action->label = $session->formintitule . '(' . $session->formref . ')'.'('.$session->ref.')';
+				$action->label = $session->formintitule .'('.$session->ref.')';
 				$action->location = $session->placecode;
 				$action->datep = $this->heured;
 				$action->datef = $this->heuref;
