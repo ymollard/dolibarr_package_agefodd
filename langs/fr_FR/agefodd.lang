@@ -1642,3 +1642,9 @@ AgfEATrainerAndTraineeAccessSessionLink=Portail formateur et apprenant - Voir le
 
 AgfDefaultCalendarStatus=Statut par defaut des creneaux session
 AgfDefaultTrainerCalendarStatus=Statut par defaut des creneaux session formateur
+
+agfnbreparticipantsexport=Participants
+agfsessiondetailexport=Sessions
+agfcatalogdetailexport=Formation
+agfsessplaceexport=Lieu
+agfteacherexport=Formateur
