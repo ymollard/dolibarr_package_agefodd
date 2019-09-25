@@ -1954,7 +1954,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			<label for="stagiaire_'.$stagiaire->id.'">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</label>
 				<div class="input-group">';
 
-            $out.= '<input '.$inputMore.' title="'.$inputTitle.'" data-plannedabsence="'.$planned_absence.'" '.($inputReadonly?' readonly ':'').' type="time" step="900" class="form-control traineeHourSpended '.$inputClass.'" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.$inputValue.'" />';
+            $out.= '<input '.$inputMore.' title="'.$inputTitle.'" data-plannedabsence="'.$planned_absence.'" '.($inputReadonly?' readonly ':'').' type="text" pattern="([0-9]*(:)[0-5][0-9]" placeholder="00:00" class="form-control traineeHourSpended '.$inputClass.'" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.$inputValue.'" />';
 
             if(!$inputReadonly)
             {
