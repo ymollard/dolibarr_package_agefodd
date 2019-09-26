@@ -82,6 +82,7 @@ class Agsession extends CommonObject
 	public $lines = array ();
 	public $commercialid;
 	public $commercialname;
+	public $commercialname_invert;
 	public $contactid;
 	public $contactname;
 	public $sourcecontactid;
@@ -810,6 +811,7 @@ class Agsession extends CommonObject
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
 				$this->commercialname = $obj->commercialname . ' ' . $obj->commercialfirstname;
+				$this->commercialname_invert = $obj->commercialfirstname.' '.$obj->commercialname;
 				$this->commercialemail = $obj->commercialemail;
 				$this->commercialphone = $obj->commercialphone;
 				$this->commercialid = $obj->commercialid;
