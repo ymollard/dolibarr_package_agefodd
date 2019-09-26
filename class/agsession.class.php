@@ -2475,6 +2475,12 @@ class Agsession extends CommonObject
 	 */
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0, $array_options_keys=array()) {
 		global $langs, $conf;
+		if (empty($array_options_keys)) {
+			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+			$extrafields = new ExtraFields($this->db);
+			$extrafields->fetch_name_optionals_label($this->table_element);
+			$array_options_keys = array_keys($extrafields->attributes[$this->table_element]['label']);
+		}
 
 		$sql = "SELECT s.rowid, s.ref as sessionref, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.date_res_trainer, s.color, ";
