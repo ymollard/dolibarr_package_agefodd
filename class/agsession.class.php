@@ -5590,8 +5590,10 @@ class Agsession extends CommonObject
 			if (is_array($formateurs->lines) && count($formateurs->lines)>0) {
 				foreach($formateurs->lines as $linetrainer) {
 					 $trainerarray[]= $linetrainer->lastname. ' '.$linetrainer->firstname;
+					 $trainerarray_invert[]= $linetrainer->firstname. ' '.$linetrainer->lastname;
 				}
 				$this->trainer_text = implode(', ',$trainerarray);
+				$this->trainer_text_invert = implode(', ',$trainerarray);
 			}
 		}
 
