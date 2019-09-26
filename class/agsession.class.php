@@ -5599,7 +5599,7 @@ class Agsession extends CommonObject
 					 $trainerarray_invert[]= $linetrainer->firstname. ' '.$linetrainer->lastname;
 				}
 				$this->trainer_text = implode(', ',$trainerarray);
-				$this->trainer_text_invert = implode(', ',$trainerarray);
+				$this->trainer_text_invert = implode(', ',$trainerarray_invert);
 			}
 		}
 
