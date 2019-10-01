@@ -156,6 +156,10 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 
 			if ($result > 0) {
 
+				if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options['options_use_subro_inter'])) {
+					$agf->type_session = 1;
+				}
+
 				// TODO : si session inter => ajout des infos OPCA dans la table
 				if ($agf->type_session == 1) {
 
@@ -250,6 +254,10 @@ if ($action == 'remove_opcafksocOPCA') {
 	if ($result > 0) {
 
 		if ($agf->type_session == 1) {
+
+			if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options['options_use_subro_inter'])) {
+				$agf->type_session = 1;
+			}
 
 			$agfsta = new Agefodd_session_stagiaire($db);
 			$agfsta->fetch(GETPOST('stagerowid', 'int'));
