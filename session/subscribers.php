@@ -253,6 +253,10 @@ if ($action == 'remove_opcafksocOPCA') {
 
 	if ($result > 0) {
 
+		if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options['options_use_subro_inter'])) {
+			$agf->type_session = 1;
+		}
+
 		if ($agf->type_session == 1) {
 
 			if (is_array($agf->array_options) && key_exists('options_use_subro_inter', $agf->array_options) && ! empty($agf->array_options['options_use_subro_inter'])) {
