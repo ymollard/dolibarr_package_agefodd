@@ -560,6 +560,9 @@ class Agefodd_teacher extends CommonObject {
 		if (! isset($this->archive))
 			$this->archive = 0;
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_formateur SET";
+		$sql .= " fk_socpeople =" . (!empty($this->fk_socpeople) ? $this->fk_socpeople : 'NULL') . " ,";
+		$sql .= " fk_user =" . (!empty($this->fk_user) ? $this->fk_user : 'NULL') . " ,";
+		$sql .= " type_trainer ='" . $this->db->escape($this->type_trainer) . "' ,";
 		$sql .= " fk_user_mod=" . $user->id . " ,";
 		$sql .= " archive=" . $this->archive . " ";
 		$sql .= " WHERE rowid = " . $this->id;
