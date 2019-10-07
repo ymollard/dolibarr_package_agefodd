@@ -69,12 +69,30 @@ class pdf_conseils extends ModelePDFAgefodd {
 		$this->marge_droite = 15;
 		$this->marge_haute = 10;
 		$this->marge_basse = 10;
+
+
 		$this->unit = 'mm';
 		$this->oriantation = 'P';
+		$this->orientation = $this->oriantation;
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
 		$this->default_font_size=12;
+
+
+		// gestion des marge en fonction de l'orientation : fonction du fond PDF
+		if($conf->global->{'AGF_MARGE_GAUCHE_'.$this->orientation}){
+			$this->marge_gauche = $conf->global->{'AGF_MARGE_GAUCHE_'.$this->orientation};
+		}
+		if($conf->global->{'AGF_MARGE_DROITE_'.$this->orientation}){
+			$this->marge_droite = $conf->global->{'AGF_MARGE_DROITE_'.$this->orientation};
+		}
+		if($conf->global->{'AGF_MARGE_HAUTE_'.$this->orientation}){
+			$this->marge_haute = $conf->global->{'AGF_MARGE_HAUTE_'.$this->orientation};
+		}
+		if($conf->global->{'AGF_MARGE_BASSE_'.$this->orientation}){
+			$this->marge_basse = $conf->global->{'AGF_MARGE_BASSE_'.$this->orientation};
+		}
 
 		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
 		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
@@ -149,6 +167,8 @@ class pdf_conseils extends ModelePDFAgefodd {
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 			$pdf->SetAutoPageBreak(1, 0);
 
+			$pdf->setPageOrientation($this->orientation, 1, $this->marge_basse);
+
 			// Set path to the background PDF File
 			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND_P))
 			{
@@ -164,6 +184,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+				$pdf->setPageOrientation($this->orientation, 1, $this->marge_basse);
 
 				$pagenb ++;
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
