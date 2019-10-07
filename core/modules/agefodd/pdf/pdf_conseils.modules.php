@@ -165,9 +165,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$pdf->SetCompression(false);
 
 			$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
-			$pdf->SetAutoPageBreak(1, 0);
-
-			$pdf->setPageOrientation($this->orientation, 1, $this->marge_basse);
+			$pdf->SetAutoPageBreak(1, $this->marge_basse);
 
 			// Set path to the background PDF File
 			if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->AGF_ADD_PDF_BACKGROUND_P))
@@ -184,7 +182,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				// New page
 				$pdf->AddPage();
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-				$pdf->setPageOrientation($this->orientation, 1, $this->marge_basse);
+				$pdf->SetAutoPageBreak(1, $this->marge_basse);
 
 				$pagenb ++;
 				$this->_pagehead($pdf, $agf, 1, $outputlangs);
@@ -403,34 +401,98 @@ class pdf_conseils extends ModelePDFAgefodd {
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
 				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->transnoentities("AgfAccesSite");
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
-				$posY += 5;
+				$pdf->startTransaction();
+				$pageposBeforeSiteAccess = $pdf->getPage();
+				$posYBeforeSiteAccess = $posY;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-
-				$this->str = strtr($agf_place->acces_site, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));
+				$this->str = '<strong>'.$langs->transnoentities("AgfAccesSite").'</strong><br/>'.$this->str;
+				$this->str.= strtr($agf_place->acces_site, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));
 
 				$pdf->SetXY($posX, $posY);
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
 				$posY = $pdf->GetY() + 8;
 
+				$pageposAfterSiteAccess=$pdf->getPage();
+				if($pageposBeforeSiteAccess < $pageposAfterSiteAccess){
+					$pdf->rollbackTransaction(true);
+					$posY = $posYBeforeSiteAccess;
+					$pagenb = $pdf->getPage();
+
+					// prepar pages to receive site access
+					while ($pagenb < $pageposAfterSiteAccess) {
+						$pdf->AddPage();
+						$pagenb++;
+
+						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+						$pdf->SetAutoPageBreak(1, $this->marge_basse);
+						$this->_pagehead($pdf, $agf, 1, $outputlangs);
+					}
+
+					// back to start
+					$pdf->setPage($pageposBeforeSiteAccess);
+					$pdf->SetXY($posX, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+					$pdf->SetXY($posX, $posY);
+					$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
+
+					$posY = $pdf->GetY() + 8;
+				}
+				else{
+					$pdf->commitTransaction();
+				}
 				/**
 				 * *** Divers ****
 				 */
 
+				$pdf->startTransaction();
+				$pageposBeforeDivers = $pdf->getPage();
+				$posYBeforeDivers = $pdf->GetY();
+
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size);
 				$pdf->SetXY($posX, $posY);
-				$this->str = $langs->transnoentities("AgfPlaceNote1");
-				$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
-				$posY += 5;
-
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
-				$this->str = $this->str = strtr($agf_place->note1, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));;
+
+				$this->str = '<strong>'.$langs->transnoentities("AgfPlaceNote1").'</strong></br>';
+				$this->str.= strtr($agf_place->note1, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));;
 
 				$pdf->SetXY($posX, $posY);
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
 				$posY = $pdf->GetY() + 8;
+
+
+				$pageposAfterDivers=$pdf->getPage();
+				if($pageposBeforeDivers < $pageposAfterDivers) {
+					$pdf->rollbackTransaction(true);
+					$pagenb = $pdf->getPage();
+					$posY = $posYBeforeDivers;
+
+					// prepar pages to receive Divers
+					while ($pagenb < $pageposAfterDivers) {
+						$pdf->AddPage();
+						$pagenb++;
+
+						if (!empty($tplidx)) $pdf->useTemplate($tplidx);
+						$pdf->SetAutoPageBreak(1, $this->marge_basse);
+						$this->_pagehead($pdf, $agf, 1, $outputlangs);
+					}
+					$pdf->SetFillColor(255,255,0);
+					// back to start
+					$pdf->setPage($pageposBeforeDivers);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size);
+					$pdf->SetXY($posX, $posY);
+
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
+
+					$pdf->SetXY($posX, $posY);
+					$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0, '2', '', '', '', '', $ishtml);
+					$posY = $pdf->GetY() + 8;
+
+				}
+				else{
+					$pdf->commitTransaction();
+				}
+
 
 				// Pied de page
 				$this->_pagefoot($pdf, $agf, $outputlangs);
