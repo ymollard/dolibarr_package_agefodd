@@ -1739,9 +1739,15 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	$statusOptions = '';
 	foreach ($TStatus as $statusKey => $label)
 	{
+
+		$missingTimeToTest = time();
+		if(!empty($conf->global->AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS)){
+			$missingTimeToTest = time() - intval($conf->global->AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS) * 3600;
+		}
+
 		$inputDisabled = '';
-		if( $agf_calendrier_formateur->heuref > time()
-			&& in_array($statusKey, array(Agefoddsessionformateurcalendrier::STATUS_FINISH, Agefoddsessionformateurcalendrier::STATUS_MISSING))
+		if( ($agf_calendrier_formateur->heuref > time() && $statusKey == Agefoddsessionformateurcalendrier::STATUS_FINISH)
+			|| ($agf_calendrier_formateur->heuref < $missingTimeToTest && $statusKey == Agefoddsessionformateurcalendrier::STATUS_MISSING)
 		){
 			$inputDisabled = 'disabled';
 		}
