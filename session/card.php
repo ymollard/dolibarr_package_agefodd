@@ -740,6 +740,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$urlreturnsite = '&fk_order=' . $fk_order;
 	}
 
+	print '<div>';
 	print '<table id="session_card" class="border tableforfield" width="100%">';
 
 	print '<tr class="order_place"><td><span class="fieldrequired">' . $langs->trans("AgfLieu") . '</span></td>';
