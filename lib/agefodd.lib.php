@@ -1803,11 +1803,12 @@ function printSessionFieldsWithCustomOrder()
                     };
 
                     // le '>' est important pour éviter d’avoir les <tr> qui appartiennent à des tableaux imbriqués
-                    let Ttr = Array.from(document.querySelectorAll('#session_card > tbody > tr'));
-                    // trie les <tr>
-                    Ttr.sort((elemA, elemB) => getOrderIndex(elemA) - getOrderIndex(elemB));
+                    let Tligne = Array.from(document.querySelectorAll('#session_card > tbody > tr'));
+                    // trie les <tr> en fonction de l’ordre de leur(s) classe(s) dans agf_TClass
+                    Tligne.sort((elemA, elemB) => getOrderIndex(elemA) - getOrderIndex(elemB));
+                    // retire les <tr> de leur parent et les y rajoute dans l’ordre
                     let session_card_tbody = document.querySelector('#session_card > tbody');
-                    Ttr.forEach((tr) => {
+                    Tligne.forEach((tr) => {
                         session_card_tbody.removeChild(tr);
                         session_card_tbody.appendChild(tr);
                     });
