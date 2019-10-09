@@ -1790,7 +1790,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 			<script>
 			$( document ).ready(function() {
-				if($("#status").val() == \''.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'\')
+				if($("#status").val() == "'.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'")
 				{
 					$("#code_c_session_calendrier_type").prop(\'required\',true);
 				} else {
@@ -1816,6 +1816,33 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				});
 
 
+				var heured = document.getElementById("heured");
+				var heuref = document.getElementById("heuref");
+			
+				heured.addEventListener("change", function (event) {
+					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
+						heured.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
+					}
+					else {
+						heured.setCustomValidity("");
+						heuref.setCustomValidity("");
+					}
+				});
+				
+				heuref.addEventListener("change", function (event) {
+					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
+						heuref.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
+					}
+					else {
+						heuref.setCustomValidity("");
+						heured.setCustomValidity("");
+					}
+				});
+
+				$("#status").focus(function() {
+					//Store old value
+					$(this).data("lastValue",$(this).val());
+				});
 
 				$("#status").change(function() {
 
@@ -1832,6 +1859,13 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
                     var start = document.getElementById("heured").value;
                     var end = document.getElementById("heuref").value;
                     var duration = agfTimeDiff(start, end);
+					
+					if(agfTimeDiff(start, end, false) < 0){
+						window.alert("'.$langs->transnoentities('HourInvalid').'");
+						$(this).val($(this).data("lastValue")); // restore last value
+						return;
+					}
+					
 					
 					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_FINISH.'\')
 					{
@@ -1870,17 +1904,23 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				});
 			});
 
-			function agfTimeDiff(start, end) {
+			function agfTimeDiff(start, end, outputFormated = true) {
                 start = start.split(":");
                 end = end.split(":");
                 var startDate = new Date(0, 0, 0, start[0], start[1], 0);
                 var endDate = new Date(0, 0, 0, end[0], end[1], 0);
                 var diff = endDate.getTime() - startDate.getTime();
-                var hours = Math.floor(diff / 1000 / 60 / 60);
-                diff -= hours * 1000 * 60 * 60;
-                var minutes = Math.floor(diff / 1000 / 60);
-                
-                return (hours < 9 ? "0" : "") + hours + ":" + (minutes < 9 ? "0" : "") + minutes;
+                console.log(diff);
+                if(outputFormated){
+					var hours = Math.floor(diff / 1000 / 60 / 60);
+					diff -= hours * 1000 * 60 * 60;
+					var minutes = Math.floor(diff / 1000 / 60);
+					
+                	return ((hours < 9 && hours >= 0) ? "0" : "") + hours + ":" + (minutes < 9 ? "0" : "") + minutes;
+                }
+                else{
+                	return diff;
+                }
             }
 			</script>
 			';
