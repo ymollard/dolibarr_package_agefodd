@@ -249,7 +249,7 @@ html, body, ul, li { margin:0; padding:0; }
 ul.agf-sortable-list,ul.agf-sortable-list ul,ul.agf-sortable-list li {
 	list-style-type:none;
 	color:#6e6e6e;
-	border:1px solid #3f3f3f;
+	border:1px solid #c3c3c3;
 }
 
 ul.agf-sortable-list{ padding:0; background-color:#f9f9f9; }
@@ -257,7 +257,7 @@ ul.agf-sortable-list{ padding:0; background-color:#f9f9f9; }
 ul.agf-sortable-list li{
 	padding-left:50px;
 	margin:5px;
-    border: 1px solid #757575;
+    border: 1px solid #c3c3c3;
     background-color: #dcdcdc;
 }
 
