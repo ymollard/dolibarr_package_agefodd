@@ -269,6 +269,10 @@ ul.agf-sortable-list li div.move {
 	cursor: move;
 }
 
+.sortableListsOpener{
+	cursor: pointer !important;
+}
+
 ';
 $datacolor = array(array(136,102,136), array(0,130,110), array(140,140,220), array(190,120,120), array(190,190,100), array(115,125,150), array(100,170,20), array(250,190,30), array(150,135,125), array(85,135,150), array(150,135,80), array(150,80,150));
 foreach ($datacolor as $key => $color) {
