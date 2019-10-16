@@ -761,7 +761,7 @@ if ($resql != - 1) {
 	}
 	if (array_key_exists('f.rowid', $arrayfields) && ! empty($arrayfields['f.rowid']['checked'])) {
 		print '<td class="liste_titre">';
-		print $formAgefodd->select_formateur($search_teacher_id, 'search_teacher_id', '', 1);
+		print $formAgefodd->select_formateur_liste($search_teacher_id, 'search_teacher_id', '', 1);
 		print '</td>';
 	}
 	if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
