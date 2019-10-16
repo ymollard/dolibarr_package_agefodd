@@ -418,7 +418,9 @@ function _displaySortableNestedItems($TNested, $htmlId=''){
 			if(empty($object->id)) $object->id = $object->rowid;
 
 			$out.= '<li id="item_'.$object->id.'" class="agf-sortable-list__item" data-id="'.$object->id.'" >';
-			$out.= '<div class="move">'.dol_htmlentities($object->intitule).'</div>';
+			$out.= '<div class="move">';
+            $out.= dol_htmlentities($object->intitule);
+            $out.= '</div>';
 			$out.= _displaySortableNestedItems($v['children']);
 			$out.= '</li>';
 		}
@@ -476,8 +478,8 @@ function _displayEditableNestedItems($TNested){
             $out.= '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
             $out.= '</form>';
             $out.= '</tr>';
-            
-            
+
+            $out.= _displayEditableNestedItems($v['children']);
             
         }
         

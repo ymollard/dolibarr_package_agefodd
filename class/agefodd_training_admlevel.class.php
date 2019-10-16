@@ -838,9 +838,8 @@ class Agefodd_training_admlevel extends CommonObject {
 		$sql .= " t.fk_agefodd_training_admlevel";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as t";
 		$sql .= " WHERE t.fk_training=" . intval($training_id);
-		if(!empty($fk_parent_level)){
-			$sql .= " AND t.fk_parent_level=" . intval($fk_parent_level);
-		}
+        $sql .= " AND t.fk_parent_level=" . intval($fk_parent_level);
+
 		$sql .= " ORDER BY t.indice ASC";
 
 		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);

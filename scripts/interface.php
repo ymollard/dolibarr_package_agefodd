@@ -36,7 +36,7 @@ $data['msg'] = '';
 
                 $data['result'] = _updateAgefoddTrainingAdmlevelHierarchy($data['items'],0, 0, 0, $data['errorMsg']);
                 if($data['result']>0){
-                    $data['msg'] = $data['result'] . ' ' . $langs->transnoentities('Updated');
+                    $data['msg'] =  $langs->transnoentities('Updated') . ' : ' .  $data['result'];
                 }
             }
         }
