@@ -202,10 +202,10 @@ $result = $agf->fetch($trainingid);
 
 $head = training_prepare_head($agf);
 
-dol_fiche_head($head, 'trainingadmtask', $langs->trans("AgfCatalogDetail"), 0, 'label');
+dol_fiche_head($head, 'trainingadmtask', $langs->trans("AgfCatalogDetail"), 1, 'label');
 
 dol_agefodd_banner_tab($agf, 'id');
-dol_fiche_end(0);
+dol_fiche_end(1);
 print '<div class="underbanner clearboth"></div>';
 
 $admlevel = new Agefodd_training_admlevel($db);
@@ -227,95 +227,88 @@ if ($result0 > 0) {
 
 print load_fiche_titre($langs->trans("AgfAdminTrainingLevel"), $morehtmlright);
 
-print '<style type="text/css">
-.button-no-style{
-	border:none;
-	background: none;
-	margin: 0;
-	cursor: pointer ;
-}
-tr.updated-row,tr.updated-row td{
-	background: #d1e9f1 !important;
-}
-td[class*="col-lvl-"] {
-  max-width: 15px;
-  padding: 0 0 0 0 !important;
-}
 
-/* My addition to github theme */
-
-html, body, ul, li { margin:0; padding:0; }
-
-ul.agf-sortable-list,ul.agf-sortable-list ul,ul.agf-sortable-list li {
-	list-style-type:none;
-	color:#6e6e6e;
-	border:1px solid #c3c3c3;
-}
-
-ul.agf-sortable-list{ padding:0; background-color:#f9f9f9; }
-
-ul.agf-sortable-list li{
-	padding-left:50px;
-	margin:5px;
-    border: 1px solid #c3c3c3;
-    background-color: #dcdcdc;
-}
-
-ul.agf-sortable-list li div {
-	padding:7px;
-	background-color:#fff;
-}
-ul.agf-sortable-list li div.move {
-	cursor: move;
-}
-
-.sortableListsOpener{
-	cursor: pointer !important;
-}
-
-';
-$datacolor = array(array(136,102,136), array(0,130,110), array(140,140,220), array(190,120,120), array(190,190,100), array(115,125,150), array(100,170,20), array(250,190,30), array(150,135,125), array(85,135,150), array(150,135,80), array(150,80,150));
-foreach ($datacolor as $key => $color) {
-	print '.button-no-style.color-level-'.$key.'{ color: rgb('.implode(',',$color).'); }';
-}
-print '</style>';
 
 if($action==='sort'){
-	$TNested = $admlevel->fetch_all_children_nested($trainingid, 'sortablelist');
+	$TNested = $admlevel->fetch_all_children_nested($trainingid, 0);
 
-	print _displayNestedItems($TNested, 'sortableLists');
+	print '<div id="ajaxResults" ></div>';
+	print _displaySortableNestedItems($TNested, 'sortableLists');
 
 	print '<script src="'.dol_buildpath('agefodd/js/jquery-sortable-lists.min.js',1).'" ></script>';
+	print '<link rel="stylesheet" href="'.dol_buildpath('agefodd/css/sortable.css',1).'" >';
 	print '	
 	<script type="text/javascript">
 	$(function()
 	{
 		var options = {
-			placeholderCss: {\'background-color\': \'#ff8\'},
-			hintCss: {\'background-color\':\'#bbf\'},
+		    insertZone: 5, // This property defines the distance from the left, which determines if item will be inserted outside(before/after) or inside of another item.
+		
+		    placeholderClass: \'agf-sortable-list__item--placeholder\',
+	        // or like a jQuery css object
+			//placeholderCss: {\'background-color\': \'#ff8\'},
+			hintClass: \'agf-sortable-list__item--hint\',
+	        // or like a jQuery css object
+			//hintCss: {\'background-color\':\'#bbf\'},
 			onChange: function( cEl )
 			{
-				console.log( \'onChange\' );
+			    
+                $("#ajaxResults").html("");
+                
+				$.ajax({
+                    url: "'.dol_buildpath('agefodd/scripts/interface.php?action=setAgefoddTrainingAdmlevelHierarchy',1).'",
+                    method: "POST",
+                    data: {
+                        \'items\' : $(\'#sortableLists\').sortableListsToHierarchy()
+                    },
+                    dataType: "json",
+                    
+                    // La fonction à apeller si la requête aboutie
+                    success: function (data) {
+                        // Loading data
+                        console.log(data);
+                        if(data.result > 0 ){
+                           // ok case
+                           $("#ajaxResults").html(\'<span class="badge badge-success">\' + data.msg + \'</span>\');
+                        }
+                        else if(data.result < 0 ){
+                           // error case
+                           $("#ajaxResults").html(\'<span class="badge badge-danger">\' + data.errorMsg + \'</span>\');
+                        }
+                        else{
+                           // nothing to do ? 
+                        }
+                    },
+                    // La fonction à appeler si la requête n\'a pas abouti
+                    error: function( jqXHR, textStatus ) {
+                        alert( "Request failed: " + textStatus );
+                    }
+                });
 			},
 			complete: function( cEl )
 			{
-				console.log( \'complete\' );
+                 
+               
+                
 			},
 			isAllowed: function( cEl, hint, target )
 			{
+			    
+			    return true;
+			
 				// Be carefull if you test some ul/ol elements here.
 				// Sometimes ul/ols are dynamically generated and so they have not some attributes as natural ul/ols.
 				// Be careful also if the hint is not visible. It has only display none so it is at the previouse place where it was before(excluding first moves before showing).
-				if( target.data(\'module\') === \'c\' && cEl.data(\'module\') !== \'c\' )
-				{
-					hint.css(\'background-color\', \'#ff9999\');
-					return false;
-				}
-				else
-				{
-					hint.css(\'background-color\', \'#99ff99\');
-					return true;
-				}
+//				if( target.data(\'module\') === \'c\' && cEl.data(\'module\') !== \'c\' )
+//				{
+//					hint.css(\'background-color\', \'#ff9999\');
+//					return false;
+//				}
+//				else
+//				{
+//					hint.css(\'background-color\', \'#99ff99\');
+//					return true;
+//				}
 			},
 			opener: {
 				active: true,
@@ -332,52 +325,40 @@ if($action==='sort'){
 					\'font-size\': \'1.1em\'
 				}
 			},
-			ignoreClass: \'clickable\'
+			ignoreClass: \'clickable\',
+			
+            insertZonePlus: true,
 		};
-		var optionsPlus = {
-			insertZonePlus: true,
-			placeholderCss: {\'background-color\': \'#ff8\'},
-			hintCss: {\'background-color\':\'#bbf\'},
-			opener: {
-				active: true,
-				as: \'html\',  // if as is not set plugin uses background image
-				close: \'<i class="fa fa-minus c3"></i>\',
-				open: \'<i class="fa fa-plus"></i>\',
-				openerCss: {
-					\'display\': \'inline-block\',
-					\'float\': \'left\',
-					\'margin-left\': \'-35px\',
-					\'margin-right\': \'5px\',
-					\'font-size\': \'1.1em\'
-				}
-			}
-		};
+		
 	
 		$(\'#sortableLists\').sortableLists( options );
-		//$(\'#sTreePlus\').sortableLists( optionsPlus );
 
 	
 	});
+		
 
 	</script>';
 
 }
 else{
 
+    print '<style type="text/css">
+        tr.updated-row,tr.updated-row td{
+            background: #d1e9f1 !important;
+        }
+    </style>';
+
+    $TNested = $admlevel->fetch_all_children_nested($trainingid, 0);
+
 	print '<table class="noborder noshadow" width="100%">';
 
-	if ($result0 > 0) {
+	if (!empty($TNested)) {
 
-		$maxLevel = 0;
-		foreach ($admlevel->lines as $line) {
-			$maxLevel = max($line->level_rank, $maxLevel);
-		}
 
 		print '<thead>';
 		print '<tr class="liste_titre nodrag nodrop">';
-		print '<th></th>';
-		print '<th colspan="' . $maxLevel . '"  >' . $langs->trans("AgfIntitule") . '</th>';
-		print '<th>' . $langs->trans("AgfParentLevel") . '</th>';
+		print '<th colspan="2">' . $langs->trans("AgfIntitule") . '</th>';
+
 		print '<th>' . $langs->trans("AgfDelaiSessionLevel") . '</th>';
 		print '<th>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</th>';
 		print '<th></th>';
@@ -385,92 +366,31 @@ else{
 		print '</thead>';
 
 		print '<tbody>';
-		$var = true;
-		foreach ($admlevel->lines as $line) {
-			/**
-			 * @var $line Agefodd_training_admlevel
-			 */
-			$var = !$var;
-			$toplevel = '';
 
-			$rowClass = '';
-			if ($updatedRowId == $line->rowid) {
-				$rowClass = 'updated-row';
-			}
-
-			print '<tr id="row-' . $line->rowid . '" class="oddeven ' . $rowClass . '" data-rowid="' . $line->rowid . '" >';
-			print '<form name="SessionLevel_update_' . $line->rowid . '" action="' . $_SERVER ['PHP_SELF'] . '#row-' . $line->rowid . '" method="POST">' . "\n";
-			print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
-			print '<input type="hidden" name="id" value="' . $line->rowid . '">' . "\n";
-			print '<input type="hidden" name="action" value="sessionlevel_update">' . "\n";
-			print '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\n";
-
-			$i = 0;
-			while ($maxLevel > $i) {
-				if (intval($line->level_rank) === $i) {
-					print '<td class="col-lvl-' . $i . '">';
-					if ($line->indice != ebi_get_adm_training_indice_per_rank($line->level_rank, $line->fk_parent_level, 'MIN')) {
-						//print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/sort_asc.png" border="0" name="sesslevel_up" alt="' . $langs->trans("Up") . '">';
-						$iconClass = 'fa fa-caret-up';
-						if (empty($line->level_rank)) {
-							$iconClass = 'fa fa-chevron-up';
-						}
-
-						print '<button type="submit" class="classfortooltip button-no-style color-level-' . $line->level_rank . '" data-level="' . $line->level_rank . '" name="sesslevel_up" value="1" title="' . $langs->trans("AgfUp") . '"><i class="' . $iconClass . '"></i></button>';
-					}
-					if ($line->indice != ebi_get_adm_training_indice_per_rank($line->level_rank, $line->fk_parent_level, 'MAX')) {
-						//print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/sort_desc.png" border="0" name="sesslevel_down" alt="' . $langs->trans("Down") . '">';
-						$iconClass = 'fa fa-caret-down';
-						if (empty($line->level_rank)) {
-							$iconClass = 'fa fa-chevron-down';
-						}
-						print '<button type="submit" class="classfortooltip button-no-style color-level-' . $line->level_rank . '" data-level="' . $line->level_rank . '" name="sesslevel_down" value="1"  title="' . $langs->trans("AgfDown") . '"><i class="' . $iconClass . '"></i></button>';
-					}
-					print '</td>';
-				} else {
-					print '<td class="col-lvl-' . $i . '"></td>';
-				}
-
-				$i++;
-			}
-
-			print '<td>';
-
-			print str_repeat('&nbsp;&nbsp;&nbsp;', $line->level_rank);
-			if (!empty($line->level_rank)) {
-				print '&#8627;';
-			}
-			print '<input type="text" name="intitule" value="' . $line->intitule . '" size="30"/></td>';
-			print '<td>' . $formAgefodd->select_action_training_adm($line->fk_parent_level, 'parent_level', $line->rowid, $trainingid) . '</td>';
-			print '<td><input type="text" name="delai" value="' . $line->alerte . '"/></td>';
-			print '<td><input type="text" name="delai_end" value="' . $line->alerte_end . '"/></td>';
-			print '<td class="right"><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
-			print '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
-			print '</form>';
-			print '</tr>';
-		}
+        print _displayEditableNestedItems($TNested);
+		
 		print '</tbody>';
 	}
 
 	print '<tfoot>';
+
 	print '<tr class="liste_titre nodrag nodrop">';
-	print '<th></th>';
-	print '<th colspan="' . $maxLevel . '" >' . $langs->trans("AgfIntitule") . '</th>';
+	print '<th>' . $langs->trans("AgfIntitule") . '</th>';
 	print '<th>' . $langs->trans("AgfParentLevel") . '</th>';
 	print '<th>' . $langs->trans("AgfDelaiSessionLevel") . '</th>';
 	print '<th>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</th>';
 	print '<th></th>';
 	print "</tr>\n";
+
 	print '<tr class="oddeven nodrag nodrop">';
 	print '<form name="SessionLevel_create" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
 	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 	print '<input type="hidden" name="action" value="sessionlevel_create">' . "\n";
 	print '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\n";
-	print '<td ></td>';
-	print '<td colspan="' . $maxLevel . '" >' . $langs->trans("Add") . ' <input type="text" name="intitule" value="" size="30"/></td>';
+	print '<td>' . $langs->trans("Add") . ' <input type="text" name="intitule" value="" size="30" placeholder="' . $langs->trans("AgfIntitule") . '"/></td>';
 	print '<td>' . $formAgefodd->select_action_training_adm('', 'parent_level', 0, $trainingid) . '</td>';
-	print '<td><input type="text" name="delai" value=""/></td>';
-	print '<td><input type="text" name="delai_end" value=""/></td>';
+	print '<td><input type="number" step="1" name="delai" value=""/></td>';
+	print '<td><input type="number" step="1" name="delai_end" value=""/></td>';
 	print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
 	print '</form>';
 	print '</tr>';
@@ -486,7 +406,7 @@ else{
 llxFooter();
 $db->close();
 
-function _displayNestedItems($TNested, $htmlId=''){
+function _displaySortableNestedItems($TNested, $htmlId=''){
 	if(!empty($TNested) && is_array($TNested)){
 		$out = '<ul id="'.$htmlId.'" class="agf-sortable-list" >';
 		foreach ($TNested as $k => $v){
@@ -494,9 +414,12 @@ function _displayNestedItems($TNested, $htmlId=''){
 			/**
 			 * @var $object Agefodd_training_admlevel
 			 */
-			$out.= '<li>';
+
+			if(empty($object->id)) $object->id = $object->rowid;
+
+			$out.= '<li id="item_'.$object->id.'" class="agf-sortable-list__item" data-id="'.$object->id.'" >';
 			$out.= '<div class="move">'.dol_htmlentities($object->intitule).'</div>';
-			$out.= _displayNestedItems($v['children']);
+			$out.= _displaySortableNestedItems($v['children']);
 			$out.= '</li>';
 		}
 		$out.= '</ul>';
@@ -505,4 +428,62 @@ function _displayNestedItems($TNested, $htmlId=''){
 	else{
 		return '';
 	}
+}
+
+function _displayEditableNestedItems($TNested){
+    global $updatedRowId, $formAgefodd, $conf, $langs, $trainingid;
+
+    $out = '';
+
+    if(!empty($TNested) && is_array($TNested)){
+        
+        foreach ($TNested as $k => $v){
+            $line = $v['object'];
+            /**
+             * @var $object Agefodd_training_admlevel
+             */
+
+            if(empty($line->id)) $line->id = $line->rowid;
+
+            /**
+             * @var $line Agefodd_training_admlevel
+             */
+
+            $rowClass = '';
+            if ($updatedRowId == $line->rowid) {
+                $rowClass = 'updated-row';
+            }
+
+            $out.= '<tr id="row-' . $line->rowid . '" class="oddeven ' . $rowClass . '" data-rowid="' . $line->rowid . '" >';
+            $out.= '<form name="SessionLevel_update_' . $line->rowid . '" action="' . $_SERVER ['PHP_SELF'] . '#row-' . $line->rowid . '" method="POST">' . "\n";
+            $out.= '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+            $out.= '<input type="hidden" name="id" value="' . $line->rowid . '">' . "\n";
+            $out.= '<input type="hidden" name="action" value="sessionlevel_update">' . "\n";
+            $out.= '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\n";
+
+
+            $out.= '<td colspan="2">';
+
+            $out.= str_repeat('&nbsp;&nbsp;&nbsp;', $line->level_rank);
+            if (!empty($line->level_rank)) {
+                $out.= '&#8627;';
+            }
+            $out.= '<input type="text" name="intitule" value="' . $line->intitule . '" size="30"/></td>';
+            //$out.= '<td>' . $formAgefodd->select_action_training_adm($line->fk_parent_level, 'parent_level', $line->rowid, $trainingid) . '</td>';
+            $out.= '<td><input type="number" step="1" name="delai" value="' . $line->alerte . '"/></td>';
+            $out.= '<td><input type="number" step="1" name="delai_end" value="' . $line->alerte_end . '"/></td>';
+            $out.= '<td class="right"><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '">';
+            $out.= '<input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/delete.png" border="0" name="sesslevel_remove" alt="' . $langs->trans("Delete") . '"></td>';
+            $out.= '</form>';
+            $out.= '</tr>';
+            
+            
+            
+        }
+        
+        return $out;
+    }
+    else{
+        return '';
+    }
 }

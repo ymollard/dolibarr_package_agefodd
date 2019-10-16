@@ -808,14 +808,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		}
 	}
 
-	public function nestedLines(){
-		$this->TNestedLines = array();
 
-
-		foreach ($this->lines as $line){
-			$this->TNestedLines[$line->fk_parent_level] = max($line->level_rank, $maxLevel);
-		}
-	}
 
 	/**
 	 * Load object in memory from database
@@ -825,7 +818,6 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @return array array of object
 	 */
 	public function fetch_all_children_nested($training_id, $fk_parent_level = 0) {
-		global $langs;
 
 		$TNested = array();
 
@@ -849,7 +841,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		if(!empty($fk_parent_level)){
 			$sql .= " AND t.fk_parent_level=" . intval($fk_parent_level);
 		}
-		$sql .= " ORDER BY t.level_rank ASC";
+		$sql .= " ORDER BY t.indice ASC";
 
 		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
