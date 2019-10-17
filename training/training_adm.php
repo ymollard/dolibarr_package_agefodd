@@ -352,9 +352,10 @@ if($action==='sort'){
 		    }
 		    
 		    dialogBox.dialog({
+		    //autoOpen: false,
 	        resizable: true,
-	        height: ,
-	        width:'.$w.',
+	        height: height,
+	        width: width,
 	        modal: true,
 	        buttons: {
 					Ok: function() {
