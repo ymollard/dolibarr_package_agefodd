@@ -15,12 +15,17 @@ ul.agf-sortable-list li.agf-sortable-list__item, #sortableListsBase li.agf-sorta
     background-color: #dcdcdc;
 }
 
-li.agf-sortable-list__item div , #sortableListsBase li.agf-sortable-list__item div {
+li.agf-sortable-list__item .agf-sortable-list__item__title , #sortableListsBase li.agf-sortable-list__item .agf-sortable-list__item__title {
     padding:7px;
     background-color:#fff;
 }
-ul.agf-sortable-list li.agf-sortable-list__item div.move {
+
+.move {
     cursor: move;
+}
+
+.clickable, .move .clickable{
+	cursor: pointer;
 }
 
 .sortableListsOpener{
@@ -33,4 +38,22 @@ ul.agf-sortable-list li.agf-sortable-list__item div.move {
 
 .agf-sortable-list__item--hint{
     background-color: #bbf !important;
+}
+
+.agf-sortable-list__item__title__flex{
+	display: flex;
+	flex-direction: row;
+}
+
+.agf-sortable-list__item__title__col{
+	flex: auto;
+	width: 25%;
+}
+
+.agf-sortable-list__item__title__col.-action{
+	text-align: right;
+}
+
+.agf-sortable-list__item__title__button{
+	margin-left: 15px;
 }

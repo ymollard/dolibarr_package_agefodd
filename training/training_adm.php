@@ -234,7 +234,7 @@ if($action==='sort'){
 
 	print '<div id="ajaxResults" ></div>';
 	print _displaySortableNestedItems($TNested, 'sortableLists');
-
+	print ajax_dialog('test','$message',$w=350,$h=150);
 	print '<script src="'.dol_buildpath('agefodd/js/jquery-sortable-lists.min.js',1).'" ></script>';
 	print '<link rel="stylesheet" href="'.dol_buildpath('agefodd/css/sortable.css',1).'" >';
 	print '	
@@ -333,12 +333,62 @@ if($action==='sort'){
 	
 		$(\'#sortableLists\').sortableLists( options );
 
+		function popTrainingAdmFormDialog(id)
+		{
+		    var dialogBox = jQuery("#dialog-info");
+		    
+		    var width = window.width();
+		    var height = window.height();
+		    
+		    if(width > 700){
+		        width = 700;
+		    }
+		    else{
+		        
+		    }
+		    
+		    if(height > 600){
+		        height = 600;
+		    }
+		    
+		    dialogBox.dialog({
+	        resizable: true,
+	        height: ,
+	        width:'.$w.',
+	        modal: true,
+	        buttons: {
+					Ok: function() {
+						jQuery(this).dialog(\'close\');
+					}
+				}
+	    	});
+		}
 	
 	});
-		
+
 
 	</script>';
 
+
+	$newtitle=dol_textishtml($title)?dol_string_nohtmltag($title,1):$title;
+	$msg= '<div id="dialog-info" title="'.dol_escape_htmltag($newtitle).'">';
+	$msg.= $message;
+	$msg.= '</div>'."\n";
+	$msg.= '<script type="text/javascript">
+    jQuery(function() {
+        jQuery("#dialog-info").dialog({
+	        resizable: false,
+	        height:'.$h.',
+	        width:'.$w.',
+	        modal: true,
+	        buttons: {
+	        	Ok: function() {
+					jQuery(this).dialog(\'close\');
+				}
+	        }
+	    });
+	});
+	</script>';
 }
 else{
 
@@ -407,6 +457,7 @@ llxFooter();
 $db->close();
 
 function _displaySortableNestedItems($TNested, $htmlId=''){
+	global $langs;
 	if(!empty($TNested) && is_array($TNested)){
 		$out = '<ul id="'.$htmlId.'" class="agf-sortable-list" >';
 		foreach ($TNested as $k => $v){
@@ -418,8 +469,37 @@ function _displaySortableNestedItems($TNested, $htmlId=''){
 			if(empty($object->id)) $object->id = $object->rowid;
 
 			$out.= '<li id="item_'.$object->id.'" class="agf-sortable-list__item" data-id="'.$object->id.'" >';
-			$out.= '<div class="move">';
-            $out.= dol_htmlentities($object->intitule);
+			$out.= '<div class="agf-sortable-list__item__title  move">';
+				$out.= '<div class="agf-sortable-list__item__title__flex">';
+
+				$out.= '<div class="agf-sortable-list__item__title__col">';
+				$out.= dol_htmlentities($object->intitule);
+				$out.= '</div>';
+
+				$out.= '<div class="agf-sortable-list__item__title__col -day-alert">';
+					$out.= '<span class="classfortooltip" title="'.$langs->trans("AgfDelaiSessionLevel").'" >';
+					$out.= '<i class="fa fa-hourglass-start"></i> ' . $object->alerte .' '.$langs->trans('days');
+					$out.= '</span>';
+				$out.= '</div>';
+
+				$out.= '<div class="agf-sortable-list__item__title__col -day-alert">';
+					$out.= '<span class="classfortooltip"  title="'.$langs->trans("AgfDelaiSessionLevelEnd").'">';
+					$out.= '<i class="fa fa-hourglass-end"></i> ' . $object->alerte_end .' '.$langs->trans('days');
+					$out.= '</span>';
+				$out.= '</div>';
+
+				$out.= '<div class="agf-sortable-list__item__title__col -action clickable">';
+
+					$out.= '<a href="" class="classfortooltip agf-sortable-list__item__title__button clickable"  title="' . $langs->trans("Edit") . '">';
+					$out.= '<i class="fa fa-pencil clickable"></i>';
+					$out.= '</a>';
+
+					$out.= '<a href="" class="classfortooltip agf-sortable-list__item__title__button clickable"  title="' . $langs->trans("Delete") . '">';
+					$out.= '<i class="fa fa-trash clickable"></i>';
+					$out.= '</a>';
+				$out.= '</div>';
+
+				$out.= '</div>';
             $out.= '</div>';
 			$out.= _displaySortableNestedItems($v['children']);
 			$out.= '</li>';
