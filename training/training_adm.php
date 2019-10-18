@@ -216,27 +216,28 @@ $morehtmlright = '';
 
 if ($result0 > 0) {
 	// ne sert à rien si aucun resultats
-	if ($action != 'sort' && function_exists('dolGetButtonTitle')) {
-		$morehtmlright .= dolGetButtonTitle($langs->trans('AgfSortMode'), '', 'fa fa-sort', $url . '&action=sort');
-	}
-
-	if ($action === 'sort' && function_exists('dolGetButtonTitle')) {
-		$morehtmlright .= dolGetButtonTitle($langs->trans('AgfViewMode'), '', 'fa fa-sort', $url . '&action=view');
-	}
+//	if ($action != 'sort' && function_exists('dolGetButtonTitle')) {
+//		$morehtmlright .= dolGetButtonTitle($langs->trans('AgfSortMode'), '', 'fa fa-sort', $url . '&action=sort');
+//	}
+//
+//	if ($action === 'sort' && function_exists('dolGetButtonTitle')) {
+//		$morehtmlright .= dolGetButtonTitle($langs->trans('AgfViewMode'), '', 'fa fa-sort', $url . '&action=view');
+//	}
 }
 
 print load_fiche_titre($langs->trans("AgfAdminTrainingLevel"), $morehtmlright);
 
 
 
-if($action==='sort'){
+if($action==='sort' || true){
 	$TNested = $admlevel->fetch_all_children_nested($trainingid, 0);
 
 	print '<div id="ajaxResults" ></div>';
-	print _displaySortableNestedItems($TNested, 'sortableLists');
-	print ajax_dialog('test','$message',$w=350,$h=150);
+	print _displaySortableNestedItems($TNested, 'sortableLists', true);
 	print '<script src="'.dol_buildpath('agefodd/js/jquery-sortable-lists.min.js',1).'" ></script>';
 	print '<link rel="stylesheet" href="'.dol_buildpath('agefodd/css/sortable.css',1).'" >';
+	print '<div id="dialog-form-edit" >'._displayFormField($admlevel).'</div>';
+
 	print '	
 	<script type="text/javascript">
 	$(function()
@@ -333,62 +334,46 @@ if($action==='sort'){
 	
 		$(\'#sortableLists\').sortableLists( options );
 
+		$(document).on("click", ".agf-sortable-list__item__title__button.-edit-btn", function(event) {
+		    event.preventDefault();
+		    var id = $(this).data("id");
+		    popTrainingAdmFormDialog(id);
+		});
+	
+
+		
+		var dialogBox = jQuery("#dialog-form-edit");
+		var width = $(window).width();
+		var height = $(window).height();
+		if(width > 700){ width = 700; }
+		if(height > 600){ height = 600; }
+		//console.log(height);
+		dialogBox.dialog({
+		autoOpen: false,
+		resizable: true,
+//		height: height,
+		width: width,
+		modal: true,
+		buttons: {
+				"'.$langs->transnoentitiesnoconv('Update').'": function() {
+					jQuery(this).dialog(\'close\');
+				}
+			}
+		});
+		
 		function popTrainingAdmFormDialog(id)
 		{
-		    var dialogBox = jQuery("#dialog-info");
-		    
-		    var width = window.width();
-		    var height = window.height();
-		    
-		    if(width > 700){
-		        width = 700;
-		    }
-		    else{
-		        
-		    }
-		    
-		    if(height > 600){
-		        height = 600;
-		    }
 		    
 		    dialogBox.dialog({
-		    //autoOpen: false,
-	        resizable: true,
-	        height: height,
-	        width: width,
-	        modal: true,
-	        buttons: {
-					Ok: function() {
-						jQuery(this).dialog(\'close\');
-					}
-				}
-	    	});
+              title: $("#item_" + id).data("title")
+         	})
+		    
+		    dialogBox.dialog( "open" );
 		}
 	
 	});
 
 
-	</script>';
-
-
-	$newtitle=dol_textishtml($title)?dol_string_nohtmltag($title,1):$title;
-	$msg= '<div id="dialog-info" title="'.dol_escape_htmltag($newtitle).'">';
-	$msg.= $message;
-	$msg.= '</div>'."\n";
-	$msg.= '<script type="text/javascript">
-    jQuery(function() {
-        jQuery("#dialog-info").dialog({
-	        resizable: false,
-	        height:'.$h.',
-	        width:'.$w.',
-	        modal: true,
-	        buttons: {
-	        	Ok: function() {
-					jQuery(this).dialog(\'close\');
-				}
-	        }
-	    });
-	});
 	</script>';
 }
 else{
@@ -457,7 +442,47 @@ else{
 llxFooter();
 $db->close();
 
-function _displaySortableNestedItems($TNested, $htmlId=''){
+
+/**
+ * @param $training_admlevel Agefodd_training_admlevel
+ */
+function _displayFormField($training_admlevel)
+{
+	global $langs;
+
+	$outForm= '<form name="SessionLevel_update" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
+	$outForm.= '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+	$outForm.= '<input type="hidden" name="id" value="' . $training_admlevel->id . '">' . "\n";
+	$outForm.= '<input type="hidden" name="action" value="sessionlevel_update">' . "\n";
+	$outForm.= '<input type="hidden" name="trainingid" value="' . $training_admlevel->fk_training . '">' . "\n";
+
+	// changed by JS
+	$outForm.= '<p>';
+	//$outForm.= '<label>' . $langs->trans("AgfIntitule") . '</label><br/>';
+	$outForm.= '<input type="text" name="intitule" placeholder="' . dol_escape_htmltag($langs->trans("AgfIntitule")) . '" value="' . dol_escape_htmltag($training_admlevel->intitule) . '" size="30"/>';
+	$outForm.= '</p>';
+
+	$outForm.= '<p>';
+	$outForm.= '<label>' . $langs->trans("AgfDelaiSessionLevel") . '</label><br/>';
+	$outForm.= '<i class="fa fa-hourglass-start"></i> ';
+	$outForm.= '<input type="number" step="1" name="delai" value="' . $training_admlevel->alerte . '"/>';
+	$outForm.= ' '.$langs->trans('days');
+	$outForm.= '</p>';
+
+	$outForm.= '<p>';
+	$outForm.= '<label>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</label><br/>';
+	$outForm.= '<i class="fa fa-hourglass-start"></i> ';
+	$outForm.= '<input type="number" step="1" name="delai_end" value="' . $training_admlevel->alerte_end . '"/>';
+	$outForm.= ' '.$langs->trans('days');
+	$outForm.= '</p>';
+
+
+	$outForm.= '</form>';
+
+	return $outForm;
+}
+
+function _displaySortableNestedItems($TNested, $htmlId='', $open = true){
 	global $langs;
 	if(!empty($TNested) && is_array($TNested)){
 		$out = '<ul id="'.$htmlId.'" class="agf-sortable-list" >';
@@ -469,7 +494,12 @@ function _displaySortableNestedItems($TNested, $htmlId=''){
 
 			if(empty($object->id)) $object->id = $object->rowid;
 
-			$out.= '<li id="item_'.$object->id.'" class="agf-sortable-list__item" data-id="'.$object->id.'" >';
+			$class = '';
+			if($open){
+				$class.= 'sortableListsClosed';
+			}
+
+			$out.= '<li id="item_'.$object->id.'" class="agf-sortable-list__item '.$class.'" data-id="'.$object->id.'" data-title="'.dol_escape_htmltag($object->intitule).'" >';
 			$out.= '<div class="agf-sortable-list__item__title  move">';
 				$out.= '<div class="agf-sortable-list__item__title__flex">';
 
@@ -491,18 +521,18 @@ function _displaySortableNestedItems($TNested, $htmlId=''){
 
 				$out.= '<div class="agf-sortable-list__item__title__col -action clickable">';
 
-					$out.= '<a href="" class="classfortooltip agf-sortable-list__item__title__button clickable"  title="' . $langs->trans("Edit") . '">';
+					$out.= '<a href="" class="classfortooltip agf-sortable-list__item__title__button clickable -edit-btn"  title="' . $langs->trans("Edit") . '" data-id="'.$object->id.'">';
 					$out.= '<i class="fa fa-pencil clickable"></i>';
 					$out.= '</a>';
 
-					$out.= '<a href="" class="classfortooltip agf-sortable-list__item__title__button clickable"  title="' . $langs->trans("Delete") . '">';
+					$out.= '<a href="" class="classfortooltip agf-sortable-list__item__title__button clickable -delete-btn"  title="' . $langs->trans("Delete") . '"  data-id="'.$object->id.'">';
 					$out.= '<i class="fa fa-trash clickable"></i>';
 					$out.= '</a>';
 				$out.= '</div>';
 
 				$out.= '</div>';
             $out.= '</div>';
-			$out.= _displaySortableNestedItems($v['children']);
+			$out.= _displaySortableNestedItems($v['children'], '', $open);
 			$out.= '</li>';
 		}
 		$out.= '</ul>';
