@@ -2760,7 +2760,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $label;
+					$line->statuslib = $label;
 
 					// Formatage comme du Dolibarr standard pour ne pas être perdu
 					$line->array_options = array();
@@ -2961,7 +2961,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $obj->statuscode . ' - ' . $label;
+					$line->statuslib = $obj->statuscode . ' - ' . $label;
 
 					$this->lines[$i] = $line;
 					$i ++;
@@ -3115,7 +3115,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $label;
+					$line->statuslib = $label;
 
 					$this->lines[$i] = $line;
 					$i ++;
@@ -3326,7 +3326,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $label;
+					$line->statuslib = $label;
 
 					$this->lines[$i] = $line;
 					$i ++;

@@ -494,6 +494,11 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 						$heure_tmp_arr = explode(':', $datedaytodate1f);
 						$agf->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
 					}
+
+					if (!empty($conf->global->AGF_DEFAULT_CALENDAR_STATUS)) {
+						$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
+					}
+
 					$result = $agf->create($user);
 					if ($result < 0) {
 						$error ++;

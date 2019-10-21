@@ -1442,6 +1442,7 @@ if (! empty($id)) {
 				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierConv3') . "\n\n";
 				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierAcceuil11') . "\n\n";
 				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierAcceuil13');
+				$formmail->withbody = nl2br($formmail->withbody);
 
 				$formmail->param['models'] = 'convention';
 				$formmail->param['pre_action'] = 'presend_convention';
