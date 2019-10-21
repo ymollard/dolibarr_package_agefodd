@@ -184,9 +184,6 @@ if ($action == 'sesslevel_remove' && $confirm == 'yes'){
             setEventMessage($agf->error, 'errors');
         }
     }
-
-	header('Location: '.$_SERVER['PHP_SELF']);
-	exit;
 }
 
 /*
@@ -221,9 +218,9 @@ $morehtmlright = '';
 print load_fiche_titre($langs->trans("AgfAdminSessionLevel"), $morehtmlright);
 
 $sesslevel_remove = GETPOST('sesslevel_remove');
-if ($action == 'sessionlevel_update' && !empty($sesslevel_remove)){
-	$deleteConfirmUrl = $_SERVER ['PHP_SELF'].'?sesslevel_remove=1&id='. GETPOST('id', 'int').'&sesslevel_remove_confirm=1';
-	print $form->formconfirm($deleteConfirmUrl, $langs->trans('ConfirmDelete'), '', 'sessionlevel_update', '', 0, 1);
+if ($action == 'sessionlevel_update' && !empty($sesslevel_remove) && empty($confirm)){
+	$deleteConfirmUrl = $_SERVER ['PHP_SELF'].'?sesslevel_remove=1&id='. GETPOST('id', 'int');
+	print $form->formconfirm($deleteConfirmUrl, $langs->trans('ConfirmDelete'), '', 'sesslevel_remove', '', 0, 1);
 }
 
 $TNested = $admlevel->fetch_all_children_nested(0);
