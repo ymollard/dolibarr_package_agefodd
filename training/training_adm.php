@@ -51,6 +51,8 @@ if (empty($trainingid)) {
 	$trainingid = $id;
 }
 
+$url = $_SERVER ['PHP_SELF'].'?token=' . $_SESSION ['newtoken'].'&trainingid=' . $trainingid;
+
 if ($action == 'sessionlevel_create') {
 	$agf = new Agefodd_training_admlevel($db);
 
@@ -176,12 +178,15 @@ if ($action == 'sessionlevel_update') {
 		}
 
 		// Delete action
-		if (GETPOST('sesslevel_remove')) {
+		if (GETPOST('sesslevel_remove') && GETPOST('confirm') == 'yes') {
 
 			$result = $agf->delete($user);
 			if ($result != 1) {
 				setEventMessage($agf_static->error, 'errors');
 			}
+
+			header('Location: '.$url);
+			exit;
 		}
 	} else {
 		setEventMessage('This action do not exists', 'errors');
@@ -202,16 +207,16 @@ $result = $agf->fetch($trainingid);
 
 $head = training_prepare_head($agf);
 
-dol_fiche_head($head, 'trainingadmtask', $langs->trans("AgfCatalogDetail"), 1, 'label');
+dol_fiche_head($head, 'trainingadmtask', $langs->trans("AgfCatalogDetail"), 0, 'label');
 
 dol_agefodd_banner_tab($agf, 'id');
-dol_fiche_end(1);
+dol_fiche_end(0);
 print '<div class="underbanner clearboth"></div>';
 
 $admlevel = new Agefodd_training_admlevel($db);
 $result0 = $admlevel->fetch_all($trainingid);
 
-$url = $_SERVER ['PHP_SELF'].'?token=' . $_SESSION ['newtoken'].'&trainingid=' . $trainingid;
+
 $morehtmlright = '';
 
 if ($result0 > 0) {
@@ -227,7 +232,11 @@ if ($result0 > 0) {
 
 print load_fiche_titre($langs->trans("AgfAdminTrainingLevel"), $morehtmlright);
 
-
+$sesslevel_remove = GETPOST('sesslevel_remove');
+if ($action == 'sessionlevel_update' && !empty($sesslevel_remove)){
+	$deleteConfirmUrl = $url.'&sesslevel_remove=1&id='. GETPOST('id', 'int').'&sesslevel_remove_confirm=1';
+	print $form->formconfirm($deleteConfirmUrl, $langs->trans('ConfirmDelete'), '', 'sessionlevel_update', '', 0, 1);
+}
 
 if($action==='sort' || true){
 	$TNested = $admlevel->fetch_all_children_nested($trainingid, 0);
@@ -506,7 +515,7 @@ function _displayFormField($training_admlevel)
 	// changed by JS
 	$outForm.= '<p>';
 	//$outForm.= '<label>' . $langs->trans("AgfIntitule") . '</label><br/>';
-	$outForm.= '<input type="text" name="intitule" placeholder="' . dol_escape_htmltag($langs->trans("AgfIntitule")) . '" value="' . dol_escape_htmltag($training_admlevel->intitule) . '" size="30"/>';
+	$outForm.= '<input type="text" name="intitule" style="width:100%;max-width:900px" placeholder="' . dol_escape_htmltag($langs->trans("AgfIntitule")) . '" value="' . dol_escape_htmltag($training_admlevel->intitule) . '" size="30"/>';
 	$outForm.= '</p>';
 
 	$outForm.= '<p>';
