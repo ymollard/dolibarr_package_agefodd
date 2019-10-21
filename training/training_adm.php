@@ -238,114 +238,106 @@ if ($action == 'sessionlevel_update' && !empty($sesslevel_remove)){
 	print $form->formconfirm($deleteConfirmUrl, $langs->trans('ConfirmDelete'), '', 'sessionlevel_update', '', 0, 1);
 }
 
-if($action==='sort' || true){
-	$TNested = $admlevel->fetch_all_children_nested($trainingid, 0);
+
+$TNested = $admlevel->fetch_all_children_nested($trainingid, 0);
+
+
+// ADD FORM
+print '<table class="noborder noshadow" width="100%">';
+print '<tr class="liste_titre nodrag nodrop">';
+print '<th>' . $langs->trans("AgfIntitule") . '</th>';
+print '<th>' . $langs->trans("AgfParentLevel") . '</th>';
+print '<th>' . $langs->trans("AgfDelaiSessionLevel") . '</th>';
+print '<th>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</th>';
+print '<th></th>';
+print "</tr>\n";
+
+print '<tr class="oddeven nodrag nodrop">';
+print '<form name="SessionLevel_create" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
+print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+print '<input type="hidden" name="action" value="sessionlevel_create">' . "\n";
+print '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\n";
+print '<td>' . $langs->trans("Add") . ' <input type="text" name="intitule" value="" size="30" placeholder="' . $langs->trans("AgfIntitule") . '"/></td>';
+print '<td>' . $formAgefodd->select_action_training_adm('', 'parent_level', 0, $trainingid) . '</td>';
+print '<td><input type="number" step="1" name="delai" value=""/></td>';
+print '<td><input type="number" step="1" name="delai_end" value=""/></td>';
+print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
+print '</form>';
+print '</tr>';
+print '</tfoot>';
+print '</table>';
 
 
 
-	print '<table class="noborder noshadow" width="100%">';
-	print '<tr class="liste_titre nodrag nodrop">';
-	print '<th>' . $langs->trans("AgfIntitule") . '</th>';
-	print '<th>' . $langs->trans("AgfParentLevel") . '</th>';
-	print '<th>' . $langs->trans("AgfDelaiSessionLevel") . '</th>';
-	print '<th>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</th>';
-	print '<th></th>';
-	print "</tr>\n";
+// JS nested
+print '<div id="ajaxResults" ></div>';
+print _displaySortableNestedItems($TNested, 'sortableLists', true);
+print '<script src="'.dol_buildpath('agefodd/js/jquery-sortable-lists.min.js',1).'" ></script>';
+print '<link rel="stylesheet" href="'.dol_buildpath('agefodd/css/sortable.css',1).'" >';
+print '<div id="dialog-form-edit" >'._displayFormField($admlevel).'</div>';
 
-	print '<tr class="oddeven nodrag nodrop">';
-	print '<form name="SessionLevel_create" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
-	print '<input type="hidden" name="action" value="sessionlevel_create">' . "\n";
-	print '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\n";
-	print '<td>' . $langs->trans("Add") . ' <input type="text" name="intitule" value="" size="30" placeholder="' . $langs->trans("AgfIntitule") . '"/></td>';
-	print '<td>' . $formAgefodd->select_action_training_adm('', 'parent_level', 0, $trainingid) . '</td>';
-	print '<td><input type="number" step="1" name="delai" value=""/></td>';
-	print '<td><input type="number" step="1" name="delai_end" value=""/></td>';
-	print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
-	print '</form>';
-	print '</tr>';
-	print '</tfoot>';
-	print '</table>';
-
-
-
-
-
-
-
-
-
-
-
-
-	print '<div id="ajaxResults" ></div>';
-	print _displaySortableNestedItems($TNested, 'sortableLists', true);
-	print '<script src="'.dol_buildpath('agefodd/js/jquery-sortable-lists.min.js',1).'" ></script>';
-	print '<link rel="stylesheet" href="'.dol_buildpath('agefodd/css/sortable.css',1).'" >';
-	print '<div id="dialog-form-edit" >'._displayFormField($admlevel).'</div>';
-
-	print '	
-	<script type="text/javascript">
-	$(function()
-	{
-		var options = {
-		    insertZone: 5, // This property defines the distance from the left, which determines if item will be inserted outside(before/after) or inside of another item.
-		
-		    placeholderClass: \'agf-sortable-list__item--placeholder\',
-	        // or like a jQuery css object
-			//placeholderCss: {\'background-color\': \'#ff8\'},
-			hintClass: \'agf-sortable-list__item--hint\',
-	        // or like a jQuery css object
-			//hintCss: {\'background-color\':\'#bbf\'},
-			onChange: function( cEl )
-			{
-			    
-                $("#ajaxResults").html("");
-                
-				$.ajax({
-                    url: "'.dol_buildpath('agefodd/scripts/interface.php?action=setAgefoddTrainingAdmlevelHierarchy',1).'",
-                    method: "POST",
-                    data: {
-                        \'items\' : $(\'#sortableLists\').sortableListsToHierarchy()
-                    },
-                    dataType: "json",
-                    
-                    // La fonction à apeller si la requête aboutie
-                    success: function (data) {
-                        // Loading data
-                        console.log(data);
-                        if(data.result > 0 ){
-                           // ok case
-                           $("#ajaxResults").html(\'<span class="badge badge-success">\' + data.msg + \'</span>\');
-                        }
-                        else if(data.result < 0 ){
-                           // error case
-                           $("#ajaxResults").html(\'<span class="badge badge-danger">\' + data.errorMsg + \'</span>\');
-                        }
-                        else{
-                           // nothing to do ? 
-                        }
-                    },
-                    // La fonction à appeler si la requête n\'a pas abouti
-                    error: function( jqXHR, textStatus ) {
-                        alert( "Request failed: " + textStatus );
-                    }
-                });
-			},
-			complete: function( cEl )
-			{
-                 
-               
-                
-			},
-			isAllowed: function( cEl, hint, target )
-			{
-			    
-			    return true;
+print '	
+<script type="text/javascript">
+$(function()
+{
+	var options = {
+		insertZone: 5, // This property defines the distance from the left, which determines if item will be inserted outside(before/after) or inside of another item.
+	
+		placeholderClass: \'agf-sortable-list__item--placeholder\',
+		// or like a jQuery css object
+		//placeholderCss: {\'background-color\': \'#ff8\'},
+		hintClass: \'agf-sortable-list__item--hint\',
+		// or like a jQuery css object
+		//hintCss: {\'background-color\':\'#bbf\'},
+		onChange: function( cEl )
+		{
 			
-				// Be carefull if you test some ul/ol elements here.
-				// Sometimes ul/ols are dynamically generated and so they have not some attributes as natural ul/ols.
-				// Be careful also if the hint is not visible. It has only display none so it is at the previouse place where it was before(excluding first moves before showing).
+			$("#ajaxResults").html("");
+			
+			$.ajax({
+				url: "'.dol_buildpath('agefodd/scripts/interface.php?action=setAgefoddTrainingAdmlevelHierarchy',1).'",
+				method: "POST",
+				data: {
+					\'items\' : $(\'#sortableLists\').sortableListsToHierarchy()
+				},
+				dataType: "json",
+				
+				// La fonction à apeller si la requête aboutie
+				success: function (data) {
+					// Loading data
+					console.log(data);
+					if(data.result > 0 ){
+					   // ok case
+					   $("#ajaxResults").html(\'<span class="badge badge-success">\' + data.msg + \'</span>\');
+					}
+					else if(data.result < 0 ){
+					   // error case
+					   $("#ajaxResults").html(\'<span class="badge badge-danger">\' + data.errorMsg + \'</span>\');
+					}
+					else{
+					   // nothing to do ? 
+					}
+				},
+				// La fonction à appeler si la requête n\'a pas abouti
+				error: function( jqXHR, textStatus ) {
+					alert( "Request failed: " + textStatus );
+				}
+			});
+		},
+		complete: function( cEl )
+		{
+			 
+		   
+			
+		},
+		isAllowed: function( cEl, hint, target )
+		{
+			
+			return true;
+		
+			// Be carefull if you test some ul/ol elements here.
+			// Sometimes ul/ols are dynamically generated and so they have not some attributes as natural ul/ols.
+			// Be careful also if the hint is not visible. It has only display none so it is at the previouse place where it was before(excluding first moves before showing).
 //				if( target.data(\'module\') === \'c\' && cEl.data(\'module\') !== \'c\' )
 //				{
 //					hint.css(\'background-color\', \'#ff9999\');
@@ -356,143 +348,81 @@ if($action==='sort' || true){
 //					hint.css(\'background-color\', \'#99ff99\');
 //					return true;
 //				}
-			},
-			opener: {
-				active: true,
-				as: \'html\',  // if as is not set plugin uses background image
-				close: \'<i class="fa fa-minus c3"></i>\',  // or \'fa-minus c3\',  // or \'./imgs/Remove2.png\',
-				open: \'<i class="fa fa-plus"></i>\',  // or \'fa-plus\',  // or\'./imgs/Add2.png\',
-				openerCss: {
-					\'display\': \'inline-block\',
-					//\'width\': \'18px\', \'height\': \'18px\',
-					\'float\': \'left\',
-					\'margin-left\': \'-35px\',
-					\'margin-right\': \'5px\',
-					//\'background-position\': \'center center\', \'background-repeat\': \'no-repeat\',
-					\'font-size\': \'1.1em\'
-				}
-			},
-			ignoreClass: \'clickable\',
-			
-            insertZonePlus: true,
-		};
-		
-	
-		$(\'#sortableLists\').sortableLists( options );
-
-		$(document).on("click", ".agf-sortable-list__item__title__button.-edit-btn", function(event) {
-		    event.preventDefault();
-		    var id = $(this).data("id");
-		    popTrainingAdmFormDialog(id);
-		});
-	
-
-		
-		var dialogBox = jQuery("#dialog-form-edit");
-		var width = $(window).width();
-		var height = $(window).height();
-		if(width > 700){ width = 700; }
-		if(height > 600){ height = 600; }
-		//console.log(height);
-		dialogBox.dialog({
-		autoOpen: false,
-		resizable: true,
-//		height: height,
-		width: width,
-		modal: true,
-		buttons: {
-				"'.$langs->transnoentitiesnoconv('Update').'": function() {
-				    dialogBox.find("form").submit();
-					jQuery(this).dialog(\'close\');
-				}
+		},
+		opener: {
+			active: true,
+			as: \'html\',  // if as is not set plugin uses background image
+			close: \'<i class="fa fa-minus c3"></i>\',  // or \'fa-minus c3\',  // or \'./imgs/Remove2.png\',
+			open: \'<i class="fa fa-plus"></i>\',  // or \'fa-plus\',  // or\'./imgs/Add2.png\',
+			openerCss: {
+				\'display\': \'inline-block\',
+				//\'width\': \'18px\', \'height\': \'18px\',
+				\'float\': \'left\',
+				\'margin-left\': \'-35px\',
+				\'margin-right\': \'5px\',
+				//\'background-position\': \'center center\', \'background-repeat\': \'no-repeat\',
+				\'font-size\': \'1.1em\'
 			}
-		});
+		},
+		ignoreClass: \'clickable\',
 		
-		function popTrainingAdmFormDialog(id)
-		{
-		    
-		    var item = $("#item_" + id);
-		    
-		    dialogBox.dialog({
-              title: $("#item_" + id).data("title")
-         	});
-		    
-		    dialogBox.find( "input[name=\'id\']" ).val(id);
-		    dialogBox.find( "input[name=\'intitule\']" ).val(item.data("title"));
-		    dialogBox.find( "input[name=\'delai\']" ).val(item.data("alert"));
-		    dialogBox.find( "input[name=\'delai_end\']" ).val(item.data("alert_end"));
-		    
-		    
-		    dialogBox.dialog( "open" );
-		}
+		insertZonePlus: true,
+	};
 	
+
+	$(\'#sortableLists\').sortableLists( options );
+
+	$(document).on("click", ".agf-sortable-list__item__title__button.-edit-btn", function(event) {
+		event.preventDefault();
+		var id = $(this).data("id");
+		popTrainingAdmFormDialog(id);
 	});
 
 
-	</script>';
-}
-else{
-
-    print '<style type="text/css">
-        tr.updated-row,tr.updated-row td{
-            background: #d1e9f1 !important;
-        }
-    </style>';
-
-    $TNested = $admlevel->fetch_all_children_nested($trainingid, 0);
-
-	print '<table class="noborder noshadow" width="100%">';
-
-	if (!empty($TNested)) {
-
-
-		print '<thead>';
-		print '<tr class="liste_titre nodrag nodrop">';
-		print '<th colspan="2">' . $langs->trans("AgfIntitule") . '</th>';
-
-		print '<th>' . $langs->trans("AgfDelaiSessionLevel") . '</th>';
-		print '<th>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</th>';
-		print '<th></th>';
-		print "</tr>\n";
-		print '</thead>';
-
-		print '<tbody>';
-
-        print _displayEditableNestedItems($TNested);
+	
+	var dialogBox = jQuery("#dialog-form-edit");
+	var width = $(window).width();
+	var height = $(window).height();
+	if(width > 700){ width = 700; }
+	if(height > 600){ height = 600; }
+	//console.log(height);
+	dialogBox.dialog({
+	autoOpen: false,
+	resizable: true,
+//		height: height,
+	width: width,
+	modal: true,
+	buttons: {
+			"'.$langs->transnoentitiesnoconv('Update').'": function() {
+				dialogBox.find("form").submit();
+				jQuery(this).dialog(\'close\');
+			}
+		}
+	});
+	
+	function popTrainingAdmFormDialog(id)
+	{
 		
-		print '</tbody>';
+		var item = $("#item_" + id);
+		
+		dialogBox.dialog({
+		  title: $("#item_" + id).data("title")
+		});
+		
+		dialogBox.find( "input[name=\'id\']" ).val(id);
+		dialogBox.find( "input[name=\'intitule\']" ).val(item.data("title"));
+		dialogBox.find( "input[name=\'delai\']" ).val(item.data("alert"));
+		dialogBox.find( "input[name=\'delai_end\']" ).val(item.data("alert_end"));
+		
+		
+		dialogBox.dialog( "open" );
 	}
 
-	print '<tfoot>';
+});
 
-	print '<tr class="liste_titre nodrag nodrop">';
-	print '<th>' . $langs->trans("AgfIntitule") . '</th>';
-	print '<th>' . $langs->trans("AgfParentLevel") . '</th>';
-	print '<th>' . $langs->trans("AgfDelaiSessionLevel") . '</th>';
-	print '<th>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</th>';
-	print '<th></th>';
-	print "</tr>\n";
 
-	print '<tr class="oddeven nodrag nodrop">';
-	print '<form name="SessionLevel_create" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
-	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
-	print '<input type="hidden" name="action" value="sessionlevel_create">' . "\n";
-	print '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\n";
-	print '<td>' . $langs->trans("Add") . ' <input type="text" name="intitule" value="" size="30" placeholder="' . $langs->trans("AgfIntitule") . '"/></td>';
-	print '<td>' . $formAgefodd->select_action_training_adm('', 'parent_level', 0, $trainingid) . '</td>';
-	print '<td><input type="number" step="1" name="delai" value=""/></td>';
-	print '<td><input type="number" step="1" name="delai_end" value=""/></td>';
-	print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
-	print '</form>';
-	print '</tr>';
-	print '</tfoot>';
-	print '</table><br>';
+</script>';
 
-	print '<div class="tabsAction">';
-	print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=replicateconfadmin&id=' . $trainingid . '" title="' . $langs->trans('AgfReplaceByAdminLevelHelp') . '">' . $langs->trans('AgfReplaceByAdminLevel') . '</a>';
-	print '</div>';
-
-}
 
 llxFooter();
 $db->close();
@@ -606,13 +536,18 @@ function _displaySortableNestedItems($TNested, $htmlId='', $open = true){
 	}
 }
 
+/**
+ * Display nested administrative level : deprecated
+ * @param $TNested
+ * @return string
+ */
 function _displayEditableNestedItems($TNested){
     global $updatedRowId, $formAgefodd, $conf, $langs, $trainingid;
 
     $out = '';
 
     if(!empty($TNested) && is_array($TNested)){
-        
+
         foreach ($TNested as $k => $v){
             $line = $v['object'];
             /**
@@ -654,9 +589,9 @@ function _displayEditableNestedItems($TNested){
             $out.= '</tr>';
 
             $out.= _displayEditableNestedItems($v['children']);
-            
+
         }
-        
+
         return $out;
     }
     else{
