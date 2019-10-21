@@ -117,7 +117,7 @@ if ($action == 'sessionlevel_update') {
 
 	if ($result > 0) {
 		// Up level of action
-		if (GETPOST('sesslevel_up_x') || GETPOST('sesslevel_up')) {
+		if (GETPOST('sesslevel_up')) {
 			$result2 = $agf->shift_indice($user, 'less');
 			$updatedRowId = $id;
 			if ($result1 != 1){
@@ -126,7 +126,7 @@ if ($action == 'sessionlevel_update') {
 		}
 
 		// Down level of action
-		if (GETPOST('sesslevel_down_x') || GETPOST('sesslevel_down')) {
+		if (GETPOST('sesslevel_down')) {
 			$result1 = $agf->shift_indice($user, 'more');
 			$updatedRowId = $id;
 			if ($result1 != 1) {
@@ -135,12 +135,12 @@ if ($action == 'sessionlevel_update') {
 		}
 
 		// Update action
-		if (GETPOST('sesslevel_update_x')) {
+		if (GETPOST('sesslevel_update')) {
 			$agf->intitule = GETPOST('intitule', 'alpha');
 			$agf->delais_alerte = GETPOST('delai', 'int');
 			$agf->delais_alerte_end = GETPOST('delai_end', 'int');
 			$updatedRowId = $id;
-			if (! empty($parent_level)) {
+			if (! empty($parent_level)){
 				if ($parent_level != $agf->fk_parent_level) {
 					$agf->fk_parent_level = $parent_level;
 
@@ -176,7 +176,7 @@ if ($action == 'sessionlevel_update') {
 		}
 
 		// Delete action
-		if (GETPOST('sesslevel_remove_x')) {
+		if (GETPOST('sesslevel_remove')) {
 
 			$result = $agf->delete($user);
 			if ($result != 1) {
@@ -231,6 +231,43 @@ print load_fiche_titre($langs->trans("AgfAdminTrainingLevel"), $morehtmlright);
 
 if($action==='sort' || true){
 	$TNested = $admlevel->fetch_all_children_nested($trainingid, 0);
+
+
+
+	print '<table class="noborder noshadow" width="100%">';
+	print '<tr class="liste_titre nodrag nodrop">';
+	print '<th>' . $langs->trans("AgfIntitule") . '</th>';
+	print '<th>' . $langs->trans("AgfParentLevel") . '</th>';
+	print '<th>' . $langs->trans("AgfDelaiSessionLevel") . '</th>';
+	print '<th>' . $langs->trans("AgfDelaiSessionLevelEnd") . '</th>';
+	print '<th></th>';
+	print "</tr>\n";
+
+	print '<tr class="oddeven nodrag nodrop">';
+	print '<form name="SessionLevel_create" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
+	print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
+	print '<input type="hidden" name="action" value="sessionlevel_create">' . "\n";
+	print '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\n";
+	print '<td>' . $langs->trans("Add") . ' <input type="text" name="intitule" value="" size="30" placeholder="' . $langs->trans("AgfIntitule") . '"/></td>';
+	print '<td>' . $formAgefodd->select_action_training_adm('', 'parent_level', 0, $trainingid) . '</td>';
+	print '<td><input type="number" step="1" name="delai" value=""/></td>';
+	print '<td><input type="number" step="1" name="delai_end" value=""/></td>';
+	print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';
+	print '</form>';
+	print '</tr>';
+	print '</tfoot>';
+	print '</table>';
+
+
+
+
+
+
+
+
+
+
+
 
 	print '<div id="ajaxResults" ></div>';
 	print _displaySortableNestedItems($TNested, 'sortableLists', true);
@@ -356,6 +393,7 @@ if($action==='sort' || true){
 		modal: true,
 		buttons: {
 				"'.$langs->transnoentitiesnoconv('Update').'": function() {
+				    dialogBox.find("form").submit();
 					jQuery(this).dialog(\'close\');
 				}
 			}
@@ -364,9 +402,17 @@ if($action==='sort' || true){
 		function popTrainingAdmFormDialog(id)
 		{
 		    
+		    var item = $("#item_" + id);
+		    
 		    dialogBox.dialog({
               title: $("#item_" + id).data("title")
-         	})
+         	});
+		    
+		    dialogBox.find( "input[name=\'id\']" ).val(id);
+		    dialogBox.find( "input[name=\'intitule\']" ).val(item.data("title"));
+		    dialogBox.find( "input[name=\'delai\']" ).val(item.data("alert"));
+		    dialogBox.find( "input[name=\'delai_end\']" ).val(item.data("alert_end"));
+		    
 		    
 		    dialogBox.dialog( "open" );
 		}
@@ -448,13 +494,14 @@ $db->close();
  */
 function _displayFormField($training_admlevel)
 {
-	global $langs;
+	global $langs, $url, $trainingid;
 
-	$outForm= '<form name="SessionLevel_update" action="' . $_SERVER ['PHP_SELF'] . '" method="POST">' . "\n";
+	$outForm= '<form name="SessionLevel_update" action="' . $url . '" method="POST">' . "\n";
 	$outForm.= '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 	$outForm.= '<input type="hidden" name="id" value="' . $training_admlevel->id . '">' . "\n";
 	$outForm.= '<input type="hidden" name="action" value="sessionlevel_update">' . "\n";
-	$outForm.= '<input type="hidden" name="trainingid" value="' . $training_admlevel->fk_training . '">' . "\n";
+	$outForm.= '<input type="hidden" name="trainingid" value="' . $trainingid . '">' . "\n";
+	$outForm.= '<input type="hidden" name="sesslevel_update" value="1">' . "\n";
 
 	// changed by JS
 	$outForm.= '<p>';
@@ -483,7 +530,7 @@ function _displayFormField($training_admlevel)
 }
 
 function _displaySortableNestedItems($TNested, $htmlId='', $open = true){
-	global $langs;
+	global $langs, $url;
 	if(!empty($TNested) && is_array($TNested)){
 		$out = '<ul id="'.$htmlId.'" class="agf-sortable-list" >';
 		foreach ($TNested as $k => $v){
@@ -499,7 +546,12 @@ function _displaySortableNestedItems($TNested, $htmlId='', $open = true){
 				$class.= 'sortableListsClosed';
 			}
 
-			$out.= '<li id="item_'.$object->id.'" class="agf-sortable-list__item '.$class.'" data-id="'.$object->id.'" data-title="'.dol_escape_htmltag($object->intitule).'" >';
+			$out.= '<li id="item_'.$object->id.'" class="agf-sortable-list__item '.$class.'" ';
+			$out.= ' data-id="'.$object->id.'" ';
+			$out.= ' data-title="'.dol_escape_htmltag($object->intitule).'" ';
+			$out.= ' data-alert="'.dol_escape_htmltag($object->alerte).'" ';
+			$out.= ' data-alert_end="'.dol_escape_htmltag($object->alerte_end).'" ';
+			$out.= '>';
 			$out.= '<div class="agf-sortable-list__item__title  move">';
 				$out.= '<div class="agf-sortable-list__item__title__flex">';
 
@@ -525,7 +577,9 @@ function _displaySortableNestedItems($TNested, $htmlId='', $open = true){
 					$out.= '<i class="fa fa-pencil clickable"></i>';
 					$out.= '</a>';
 
-					$out.= '<a href="" class="classfortooltip agf-sortable-list__item__title__button clickable -delete-btn"  title="' . $langs->trans("Delete") . '"  data-id="'.$object->id.'">';
+					$deleteUrl = $url.'&amp;sesslevel_remove=1&amp;id='. $object->id.'&amp;action=sessionlevel_update&amp;sesslevel_remove=1';
+
+					$out.= '<a href="'.$deleteUrl.'" class="classfortooltip agf-sortable-list__item__title__button clickable -delete-btn"  title="' . $langs->trans("Delete") . '"  data-id="'.$object->id.'">';
 					$out.= '<i class="fa fa-trash clickable"></i>';
 					$out.= '</a>';
 				$out.= '</div>';
