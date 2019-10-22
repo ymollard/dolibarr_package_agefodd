@@ -46,6 +46,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 	protected $colorheaderText;
 	protected $colorLine;
 
+	protected $h_ligne;
+
 	/**
 	 * Constructor
 	 *
@@ -111,6 +113,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 		}
 
 		$this->nbtimeslots = 6;
+
+		$this->h_ligne=10;
 	}
 
 	/**
@@ -486,16 +490,16 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$posY += 2;
 
 			$larg_col1 = $this->trainer_widthcol1;
-			$h_ligne = 7;
+
 
 			// Entête
 			// Cadre
-			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne + 8);
+			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne + 8);
 			// Nom
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 			$str = $outputlangs->transnoentities('AgfPDFFichePres16');
-			$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($str), 'R', 2, "C", 0);
+			$pdf->Cell($larg_col1, $this->h_ligne + 8, $outputlangs->convToOutputCharset($str), 'R', 2, "C", 0);
 			// Signature
 			$pdf->SetXY($posX + $larg_col1, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
@@ -506,7 +510,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
 			$str = $outputlangs->transnoentities('AgfPDFFichePres13');
 			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
-			$posY += $h_ligne;
+			$posY += $this->h_ligne;
 
 			// Date
 
@@ -552,16 +556,16 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				foreach ( $formateurs->lines as $trainerlines ) {
 
 					// Cadre
-					$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
+					$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne);
 
 					// Nom
 					$pdf->SetXY($posX - 2, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
 					$str = strtoupper($trainerlines->lastname) . ' ' . ucfirst($trainerlines->firstname);
-					$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
+					$pdf->MultiCell($larg_col1 + 2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
 
 					for($i = 0; $i < $this->nbtimeslots - 1; $i ++) {
-						$pdf->Rect($posX + $larg_col1 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
+						$pdf->Rect($posX + $larg_col1 + $largeur_date * $i, $posY, $largeur_date, $this->h_ligne);
 					}
 
 					$posY = $pdf->GetY();
@@ -589,22 +593,21 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 
 			$larg_col1 = $this->trainee_widthcol1;
 			$larg_col2 = $this->trainee_widthcol2;
-			$h_ligne = 7;
 
 			// Entête
 			// Cadre
-			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne + 8);
+			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne + 8);
 			// Nom
 			$pdf->SetXY($posX, $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 			$str = $outputlangs->transnoentities('AgfPDFFichePres16');
-			$pdf->Cell($larg_col1, $h_ligne + 8, $outputlangs->convToOutputCharset($str), 'R', 2, "C", 0);
+			$pdf->Cell($larg_col1, $this->h_ligne + 8, $outputlangs->convToOutputCharset($str), 'R', 2, "C", 0);
 			// Société
 			if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
 				$pdf->SetXY($posX + $larg_col1, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$str = $outputlangs->transnoentities('AgfPDFFichePres17');
-				$pdf->Cell($larg_col2, $h_ligne + 8, $outputlangs->convToOutputCharset($str), 0, 2, "C", 0);
+				$pdf->Cell($larg_col2, $this->h_ligne + 8, $outputlangs->convToOutputCharset($str), 0, 2, "C", 0);
 			} else {
 				$larg_col2=0;
 			}
@@ -618,7 +621,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
 			$str = $outputlangs->transnoentities('AgfPDFFichePres19');
 			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
-			$posY += $h_ligne;
+			$posY += $this->h_ligne;
 
 			// Date
 			$agf_date = new Agefodd_sesscalendar($this->db);
@@ -662,12 +665,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 			$posY = $pdf->GetY();
 
 			// ligne
-			$h_ligne = 7;
 			if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
-				$h_ligne = $h_ligne + 3;
+				$this->h_ligne = $this->h_ligne + 3;
 			}
 			if (!empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
-				$h_ligne = $h_ligne + 3;
+				$this->h_ligne = $this->h_ligne + 3;
 			}
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 
@@ -688,7 +690,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 
 				$nbsta_index++;
 				// Cadre
-				$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
+				$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne);
 
 				// Nom
 				$pdf->SetXY($posX - 2, $posY);
@@ -731,18 +733,18 @@ class pdf_fiche_presence extends ModelePDFAgefodd {
 				        }
 				    }
 				}
-				$pdf->MultiCell($larg_col1 + 2, $h_ligne, $outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
+				$pdf->MultiCell($larg_col1 + 2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
 
 				// Société
 				if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
 					$pdf->SetXY($posX + $larg_col1, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
 					$str = dol_trunc($line->socname, 27);
-					$pdf->MultiCell($larg_col2, $h_ligne, $outputlangs->convToOutputCharset($str), 1, "C", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
+					$pdf->MultiCell($larg_col2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "C", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
 				}
 
 				for($i = 0; $i < $this->nbtimeslots - 1; $i ++) {
-					$pdf->Rect($posX + $larg_col1 + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
+					$pdf->Rect($posX + $larg_col1 + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $this->h_ligne);
 				}
 
 				$posY = $pdf->GetY();
