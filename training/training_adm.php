@@ -219,6 +219,12 @@ $result0 = $admlevel->fetch_all($trainingid);
 
 $morehtmlright = '';
 
+if ($action != 'sort' && function_exists('dolGetButtonTitle')) {
+	$reloadUrl = $_SERVER ['PHP_SELF'] . '?action=replicateconfadmin&id=' . $trainingid;
+	$morehtmlright .= dolGetButtonTitle($langs->trans('AgfReplaceByAdminLevel'), $langs->trans('AgfReplaceByAdminLevelHelp'), 'fa fa-refresh', $reloadUrl);
+}
+
+
 if ($result0 > 0) {
 	// ne sert à rien si aucun resultats
 //	if ($action != 'sort' && function_exists('dolGetButtonTitle')) {
