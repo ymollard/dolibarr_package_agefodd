@@ -5584,6 +5584,7 @@ class Agsession extends CommonObject
 			}
 		}
 		$this->date_text=$this->libSessionDate();
+		$this->date_text_formated=$this->libSessionDate('%A %d %B %Y');
 		if (empty($this->session_nb_days) && !empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
 			$this->session_nb_days=$this->duree_session / $conf->global->AGF_NB_HOUR_IN_DAYS;
 		}
