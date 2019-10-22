@@ -1468,6 +1468,7 @@ class ActionsAgefodd
 			} elseif (!empty($agftrainerid)) {
 				// agenda pour le formateur
 				$sql .= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier agf_sfc ON (a.id = agf_sfc.fk_actioncomm) ';
+				$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur agf_sf ON (agf_sf.rowid = agf_sfc.fk_agefodd_session_formateur)';
 			}
 
 			$this->resprints = $sql;
@@ -1491,7 +1492,7 @@ class ActionsAgefodd
 			if (!empty($agftraineeid)) {
 				$sql .= ' AND agf_ss.fk_stagiaire = ' . intval($agftraineeid);
 			} elseif (!empty($agftrainerid)) {
-				$sql .= ' AND agf_sfc.fk_agefodd_session_formateur = ' . intval($agftrainerid);
+				$sql .= ' AND agf_sf.fk_agefodd_formateur = ' . intval($agftrainerid);
 			}
 
 			$this->resprints = $sql;
