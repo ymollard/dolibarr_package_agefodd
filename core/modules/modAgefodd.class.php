@@ -154,7 +154,7 @@ class modAgefodd extends DolibarrModules
 				3
 		);
 		$this->need_dolibarr_version = array(
-				9,
+				7,
 				0
 		);
 		$this->langfiles = array(
