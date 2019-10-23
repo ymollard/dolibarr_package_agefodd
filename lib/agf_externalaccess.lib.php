@@ -2077,7 +2077,12 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		$buttons= '';
 	if ($action != 'view')
 	{
-        $buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />';
+		$buttonsValue = $langs->trans('Add');
+		if(!empty($agf_calendrier_formateur->id)) {
+			$buttonsValue = $langs->trans('Update');
+		}
+
+		$buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$buttonsValue.'" />';
 	}
 
 	if(empty($user->rights->agefodd->external_trainer_time_slot_delete)){
