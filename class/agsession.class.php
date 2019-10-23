@@ -5522,15 +5522,18 @@ class Agsession extends CommonObject
 		//Trainee link to the company convention
 		if (!empty($this->contactname)) {
 			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+			$this->signataire_intra_poste = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
 		} else {
 			$this->signataire_intra ='';
+			$this->signataire_intra_poste ='';
 		}
 		$stagiaires = new Agefodd_session_stagiaire($this->db);
-		$result=$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
+		$result=$stagiaires->fetch_stagiaire_per_session($this->id, $socid, 1);
 		if ($result<0) {
-			setEventMessage($stagiaires->error,'errors');
+			setEventMessage($stagiaires->error, 'errors');
 		} else {
 			$this->signataire_inter_array=array();
+			$this->signataire_inter_array_poste=array();
 			if (is_array($stagiaires->lines) && count($stagiaires->lines)>0) {
 
 				foreach ($stagiaires->lines as $line) {
@@ -5538,15 +5541,19 @@ class Agsession extends CommonObject
 						$socpsign=new Contact($this->db);
 						$socpsign->fetch($line->fk_socpeople_sign);
 						$this->signataire_inter_array[$line->fk_socpeople_sign]= $socpsign->getFullName($langs).' ';
+						$this->signataire_inter_array_poste[$line->fk_socpeople_sign]= $socpsign->poste.' ';
 					}
 				}
 
 			}
 			if (count($this->signataire_inter_array)>0) {
-				$this->signataire_inter=implode(', ',$this->signataire_inter_array);
+				$this->signataire_inter=implode(', ', $this->signataire_inter_array);
+				$this->signataire_inter_poste=implode(', ', $this->signataire_inter_array_poste);
 				unset($this->signataire_inter_array);
+				unset($this->signataire_inter_array_poste);
 			} else {
 				$this->signataire_inter='';
+				$this->signataire_inter_poste='';
 			}
 		}
 
