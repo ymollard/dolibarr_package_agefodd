@@ -5365,10 +5365,12 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-			// Chargement des spécifique participants/convention
+
+		$this->convention_notes='';
+		// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
 			$this->TConventionFinancialLine=array();
-
+			$this->convention_notes=dol_nl2br($obj_agefodd_convention->notes);
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
 				$nbstag = count($obj_agefodd_convention->line_trainee);
