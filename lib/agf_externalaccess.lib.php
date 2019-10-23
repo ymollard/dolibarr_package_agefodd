@@ -1663,6 +1663,13 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	}
 
 	$out = '<!-- getPageViewSessionCardCalendrierFormateurExternalAccess -->';
+
+	// CLOSE IFRAME
+	$fromaction = GETPOST('fromaction');
+	if($context->iframe && $fromaction === 'add' && $action === 'view'){
+		$out.= '<script >window.parent.closeModal();</script>';
+	}
+
 	$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
 
 	$backUrl = $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id.'&save_lastsearch_values=1');
