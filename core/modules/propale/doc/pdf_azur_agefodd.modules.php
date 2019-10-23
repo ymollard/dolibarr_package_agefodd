@@ -388,7 +388,7 @@ class pdf_azur_agefodd extends ModelePDFPropales
 				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 				$pagenb++;
 
-                $heightforinfotot = 30;	// Height reserved to output the info and total part
+                $heightforinfotot = 40;	// Height reserved to output the info and total part
                 $heightforsignature = empty($conf->global->PROPAL_DISABLE_SIGNATURE)?(pdfGetHeightForHtmlContent($pdf, $outputlangs->transnoentities("ProposalCustomerSignature"))):0;
                 $heightforfreetext= (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT)?$conf->global->MAIN_PDF_FREETEXT_HEIGHT:5);	// Height reserved to output the free text on last page
 	            $heightforfooter = $this->marge_basse + 8;	// Height reserved to output the footer (value include bottom margin)
