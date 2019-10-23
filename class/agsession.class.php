@@ -5522,10 +5522,22 @@ class Agsession extends CommonObject
 		//Trainee link to the company convention
 		if (!empty($this->contactname)) {
 			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
-			$this->signataire_intra_poste = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+			if (!empty($this->sourcecontactid)) {
+				$socpsign = new Contact($this->db);
+				$socpsign->fetch($this->sourcecontactid);
+				$this->signataire_intra_poste = $socpsign->poste;
+				$this->signataire_intra_mail = $socpsign->email;
+				$this->signataire_intra_phone = $socpsign->phone_pro;
+			} else {
+				$this->signataire_intra_poste ='';
+				$this->signataire_intra_mail ='';
+				$this->signataire_intra_phone ='';
+			}
 		} else {
 			$this->signataire_intra ='';
 			$this->signataire_intra_poste ='';
+			$this->signataire_intra_mail ='';
+			$this->signataire_intra_phone ='';
 		}
 		$stagiaires = new Agefodd_session_stagiaire($this->db);
 		$result=$stagiaires->fetch_stagiaire_per_session($this->id, $socid, 1);
@@ -5534,26 +5546,34 @@ class Agsession extends CommonObject
 		} else {
 			$this->signataire_inter_array=array();
 			$this->signataire_inter_array_poste=array();
+			$this->signataire_inter_array_mail=array();
+			$this->signataire_inter_array_phone=array();
 			if (is_array($stagiaires->lines) && count($stagiaires->lines)>0) {
-
 				foreach ($stagiaires->lines as $line) {
 					if (!empty($line->fk_socpeople_sign)) {
 						$socpsign=new Contact($this->db);
 						$socpsign->fetch($line->fk_socpeople_sign);
 						$this->signataire_inter_array[$line->fk_socpeople_sign]= $socpsign->getFullName($langs).' ';
 						$this->signataire_inter_array_poste[$line->fk_socpeople_sign]= $socpsign->poste.' ';
+						$this->signataire_inter_array_mail[$line->fk_socpeople_sign]= $socpsign->email.' ';
+						$this->signataire_inter_array_phone[$line->fk_socpeople_sign]= $socpsign->phone_pro.' ';
 					}
 				}
-
 			}
 			if (count($this->signataire_inter_array)>0) {
 				$this->signataire_inter=implode(', ', $this->signataire_inter_array);
 				$this->signataire_inter_poste=implode(', ', $this->signataire_inter_array_poste);
+				$this->signataire_inter_mail=implode(', ', $this->signataire_inter_array_mail);
+				$this->signataire_inter_phone=implode(', ', $this->signataire_inter_array_phone);
 				unset($this->signataire_inter_array);
 				unset($this->signataire_inter_array_poste);
+				unset($this->signataire_inter_array_mail);
+				unset($this->signataire_inter_array_phone);
 			} else {
 				$this->signataire_inter='';
 				$this->signataire_inter_poste='';
+				$this->signataire_inter_mail='';
+				$this->signataire_inter_phone='';
 			}
 		}
 
