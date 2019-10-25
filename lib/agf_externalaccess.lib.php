@@ -1309,13 +1309,13 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 		$out.= '<li class="list-group-item"><i class="fa fa-'.(in_array($stagiaire->civilite, array('MME', 'MLE')) ? 'female' : 'male').'"></i><span class="ml-2">';
 		$out.= strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom) . '('.$stagiaire->socname.')';
 		if (!empty($stagiaire->tel1)) {
-			$out.= '-'.$stagiaire->tel1;
+			$out.= ' - '.$stagiaire->tel1;
 		}
 		if (!empty($stagiaire->tel2)) {
-			$out.= '-'.$stagiaire->tel2;
+			$out.= ' - '.$stagiaire->tel2;
 		}
 		if (!empty($stagiaire->email)) {
-			$out .= '-' . $stagiaire->email;
+			$out .= ' - ' . $stagiaire->email;
 		}
 		$out.= '</span></li>';
 	}
