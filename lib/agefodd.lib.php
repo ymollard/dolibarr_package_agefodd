@@ -1755,13 +1755,16 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 			$agf = new Formation($db);
 			$agf->fetch($object->fk_formation_catalogue);
 			$forma_ref_int = $agf->ref_interne;
-			$forma_ref_int .= '(' . $object->libSessionDate() . ') - ' . $object->id;
+			if (empty($conf->global->AGF_HIDE_DATE_ON_HEADER)) {
+				$forma_ref_int .= '(' . $object->libSessionDate() . ') - ';
+			}
+			$forma_ref_int .= $object->id . '#' . $object->ref ;
 		}
 
 
 		if ($forma_ref_int != null) {
 			$pdf->SetXY($x, $y);
-			$pdf->SetFont('', '', $font_size);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $font_size);
 			$pdf->MultiCell(70, 4, $outputlangs->transnoentities('AgfRefInterne') . ' : ' . $outputlangs->convToOutputCharset($forma_ref_int), 0, $align);
 		}
 	}
@@ -1776,6 +1779,7 @@ function printSessionFieldsWithCustomOrder()
 	if (!empty($customOrder)) {
 		$TClassName = explode(',', $customOrder);
 
+		$order = '';
 		foreach ($TClassName as $className) {
 			$order .= '"' . trim($className) . '",';
 		}
@@ -1786,41 +1790,30 @@ function printSessionFieldsWithCustomOrder()
 			<script type="text/javascript">
 
                 $(function () {
-                    $('#session_card > tbody > tr div.select2-container').each(function (i, item) {
-                        let id = item.id.slice(5);
-                        $('#' + id).select2('destroy');
-                        $('#' + id).addClass('toSelect2');
-                    });
-
                     // Correspond aux premières lignes à afficher sur la fiche d'une session de formation
                     var agf_TClass = new Array(<?php print $order ?>); // "agefodd_agsession_extras_"+codeExtrafield, "order_intitule", "order_ref", "order_intituleCusto"
-                    var agf_tab_tr = $('#session_card > tbody > tr').clone(true);
-                    var TAgf_found = new Array();
 
-                    $('#session_card > tbody > tr').remove();
+                    /**
+                     * @param elem (HTMLElement)
+                     * @return int  index of elem’s class in agf_TClass;
+                     *              - if elem has more than one class, return the smallest index of those found in agf_TClass
+                     *              - if elem has no class in agf_TClass, return agf_TClass.length
+                     */
+                    let getOrderIndex = function (elem) {
+                        // index = agf_TClass.indexOf(elem.className) would be ok if we were certain that <tr> have only one class
+                        let index = agf_TClass.findIndex((className) => elem.classList.contains(className));
+                        return (index === -1) ? agf_TClass.length : index;
+                    };
 
-                    for (let i in agf_TClass) {
-                        if ($.isNumeric(i) === false) break;
-
-                        for (let j in agf_tab_tr) {
-                            if ($.isNumeric(j) === false) break;
-
-                            if (agf_TClass[i] === agf_tab_tr[j].className) {
-                                $('#session_card > tbody').append(agf_tab_tr[j]);
-                                TAgf_found[j] = true;
-                            }
-                        }
-                    }
-
-                    // Ajoute le reste des TR non ordonnés à la suite
-                    for (let i in agf_tab_tr) {
-                        if ($.isNumeric(i) === false) break;
-                        if (TAgf_found[i] === true) continue;
-                        $('#session_card > tbody').append(agf_tab_tr[i]);
-                    }
-
-                    $('.toSelect2').select2({
-                        width: 'element'
+                    // le '>' est important pour éviter d’avoir les <tr> qui appartiennent à des tableaux imbriqués
+                    let Tligne = Array.from(document.querySelectorAll('#session_card > tbody > tr'));
+                    // trie les <tr> en fonction de l’ordre de leur(s) classe(s) dans agf_TClass
+                    Tligne.sort((elemA, elemB) => getOrderIndex(elemA) - getOrderIndex(elemB));
+                    // retire les <tr> de leur parent et les y rajoute dans l’ordre
+                    let session_card_tbody = document.querySelector('#session_card > tbody');
+                    Tligne.forEach((tr) => {
+                        session_card_tbody.removeChild(tr);
+                        session_card_tbody.appendChild(tr);
                     });
                 });
 

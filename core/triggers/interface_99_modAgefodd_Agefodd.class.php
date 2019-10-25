@@ -1209,6 +1209,34 @@ class InterfaceAgefodd {
 				}
 			}
 		}
+		elseif ($action == 'USER_MODIFY')
+        {
+            if ((empty($object->contactid) && GETPOST('contactid') > 0) || (!empty($object->contactid) && GETPOST('contactid') == 0))
+            {
+                dol_include_once('agefodd/class/agefodd_formateur.class.php');
+                // Nous avons peut être un formateur de déclaré avec cet utilisateur, puis il est changé en tant que contact externe
+                $formateur = new Agefodd_teacher($this->db);
+                $formateur->fetchByUser($object);
+                if (!empty($formateur->id))
+                {
+                    // Cas 1 : utilisateur interne qui passe à externe
+                    if (empty($object->contactid))
+                    {
+                        $formateur->type_trainer = 'socpeople';
+                        $formateur->fk_socpeople = GETPOST('contactid');
+                        $formateur->update($user);
+                    }
+                    // Cas 2 : utilisateur externe qui passe à interne
+                    else
+                    {
+                        $formateur->type_trainer = 'user';
+                        $formateur->fk_socpeople = null;
+                        $formateur->fk_user = $object->id;
+                        $formateur->update($user);
+                    }
+                }
+            }
+        }
 
 		return 0;
 	}

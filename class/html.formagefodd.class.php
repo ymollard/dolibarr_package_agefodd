@@ -129,7 +129,7 @@ class FormAgefodd extends Form
 			if ($num) {
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
-					$label = stripslashes($obj->intitule);
+					$label = dol_html_entity_decode(stripslashes($obj->intitule), ENT_QUOTES);
 					if (! empty($obj->ref_interne)) {
 						$label .= ' (' . $obj->ref_interne . ')';
 					}

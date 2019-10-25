@@ -554,12 +554,15 @@ class ActionsAgefodd
 										if ($sendRes > 0) {
 											$context->setEventMessages($langs->trans('AgfNbEmailSended', $sendRes));
 										} elseif ($sendRes < 0) {
+											$error++;
 											$context->setEventMessages($langs->trans('AgfEmailSendError') . $sendRes, 'errors');
 										} else {
+											$error++;
 											$context->setEventMessages($langs->trans('AgfNoEmailSended'), 'warnings');
 										}
 
 										if (!empty($errorsMsg) and is_array($errorsMsg)) {
+											$error++;
 											$context->setEventMessages($errorsMsg, 'errors');
 										}
 									}
@@ -568,9 +571,12 @@ class ActionsAgefodd
 									$context->setError($langs->trans('AgfExternalAccessErrorCreateOrUpdateCreneau'));
 								}
 
-								$redirect = $context->getRootUrl('agefodd_session_card', '&sessid=' . $agsession->id);
+								$redirect = $context->getRootUrl('agefodd_session_card', '&sessid=' . $agsession->id.'&fromaction='.$action);
 								if ($context->iframe || empty($conf->global->AGF_EA_FORCE_REDIRECT_TO_LIST_AFTER_SAVE_CRENEAU)) {
-									$redirect = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid=' . $agsession->id . '&slotid=' . $agf_calendrier_formateur->id);
+									$redirect = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid=' . $agsession->id . '&slotid=' . $agf_calendrier_formateur->id.'&fromaction='.$action);
+									if(empty($error)){
+										$redirect.= '&action=view';
+									}
 								}
 
 								$context->setEventMessages($langs->transnoentities('Saved'));
@@ -1468,6 +1474,7 @@ class ActionsAgefodd
 			} elseif (!empty($agftrainerid)) {
 				// agenda pour le formateur
 				$sql .= ' JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier agf_sfc ON (a.id = agf_sfc.fk_actioncomm) ';
+				$sql .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur agf_sf ON (agf_sf.rowid = agf_sfc.fk_agefodd_session_formateur)';
 			}
 
 			$this->resprints = $sql;
@@ -1491,7 +1498,7 @@ class ActionsAgefodd
 			if (!empty($agftraineeid)) {
 				$sql .= ' AND agf_ss.fk_stagiaire = ' . intval($agftraineeid);
 			} elseif (!empty($agftrainerid)) {
-				$sql .= ' AND agf_sfc.fk_agefodd_session_formateur = ' . intval($agftrainerid);
+				$sql .= ' AND agf_sf.fk_agefodd_formateur = ' . intval($agftrainerid);
 			}
 
 			$this->resprints = $sql;

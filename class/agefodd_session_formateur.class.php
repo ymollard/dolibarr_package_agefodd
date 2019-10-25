@@ -260,6 +260,7 @@ class Agefodd_session_formateur
 						$line->lastname = $obj->name_socp;
 						$line->firstname = $obj->firstname_socp;
 						$line->phone = $obj->phone_socp;
+						$line->email = $obj->email_socp;
 					}
 					if (! empty($obj->fk_user)) {
 						$line->lastname = $obj->name_user;

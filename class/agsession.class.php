@@ -82,6 +82,7 @@ class Agsession extends CommonObject
 	public $lines = array ();
 	public $commercialid;
 	public $commercialname;
+	public $commercialname_invert;
 	public $contactid;
 	public $contactname;
 	public $sourcecontactid;
@@ -810,6 +811,7 @@ class Agsession extends CommonObject
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
 				$this->commercialname = $obj->commercialname . ' ' . $obj->commercialfirstname;
+				$this->commercialname_invert = $obj->commercialfirstname.' '.$obj->commercialname;
 				$this->commercialemail = $obj->commercialemail;
 				$this->commercialphone = $obj->commercialphone;
 				$this->commercialid = $obj->commercialid;
@@ -2475,6 +2477,12 @@ class Agsession extends CommonObject
 	 */
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0, $array_options_keys=array()) {
 		global $langs, $conf;
+		if (empty($array_options_keys)) {
+			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+			$extrafields = new ExtraFields($this->db);
+			$extrafields->fetch_name_optionals_label($this->table_element);
+			$array_options_keys = array_keys($extrafields->attributes[$this->table_element]['label']);
+		}
 
 		$sql = "SELECT s.rowid, s.ref as sessionref, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.date_res_trainer, s.color, ";
@@ -2752,7 +2760,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $label;
+					$line->statuslib = $label;
 
 					// Formatage comme du Dolibarr standard pour ne pas être perdu
 					$line->array_options = array();
@@ -2953,7 +2961,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $obj->statuscode . ' - ' . $label;
+					$line->statuslib = $obj->statuscode . ' - ' . $label;
 
 					$this->lines[$i] = $line;
 					$i ++;
@@ -3107,7 +3115,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $label;
+					$line->statuslib = $label;
 
 					$this->lines[$i] = $line;
 					$i ++;
@@ -3318,7 +3326,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $label;
+					$line->statuslib = $label;
 
 					$this->lines[$i] = $line;
 					$i ++;
@@ -5357,10 +5365,12 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-			// Chargement des spécifique participants/convention
+
+		$this->convention_notes='';
+		// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
 			$this->TConventionFinancialLine=array();
-
+			$this->convention_notes=dol_nl2br($obj_agefodd_convention->notes);
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
 				$nbstag = count($obj_agefodd_convention->line_trainee);
@@ -5514,31 +5524,58 @@ class Agsession extends CommonObject
 		//Trainee link to the company convention
 		if (!empty($this->contactname)) {
 			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+			if (!empty($this->sourcecontactid)) {
+				$socpsign = new Contact($this->db);
+				$socpsign->fetch($this->sourcecontactid);
+				$this->signataire_intra_poste = $socpsign->poste;
+				$this->signataire_intra_mail = $socpsign->email;
+				$this->signataire_intra_phone = $socpsign->phone_pro;
+			} else {
+				$this->signataire_intra_poste ='';
+				$this->signataire_intra_mail ='';
+				$this->signataire_intra_phone ='';
+			}
 		} else {
 			$this->signataire_intra ='';
+			$this->signataire_intra_poste ='';
+			$this->signataire_intra_mail ='';
+			$this->signataire_intra_phone ='';
 		}
 		$stagiaires = new Agefodd_session_stagiaire($this->db);
-		$result=$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
+		$result=$stagiaires->fetch_stagiaire_per_session($this->id, $socid, 1);
 		if ($result<0) {
-			setEventMessage($stagiaires->error,'errors');
+			setEventMessage($stagiaires->error, 'errors');
 		} else {
 			$this->signataire_inter_array=array();
+			$this->signataire_inter_array_poste=array();
+			$this->signataire_inter_array_mail=array();
+			$this->signataire_inter_array_phone=array();
 			if (is_array($stagiaires->lines) && count($stagiaires->lines)>0) {
-
 				foreach ($stagiaires->lines as $line) {
 					if (!empty($line->fk_socpeople_sign)) {
 						$socpsign=new Contact($this->db);
 						$socpsign->fetch($line->fk_socpeople_sign);
 						$this->signataire_inter_array[$line->fk_socpeople_sign]= $socpsign->getFullName($langs).' ';
+						$this->signataire_inter_array_poste[$line->fk_socpeople_sign]= $socpsign->poste.' ';
+						$this->signataire_inter_array_mail[$line->fk_socpeople_sign]= $socpsign->email.' ';
+						$this->signataire_inter_array_phone[$line->fk_socpeople_sign]= $socpsign->phone_pro.' ';
 					}
 				}
-
 			}
 			if (count($this->signataire_inter_array)>0) {
-				$this->signataire_inter=implode(', ',$this->signataire_inter_array);
+				$this->signataire_inter=implode(', ', $this->signataire_inter_array);
+				$this->signataire_inter_poste=implode(', ', $this->signataire_inter_array_poste);
+				$this->signataire_inter_mail=implode(', ', $this->signataire_inter_array_mail);
+				$this->signataire_inter_phone=implode(', ', $this->signataire_inter_array_phone);
 				unset($this->signataire_inter_array);
+				unset($this->signataire_inter_array_poste);
+				unset($this->signataire_inter_array_mail);
+				unset($this->signataire_inter_array_phone);
 			} else {
 				$this->signataire_inter='';
+				$this->signataire_inter_poste='';
+				$this->signataire_inter_mail='';
+				$this->signataire_inter_phone='';
 			}
 		}
 
@@ -5576,6 +5613,7 @@ class Agsession extends CommonObject
 			}
 		}
 		$this->date_text=$this->libSessionDate();
+		$this->date_text_formated=$this->libSessionDate('%A %d %B %Y');
 		if (empty($this->session_nb_days) && !empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
 			$this->session_nb_days=$this->duree_session / $conf->global->AGF_NB_HOUR_IN_DAYS;
 		}
@@ -5590,8 +5628,10 @@ class Agsession extends CommonObject
 			if (is_array($formateurs->lines) && count($formateurs->lines)>0) {
 				foreach($formateurs->lines as $linetrainer) {
 					 $trainerarray[]= $linetrainer->lastname. ' '.$linetrainer->firstname;
+					 $trainerarray_invert[]= $linetrainer->firstname. ' '.$linetrainer->lastname;
 				}
 				$this->trainer_text = implode(', ',$trainerarray);
+				$this->trainer_text_invert = implode(', ',$trainerarray_invert);
 			}
 		}
 

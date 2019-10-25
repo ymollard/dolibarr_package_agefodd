@@ -1674,6 +1674,13 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	}
 
 	$out = '<!-- getPageViewSessionCardCalendrierFormateurExternalAccess -->';
+
+	// CLOSE IFRAME
+	$fromaction = GETPOST('fromaction');
+	if($context->iframe && $fromaction === 'add' && $action === 'view'){
+		$out.= '<script >window.parent.closeModal();</script>';
+	}
+
 	$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
 
 	$backUrl = $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id.'&save_lastsearch_values=1');
@@ -1750,9 +1757,15 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	$statusOptions = '';
 	foreach ($TStatus as $statusKey => $label)
 	{
+
+		$missingTimeToTest = time();
+		if(!empty($conf->global->AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS)){
+			$missingTimeToTest = time() - intval($conf->global->AGF_NUMBER_OF_HOURS_BEFORE_LOCKING_ABSENCE_REQUESTS) * 3600;
+		}
+
 		$inputDisabled = '';
-		if( $agf_calendrier_formateur->heuref > time()
-			&& in_array($statusKey, array(Agefoddsessionformateurcalendrier::STATUS_FINISH, Agefoddsessionformateurcalendrier::STATUS_MISSING))
+		if( ($agf_calendrier_formateur->heuref > time() && $statusKey == Agefoddsessionformateurcalendrier::STATUS_FINISH)
+			|| ($agf_calendrier_formateur->heuref < $missingTimeToTest && $statusKey == Agefoddsessionformateurcalendrier::STATUS_MISSING)
 		){
 			$inputDisabled = 'disabled';
 		}
@@ -1801,7 +1814,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 			<script>
 			$( document ).ready(function() {
-				if($("#status").val() == \''.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'\')
+				if($("#status").val() == "'.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'")
 				{
 					$("#code_c_session_calendrier_type").prop(\'required\',true);
 				} else {
@@ -1827,6 +1840,33 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				});
 
 
+				var heured = document.getElementById("heured");
+				var heuref = document.getElementById("heuref");
+			
+				heured.addEventListener("change", function (event) {
+					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
+						heured.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
+					}
+					else {
+						heured.setCustomValidity("");
+						heuref.setCustomValidity("");
+					}
+				});
+				
+				heuref.addEventListener("change", function (event) {
+					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
+						heuref.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
+					}
+					else {
+						heuref.setCustomValidity("");
+						heured.setCustomValidity("");
+					}
+				});
+
+				$("#status").focus(function() {
+					//Store old value
+					$(this).data("lastValue",$(this).val());
+				});
 
 				$("#status").change(function() {
 
@@ -1843,6 +1883,13 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
                     var start = document.getElementById("heured").value;
                     var end = document.getElementById("heuref").value;
                     var duration = agfTimeDiff(start, end);
+					
+					if(agfTimeDiff(start, end, false) < 0){
+						window.alert("'.$langs->transnoentities('HourInvalid').'");
+						$(this).val($(this).data("lastValue")); // restore last value
+						return;
+					}
+					
 					
 					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_FINISH.'\')
 					{
@@ -1881,17 +1928,23 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				});
 			});
 
-			function agfTimeDiff(start, end) {
+			function agfTimeDiff(start, end, outputFormated = true) {
                 start = start.split(":");
                 end = end.split(":");
                 var startDate = new Date(0, 0, 0, start[0], start[1], 0);
                 var endDate = new Date(0, 0, 0, end[0], end[1], 0);
                 var diff = endDate.getTime() - startDate.getTime();
-                var hours = Math.floor(diff / 1000 / 60 / 60);
-                diff -= hours * 1000 * 60 * 60;
-                var minutes = Math.floor(diff / 1000 / 60);
-                
-                return (hours < 9 ? "0" : "") + hours + ":" + (minutes < 9 ? "0" : "") + minutes;
+                // console.log(diff);
+                if(outputFormated){
+					var hours = Math.floor(diff / 1000 / 60 / 60);
+					diff -= hours * 1000 * 60 * 60;
+					var minutes = Math.floor(diff / 1000 / 60);
+					
+                	return ((hours < 9 && hours >= 0) ? "0" : "") + hours + ":" + (minutes < 9 ? "0" : "") + minutes;
+                }
+                else{
+                	return diff;
+                }
             }
 			</script>
 			';
@@ -1965,7 +2018,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			<label for="stagiaire_'.$stagiaire->id.'">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</label>
 				<div class="input-group">';
 
-            $out.= '<input '.$inputMore.' title="'.$inputTitle.'" data-plannedabsence="'.$planned_absence.'" '.($inputReadonly?' readonly ':'').' type="time" step="900" class="form-control traineeHourSpended '.$inputClass.'" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.$inputValue.'" />';
+            $out.= '<input '.$inputMore.' title="'.$inputTitle.'" data-plannedabsence="'.$planned_absence.'" '.($inputReadonly?' readonly ':'').' type="text" pattern="([0-9]*(:)[0-5][0-9]" placeholder="00:00" class="form-control traineeHourSpended '.$inputClass.'" id="stagiaire_'.$stagiaire->id.'" name="hours['.$stagiaire->id.']" value="'.$inputValue.'" />';
 
             if(!$inputReadonly)
             {
@@ -2042,7 +2095,12 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		$buttons= '';
 	if ($action != 'view')
 	{
-        $buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />';
+		$buttonsValue = $langs->trans('Add');
+		if(!empty($agf_calendrier_formateur->id)) {
+			$buttonsValue = $langs->trans('Update');
+		}
+
+		$buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$buttonsValue.'" />';
 	}
 
 	if(empty($user->rights->agefodd->external_trainer_time_slot_delete)){
