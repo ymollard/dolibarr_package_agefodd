@@ -1,0 +1,59 @@
+
+ul.agf-sortable-list,ul.agf-sortable-list ul,ul.agf-sortable-list li, #sortableListsBase ul, #sortableListsBase li {
+    margin:0; padding:0;
+    list-style-type:none;
+    color:#6e6e6e;
+    border:1px solid #c3c3c3;
+}
+
+ul.agf-sortable-list{ padding:0; background-color:#f9f9f9; }
+
+ul.agf-sortable-list li.agf-sortable-list__item, #sortableListsBase li.agf-sortable-list__item{
+    padding-left:50px;
+    margin:5px;
+    border: 1px solid #c3c3c3;
+    background-color: #dcdcdc;
+}
+
+li.agf-sortable-list__item .agf-sortable-list__item__title , #sortableListsBase li.agf-sortable-list__item .agf-sortable-list__item__title {
+    padding:7px;
+    background-color:#fff;
+}
+
+.move {
+    cursor: move;
+}
+
+.clickable, .move .clickable{
+	cursor: pointer;
+}
+
+.sortableListsOpener{
+    cursor: pointer !important;
+}
+
+.agf-sortable-list__item--placeholder{
+    background-color: #ff8 !important;
+}
+
+.agf-sortable-list__item--hint{
+    background-color: #bbf !important;
+}
+
+.agf-sortable-list__item__title__flex{
+	display: flex;
+	flex-direction: row;
+}
+
+.agf-sortable-list__item__title__col{
+	flex: auto;
+	width: 25%;
+}
+
+.agf-sortable-list__item__title__col.-action{
+	text-align: right;
+}
+
+.agf-sortable-list__item__title__button{
+	margin-left: 15px;
+}
