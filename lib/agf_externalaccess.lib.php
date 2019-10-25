@@ -1306,7 +1306,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	foreach ($stagiaires->lines as &$stagiaire)
 	{
 		if ($stagiaire->id <= 0) continue;
-		$out.= '<li class="list-group-item"><i class="fa fa-'.(in_array($stagiaire->civilite, array('MME', 'MLE')) ? 'female' : 'male').'"></i><span class="ml-2">'
+		$out.= '<li class="list-group-item"><i class="fa fa-'.(in_array($stagiaire->civilite, array('MME', 'MLE')) ? 'female' : 'male').'"></i><span class="ml-2">';
 		$out.= strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom) . '('.$stagiaire->socname.')';
 		if (!empty($stagiaire->tel1)) {
 			$out.= '-'.$stagiaire->tel1;
