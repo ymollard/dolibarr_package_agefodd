@@ -160,10 +160,9 @@ class Agefodd_teacher extends CommonObject {
 		$error = 0;
 		
 		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formateur';
-		if (!empty($user->contactid)) $sql.= ' WHERE fk_socpeople = '.$user->contactid.' AND type_trainer = \'socpeople\'';
-		else $sql.= ' WHERE fk_user = '.$user->id.' AND type_trainer = \'user\'';
+		$sql.= ' WHERE (fk_user = '.$user->id.' AND type_trainer = \'user\')';
+		if (!empty($user->contactid)) $sql.= ' OR (fk_socpeople = '.$user->contactid.' AND type_trainer = \'socpeople\')';
 		$sql.= ' AND entity = '.$conf->entity;
-		
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
