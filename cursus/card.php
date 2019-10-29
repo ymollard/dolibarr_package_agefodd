@@ -52,7 +52,7 @@ $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
 
-if ($page == - 1) {
+if ($page == - 1 || $page === '') {
 	$page = 0;
 }
 
