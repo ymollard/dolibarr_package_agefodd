@@ -452,7 +452,7 @@ if ($action != 'edit' && $action != 'create') {
 		print '<table class="noborder" width="100%">';
 		print '<tr>';
 		print '<td>' . $langs->trans('AgfAddTraining');
-		print $formAgefodd->select_formation('', 'training_id', 'intitule', 1, 0, array (), array (
+		print $formAgefodd->select_formation_liste('', 'training_id', 'intitule', 1, 0, array (), array (
 				' AND c.rowid NOT IN (SELECT fk_formation_catalogue FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_cursus WHERE fk_cursus=' . $id . ')'
 		));
 		print '<input type="submit" class="butAction" value="' . $langs->trans("Add") . '"></td>';
