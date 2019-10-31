@@ -214,7 +214,8 @@ class Agsession extends CommonObject
 		$sql .= "status,";
 		$sql .= "duree_session,";
 		$sql .= "intitule_custo,";
-		$sql .= "trainer_ext_information";
+		$sql .= "trainer_ext_information,";
+		$sql .= "color";
 		$sql .= ") VALUES (";
 		$sql .= " " . (! isset($ref) ? "''" : "'" . $ref. "'") . ",";
 		$sql .= " " . (empty($this->fk_soc) ? 'NULL' : $this->fk_soc) . ",";
@@ -238,7 +239,8 @@ class Agsession extends CommonObject
 		$sql .= " " . (! isset($this->status) ? 'NULL' : $this->db->escape($this->status)) . ",";
 		$sql .= " " . (empty($this->duree_session) ? '0' : price2num($this->duree_session)) . ",";
 		$sql .= " " . (! isset($this->intitule_custo) ? 'NULL' : "'" . $this->db->escape($this->intitule_custo) . "'") . ",";
-		$sql .= " " . (empty($this->trainer_ext_information) ? 'NULL' : "'" . $this->db->escape($this->trainer_ext_information) . "'") . "";
+		$sql .= " " . (empty($this->trainer_ext_information) ? 'NULL' : "'" . $this->db->escape($this->trainer_ext_information) . "'") . ",";
+		$sql .= " " . (empty($this->color) ? 'NULL' : "'" . $this->db->escape($this->color) . "'") . "";
 		$sql .= ")";
 		$this->db->begin();
 
@@ -3659,6 +3661,12 @@ class Agsession extends CommonObject
 			print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
 			print '<td colspan="'.$colspan.'">' . ($this->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td></tr>';
 		}
+
+		print '<tr  class="order_sessionColor"><td>' . $langs->trans("Color") . '</td>';
+	        print '<td>';
+        	print '<div style="width:15px;height:15px;background-color:#'.$this->color.';border:1px solid;">&nbsp;</div>';
+        	print '</td></tr>';
+
 
 		print '<tr class="order_sessionCommercial"><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
 		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/user/card.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';

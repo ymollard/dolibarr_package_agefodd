@@ -503,7 +503,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		$agf->type_session = GETPOST('type_session', 'int');
 		$agf->nb_place = GETPOST('nb_place', 'int');
 		$agf->status = GETPOST('session_status', 'int');
-
+		$agf->color = GETPOST('color');
 		$agf->fk_soc = GETPOST('fk_soc', 'int');
 		$agf->dated = dol_mktime(12, 0, 0, GETPOST('dadmonth', 'int'), GETPOST('dadday', 'int'), GETPOST('dadyear', 'int'));
 		$agf->datef = dol_mktime(12, 0, 0, GETPOST('dafmonth', 'int'), GETPOST('dafday', 'int'), GETPOST('dafyear', 'int'));
@@ -759,6 +759,11 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
 	print '<td>' . $formAgefodd->select_type_session('type_session', $conf->global->AGF_DEFAULT_SESSION_TYPE) . '</td></tr>';
+
+	print '<tr  class="order_sessionColor"><td>' . $langs->trans("Color") . '</td>';
+        print '<td>';
+        print $formother->selectColor($agf->color, 'color');
+        print '</td></tr>';
 
 	print '<tr class="order_sessionCommercial"><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
 	print '<td>';
