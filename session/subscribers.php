@@ -675,7 +675,7 @@ if (! empty($id)) {
 			print '<tr class="liste_titre"><th></th>';
 			if ($blocNumber > 0) {
 				for($i = 0; $i < $blocNumber; $i ++) {
-					print '<th align="center">' . dol_print_date($calendrier->lines[$i]->date_session, '%d/%m/%Y') . '<br>' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour') . '</th>';
+					print '<th align="center">' . dol_print_date($calendrier->lines[$i]->date_session, '%d/%m/%Y') . '<br>' . dol_print_date($calendrier->lines[$i]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$i]->heuref, 'hour') .(!empty($calendrier->lines[$i]->calendrier_type_label) ? "<br>".$calendrier->lines[$i]->calendrier_type_label : "") .'</th>';
 				}
 			} else {
 				print '<th align="center">' . $langs->trans("AgfNoCalendar") . '</th>';
