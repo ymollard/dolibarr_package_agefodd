@@ -100,7 +100,7 @@ function _getAgefoddSessionCalendrier($fk_agefodd_session, $date_s, $date_e)
 	$sql = 'SELECT agsc.rowid';
 	$sql.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier agsc';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session s ON (s.rowid = agsc.fk_agefodd_session)';
-	$sql.= ' WHERE s.entity = '.$conf->entity.' AND agsc.fk_agefodd_session = '.$fk_agefodd_session;
+	$sql.= ' WHERE s.entity IN ('.getEntity('agefodd').') AND agsc.fk_agefodd_session = '.$fk_agefodd_session;
 	$sql.= ' AND agsc.heured >= \''.$date_s.'\'';
 	$sql.= ' AND agsc.heuref <= \''.$date_e.'\'';
 	
