@@ -1306,7 +1306,18 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	foreach ($stagiaires->lines as &$stagiaire)
 	{
 		if ($stagiaire->id <= 0) continue;
-		$out.= '<li class="list-group-item"><i class="fa fa-'.(in_array($stagiaire->civilite, array('MME', 'MLE')) ? 'female' : 'male').'"></i><span class="ml-2">'.strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom).'</span></li>';
+		$out.= '<li class="list-group-item"><i class="fa fa-'.(in_array($stagiaire->civilite, array('MME', 'MLE')) ? 'female' : 'male').'"></i><span class="ml-2">';
+		$out.= strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom) . ' ('.$stagiaire->socname.')';
+		if (!empty($stagiaire->tel1)) {
+			$out.= ' - '.$stagiaire->tel1;
+		}
+		if (!empty($stagiaire->tel2)) {
+			$out.= ' - '.$stagiaire->tel2;
+		}
+		if (!empty($stagiaire->email)) {
+			$out .= ' - ' . $stagiaire->email;
+		}
+		$out.= '</span></li>';
 	}
 	$out.= '</ul>';
 
@@ -1663,6 +1674,13 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	}
 
 	$out = '<!-- getPageViewSessionCardCalendrierFormateurExternalAccess -->';
+
+	// CLOSE IFRAME
+	$fromaction = GETPOST('fromaction');
+	if($context->iframe && $fromaction === 'add' && $action === 'view'){
+		$out.= '<script >window.parent.closeModal();</script>';
+	}
+
 	$out.= '<section id="section-session-card-calendrier-formateur" class="py-5"><div class="container">';
 
 	$backUrl = $context->getRootUrl('agefodd_session_card', '&sessid='.$agsession->id.'&save_lastsearch_values=1');
@@ -2077,7 +2095,12 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		$buttons= '';
 	if ($action != 'view')
 	{
-        $buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$langs->trans('Save').'" />';
+		$buttonsValue = $langs->trans('Add');
+		if(!empty($agf_calendrier_formateur->id)) {
+			$buttonsValue = $langs->trans('Update');
+		}
+
+		$buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$buttonsValue.'" />';
 	}
 
 	if(empty($user->rights->agefodd->external_trainer_time_slot_delete)){

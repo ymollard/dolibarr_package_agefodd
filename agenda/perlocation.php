@@ -1032,7 +1032,6 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 					$color = 'cc0000';
 				}
 
-
 				// Define all rects with event (cases1 is first half hour, cases2 is second half hour)
 				for($h = $begin_h; $h < $end_h; $h ++) {
 					// if ($username->id == 1 && $day==1) print 'h='.$h;
@@ -1066,7 +1065,8 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 								// $cases1[$h][$event->id]['string'].='xxx';
 							}
 							$cases1[$h][$event->id]['color'] = $color;
-						}
+                            $cases1[$h][$event->id]['sessionid'] = $event->sessionid;
+                        }
 						if ($event->date_start_in_calendar < $c && $dateendtouse > $b) {
 							$busy = $event->transparency;
 							$cases2[$h][$event->id]['busy'] = $busy;
@@ -1085,7 +1085,8 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 								// $cases2[$h][$event->id]['string'].='xxx';
 							}
 							$cases2[$h][$event->id]['color'] = $color;
-						}
+                            $cases2[$h][$event->id]['sessionid'] = $event->sessionid;
+                        }
 					} else {
 						$busy = $event->transparency;
 						$cases1[$h][$event->id]['busy'] = $busy;
@@ -1150,10 +1151,12 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 
 		if (!empty($cases1[$h])) {
 			$output = array_slice($cases1[$h], 0, 1);
-			if ($output[0]['string'])
+            if ($output[0]['string'])
 				$title1 .= ($title1 ? ' - ' : '') . $output[0]['string'];
 			if ($output[0]['color'])
 				$color1 = $output[0]['color'];
+			if($output[0]['sessionid'])
+			    $sessionid1 = $output[0]['sessionid'];
 		}
 
 			// 1 seul evenement
@@ -1163,6 +1166,8 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 				$title2 .= ($title2 ? ' - ' : '') . $output[0]['string'];
 			if ($output[0]['color'])
 				$color2 = $output[0]['color'];
+            if($output[0]['sessionid'])
+                $sessionid2 = $output[0]['sessionid'];
 		}
 
 		$ids1 = '';
@@ -1173,10 +1178,10 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 		if (!empty($cases2[$h]) && count($cases2[$h]) && array_keys($cases2[$h]))
 			$ids2 = join(',', array_keys($cases2[$h]));
 
-		print '<table class="nobordernopadding" width="100%">';
-		print '<tr><td ' . ($color1 ? 'style="background: #' . $color1 . ';"' : '') . 'class="' . ($style1 ? $style1 . ' ' : '') . (!empty($event->sessionid)?'onclickopenref':'') . ($title1 ? ' cursorpointer' : '') . '" data-sessionid="'.$event->sessionid.'" data-trainerid="'.$event->trainerid.'" data-year="'.sprintf("%04d", $year).'" data-month="'.sprintf("%02d", $month).'" data-day="'.sprintf("%02d", $day).'" data-hour="'.sprintf("%02d", $h).'" data-min="00" data-ids-event="'.($ids1 ? $ids1 : 'none').'" ' . ($title1 ? ' title="' . $title1 . '"' : '') . '>';
+        print '<table class="nobordernopadding" width="100%">';
+		print '<tr><td ' . ($color1 ? 'style="background: #' . $color1 . ';"' : '') . 'class="' . ($style1 ? $style1 . ' ' : '') . (!empty($sessionid1)?'onclickopenref':'') . ($title1 ? ' cursorpointer' : '') . '" data-sessionid="'.$sessionid1.'" data-trainerid="'.$event->trainerid.'" data-year="'.sprintf("%04d", $year).'" data-month="'.sprintf("%02d", $month).'" data-day="'.sprintf("%02d", $day).'" data-hour="'.sprintf("%02d", $h).'" data-min="00" data-ids-event="'.($ids1 ? $ids1 : 'none').'" ' . ($title1 ? ' title="' . $title1 . '"' : '') . '>';
 		print $string1;
-		print '</td><td ' . ($color2 ? 'style="background: #' . $color2 . ';"' : '') . 'class="' . ($style2 ? $style2 . ' ' : '') . (!empty($event->sessionid)?'onclickopenref':'') . ($title1 ? ' cursorpointer' : '') . '" data-sessionid="'.$event->sessionid.'" data-trainerid="'.$event->trainerid.'" data-year="'.sprintf("%04d", $year).'" data-month="'.sprintf("%02d", $month).'" data-day="'.sprintf("%02d", $day).'" data-hour="'.sprintf("%02d", $h).'" data-min="00" data-ids-event="'.($ids1 ? $ids1 : 'none').'" ' . ($title2 ? ' title="' . $title2 . '"' : '') . '>';
+		print '</td><td ' . ($color2 ? 'style="background: #' . $color2 . ';"' : '') . 'class="' . ($style2 ? $style2 . ' ' : '') . (!empty($sessionid2)?'onclickopenref':'') . ($title1 ? ' cursorpointer' : '') . '" data-sessionid="'.$sessionid2.'" data-trainerid="'.$event->trainerid.'" data-year="'.sprintf("%04d", $year).'" data-month="'.sprintf("%02d", $month).'" data-day="'.sprintf("%02d", $day).'" data-hour="'.sprintf("%02d", $h).'" data-min="00" data-ids-event="'.($ids1 ? $ids1 : 'none').'" ' . ($title2 ? ' title="' . $title2 . '"' : '') . '>';
 		print $string2;
 		print '</td></tr>';
 		print '</table>';

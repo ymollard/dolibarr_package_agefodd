@@ -135,6 +135,7 @@ class pdf_azur_agefodd extends ModelePDFPropales
 		$this->db = $db;
 		$this->name = "azur_agefodd";
 		$this->description = $langs->trans('DocModelAzurDescription'). 'Agefodd';
+		$this->update_main_doc_field = 1;
 
 		// Dimension page
 		$this->type = 'pdf';
@@ -388,7 +389,7 @@ class pdf_azur_agefodd extends ModelePDFPropales
 				$pagenb++;
 
                 $heightforinfotot = 40;	// Height reserved to output the info and total part
-                $heightforsignature = empty($conf->global->PROPAL_DISABLE_SIGNATURE)?(pdfGetHeightForHtmlContent($pdf, $outputlangs->transnoentities("ProposalCustomerSignature"))+10):0;
+                $heightforsignature = empty($conf->global->PROPAL_DISABLE_SIGNATURE)?(pdfGetHeightForHtmlContent($pdf, $outputlangs->transnoentities("ProposalCustomerSignature"))):0;
                 $heightforfreetext= (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT)?$conf->global->MAIN_PDF_FREETEXT_HEIGHT:5);	// Height reserved to output the free text on last page
 	            $heightforfooter = $this->marge_basse + 8;	// Height reserved to output the footer (value include bottom margin)
 				if ($conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS >0) $heightforfooter+= 6;
@@ -1486,7 +1487,7 @@ class pdf_azur_agefodd extends ModelePDFPropales
 			}
 		}
 
-		$pdf->SetFont('', 'B', $default_font_size + 3);
+		$pdf->SetFont('', 'B', $default_font_size + 5);
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetTextColor(0, 0, 60);
 		$title=$outputlangs->transnoentities("PdfCommercialProposalTitle");
@@ -1706,4 +1707,3 @@ class pdf_azur_agefodd extends ModelePDFPropales
 		return ($tab_hl*7);
 	}
 }
-

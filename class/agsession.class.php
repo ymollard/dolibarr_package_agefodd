@@ -214,7 +214,8 @@ class Agsession extends CommonObject
 		$sql .= "status,";
 		$sql .= "duree_session,";
 		$sql .= "intitule_custo,";
-		$sql .= "trainer_ext_information";
+		$sql .= "trainer_ext_information,";
+		$sql .= "color";
 		$sql .= ") VALUES (";
 		$sql .= " " . (! isset($ref) ? "''" : "'" . $ref. "'") . ",";
 		$sql .= " " . (empty($this->fk_soc) ? 'NULL' : $this->fk_soc) . ",";
@@ -238,7 +239,8 @@ class Agsession extends CommonObject
 		$sql .= " " . (! isset($this->status) ? 'NULL' : $this->db->escape($this->status)) . ",";
 		$sql .= " " . (empty($this->duree_session) ? '0' : price2num($this->duree_session)) . ",";
 		$sql .= " " . (! isset($this->intitule_custo) ? 'NULL' : "'" . $this->db->escape($this->intitule_custo) . "'") . ",";
-		$sql .= " " . (empty($this->trainer_ext_information) ? 'NULL' : "'" . $this->db->escape($this->trainer_ext_information) . "'") . "";
+		$sql .= " " . (empty($this->trainer_ext_information) ? 'NULL' : "'" . $this->db->escape($this->trainer_ext_information) . "'") . ",";
+		$sql .= " " . (empty($this->color) ? 'NULL' : "'" . $this->db->escape($this->color) . "'") . "";
 		$sql .= ")";
 		$this->db->begin();
 
@@ -3660,6 +3662,12 @@ class Agsession extends CommonObject
 			print '<td colspan="'.$colspan.'">' . ($this->type_session ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td></tr>';
 		}
 
+		print '<tr  class="order_sessionColor"><td>' . $langs->trans("Color") . '</td>';
+	        print '<td>';
+        	print '<div style="width:15px;height:15px;background-color:#'.$this->color.';border:1px solid;">&nbsp;</div>';
+        	print '</td></tr>';
+
+
 		print '<tr class="order_sessionCommercial"><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
 		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/user/card.php', 1) . '?id=' . $this->commercialid . '">' . $this->commercialname . '</a></td></tr>';
 
@@ -5365,10 +5373,12 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-			// Chargement des spécifique participants/convention
+
+		$this->convention_notes='';
+		// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
 			$this->TConventionFinancialLine=array();
-
+			$this->convention_notes=dol_nl2br($obj_agefodd_convention->notes);
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
 				$nbstag = count($obj_agefodd_convention->line_trainee);
@@ -5522,31 +5532,58 @@ class Agsession extends CommonObject
 		//Trainee link to the company convention
 		if (!empty($this->contactname)) {
 			$this->signataire_intra = ucfirst(strtolower($this->contactcivilite)) . ' ' . $this->contactname;
+			if (!empty($this->sourcecontactid)) {
+				$socpsign = new Contact($this->db);
+				$socpsign->fetch($this->sourcecontactid);
+				$this->signataire_intra_poste = $socpsign->poste;
+				$this->signataire_intra_mail = $socpsign->email;
+				$this->signataire_intra_phone = $socpsign->phone_pro;
+			} else {
+				$this->signataire_intra_poste ='';
+				$this->signataire_intra_mail ='';
+				$this->signataire_intra_phone ='';
+			}
 		} else {
 			$this->signataire_intra ='';
+			$this->signataire_intra_poste ='';
+			$this->signataire_intra_mail ='';
+			$this->signataire_intra_phone ='';
 		}
 		$stagiaires = new Agefodd_session_stagiaire($this->db);
-		$result=$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
+		$result=$stagiaires->fetch_stagiaire_per_session($this->id, $socid, 1);
 		if ($result<0) {
-			setEventMessage($stagiaires->error,'errors');
+			setEventMessage($stagiaires->error, 'errors');
 		} else {
 			$this->signataire_inter_array=array();
+			$this->signataire_inter_array_poste=array();
+			$this->signataire_inter_array_mail=array();
+			$this->signataire_inter_array_phone=array();
 			if (is_array($stagiaires->lines) && count($stagiaires->lines)>0) {
-
 				foreach ($stagiaires->lines as $line) {
 					if (!empty($line->fk_socpeople_sign)) {
 						$socpsign=new Contact($this->db);
 						$socpsign->fetch($line->fk_socpeople_sign);
 						$this->signataire_inter_array[$line->fk_socpeople_sign]= $socpsign->getFullName($langs).' ';
+						$this->signataire_inter_array_poste[$line->fk_socpeople_sign]= $socpsign->poste.' ';
+						$this->signataire_inter_array_mail[$line->fk_socpeople_sign]= $socpsign->email.' ';
+						$this->signataire_inter_array_phone[$line->fk_socpeople_sign]= $socpsign->phone_pro.' ';
 					}
 				}
-
 			}
 			if (count($this->signataire_inter_array)>0) {
-				$this->signataire_inter=implode(', ',$this->signataire_inter_array);
+				$this->signataire_inter=implode(', ', $this->signataire_inter_array);
+				$this->signataire_inter_poste=implode(', ', $this->signataire_inter_array_poste);
+				$this->signataire_inter_mail=implode(', ', $this->signataire_inter_array_mail);
+				$this->signataire_inter_phone=implode(', ', $this->signataire_inter_array_phone);
 				unset($this->signataire_inter_array);
+				unset($this->signataire_inter_array_poste);
+				unset($this->signataire_inter_array_mail);
+				unset($this->signataire_inter_array_phone);
 			} else {
 				$this->signataire_inter='';
+				$this->signataire_inter_poste='';
+				$this->signataire_inter_mail='';
+				$this->signataire_inter_phone='';
 			}
 		}
 
@@ -5584,6 +5621,7 @@ class Agsession extends CommonObject
 			}
 		}
 		$this->date_text=$this->libSessionDate();
+		$this->date_text_formated=$this->libSessionDate('%A %d %B %Y');
 		if (empty($this->session_nb_days) && !empty($conf->global->AGF_NB_HOUR_IN_DAYS)) {
 			$this->session_nb_days=$this->duree_session / $conf->global->AGF_NB_HOUR_IN_DAYS;
 		}

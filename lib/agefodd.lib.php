@@ -1755,13 +1755,16 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 			$agf = new Formation($db);
 			$agf->fetch($object->fk_formation_catalogue);
 			$forma_ref_int = $agf->ref_interne;
-			$forma_ref_int .= '(' . $object->libSessionDate() . ') - ' . $object->id . '#' . $object->ref ;
+			if (empty($conf->global->AGF_HIDE_DATE_ON_HEADER)) {
+				$forma_ref_int .= '(' . $object->libSessionDate() . ') - ';
+			}
+			$forma_ref_int .= $object->id . '#' . $object->ref ;
 		}
 
 
 		if ($forma_ref_int != null) {
 			$pdf->SetXY($x, $y);
-			$pdf->SetFont('', '', $font_size);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $font_size);
 			$pdf->MultiCell(70, 4, $outputlangs->transnoentities('AgfRefInterne') . ' : ' . $outputlangs->convToOutputCharset($forma_ref_int), 0, $align);
 		}
 	}
