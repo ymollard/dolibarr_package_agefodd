@@ -216,13 +216,56 @@ function getPageViewSessionListExternalAccess()
 	$agsession = new Agsession($db);
 
 	$formateur->fetchByUser($user);
+	$status = GETPOST('filterStatusCode');
 	if (!empty($formateur->id))
 	{
-		$agsession->fetch_session_per_trainer($formateur->id);
+		$sortorder = '';
+		$sortfield = '';
+		$limit = 0;
+		$offset = 0;
+		$filter = array();
+
+
+
+		if(empty($status)){
+			$status = 'DEFAULT';
+		}
+
+		$sql = "SELECT rowid ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type";
+		$sql .= " WHERE " . MAIN_DB_PREFIX . "agefodd_session_status_type.code = 'ARCH' ";
+		$sql .= " LIMIT 1 ";
+
+		$resql = $db->query($sql);
+		if($resql)
+		{
+			$obj = $db->fetch_object($resql);
+			if($status == 'ARCH'){
+				$filter['s.status'] = $obj->rowid;
+			}
+			elseif($status == 'DEFAULT'){
+				$filter['!s.status'] = $obj->rowid;
+			}
+		}
+
+		$agsession->fetch_session_per_trainer($formateur->id, $sortorder, $sortfield, $limit, $offset, $filter);
+
 	}
 
 	$out = '<!-- getPageViewSessionListExternalAccess -->';
 	$out.= '<section id="section-session-list"><div class="container">';
+
+
+	$out.= '
+		<ul class="nav nav-tabs mb-3" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link '.($status=='DEFAULT'?'active':'').'"  href="'.$context->getRootUrl('agefodd_session_list').'" >'.$langs->trans('Sessions').'</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link '.($status=='ARCH'?'active':'').'"  href="'.$context->getRootUrl('agefodd_session_list', '&filterStatusCode=ARCH').'" >'.$langs->trans('ArchivedSessions').'</a>
+			</li>
+        </ul>
+	';
 
 	if(!empty($agsession->lines))
 	{
@@ -233,7 +276,6 @@ function getPageViewSessionListExternalAccess()
 		$out.= '<tr>';
 		$out.= ' <th class="" >'.$langs->trans('Ref').'</th>';
 		$out.= ' <th class="" >'.$langs->trans('AgfFormIntitule').'</th>';
-		$out.= ' <th class="" >'.$langs->trans('AgfParticipant').'</th>';
 		$out.= ' <th class="" >'.$langs->trans('DateStart').'</th>';
 		$out.= ' <th class="" >'.$langs->trans('DateEnd').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDuree').'</th>';
@@ -243,6 +285,7 @@ function getPageViewSessionListExternalAccess()
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeDeclared').'</th>';
 		//$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeSoldeTrainee').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('Status').'</th>';
+		$out.= ' <th class="" >'.$langs->trans('AgfParticipant').'</th>';
 		$out.= ' <th class="text-center" ></th>';
 		$out.= '</tr>';
 
@@ -270,7 +313,6 @@ function getPageViewSessionListExternalAccess()
 			$out.= '<tr>';
 			$out.= ' <td data-order="'.$item->sessionref.'" data-search="'.$item->sessionref.'"  ><a href="'.$context->getRootUrl('agefodd_session_card', '&sessid='.$item->rowid).'">'.$item->sessionref.'</a></td>';
 			$out.= ' <td data-order="'.$item->intitule.'" data-search="'.$item->intitule.'"  >'.$item->intitule.'</td>';
-			$out.= ' <td data-search="'.$stagiaires_str.'"  >'.$stagiaires_str.'</td>';
 			$out.= ' <td data-order="'.$item->dated.'" data-search="'.dol_print_date($item->dated, '%d/%m/%Y').'" >'.dol_print_date($item->dated, '%d/%m/%Y').'</td>';
 			$out.= ' <td data-order="'.$item->datef.'" data-search="'.dol_print_date($item->datef, '%d/%m/%Y').'" >'.dol_print_date($item->datef, '%d/%m/%Y').'</td>';
 			$out.= ' <td class="text-center" data-order="'.$item->duree_session.'" data-session="'.$item->duree_session.'"  >'.$item->duree_session.'</td>';
@@ -335,6 +377,7 @@ function getPageViewSessionListExternalAccess()
 			//$out.= ' <td class="text-center" data-order="'.$solde.'">'.$solde.'</td>';
 			$statut = Agsession::getStaticLibStatut($item->status, 0);
 			$out.= ' <td class="text-center" data-search="'.$statut.'" data-order="'.$statut.'" >'.$statut.'</td>';
+			$out.= ' <td data-search="'.$stagiaires_str.'"  >'.$stagiaires_str.'</td>';
 
 			$out.= ' <td class="text-right" >&nbsp;</td>';
 
