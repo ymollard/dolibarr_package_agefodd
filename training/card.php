@@ -475,6 +475,27 @@ if ($action == 'fichepedamodule' && $user->rights->agefodd->agefodd_formation_ca
 		setEventMessage($agf->error, 'errors');
 	}
 }
+    // Delete file
+    if ($action == 'remove_file' && $user->rights->agefodd->agefodd_formation_catalogue->supprimer)
+    {
+        require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+
+        if (empty($agf->id) || ! $agf->id > 0) {
+            // Reload to get all modified line records and be ready for hooks
+            $ret = $agf->fetch($id);
+        }
+
+        $langs->load('other');
+        $filetodelete = GETPOST('file','alpha');
+        $file =	$conf->agefodd->dir_output	. '/' .	$filetodelete;
+        $ret = dol_delete_file($file,0,0,0, $agf);
+        if ($ret) setEventMessages($langs->trans('FileWasRemoved', $filetodelete), null, 'mesgs');
+        else setEventMessages($langs->trans('ErrorFailToDeleteFile', $filetodelete), null, 'errors');
+
+        // Make a redirect to avoid to keep the remove_file into the url that create side effects
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $id);
+        exit();
+    }
 }
 /*
  * View
@@ -1050,29 +1071,40 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 				print '<tr class="liste_titre"><td colspan=3>' . $langs->trans("AgfLinkedDocuments") . '</td></tr>';
 
 				$agf->generatePDAByLink();
-				if (is_file($conf->agefodd->dir_output . '/fiche_pedago_' . $id . '.pdf')) {
-
+                $filename = 'fiche_pedago_' . $id . '.pdf';
+                $filedir  = $conf->agefodd->dir_output;
+                $filepath = $filedir . '/' . $filename;
+				if (is_file($filepath)) {
 					// afficher
 					$legende = $langs->trans("AgfDocOpen");
 					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogique") . '</td><td> ';
-					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-					print img_picto('fiche_pedago_' . $id . '.pdf:fiche_pedago_' . $id . '.pdf', 'pdf2') . '</a>';
+                    print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $filename . '" alt="' . $legende . '" title="' . $legende . '">';
+                    print img_picto($filename . ':' . $filename, 'pdf2', 'class="valignmiddle"') . '</a>';
 					if (function_exists('getAdvancedPreviewUrl')) {
 						$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_' . $id . '.pdf');
-						if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+						if ($urladvanced) print '&nbsp;&nbsp;<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('', 'detail', 'class="valignmiddle"').'</a>';
 					}
+                    if ($user->rights->agefodd->agefodd_formation_catalogue->supprimer) {
+                        print '<a href="' . $_SERVER["PHP_SELF"] . "?id=" . $agf->id . '&amp;action=remove_file&amp;file=' . urlencode($filename) . '">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+                    }
 					print '</td></tr>';
 				}
 
-				if (is_file($conf->agefodd->dir_output . '/fiche_pedago_modules_' . $id . '.pdf') && (!empty($conf->global->AGF_USE_TRAINING_MODULE))) {
+                $filename = 'fiche_pedago_modules_' . $id . '.pdf';
+                $filedir  = $conf->agefodd->dir_output;
+                $filepath = $filedir . '/' . $filename;
+				if (is_file($filepath) && (!empty($conf->global->AGF_USE_TRAINING_MODULE))) {
 					$legende = $langs->trans("AgfDocOpen");
 					print '<tr><td width="200" align="center">' . $langs->trans("AgfFichePedagogiqueModule") . '</td><td> ';
-					print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=fiche_pedago_modules_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
-					print img_picto('fiche_pedago_modules_' . $id . '.pdf:fiche_pedago_modules_' . $id . '.pdf', 'pdf2') . '</a>';
+                    print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=' . $filename . '" alt="' . $legende . '" title="' . $legende . '">';
+                    print img_picto($filename . ':' . $filename, 'pdf2', 'class="valignmiddle"') . '</a>';
 					if (function_exists('getAdvancedPreviewUrl')) {
 						$urladvanced = getAdvancedPreviewUrl('agefodd', 'fiche_pedago_modules_' . $id . '.pdf');
-						if ($urladvanced) print '<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('','detail').'</a>';
+						if ($urladvanced) print '&nbsp;&nbsp;<a data-ajax="false" href="'.$urladvanced.'" title="' . $langs->trans("Preview"). '">'.img_picto('', 'detail', 'class="valignmiddle"').'</a>';
 					}
+                    if ($user->rights->agefodd->agefodd_formation_catalogue->supprimer) {
+                        print '<a href="' . $_SERVER["PHP_SELF"] . "?id=" . $agf->id . '&amp;action=remove_file&amp;file=' . urlencode($filename) . '">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+                    }
 					print '</td></tr>';
 				}
 
