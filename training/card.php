@@ -70,6 +70,7 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 
 if (empty($reshook)){
 
+    $error = 0;
 
 /*
  * Actions delete
@@ -377,16 +378,73 @@ if ($action == "obj_update" && $user->rights->agefodd->agefodd_formation_catalog
 
 if ($action == 'confirm_clone' && $confirm == 'yes') {
 	$agf = new Formation($db);
-	if ($agf->fetch($id) > 0) {
-		$result = $agf->createFromClone($id);
-		if ($result < 0) {
-			setEventMessage($agf->error, 'errors');
-			$action = '';
-		} else {
-			header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $result);
-			exit();
-		}
-	}
+    if ($agf->fetch($id) > 0) {
+        $db->begin();
+
+        $srcFkFormationCatalogue = $agf->id;
+        $newFkFormationCatalogue = $agf->createFromClone($id);
+
+        if ($newFkFormationCatalogue < 0) $error++;
+
+        if (!$error) {
+            if (GETPOST('clone_training_modules')) {
+                // clone training modules
+                $sql = "SELECT";
+                $sql .= " t.rowid";
+                $sql .= ", t.entity";
+                $sql .= ", t.fk_formation_catalogue";
+                $sql .= ", t.sort_order";
+                $sql .= ", t.title";
+                $sql .= ", t.content_text";
+                $sql .= ", t.duration";
+                $sql .= ", t.obj_peda";
+                $sql .= ", t.status";
+                $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue_modules as t";
+                $sql .= " WHERE t.fk_formation_catalogue = " . $srcFkFormationCatalogue;
+
+                $resql = $db->query($sql);
+                if (!$resql) {
+                    $error++;
+                    $agf->errors[] = $db->lasterror();
+                }
+
+                if (!$error) {
+                    while ($obj = $db->fetch_object($resql)) {
+                        $agfFormationCatalogueModules = new Agefoddformationcataloguemodules($db);
+                        $agfFormationCatalogueModules->entity = $obj->entity;
+                        $agfFormationCatalogueModules->fk_formation_catalogue = $newFkFormationCatalogue;
+                        $agfFormationCatalogueModules->sort_order = $obj->sort_order;
+                        $agfFormationCatalogueModules->title = $obj->title;
+                        $agfFormationCatalogueModules->content_text = $obj->content_text;
+                        $agfFormationCatalogueModules->duration = $obj->duration;
+                        $agfFormationCatalogueModules->obj_peda = $obj->obj_peda;
+                        $agfFormationCatalogueModules->status = $obj->status;
+
+                        $result = $agfFormationCatalogueModules->create($user);
+                        if ($result < 0) {
+                            $error++;
+                            $agf->errors[] = $agfFormationCatalogueModules->errorsToString();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($error) {
+            $db->rollback();
+        } else {
+            $db->commit();
+        }
+
+        if ($error) {
+            setEventMessages($agf->error, $agf->errors, 'errors');
+            $action = '';
+        } else {
+            header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $newFkFormationCatalogue);
+            exit();
+        }
+    }
 }
 
 /*
@@ -801,6 +859,16 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 				// Confirm clone
 				if ($action == 'clone') {
+                    $formquestion = array (
+                        'text' => $langs->trans("ConfirmClone"),
+                        array (
+                            'type'  => 'checkbox',
+                            'name'  => 'clone_training_modules',
+                            'label' => $langs->trans("AgfCloneTrainingModules"),
+                            'value' => 0
+                        )
+                    );
+
 					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
 				}
 

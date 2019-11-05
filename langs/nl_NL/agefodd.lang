@@ -974,3 +974,4 @@ AgfMenuContactCreate=New trainning contact
 AgfNobodyTrainer=No trainer subs.
 AgfThirdpartyOfTraineeMandatory=Cannot create trainnee without thirdparty linked
 AgfUseTrainingProgramModule=USe modules into training program (experimental)
+AgfCloneTrainingModules=Cloner programme de formation des modules ?
