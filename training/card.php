@@ -859,15 +859,17 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_formation_catalogue->
 
 				// Confirm clone
 				if ($action == 'clone') {
-                    $formquestion = array (
-                        'text' => $langs->trans("ConfirmClone"),
-                        array (
-                            'type'  => 'checkbox',
-                            'name'  => 'clone_training_modules',
+                    $formquestion = '';
+
+                    if (!empty($conf->global->AGF_USE_TRAINING_MODULE)) {
+                        $formquestion = array('text' => $langs->trans("ConfirmClone"));
+                        $formquestion[] = array(
+                            'type' => 'checkbox',
+                            'name' => 'clone_training_modules',
                             'label' => $langs->trans("AgfCloneTrainingModules"),
                             'value' => 0
-                        )
-                    );
+                        );
+                    }
 
 					print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneTraining"), $langs->trans("ConfirmCloneTraining"), "confirm_clone", $formquestion, '', 1);
 				}
