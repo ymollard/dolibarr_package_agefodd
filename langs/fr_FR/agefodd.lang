@@ -1654,3 +1654,4 @@ agfcatalogdetailexport=Formation
 agfsessplaceexport=Lieu
 agfteacherexport=Formateur
 ConfirmDelete=Confirmer la suppression
+AgfCloneTrainingModules=Cloner programme de formation des modules ?
