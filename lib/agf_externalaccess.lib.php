@@ -278,14 +278,14 @@ function getPageViewSessionListExternalAccess()
 		$out.= ' <th class="" >'.$langs->trans('AgfFormIntitule').'</th>';
 		$out.= ' <th class="" >'.$langs->trans('DateStart').'</th>';
 		$out.= ' <th class="" >'.$langs->trans('DateEnd').'</th>';
-		$out.= ' <th class="text-center" >'.$langs->trans('AgfDuree').'</th>';
+		$out.= ' <th class="" >'.$langs->trans('AgfParticipant').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeOffPlatform').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfSessionSummaryTimeDone').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfSessionSummaryTotalLeft').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeDeclared').'</th>';
 		//$out.= ' <th class="text-center" >'.$langs->trans('AgfDureeSoldeTrainee').'</th>';
 		$out.= ' <th class="text-center" >'.$langs->trans('Status').'</th>';
-		$out.= ' <th class="" >'.$langs->trans('AgfParticipant').'</th>';
+		$out.= ' <th class="text-center" >'.$langs->trans('AgfDuree').'</th>';
 		$out.= ' <th class="text-center" ></th>';
 		$out.= '</tr>';
 
@@ -300,12 +300,49 @@ function getPageViewSessionListExternalAccess()
 			$stagiaires->fetch_stagiaire_per_session($item->rowid);
 
 			$stagiaires_str = '';
+			$plus_sta='';
+			$Tsearch_sta=array();
+			$Tpopcontent_sta=array();
 			if (!empty($stagiaires->lines))
 			{
 				foreach ($stagiaires->lines as &$stagiaire)
 				{
+					//Populate cell value and search value with only one trainee
 					if (empty($stagiaire->nom) && empty($stagiaire->prenom)) continue;
-					$stagiaires_str.= implode(' ', array( $stagiaire->civilite, strtoupper($stagiaire->nom), ucfirst($stagiaire->prenom) ))."<br />";
+					$stagiaires_str = implode(' ', array( $stagiaire->civilite, strtoupper($stagiaire->nom), ucfirst($stagiaire->prenom), ' ('.$stagiaire->socname.') '));
+					$search_sta= ' '. strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom) . ' ('.$stagiaire->socname.') ';
+					if (!empty($stagiaire->tel1)) {
+						$search_sta.= ' - '.$stagiaire->tel1;
+					}
+					if (!empty($stagiaire->tel2)) {
+						$search_sta.= ' - '.$stagiaire->tel2;
+					}
+					if (!empty($stagiaire->email)) {
+						$search_sta .= ' - ' . $stagiaire->email;
+					}
+					$Tsearch_sta[]=$search_sta;
+					break;
+				}
+				if (count($stagiaires->lines)>1) {
+					$Tsearch_sta=array();
+					foreach ($stagiaires->lines as &$stagiaire)
+					{
+						//Populate cell value and "plus" data and search value with all trainees
+						if (empty($stagiaire->nom) && empty($stagiaire->prenom)) continue;
+						$search_sta=  ' '. strtoupper($stagiaire->nom) . ' ' . ucfirst($stagiaire->prenom) . ' ('.$stagiaire->socname.')';
+						if (!empty($stagiaire->tel1)) {
+							$search_sta.= ' - '.$stagiaire->tel1;
+						}
+						if (!empty($stagiaire->tel2)) {
+							$search_sta.= ' - '.$stagiaire->tel2;
+						}
+						if (!empty($stagiaire->email)) {
+							$search_sta .= ' - ' . $stagiaire->email;
+						}
+						$Tsearch_sta[]=$search_sta;
+						$Tpopcontent_sta[]=' '.$stagiaire->civilite. ' '.$search_sta;
+					}
+					$plus_sta = ' <span data-toggle="popover" title="Détail des stagiaires" data-content="'.implode(' <br /> ',$Tpopcontent_sta).'"><i class="fa fa-plus hours-detail"></i></span>';
 				}
 
 			}
@@ -315,7 +352,7 @@ function getPageViewSessionListExternalAccess()
 			$out.= ' <td data-order="'.$item->intitule.'" data-search="'.$item->intitule.'"  >'.$item->intitule.'</td>';
 			$out.= ' <td data-order="'.$item->dated.'" data-search="'.dol_print_date($item->dated, '%d/%m/%Y').'" >'.dol_print_date($item->dated, '%d/%m/%Y').'</td>';
 			$out.= ' <td data-order="'.$item->datef.'" data-search="'.dol_print_date($item->datef, '%d/%m/%Y').'" >'.dol_print_date($item->datef, '%d/%m/%Y').'</td>';
-			$out.= ' <td class="text-center" data-order="'.$item->duree_session.'" data-session="'.$item->duree_session.'"  >'.$item->duree_session.'</td>';
+			$out.= ' <td data-search="'.implode(" ",$Tsearch_sta).'"  >'.$stagiaires_str.$plus_sta.'</td>';
 
 			$filters['excludeCanceled'] = true;
 			$agsession->fetchTrainers($item->rowid);
@@ -377,7 +414,8 @@ function getPageViewSessionListExternalAccess()
 			//$out.= ' <td class="text-center" data-order="'.$solde.'">'.$solde.'</td>';
 			$statut = Agsession::getStaticLibStatut($item->status, 0);
 			$out.= ' <td class="text-center" data-search="'.$statut.'" data-order="'.$statut.'" >'.$statut.'</td>';
-			$out.= ' <td data-search="'.$stagiaires_str.'"  >'.$stagiaires_str.'</td>';
+
+			$out.= ' <td class="text-center" data-order="'.$item->duree_session.'" data-session="'.$item->duree_session.'"  >'.$item->duree_session.'</td>';
 
 			$out.= ' <td class="text-right" >&nbsp;</td>';
 
@@ -1471,10 +1509,10 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 		$links = array();
 		$link->fetchAll($links, $agsession->element, $agsession->id, '', '');
 		if (is_array($links) && count($links)>0) {
-			$out .= '				<br><br><h5>' . $langs->trans('AgfLinksExternal') . '</h5>';
+			$out .= '				<br /><br /><h5>' . $langs->trans('AgfLinksExternal') . '</h5>';
 			foreach ($links as $link) {
 				$out .= '<a data-ajax="false" href="' . $link->url . '" target="_blank"><i class="fa fa-link"></i>';
-				$out .= dol_escape_htmltag($link->label).'</a><br/>';
+				$out .= dol_escape_htmltag($link->label).'</a><br />';
 			}
 		}
 	}
@@ -1483,7 +1521,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 						</div>
 
 						<div class="col-md-6">
-                            <h5>'.$langs->trans('AgfUploadFileTrainer').'</h5><br>';
+                            <h5>'.$langs->trans('AgfUploadFileTrainer').'</h5><br />';
 	dol_include_once('/core/class/html.formfile.class.php');
 	$formfile = new FormFile($db);
 
