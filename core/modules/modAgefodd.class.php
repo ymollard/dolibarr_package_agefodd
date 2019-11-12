@@ -1232,6 +1232,7 @@ class modAgefodd extends DolibarrModules
 
 		$this->export_fields_array[$r] = array(
 				's.rowid' => 'Id',
+				's.ref' => 'Ref.',
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfFormTypeSession',
 				's.dated' => 'AgfDateDebut',
 				's.datef' => 'AgfDateFin',
@@ -1300,10 +1301,12 @@ class modAgefodd extends DolibarrModules
 				's.dated' => 'Date',
 				's.datef' => 'Date',
 				'sosta.nom' => 'Text',
+				's.ref'=>'Text',
 				'sta.date_birth' => "Date",
 		);
 		$this->export_entities_array[$r] = array(
 				's.rowid' => "AgfSessionDetail",
+				's.ref' => "AgfSessionDetail",
 				'CASE WHEN s.type_session=0 THEN \'Intra\' ELSE \'Inter\' END as type_session' => 'AgfSessionDetail',
 				's.dated' => 'AgfSessionDetail',
 				's.datef' => 'AgfSessionDetail',
