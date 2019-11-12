@@ -616,27 +616,27 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 										return $result;
 									}
 									foreach ($stagiaires->lines as $traine_line) {
-										//	if ($traine_line->status_in_session==3 || $traine_line->status_in_session==4) {
-										$traineelist[$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom;
+										if ($traine_line->status_in_session==3 || $traine_line->status_in_session==4) {
+											$traineelist[$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom;
 
-										// If comapny is empty we are probably in inter-entre or false inter
-										// In this case we add into company column the trainee company
-										if (empty($line->socname)) {
-											$line_to_output[2][$traine_line->stagerowid] = $traine_line->socname;
-										} else {
-											$line_to_output[2] = $line->socname;
-										}
+											// If comapny is empty we are probably in inter-entre or false inter
+											// In this case we add into company column the trainee company
+											if (empty($line->socname)) {
+												$line_to_output[2][$traine_line->stagerowid] = $traine_line->socname;
+											} else {
+												$line_to_output[2] = $line->socname;
+											}
 
-										$sessionOPCA = new Agefodd_opca($this->db);
-										$result = $sessionOPCA->getOpcaForTraineeInSession($traine_line->socid, $line->id);
-										if ($result < 0) {
-											$this->error = $sessionOPCA->error;
-											return $result;
+											$sessionOPCA = new Agefodd_opca($this->db);
+											$result = $sessionOPCA->getOpcaForTraineeInSession($traine_line->socid, $line->id);
+											if ($result < 0) {
+												$this->error = $sessionOPCA->error;
+												return $result;
+											}
+											$OPCA_array[$sessionOPCA->fk_soc_OPCA] = $traine_line->socid;
+											$OPCA_array_socid[$traine_line->socid] = $sessionOPCA->fk_soc_OPCA;
 										}
-										$OPCA_array[$sessionOPCA->fk_soc_OPCA] = $traine_line->socid;
-										$OPCA_array_socid[$traine_line->socid] = $sessionOPCA->fk_soc_OPCA;
 									}
-									//}
 								}
 							}
 
