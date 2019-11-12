@@ -405,7 +405,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 				$numdossier = array();
 
 				$conv = new Agefodd_convention($this->db);
-				$result = $conv->fetch_all($line->id);
+				$result = $conv->fetch_all($line->id, 0, array(4, 3));
 				if ($result < 0) {
 					$this->error = $conv->error;
 					return $result;
@@ -543,7 +543,6 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 								}
 							}
 
-
 							if (array_key_exists($convline->socid, $thirdparty_link_to_session)) {
 								$check_soc = false;
 								$output_trainee = false;
@@ -617,25 +616,27 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 										$this->error = $stagiaires->error;
 										return $result;
 									}
-									foreach ($stagiaires->lines as $traine_line) {
-										$traineelist[$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom;
+									foreach ( $stagiaires->lines as $traine_line ) {
+										if ($traine_line->status_in_session == 3 || $traine_line->status_in_session == 4) {
+											$traineelist[$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom;
 
-										// If comapny is empty we are probably in inter-entre or false inter
-										// In this case we add into company column the trainee company
-										if (empty($line->socname)) {
-											$line_to_output[2][$traine_line->stagerowid] = $traine_line->socname;
-										} else {
-											$line_to_output[2] = $line->socname;
-										}
+											// If comapny is empty we are probably in inter-entre or false inter
+											// In this case we add into company column the trainee company
+											if (empty($line->socname)) {
+												$line_to_output[2][$traine_line->stagerowid] = $traine_line->socname;
+											} else {
+												$line_to_output[2] = $line->socname;
+											}
 
-										$sessionOPCA = new Agefodd_opca($this->db);
-										$result = $sessionOPCA->getOpcaForTraineeInSession($traine_line->socid, $line->id);
-										if ($result < 0) {
-											$this->error = $sessionOPCA->error;
-											return $result;
+											$sessionOPCA = new Agefodd_opca($this->db);
+											$result = $sessionOPCA->getOpcaForTraineeInSession($traine_line->socid, $line->id);
+											if ($result < 0) {
+												$this->error = $sessionOPCA->error;
+												return $result;
+											}
+											$OPCA_array[$sessionOPCA->fk_soc_OPCA] = $traine_line->socid;
+											$OPCA_array_socid[$traine_line->socid] = $sessionOPCA->fk_soc_OPCA;
 										}
-										$OPCA_array[$sessionOPCA->fk_soc_OPCA] = $traine_line->socid;
-										$OPCA_array_socid[$traine_line->socid] = $sessionOPCA->fk_soc_OPCA;
 									}
 								}
 							}
@@ -645,9 +646,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 							$array_sub_total[11] += count($traineelist);
 						}
 					} else {
-
-
-						$traineelist = array();
+						$traineelist = array ();
 						$numdossier[0] = $line->id . '_' . $line->socid;
 						// All trainnee is linked to this convention.
 						$stagiaires = new Agefodd_session_stagiaire($this->db);
@@ -658,116 +657,116 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 						}
 						foreach ($stagiaires->lines as $traine_line) {
 
-
-							$output_trainee = false;
-							// If filter by soc is done we output only trainee and conv related to this soc
-							if (array_key_exists('so.nom', $filter)
-								|| array_key_exists('so.parent|sorequester.parent', $filter)
-								|| array_key_exists('socrequester.nom', $filter)
-								|| array_key_exists('sale.fk_user_com', $filter)) {
-								$check_soc = true;
-							}
-							if ($check_soc) {
-
-								$output_trainee_soc_nom = false;
-								$output_trainee_socparent = false;
-								$output_trainee_socrequester_nom = false;
-								$output_trainee_salesman = false;
-
-								$socstatic = new Societe($this->db);
-								$result = $socstatic->fetch($traine_line->socid);
-								if ($result < 0) {
-									$this->error = '$socstatic $traine_line ERROR=' . $socstatic->error;
-									return $result;
+							if ($traine_line->status_in_session == 3 || $traine_line->status_in_session == 4) {
+								$output_trainee = false;
+								// If filter by soc is done we output only trainee and conv related to this soc
+								if (array_key_exists('so.nom', $filter)
+										|| array_key_exists('so.parent|sorequester.parent', $filter)
+										|| array_key_exists('socrequester.nom', $filter)
+										|| array_key_exists('sale.fk_user_com', $filter)) {
+									$check_soc = true;
 								}
+								if ($check_soc) {
 
+									$output_trainee_soc_nom = false;
+									$output_trainee_socparent = false;
+									$output_trainee_socrequester_nom = false;
+									$output_trainee_salesman= false;
 
-								if (array_key_exists('so.nom', $filter)) {
-									if (strpos(dol_strtoupper($socstatic->name), dol_strtoupper($filter['so.nom'])) !== false) {
-										$output_trainee_soc_nom = true;
+									$socstatic = new Societe($this->db);
+									$result = $socstatic->fetch($traine_line->socid);
+									if ($result < 0) {
+										$this->error = '$socstatic $traine_line ERROR='.$socstatic->error;
+										return $result;
 									}
-								}
-								if (array_key_exists('socrequester.nom', $filter)) {
 
-									if (!empty($traine_line->fk_soc_requester) && $traine_line->fk_soc_requester != -1) {
-										$socstaticrequester = new Societe($this->db);
-										$result = $socstaticrequester->fetch($traine_line->fk_soc_requester);
-										if ($result < 0) {
-											$this->error = 'socstaticrequester=' . $socstaticrequester->error;
-											return $result;
+
+										if (array_key_exists('so.nom', $filter)) {
+											if (strpos(dol_strtoupper($socstatic->name), dol_strtoupper($filter['so.nom'])) !== false) {
+												$output_trainee_soc_nom = true;
+											}
 										}
+										if (array_key_exists('socrequester.nom', $filter)) {
 
+										if (!empty($traine_line->fk_soc_requester) && $traine_line->fk_soc_requester!=-1) {
+											$socstaticrequester = new Societe($this->db);
+											$result = $socstaticrequester->fetch($traine_line->fk_soc_requester);
+											if ($result < 0) {
+												$this->error = 'socstaticrequester='.$socstaticrequester->error;
+												return $result;
+											}
 
-										if (strpos(dol_strtoupper($socstaticrequester->name), dol_strtoupper($filter['socrequester.nom'])) !== false) {
+												if (strpos(dol_strtoupper($socstaticrequester->name), dol_strtoupper($filter['socrequester.nom'])) !== false) {
+													$output_trainee_socrequester_nom = true;
+												}
+											}
+
+										if (strpos(dol_strtoupper($socstatic->name), dol_strtoupper($filter['socrequester.nom'])) !== false) {
 											$output_trainee_socrequester_nom = true;
 										}
 									}
-
-									if (strpos(dol_strtoupper($socstatic->name), dol_strtoupper($filter['socrequester.nom'])) !== false) {
-										$output_trainee_socrequester_nom = true;
-									}
-								}
-								if (array_key_exists('so.parent|sorequester.parent', $filter)) {
-									if ($socstatic->parent == $filter['so.parent|sorequester.parent'] || $socstatic->id == $filter['so.parent|sorequester.parent']) {
-										$output_trainee_socparent = true;
-									}
-								}
-
-								if (array_key_exists('sale.fk_user_com', $filter)) {
-									$traineesoc = array();
-									if (!empty($traine_line->socid)) {
-										$traineesoc[] = $traine_line->socid;
-									}
-									if (!empty($traine_line->fk_soc_requester)) {
-										$traineesoc[] = $traine_line->fk_soc_requester;
-									}
-									if (count($traineesoc) > 0) {
-										$sql = 'SELECT fk_user FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux WHERE fk_soc IN (' . implode(',', $traineesoc) . ')';
-										$sql .= '  AND fk_user=' . $filter['sale.fk_user_com'];
-										dol_syslog(get_class($this) . "::find salesman for thirdparty output_trainee_salesman sql=" . $sql, LOG_DEBUG);
-										$result = $this->db->query($sql);
-										if ($result) {
-											if ($this->db->num_rows($result)) {
-												$output_trainee_salesman = true;
-											} else {
-												$output_trainee_salesman = false;
-											}
-										} else {
-											$this->error = "Error " . $this->db->lasterror();
-											dol_syslog(get_class($this) . "::write_file " . $this->error, LOG_ERR);
-											return -1;
+									if (array_key_exists('so.parent|sorequester.parent', $filter)) {
+										if ($socstatic->parent==$filter['so.parent|sorequester.parent'] || $socstatic->id==$filter['so.parent|sorequester.parent']) {
+											$output_trainee_socparent = true;
 										}
-									} else {
-										$output_trainee_salesman = true;
 									}
-								}
 
-								$output_trainee = $output_trainee_soc_nom || $output_trainee_socrequester_nom || $output_trainee_socparent || $output_trainee_salesman;
-							} else {
-								$output_trainee = true;
-							}
+									if (array_key_exists('sale.fk_user_com', $filter)) {
+										$traineesoc=array();
+										if (!empty($traine_line->socid)) {
+											$traineesoc[]=$traine_line->socid;
+										}
+										if (!empty($traine_line->fk_soc_requester)) {
+											$traineesoc[]=$traine_line->fk_soc_requester;
+										}
+										if (count($traineesoc)>0){
+											$sql = 'SELECT fk_user FROM '.MAIN_DB_PREFIX.'societe_commerciaux WHERE fk_soc IN ('.implode(',',$traineesoc).')';
+											$sql .='  AND fk_user='.$filter['sale.fk_user_com'];
+											dol_syslog(get_class($this) . "::find salesman for thirdparty output_trainee_salesman sql=" . $sql, LOG_DEBUG);
+											$result = $this->db->query($sql);
+											if ($result) {
+												if ($this->db->num_rows($result)) {
+													$output_trainee_salesman = true;
+												} else {
+													$output_trainee_salesman = false;
+												}
+											} else {
+												$this->error = "Error " . $this->db->lasterror();
+												dol_syslog(get_class($this) . "::write_file " . $this->error, LOG_ERR);
+												return - 1;
+											}
+										}else {
+											$output_trainee_salesman=true;
+										}
+									}
 
-							if ($output_trainee) {
-								$traineelist[$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom;
-								if (empty($line->socid)) {
-									$numdossier[0] = $line->id . '_' . $traine_line->socid;
-								}
-								// If comapny is empty we are probably in inter-entre or false inter
-								// In this case we add into company column the trainee company
-								if (empty($line->socname)) {
-									$line_to_output[2][$traine_line->stagerowid] = $traine_line->socname;
+									$output_trainee = $output_trainee_soc_nom || $output_trainee_socrequester_nom || $output_trainee_socparent || $output_trainee_salesman;
 								} else {
-									$line_to_output[2] = $line->socname;
+									$output_trainee = true;
 								}
 
-								$sessionOPCA = new Agefodd_opca($this->db);
-								$result = $sessionOPCA->getOpcaForTraineeInSession($traine_line->socid, $line->id);
-								if ($result < 0) {
-									$this->error = $sessionOPCA->error;
-									return $result;
+								if ($output_trainee) {
+									$traineelist[$traine_line->stagerowid] = $traine_line->nom . ' ' . $traine_line->prenom;
+									if (empty($line->socid)) {
+										$numdossier[0] = $line->id . '_' . $traine_line->socid;
+									}
+									// If comapny is empty we are probably in inter-entre or false inter
+									// In this case we add into company column the trainee company
+									if (empty($line->socname)) {
+										$line_to_output[2][$traine_line->stagerowid] = $traine_line->socname;
+									} else {
+										$line_to_output[2] = $line->socname;
+									}
+
+									$sessionOPCA = new Agefodd_opca($this->db);
+									$result = $sessionOPCA->getOpcaForTraineeInSession($traine_line->socid, $line->id);
+									if ($result < 0) {
+										$this->error = $sessionOPCA->error;
+										return $result;
+									}
+									$OPCA_array[$sessionOPCA->fk_soc_OPCA] = $traine_line->socid;
+									$OPCA_array_socid[$traine_line->socid] = $sessionOPCA->fk_soc_OPCA;
 								}
-								$OPCA_array[$sessionOPCA->fk_soc_OPCA] = $traine_line->socid;
-								$OPCA_array_socid[$traine_line->socid] = $sessionOPCA->fk_soc_OPCA;
 							}
 						}
 
