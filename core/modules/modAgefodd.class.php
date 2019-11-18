@@ -1302,6 +1302,7 @@ class modAgefodd extends DolibarrModules
 				's.datef' => 'Date',
 				'sosta.nom' => 'Text',
 				's.ref'=>'Text',
+				's.rowid'=>'Text',
 				'sta.date_birth' => "Date",
 		);
 		$this->export_entities_array[$r] = array(
