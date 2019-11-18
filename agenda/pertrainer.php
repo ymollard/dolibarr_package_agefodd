@@ -426,7 +426,7 @@ if (! empty($filter_contact)) {
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid ";
 if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
-	if (! empty($filter_trainer)) {
+	if (! empty($filter_trainer) && !empty($onlysession)) {
 		$sql .= " AND ca.code='AC_AGF_SESST' ";
 	}
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as trainercal ON trainercal.fk_agefodd_session_formateur = trainer_session.rowid ";
