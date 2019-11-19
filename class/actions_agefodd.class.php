@@ -1090,6 +1090,21 @@ class ActionsAgefodd
 			);
 		}
 
+		if (is_object($hookmanager))
+		{
+			$params = array (
+				'menuList' => $this->results
+			);
+			$reshook = $hookmanager->executeHooks('addExternalTopMenu', $params);
+
+			if (!empty($reshook)){
+				// override full output
+				$this->results = $hookmanager->resArray;
+			}
+			else{
+				$this->results.= $hookmanager->resArray;
+			}
+		}
 
 		return 0;
 	}

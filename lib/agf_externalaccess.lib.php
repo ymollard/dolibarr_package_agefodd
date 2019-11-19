@@ -40,7 +40,7 @@ function convertHundredthHoursToReadable($hours)
  */
 function getMenuAgefoddExternalAccess()
 {
-	global $langs, $user;
+	global $langs, $user, $hookmanager;
 
 	$context = Context::getInstance();
 	$html = '	<!-- getMenuAgefoddExternalAccess -->
@@ -71,6 +71,20 @@ function getMenuAgefoddExternalAccess()
         $link = $context->getRootUrl('agefodd_trainee_session_list');
         $html.= getService($langs->trans('AgfMenuSessTrainee'),'fa-graduation-cap',$link);
     }
+
+	if (is_object($hookmanager))
+	{
+		$params = array ();
+		$reshook = $hookmanager->executeHooks('addAgefoddExternalAccessServices', $params);
+
+		if (!empty($reshook)){
+			// override full output
+			$html = $hookmanager->resPrint;
+		}
+		else{
+			$html.= $hookmanager->resPrint;
+		}
+	}
 
 	$html.= '</div>
 			</div>
