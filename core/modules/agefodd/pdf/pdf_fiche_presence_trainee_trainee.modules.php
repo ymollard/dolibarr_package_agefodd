@@ -712,4 +712,75 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 		$this->pdf->SetAutoPageBreak(0);
 		return pdf_agfpagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $this->ref_object, 1, $hidefreetext);
 	}
+
+    /** @var TCPDF $pdf */
+    /**
+     * @param TCPDF  $pdf
+     * @param string $method Name of a method to be called by _tryToPrint; the method will be called with $pdf as the first argument
+     * @param bool   $autoPageBreak
+     * @param array  $param (Optional) : additional parameters to be passed to the method
+     * @return float New Y "cursor" position on the PDF document.
+     */
+    public function _tryToPrint(&$pdf, $method, $autoPageBreak = true, $param = array())
+    {
+        global $conf, $outputlangs;
+
+        $callback = array($this, $method);
+
+        if (is_callable($callback))
+        {
+
+            $pdf->startTransaction();
+            $posYBefore = $pdf->GetY();
+            $pageposBefore=$pdf->getPage();
+
+            // START FIRST TRY
+            $callbackParams = array_merge(array(&$pdf), $param);
+            call_user_func_array($callback, $callbackParams);
+
+            $pageposAfter=$pdf->getPage();
+            $posYAfter = $pdf->GetY();
+
+            // END FIRST TRY
+
+            if($autoPageBreak && $pageposAfter > $pageposBefore )
+            {
+                $pagenb = $pageposBefore;
+                $pdf->rollbackTransaction(true);
+                $posY = $posYBefore;
+
+                // prepare pages to receive content
+                while ($pagenb < $pageposAfter) {
+                    $pdf->AddPage();
+                    $pagenb++;
+
+                    if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+                    if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $this->object, 0, $outputlangs);
+
+                    $topY = $pdf->GetY() + 20;
+                    $pdf->SetMargins($this->marge_gauche, $topY, $this->marge_droite); // Left, Top, Right
+
+                    $pdf->SetAutoPageBreak(0, 0); // to prevent footer creating page
+                    $footerheight = $this->_pagefoot($pdf,$this->object, $outputlangs);
+                    $pdf->SetAutoPageBreak(1, $footerheight);
+
+                    // The only function to edit the bottom margin of current page to set it.
+                    $pdf->setPageOrientation('', 1, $footerheight);
+                }
+
+                // BACK TO START
+                $pdf->setPage($pageposBefore);
+                $pdf->SetY($posYBefore);
+
+                // RESTART DISPLAY BLOCK - without auto page break
+                return $this->_tryToPrint($pdf, $method, false, $param);
+            }
+            else // No pagebreak
+            {
+                $pdf->commitTransaction();
+            }
+        }
+        return $pdf->GetY();
+    }
 }
