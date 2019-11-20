@@ -856,6 +856,7 @@ if (! empty($id)) {
 					// Before training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfBeforeTraining") . '</td></tr>' . "\n";
 					document_line($langs->trans("AgfPDFConvocation"), 'convocation_trainee', $agf_trainee->lines [$i]->stagerowid);
+					document_line($langs->trans("AgfPDFFichePresence"), 'fiche_presence_trainee_trainee', $agf_trainee->lines[$i]->stagerowid);
 
 					// After training session
 					print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfAfterTraining") . '</td></tr>' . "\n";
