@@ -687,6 +687,12 @@ class ActionsAgefodd
 
 					// Get start date
 					$heured = GETPOST('heured');
+					$heuredDate = GETPOST('heured-date'); // it's a fix for firefox and datetime-local
+					$heuredTime = GETPOST('heured-time'); // it's a fix for firefox and datetime-local
+					if(empty($heured) && !empty($heuredDate) && !empty($heuredTime)){
+						$heured = $heuredDate.'T'.$heuredTime;
+					}
+
 					$startDate = parseFullCalendarDateTime($heured);
 
 					if (!empty($startDate)) {
@@ -698,6 +704,11 @@ class ActionsAgefodd
 
 					// Get end date
 					$heuref = GETPOST('heuref');
+					$heurefDate = GETPOST('heuref-date');
+					$heurefTime = GETPOST('heuref-time');
+					if(empty($heuref) && !empty($heurefDate) && !empty($heurefTime)){
+						$heuref = $heurefDate.'T'.$heurefTime;
+					}
 					$endDate = new DateTime();
 					$endDate = parseFullCalendarDateTime($heuref);
 					if (!empty($endDate)) {
