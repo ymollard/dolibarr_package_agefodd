@@ -1102,7 +1102,7 @@ class ActionsAgefodd
 				$this->results = $hookmanager->resArray;
 			}
 			else{
-				$this->results.= $hookmanager->resArray;
+				$this->results+= $hookmanager->resArray;
 			}
 		}
 
