@@ -1013,8 +1013,8 @@ if ($id) {
 	$diroutput = $conf->agefodd->multidir_output[$agf->entity];
 	$trackid = 'agftrainee' . $agf->id;
 
-	if(!isset($_POST['receiver']) || empty($_POST['receiver'])){ // Pas le choix
-		$_POST['receiver']= array($agf->fk_socpeople);
+	if(!empty($agf->fk_socpeople) && (!isset($_POST['receiver']) || empty($_POST['receiver']))){
+		$_POST['receiver']= array($agf->fk_socpeople); // Pas le choix
 	}
 
 	include __DIR__ . '/../tpl/card_presend.tpl.php';
