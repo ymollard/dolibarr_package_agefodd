@@ -1666,7 +1666,23 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
                 )
                 {
                     $countNbSessionAvailable++;
-                    $optionSessions .= '<option value="' . $line->rowid . '">' . $line->sessionref . ' : ' . $line->intitule . '</option>';
+                    $optionLabel = $line->sessionref . ' : ' . $line->intitule;
+                    if(!empty($conf->global->AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST)){
+						$optionLabel.= '';
+						$sessionStagiaire = new Agefodd_session_stagiaire($db);
+						$sessionStagiaire->fetch_stagiaire_per_session($line->rowid);
+						if(!empty($sessionStagiaire->lines)){
+							$i = 0;
+							$optionLabel.= ' (';
+							foreach ($sessionStagiaire->lines as $stagiare){
+								$optionLabel.= ($i>0?', ':'').$stagiare->getFullName($langs);
+								$i++;
+							}
+							$optionLabel.= ')';
+						}
+
+					}
+                    $optionSessions .= '<option value="' . $line->rowid . '">' . $optionLabel . '</option>';
                 }
 			}
 		}
