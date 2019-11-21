@@ -2766,7 +2766,7 @@ class Agsession extends CommonObject
 
 					// Formatage comme du Dolibarr standard pour ne pas être perdu
 					$line->array_options = array();
-					if (is_array($array_options_keys)) {
+					if (is_array($array_options_keys) && count($array_options_keys)>0) {
 						foreach ( $array_options_keys as $key ) {
 							$line->array_options['options_'.$key] = $obj->{$key};
 						}

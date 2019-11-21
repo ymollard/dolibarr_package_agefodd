@@ -1760,6 +1760,41 @@ class modAgefodd extends DolibarrModules
             $this->rights[$r][5] = 'send';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
         }
 
+
+        // MORE External access rights for agefodd
+
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;
+            $this->rights[$r][1] = 'AgfEATrainerAgenda';
+            $this->rights[$r][3] = 0;
+            $this->rights[$r][4] = 'external_trainer_agenda';
+        }
+
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;
+            $this->rights[$r][1] = 'AgfEATrainee';
+            $this->rights[$r][3] = 0;
+            $this->rights[$r][4] = 'external_trainee_read';
+        }
+
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;
+            $this->rights[$r][1] = 'AgfEATrainerTimeslotDelete';
+            $this->rights[$r][3] = 0;
+            $this->rights[$r][4] = 'external_trainer_time_slot_delete';
+        }
+
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;
+            $this->rights[$r][1] = 'AgfEATrainerAndTraineeAccessSessionLink';
+            $this->rights[$r][3] = 0;
+            $this->rights[$r][4] = 'external_access_link_attatchement';
+        }
+
 		// Main menu entries
 		$this->menus = array();
 		$r = 0;
