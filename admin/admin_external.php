@@ -284,7 +284,7 @@ if(!empty($conf->externalaccess->enabled))
     print '<td></td>';
     print '</tr>';
 
-    // Active l'accés stagiaire
+	// Ajoute une option permettant d’ajouter le nom des stagiaires dans la liste des session sur le portail
     print '<tr  class="oddeven"><td>' . $langs->trans("AgfEAAddTrainneNameInSessionSelectList") . '</td>';
     print '<td align="left">';
     if ($conf->use_javascript_ajax) {
