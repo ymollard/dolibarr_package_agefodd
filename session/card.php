@@ -1443,10 +1443,38 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						print '<table class="border order_cost" width="100%">';
 						print '<tr class="liste_titre"><td></td><td></td><td width="20%">' . $langs->trans("Planned") . '</td><td width="20%">' . $langs->trans("Engaged") . '</td><td width="20%">' . $langs->trans("Done") . '</td><td width="20%">' . $langs->trans("Result") . '</td></tr>';
 
+						// Le calcul du réalisé formateur doit tenir compte du fait que certaines factures fournisseurs règlent les prestations faites pour plusieurs session
+						$agf_formateurs = new Agefodd_session_formateur($db);
+						$nbform = $agf_formateurs->fetch_formateur_per_session($id);
+						$invoice_trainer_array=array();
+						if(!empty($agf_formateurs->lines)) {
+							foreach ( $agf_formateurs->lines as $line_trainer ) {
+								$contact_stat = new Contact($db);
+								$contact_stat->fetch($line_trainer->socpeopleid);
+								$contact_stat->fetch_thirdparty();
+								$soc_trainer_id = $contact_stat->thirdparty->id;
+
+								$agf_finn = new Agefodd_session_element($db);
+								$agf_finn->fetch_by_session_by_thirdparty($id,$soc_trainer_id,array('\'invoice_supplier_trainer\'','\'invoice_supplierline_trainer\''));
+								$invoice_trainer_array=array_merge($invoice_trainer_array,$agf_finn->lines);
+							}
+						}
+
+						if(!empty($invoice_trainer_array)) {
+							$cost_trainer_for_session=0;
+							foreach($invoice_trainer_array as &$objj) {
+								$fourninvoice = new FactureFournisseur($db);
+								$fourninvoice->fetch($objj->fk_element);
+								$agff = new Agsession($db);
+								$agff->fetch_all_by_order_invoice_propal('', '', '', '', '', '', '', $fourninvoice->id, '');
+								$cost_trainer_for_session += price2num($fourninvoice->total_ht / count($agff->lines), 'MT');
+							}
+						}
+
 						print '<tr><td ><strong>' . $langs->trans("TaxRevenue") . '</strong></td><td >' . $langs->trans("AgfCoutFormation") . '</td>';
 						print '<td>' . price($agf->sell_price_planned) . '</td><td>' . price($engaged_revenue) . '</td><td>' . price($paied_revenue) . '</td><td>' . price($paied_revenue - $agf->sell_price_planned) . '</td></tr>';
 						print '<tr><td rowspan="4" ><strong>' . $langs->trans("Expense") . '</strong></td><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
-						print '<td>' . price($agf->cost_trainer_planned) . '</td><td>' . price($cost_trainer_engaged) . '</td><td>' . price($agf->cost_trainer) . '</td><td>' . price($agf->cost_trainer_planned - $agf->cost_trainer) . '</td></tr>';
+						print '<td>' . price($agf->cost_trainer_planned) . '</td><td>' . price($cost_trainer_engaged) . '</td><td>' . price(/*$agf->cost_trainer*/$cost_trainer_for_session) . '</td><td>' . price($agf->cost_trainer_planned - $agf->cost_trainer) . '</td></tr>';
 						$spend_cost += $agf->cost_trainer;
 						$spend_cost_planned += $agf->cost_trainer_planned;
 						$spend_cost_engaged += $cost_trainer_engaged;
