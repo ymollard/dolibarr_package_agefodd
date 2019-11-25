@@ -301,25 +301,9 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			$error ++;
 		}
 
-		$result = $agf->fetchOtherSessionSameplacedate();
-		if ($result < 0) {
-			setEventMessage($agf->error, 'errors');
-			$error ++;
-		} else {
-
-			if (is_array($agf->lines_place) && count($agf->lines_place) > 0) {
-				$sessionplaceerror = '';
-				foreach ( $agf->lines_place as $linesess ) {
-
-					if ($linesess->typeevent=='session') {
-						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
-					} elseif ($linesess->typeevent=='event') {
-						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherEvent') . '<a href=' . dol_buildpath('/comm/action/list.php', 1) . '?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&search_options_agf_site='.$fk_session_place . '" target="_blanck">' . $linesess->rowid . '</a><br>';
-					}
-				}
-				setEventMessage($sessionplaceerror, 'warnings');
-			}
-		}
+        $TMessage = $agf->checkOtherSessionSamePlaceDate();
+        if (!empty($agf->error)) setEventMessage($agf->error, 'errors');
+        elseif (!empty($TMessage)) setEventMessage($TMessage, 'warnings');
 
 		// If customer is selected contact is required
 		$custid = GETPOST('fk_soc', 'int');
@@ -560,32 +544,12 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				setEventMessage($agf->error, 'errors');
 				$error ++;
 			}
+
+			$TMessage = $agf->checkOtherSessionSamePlaceDate();
+			if (!empty($agf->error)) setEventMessage($agf->error, 'errors');
+			elseif (!empty($TMessage)) setEventMessage($TMessage, 'warnings');
 		}
 
-		$agf->id = $new_session_id;
-		$result = $agf->fetchOtherSessionSameplacedate();
-		if ($result < 0) {
-			setEventMessage($agf->error, 'errors');
-			$error ++;
-		} else {
-
-			if (is_array($agf->lines_place) && count($agf->lines_place) > 0) {
-				$sessionplaceerror = '';
-				foreach ( $agf->lines_place as $linesess ) {
-					if ($linesess->rowid != $new_session_id) {
-						if ($linesess->typeevent=='session') {
-							$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
-						} elseif ($linesess->typeevent=='event') {
-							$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherEvent') . '<a href=' . dol_buildpath('/comm/action/list.php', 1) . '?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&search_options_agf_site='.$fk_session_place . '" target="_blanck">' . $linesess->rowid . '</a><br>';
-						}
-
-					}
-				}
-				if (! empty($sessionplaceerror)) {
-					setEventMessage($sessionplaceerror, 'warnings');
-				}
-			}
-		}
 
 		if ($error == 0 && ! empty($fk_propal)) {
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');

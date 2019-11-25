@@ -5159,6 +5159,37 @@ class Agsession extends CommonObject
 		return $date_conv;
 	}
 
+	public function checkOtherSessionSamePlaceDate()
+    {
+        $TMessage = array();
+
+        $result = $this->fetchOtherSessionSameplacedate(); // set attribute 'error' if needed
+        if ($result > 0)
+        {
+            global $langs;
+
+            if (is_array($this->lines_place) && count($this->lines_place) > 0)
+            {
+                foreach ($this->lines_place as $linesess)
+                {
+                    if ($linesess->rowid != $this->id)
+                    {
+                        if ($linesess->typeevent == 'session')
+                        {
+                            $TMessage[] = $langs->trans('AgfPlaceUseInOtherSession').'<a href="'.dol_buildpath('/agefodd/session/list.php', 1).'?site_view=1&search_id='.$linesess->rowid.'&search_site='.$linesess->fk_session_place.'" target="_blank">'.$linesess->rowid.'</a>';
+                        }
+                        elseif ($linesess->typeevent == 'event') // @FIXME [PH] - le test devrait il pas porter sur == 'actioncomm' ?
+                        {
+                            $TMessage[] = $langs->trans('AgfPlaceUseInOtherEvent').'<a href="'.dol_buildpath('/comm/action/list.php', 1).'?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&status=&search_options_agf_site='.$linesess->fk_session_place.'" target="_blank">'.$linesess->rowid.'</a>';
+                        }
+                    }
+                }
+            }
+        }
+
+        return $TMessage;
+    }
+
 	/**
 	 */
 	public function fetchOtherSessionSameplacedate() {
@@ -5230,6 +5261,7 @@ class Agsession extends CommonObject
 					while ( $obj = $this->db->fetch_object($resql) ) {
 						$line = new AgfSessionLine();
 						$line->rowid = $obj->rowid;
+						$line->fk_session_place = $this->fk_session_place;
 						$line->typeevent='session';
 						$this->lines_place[] = $line;
 					}
@@ -5257,6 +5289,7 @@ class Agsession extends CommonObject
 						while ( $obj = $this->db->fetch_object($resql) ) {
 							$line = new AgfSessionLine();
 							$line->rowid = $obj->rowid;
+                            $line->fk_session_place = $this->fk_session_place;
 							$line->typeevent='actioncomm';
 							$this->lines_place[] = $line;
 						}
