@@ -153,8 +153,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->Open();
         $this->_setMetaData();
         $this->pdf->SetAutoPageBreak(1, $this->getRealHeightLine('foot'));
-        $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
-        $this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
+        $this->_setDefaultColorAndStyle();
         if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION) {$this->pdf->SetCompression(false);}
 
         $headerHeight = $this->getRealHeightLine('head');
@@ -294,7 +293,6 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         if (0) $this->_showTrainerTableForPage($TSessionDate);
         if (0) $this->_showTraineeTableForPage($TSessionDate);
         $this->_tryToPrint('_showTrainerTableForPage', 1, array($TSessionDate));
-        $this->pdf->SetY($this->pdf->GetY() + 5);
         $this->_tryToPrint('_showTraineeTableForPage', 1, array($TSessionDate));
     }
 
@@ -423,8 +421,9 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
     protected function _showTrainerTableForPage($TSessionDate)
     {
+        $this->_setDefaultColorAndStyle();
         $tableTitle = $this->_getTrainerTableTitleContent();
-        $fontHeight = $this->pdf->getStringHeight(200, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')*2;
+        $fontHeight = $this->_getYSpacing(1);
 
         $dateColWidth = $this->_getDateColWidth($this->trainer_widthcol1, count($TSessionDate));
 
@@ -432,7 +431,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->SetFont('', 'bi', $this->default_font_size - 1);
         $this->pdf->MultiCell($this->espaceH_dispo, $fontHeight, $tableTitle, '', 'L', 0, 1);
         $this->pdf->SetFont('', '-', $this->default_font_size);
-        $this->pdf->SetY($this->pdf->GetY()-4);
+        $this->pdf->SetY($this->pdf->GetY()-1.6);
 
         // Ligne des titres (≠ titre du tableau)
         $this->_showHeaderRow($this->trainer_widthcol1, $dateColWidth, $TSessionDate);
@@ -447,21 +446,23 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
                 $TSessionDate);
             $trainerN++;
         }
+        $this->pdf->SetY($this->pdf->GetY() + 5);
     }
 
     protected function _showTraineeTableForPage($TSessionDate)
     {
+        $this->_setDefaultColorAndStyle();
         $leftMostCellContent = $this->_getTraineeNameCellContent($this->agfTrainee);
         $tableTitle = $this->_getTraineeTableTitleContent();
         $espacementTables = 5;
-        $fontHeight = $this->pdf->getStringHeight(200, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')*2;
+        $fontHeight = $this->_getYSpacing(1);
 
         $dateColWidth = $this->_getDateColWidth($this->trainer_widthcol1, count($TSessionDate));
 
         $this->pdf->SetFont('', 'bi', $this->default_font_size - 1);
         $this->pdf->MultiCell($this->espaceH_dispo, $fontHeight, $tableTitle, '', 'L', 0, 1);
         $this->pdf->SetFont('', '-', $this->default_font_size);
-        $this->pdf->SetY($this->pdf->GetY()-4);
+        $this->pdf->SetY($this->pdf->GetY()-1.6);
 
         // Ligne des titres (≠ titre du tableau)
         $this->_showHeaderRow($this->trainer_widthcol1, $dateColWidth, $TSessionDate);
@@ -588,7 +589,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
         $this->outputlangs->load("main");
 
-//        $this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
+        $this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 
         // spécifique multicompany
         if (!empty($conf->multicompany->enabled)) {
@@ -601,7 +602,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
         $this->pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
 
-//        pdf_pagehead($this->pdf, $this->outputlangs, $this->pdf->page_hauteur);
+        pdf_pagehead($this->pdf, $this->outputlangs, $this->pdf->page_hauteur);
 
         $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
         $this->pdf->SetTextColor($this->colorheaderText[0], $this->colorheaderText[1], $this->colorheaderText[2]);
@@ -935,5 +936,15 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
             $this->page_hauteur = $formatarray['width'];
         }
         $this->format = array($this->page_largeur, $this->page_hauteur);
+    }
+
+    public function _setDefaultColorAndStyle()
+    {
+        $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
+        $this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
+        $this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
+        $this->pdf->SetLineStyle(array(
+            'width' => 0.05,
+        ));
     }
 }
