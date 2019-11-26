@@ -300,10 +300,11 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
     protected function _showHeaderRow($leftColWidth, $dateColWidth, $TSessionDate)
     {
-        $subRow1Height = $this->_getYSpacing(2);
+        $subRow1Height = $this->_getYSpacing(1.5);
         $subRow2Height = $this->_getYSpacing(2);
         $rowHeight = $subRow1Height + $subRow2Height;
-        $leftHeaderCellContent = 'nOM et pRÉNOM'; //TODO
+
+        $leftHeaderCellContent = $this->outputlangs->transnoentities('AgfPDFFichePres16'); // "Nom et prénom"
 
         // cellule de gauche
         $this->pdf->MultiCell(
@@ -327,7 +328,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->MultiCell(
             $this->espaceH_dispo - $leftColWidth,
             $subRow1Height,
-            'sIGNATURE', // todo
+            $this->outputlangs->transnoentities('AgfPDFFichePres18'), // "Signature"
             'LTRB',
             'C',
             0,
@@ -737,7 +738,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->SetXY($this->posX, $this->posY);
         $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
         $this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-        $this->str = $this->outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' »,' . $this->outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
+        $this->str = $this->outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' », ' . $this->outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
         $this->str .= $mysoc->address . ' ';
         $this->str .= $mysoc->zip . ' ' . $mysoc->town;
         $this->str .= $this->outputlangs->transnoentities('AgfPDFFichePres4') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . ",\n";
@@ -782,10 +783,10 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->SetXY($this->posX + $this->larg_col1, $this->posY);
         $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
 
-        if (empty($this->ref_object->intitule_custo)) {
-            $this->str = '« ' . $this->ref_object->formintitule . ' »';
+        if (empty($this->session->intitule_custo)) {
+            $this->str = '« ' . $this->session->formintitule . ' »';
         } else {
-            $this->str = '« ' . $this->ref_object->intitule_custo . ' »';
+            $this->str = '« ' . $this->session->intitule_custo . ' »';
         }
         $this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
 
@@ -798,10 +799,10 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->str = $this->outputlangs->transnoentities('AgfPDFFichePres7');
         $this->pdf->Cell($this->larg_col1, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-        if ($this->ref_object->dated == $this->ref_object->datef) {
-            $this->str = $this->outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($this->ref_object->datef, 'daytext');
+        if ($this->session->dated == $this->session->datef) {
+            $this->str = $this->outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($this->session->datef, 'daytext');
         } else {
-            $this->str = $this->outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($this->ref_object->dated) . ' ' . $this->outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($this->ref_object->datef, 'daytext');
+            $this->str = $this->outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($this->session->dated) . ' ' . $this->outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($this->session->datef, 'daytext');
         }
         $this->pdf->SetXY($this->posX + $this->larg_col1, $this->posY);
         $this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -814,7 +815,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->str = $this->outputlangs->transnoentities('Session')." :";
         $this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
         $this->pdf->SetXY($this->posX + $this->larg_col1, $this->posY);
-        $this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->ref_object->id), 0, 'L');
+        $this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->session->id), 0, 'L');
         $this->haut_col2 += $hauteur + 1;
         // Lieu
         $this->pdf->SetXY($this->posX + $this->larg_col1 + $this->larg_col2, $this->posYintitule);
@@ -822,7 +823,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->Cell($this->larg_col3, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
         $agf_place = new Agefodd_place($this->db);
-        $resql = $agf_place->fetch($this->ref_object->placeid);
+        $resql = $agf_place->fetch($this->session->placeid);
 
         $this->pdf->SetXY($this->posX + $this->larg_col1 + $this->larg_col2 + $this->larg_col3, $this->posYintitule);
         $this->str = $agf_place->ref_interne . "\n" . $agf_place->adresse . "\n" . $agf_place->cp . " " . $agf_place->ville;
@@ -850,7 +851,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
         $this->pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
         $this->pdf->SetAutoPageBreak(0);
-        return pdf_agfpagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $this->ref_object, 1, $hidefreetext);
+        return pdf_agfpagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $this->session, 1, $hidefreetext);
     }
 
     /** @var TCPDF $pdf */
