@@ -324,7 +324,7 @@ function show_fiche_presence_trainee_trainee($file, $session_traineeid)
 
 		// Envoie par mail
 		$legende = $langs->trans("AgfSendDoc");
-		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=presend_convocation_trainee&mode=init" alt="' . $legende . '" title="' . $legende . '">';
+		$mess .= '<a href="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&sessiontraineeid=' . $session_traineeid . '&action=presend_fichepres_trainee_trainee&mode=init" alt="' . $legende . '" title="' . $legende . '">';
 		$mess .= img_picto($langs->trans("AgfSendDoc"), 'stcomm0') . '</a>';
 	} else {
 		// Génereration des documents

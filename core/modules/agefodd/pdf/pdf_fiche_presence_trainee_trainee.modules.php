@@ -272,6 +272,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      */
     function _pagebody($TSessionDate)
     {
+//        print '<div class="pagebody" style="border: solid 1px black; margin: 10px;">Affichage d’une "page" logique (un mois ou une portion de mois)<br>';
         global $conf, $mysoc;
         // Set path to the background PDF File
         if (empty($conf->global->MAIN_DISABLE_FPDI) && !empty($conf->global->AGF_ADD_PDF_BACKGROUND_P)) {
@@ -294,6 +295,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         if (0) $this->_showTraineeTableForPage($TSessionDate);
         $this->_tryToPrint('_showTrainerTableForPage', 1, array($TSessionDate));
         $this->_tryToPrint('_showTraineeTableForPage', 1, array($TSessionDate));
+//        print '</div>';
     }
 
     protected function _showHeaderRow($leftColWidth, $dateColWidth, $TSessionDate)
@@ -372,6 +374,9 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
     protected function _showBodyRow($leftColWidth, $dateColWidth, $leftHeaderCellContent, $TSessionDate)
     {
         $rowHeight = $this->_getYSpacing(1);
+        $pageStart = $this->pdf->getPage();
+        $rowStartY = $this->pdf->GetY();
+        $colStartX = $this->pdf->GetX();
 
         // cellule de gauche
         $this->pdf->MultiCell(
@@ -381,9 +386,9 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
             'LTRB',
             'L',
             0,
-            0,
-            '',
-            '',
+            1,
+            $colStartX,
+            $rowStartY,
             true,
             0,
             false,
@@ -391,13 +396,21 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
             $rowHeight,
             'M',
             false);
+        if ($this->pdf->getPage() > $pageStart) {
+//            var_dump('—————————————————————————————————————');
+            return;
+        }
+        $colStartX += $leftColWidth;
 
         // autres cellules
+        // note à moi-même : NE JAMAIS PLUS UTILISER LE PARAMÈTRE LN (le laisser toujours à 1).
+        // parce que comme le curseur est "remonté" à la fin de l’appel avec ln=0,
+        // les mécanismes de saut de page auto ne voient pas que la page a changé / doit changer.
         $nbSlots = count($TSessionDate);
         $slotNum = 1;
         foreach ($TSessionDate as $dateSlot) {
-            $colStartX = $this->pdf->GetX();
-            $ln = ($slotNum == $nbSlots) ? 1 : 0; // si dernière cellule de la ligne, on update Y, sinon X
+//            $ln = ($slotNum == $nbSlots) ? 1 : 0; // si dernière cellule de la ligne, on update Y, sinon X
+            $ln = 1;
             $this->pdf->MultiCell(
                 $dateColWidth,
                 $rowHeight,
@@ -406,8 +419,8 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
                 'C',
                 0,
                 $ln,
-                '',
-                '',
+                $colStartX,
+                $rowStartY,
                 true,
                 0,
                 false,
@@ -415,12 +428,18 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
                 $rowHeight,
                 'M',
                 false);
+            $colStartX += $dateColWidth;
+            if ($this->pdf->getPage() > $pageStart) {
+//                var_dump('—————————————————————————————————————');
+                return; // _tryToPrint will take care of re-calling the method
+            }
             $slotNum++;
         }
     }
 
     protected function _showTrainerTableForPage($TSessionDate)
     {
+//        var_dump('_showTrainerTableForPage [Y = '.$this->pdf->GetY().']');
         $this->_setDefaultColorAndStyle();
         $tableTitle = $this->_getTrainerTableTitleContent();
         $fontHeight = $this->_getYSpacing(1);
@@ -451,6 +470,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
     protected function _showTraineeTableForPage($TSessionDate)
     {
+//        var_dump('_showTraineeTableForPage [Y = '.$this->pdf->GetY().']');
         $this->_setDefaultColorAndStyle();
         $leftMostCellContent = $this->_getTraineeNameCellContent($this->agfTrainee);
         $tableTitle = $this->_getTraineeTableTitleContent();
@@ -468,7 +488,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->_showHeaderRow($this->trainer_widthcol1, $dateColWidth, $TSessionDate);
 
         // Ligne de contenu
-        $this->_showBodyRow($this->trainer_widthcol1, $dateColWidth, $this->_getTraineeTableTitleContent(), $TSessionDate);
+        $this->_showBodyRow($this->trainer_widthcol1, $dateColWidth, $leftMostCellContent, $TSessionDate);
         $this->pdf->SetY($this->pdf->GetY() + $espacementTables);
     }
 
@@ -584,6 +604,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      * \param outputlangs Object lang for output
      */
     function _pagehead() {
+//        var_dump('_pagehead() [GetY() -> '.$this->pdf->GetY().']');
 //        xdebug_print_function_stack();
         global $conf, $langs, $mysoc;
 
@@ -839,6 +860,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table);
 
         $this->pdf->SetY($this->posY + 1);
+//        var_dump('END _pagehead() [GetY() -> '.$this->pdf->GetY().']');
     }
 
     /**
@@ -849,6 +871,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      * \remarks Need this->emetteur object
      */
     function _pagefoot() {
+//        var_dump('_pagefoot()');
         $this->pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
         $this->pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
         $this->pdf->SetAutoPageBreak(0);
@@ -866,6 +889,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
     public function _tryToPrint($method, $autoPageBreak = true, $callbackParams = array())
     {
         global $conf, $outputlangs;
+//        var_dump('start _tryToPrint("'.$method.'"); current Y: ' . $this->pdf->GetY());
 
         $callback = array($this, $method);
 
@@ -873,56 +897,110 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         {
 
             $this->pdf->startTransaction();
+//            print '<div style="padding-left: 10%; border: solid 1px blue;">startTransaction()<br>';
             $posYBefore = $this->pdf->GetY();
+//            var_dump('$posYBefore:  [Y = '.$this->pdf->GetY().']');
             $pageposBefore=$this->pdf->getPage();
 
             // START FIRST TRY
             call_user_func_array($callback, $callbackParams);
 
             $pageposAfter=$this->pdf->getPage();
-            $posYAfter = $this->pdf->GetY();
 
             // END FIRST TRY
 
             if($autoPageBreak && $pageposAfter > $pageposBefore )
             {
                 $pagenb = $pageposBefore;
+//                print 'rollbackTransaction()';
+//                print '</div>';
                 $this->pdf->rollbackTransaction(true);
-                $posY = $posYBefore;
+//                var_dump('current Y:' . $this->pdf->GetY());
 
                 // prepare pages to receive content
-                while ($pagenb < $pageposAfter) {
-                    $this->pdf->AddPage();
-                    $pagenb++;
+                $this->pdf->AddPage();
 
-                    if (! empty($tplidx)) $this->pdf->useTemplate($tplidx);
-
-                    if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($this->pdf, $this->object, 0, $outputlangs);
-
-                    $topY = $this->pdf->GetY() + 20;
-                    $this->pdf->SetMargins($this->marge_gauche, $topY, $this->marge_droite); // Left, Top, Right
-
-                    $this->pdf->SetAutoPageBreak(0, 0); // to prevent footer creating page
-                    $footerheight = $this->_pagefoot($this->pdf,$this->object, $outputlangs);
-                    $this->pdf->SetAutoPageBreak(1, $footerheight);
-
-                    // The only function to edit the bottom margin of current page to set it.
-                    $this->pdf->setPageOrientation('', 1, $footerheight);
-                }
-
-                // BACK TO START
-                $this->pdf->setPage($pageposBefore);
-                $this->pdf->SetY($posYBefore);
-
+//                var_dump('calling _tryToPrint again [Y = ' . $this->pdf->GetY() .']');
                 // RESTART DISPLAY BLOCK - without auto page break
+                $this->pdf->SetY($this->getRealHeightLine('head') + $this->marge_haute);
                 return $this->_tryToPrint($method, false, $callbackParams);
             }
             else // No pagebreak
             {
+//                print 'commitTransaction()';
+//                print '</div>';
                 $this->pdf->commitTransaction();
             }
         }
         return $this->pdf->GetY();
+    }
+
+    /** @var TCPDF $pdf */
+    public function _tryToPrintOriginal(&$pdf, $method, $autoPageBreak = true, $param = array())
+    {
+        global $conf, $outputlangs;
+
+        $callback = array($this, $method);
+
+        if (is_callable($callback))
+        {
+
+            $pdf->startTransaction();
+            $posYBefore = $pdf->GetY();
+            $pageposBefore=$pdf->getPage();
+
+            // START FIRST TRY
+            call_user_func_array($callback, array(&$pdf));
+
+            $pageposAfter=$pdf->getPage();
+            $posYAfter = $pdf->GetY();
+
+            // END FIRST TRY
+
+
+
+            //if ($method == 'printNotes') {var_dump('yes',$pageposafter>$pageposbefore, $pageposafter, $pageposbefore,$posybefore, $posyafter); exit;}
+            if($autoPageBreak && $pageposAfter > $pageposBefore )
+            {
+                $pagenb = $pageposBefore;
+                $pdf->rollbackTransaction(true);
+                $posY = $posYBefore;
+
+                // prepare pages to receive content
+                while ($pagenb < $pageposAfter) {
+                    $pdf->AddPage();
+                    $pagenb++;
+
+                    if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+                    if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $this->object, 0, $outputlangs);
+
+                    $topY = $pdf->GetY() + 20;
+                    $pdf->SetMargins($this->marge_gauche, $topY, $this->marge_droite); // Left, Top, Right
+
+                    $pdf->SetAutoPageBreak(0, 0); // to prevent footer creating page
+                    $footerheight = $this->_pagefoot($pdf,$this->object, $outputlangs);
+                    $pdf->SetAutoPageBreak(1, $footerheight);
+
+                    // The only function to edit the bottom margin of current page to set it.
+                    $pdf->setPageOrientation('', 1, $footerheight);
+                }
+
+                // BACK TO START
+                $pdf->setPage($pageposBefore);
+                $pdf->SetY($posYBefore);
+
+                // RESTART DISPLAY BLOCK - without auto page break
+                $posY = $this->_tryToPrint($pdf, $method, false, $param);
+
+            }
+            else // No pagebreak
+            {
+                $pdf->commitTransaction();
+            }
+
+            return $pdf->GetY();
+        }
     }
 
     public function _setOrientation($orientation='P') {
