@@ -2374,7 +2374,7 @@ function agf_UserIsTrainee($user){
 function getPageViewAgendaOtherExternalAccess()
 {
 
-	global $db, $conf, $user, $langs;
+	global $db, $conf, $user, $langs, $hookmanager;
 
 	include_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
 
@@ -2476,7 +2476,7 @@ function getPageViewAgendaOtherExternalAccess()
 		$html.='<input type="hidden" name="type" value="'.$type.'" />';
 	}
 
-	$html.='<h4>'.$typeTitle.'</h4>';
+	$html.='<h4 class="mb-3">'.$typeTitle.'</h4>';
 
 	if(!empty($id)){
 		$html.='<input type="hidden" name="id" value="'.$id.'" />';
@@ -2517,8 +2517,22 @@ function getPageViewAgendaOtherExternalAccess()
 	<div class="form-group">
 		<label for="actionnote">'.$langs->trans('Notes').'</label>
 		<textarea '.($action == 'view' ? 'readonly' : '').' type="datetime-local" class="form-control" id="actionnote" name="note" >'.dol_htmlentities($event->note).'</textarea>
-	</div>
-	';
+	</div>';
+
+    $parameters = array(
+         'heured'  => $heured
+        , 'heuredDat' => $heuredDate
+        , 'heuredTime' => $heuredTime
+        , 'heuref' => $heuref
+        , 'heurefDate' => $heurefDate
+        , 'heurefTime' => $heurefTime
+    );
+
+
+    $hookmanager->executeHooks('formAddObjectLine', $parameters, $event, $action);
+    if (!empty($hookmanager->resPrint)) $html.= $hookmanager->resPrint;
+
+
 
     $html.='<p>';
     $html.='<button class="btn btn-danger pull-left" type="button" data-toggle="modal" data-target="#deleteeventotherconfirm"  ><i class="fa fa-trash" ></i> '.$langs->trans('Delete').'</button>';
