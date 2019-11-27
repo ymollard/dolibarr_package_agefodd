@@ -2529,7 +2529,7 @@ function getPageViewAgendaOtherExternalAccess()
     );
 
 
-    $hookmanager->executeHooks('formAddObjectLine', $parameters, $event, $action);
+    $hookmanager->executeHooks('formObjectOptions', $parameters, $event, $action);
     if (!empty($hookmanager->resPrint)) $html.= $hookmanager->resPrint;
 
 
