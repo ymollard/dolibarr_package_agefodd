@@ -563,7 +563,7 @@ if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			print 'Session '.$obj->rowid.' dans '.MAIN_DB_PREFIX.'agefodd_session qui non une formation qui n existe plus<BR>';
 		}
-		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE (fk_soc NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe) OR fk_soc IS NULL);<BR><BR><BR>';
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session WHERE fk_formation_catalogue NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formation_catalogue;<BR><BR><BR>';
 
 
 
@@ -589,6 +589,11 @@ if ($resql) {
 }else {
 	dol_print_error($db);
 }
+
+
+if($dolibarr_main_db_type != 'pgsql')
+{
+
 
 //Collation, PS: il existe aussi un script dans abricot pour ça.
 $sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET utf8 COLLATE '.$dolibarr_main_db_collation.';\') AS    mySQL
@@ -617,6 +622,7 @@ if ($resql) {
     dol_print_error($db);
 }
 
+}
 
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur', 'datec');
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'datec');

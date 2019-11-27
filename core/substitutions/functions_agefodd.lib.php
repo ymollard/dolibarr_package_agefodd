@@ -30,19 +30,24 @@ function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$obj
 			'__FORMINTITULE__' => $outputlangs->trans('AgfFormIntitule').' '.$outputlangs->trans('OnlyOnTrainingMail'),
 			'__FORMDATESESSION__' => $outputlangs->trans('AgfPDFFichePres7bis').' '.$outputlangs->trans('OnlyOnTrainingMail'),
 			'__AGENDATOKEN__' => $conf->global->MAIN_AGENDA_XCAL_EXPORTKEY,
+			'__TRAINER_1_EXTRAFIELD_XXXX__' => $outputlangs->trans('OnlyOnSessionMail')
 	));
 
 	// Add ICS link replacement to mails
-	$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2).'?format=ical&type=event&exportkey='.$conf->global->MAIN_AGENDA_XCAL_EXPORTKEY;
+	$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2).'?format=ical&type=event';
 
 	if(!empty($object) && $object->element == 'agefodd_formateur')
 	{
-		$substitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$object->id;
+		$substitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftrainerid='.$object->id;
+		$substitutionarray['__AGENDAICS__'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftrainerid'.$object->id);
 	}
 	elseif(!empty($object) && get_class ($object) == "Agefodd_stagiaire")
 	{
 		$substitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$object->id;
+		$substitutionarray['__AGENDAICS__'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftraineeid'.$object->id);
 	}
+
+
 
 
 	return $substitutionarray;

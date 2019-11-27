@@ -51,6 +51,7 @@ if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
 
+
 $hookmanager->initHooks(array(
 		'agefoddsessionlinkedfiles'
 ));
@@ -80,7 +81,7 @@ if ($result < 0) {
 }
 //Rename training program file with trim whitespace to be enable to move it as training program pdf
 // do_move user rename php function thaht do not work with white space in name
-if (GETPOST('sendit','alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC) && ! empty($_FILES))
+if (GETPOST('sendit', 'alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC) && ! empty($_FILES))
 {
 	if (is_array($_FILES['userfile']['name'])) $userfiles=$_FILES['userfile']['name'];
 	else $userfiles=array($_FILES['userfile']['name']);
@@ -143,6 +144,7 @@ if ($object->id) {
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->creer || $user->rights->agefodd->modifier);
+    $permtoedit = $user->rights->agefodd->creer || $user->rights->agefodd->modifier;
 	$param = '&id=' . $object->id;
 	$object->ref=$object->id; // Hack moche mais cool !
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';

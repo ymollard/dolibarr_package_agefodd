@@ -46,6 +46,11 @@ LIVE DEMO
 
 	http://dolibarr.atm-consulting.fr/dolibarr_agefodd/htdocs/
 
+HIDDEN CONFIGURATION
+---------------
+AGF_CRENEAU_FORCE_EMAIL_TO
+
+
 Other Licences
 --------------
 

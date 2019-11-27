@@ -59,6 +59,9 @@ $page = GETPOST("page", 'int');
 if ($page == - 1) {
 	$page = 0;
 }
+if ($page===''){
+	$page=0;
+}
 $offset = $conf->liste_limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
@@ -105,7 +108,7 @@ if ($object->id) {
 	$head = trainer_prepare_head($object);
 
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfTeacher"), 0, 'bill');
-	
+
 	dol_agefodd_banner_tab($object, 'id');
 	print '<div class="underbanner clearboth"></div>';
 
@@ -120,7 +123,10 @@ if ($object->id) {
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->creer);
+    $permtoedit = $user->rights->agefodd->creer;
 	$param = '&id=' . $object->id;
+	//Avoid bug with Jquery multiselect form
+	$conf->global->MAIN_USE_JQUERY_FILEUPLOAD=0;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 
 

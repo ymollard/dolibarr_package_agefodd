@@ -45,10 +45,11 @@ class Agefodd_sesscalendar extends CommonObject{
 	public $billed = 0;
 	public $lines = array ();
 
-
+    // Attention Const need to be same as Agefoddsessionformateurcalendrier, take care of getListStatus
 	const STATUS_DRAFT = 0;
 	const STATUS_CONFIRMED = 1;
 	const STATUS_MISSING = 2;
+	const STATUS_FINISH = 3;
 	const STATUS_CANCELED = -1;
 	/**
 	 * Constructor
@@ -59,6 +60,32 @@ class Agefodd_sesscalendar extends CommonObject{
 		$this->db = $db;
 		return 1;
 	}
+
+
+	static function getListStatus()
+	{
+		global $langs;
+		return array (
+			self::STATUS_DRAFT 		=> self::getStaticLibStatut(self::STATUS_DRAFT),
+			self::STATUS_CONFIRMED 	=> self::getStaticLibStatut(self::STATUS_CONFIRMED),
+			self::STATUS_CANCELED 	=> self::getStaticLibStatut(self::STATUS_CANCELED),
+			self::STATUS_MISSING 	=> self::getStaticLibStatut(self::STATUS_MISSING),
+			self::STATUS_FINISH 	=> self::getStaticLibStatut(self::STATUS_FINISH),
+		);
+	}
+
+
+    /**
+     *    	Return label of status of proposal (draft, validated, ...)
+     *
+     *    	@param      int			$mode        0=Long label, 1=Short label, 2=Picto + Short label, 3=Picto, 4=Picto + Long label, 5=Short label + Picto, 6=Long label + Picto
+     *    	@return     string		Label
+     */
+    function getLibStatut($mode=0)
+    {
+        // TODO: do a true getlibstatus
+        return self::getStaticLibStatut($this->status);
+    }
 
 	/**
 	 * Create object into database
@@ -421,7 +448,7 @@ class Agefodd_sesscalendar extends CommonObject{
 			dol_include_once('/comm/action/class/actioncomm.class.php');
 
 			$action = new ActionComm($this->db);
-			$action->id = $this->fk_actioncomm;
+			$action->fetch($this->fk_actioncomm); // for triggers we must load object
 			$r=$action->delete();
 			if ($r < 0) $error++;
 		}
@@ -503,7 +530,19 @@ class Agefodd_sesscalendar extends CommonObject{
 			$error ++;
 		}
 
-		$action->label = $session->formintitule . '(' . $session->formref . ')';
+		$label = $session->intitule_custo;
+
+		if(empty($conf->global->MAIN_EXTRAFIELDS_DISABLED) && ! empty($conf->global->AGF_EXTRAFIELD_FOR_TRAINING_LABEL))
+		{
+			$fullExtrafieldKey = 'options_' . $conf->global->AGF_EXTRAFIELD_FOR_TRAINING_LABEL;
+
+			if(is_array($session->array_options) && array_key_exists($fullExtrafieldKey, $session->array_options) && ! empty($session->array_options[$fullExtrafieldKey]))
+			{
+				$label = $session->array_options[$fullExtrafieldKey];
+			}
+		}
+
+		$action->label = $label . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $session->ref;
 		$action->location = $session->placecode;
 		$action->datep = $this->heured;
 		$action->datef = $this->heuref;
@@ -559,17 +598,30 @@ class Agefodd_sesscalendar extends CommonObject{
 		if ($result < 0) {
 			$error ++;
 		}
-
-		$result = $action->fetch_userassigned();
-		if ($result < 0) {
-			$error ++;
-		}
+        elseif ($result > 0) {
+            $result = $action->fetch_userassigned();
+            if ($result < 0) {
+                $error ++;
+            }
+        }
 
 		if ($error == 0) {
 
 			if ($action->id == $this->fk_actioncomm) {
+				$label = $session->intitule_custo;
 
-				$action->label = $session->formintitule . '(' . $session->formref . ')';
+				if(empty($conf->global->MAIN_EXTRAFIELDS_DISABLED) && ! empty($conf->global->AGF_EXTRAFIELD_FOR_TRAINING_LABEL))
+				{
+					$fullExtrafieldKey = 'options_' . $conf->global->AGF_EXTRAFIELD_FOR_TRAINING_LABEL;
+
+					if(is_array($session->array_options) && array_key_exists($fullExtrafieldKey, $session->array_options) && ! empty($session->array_options[$fullExtrafieldKey]))
+					{
+						$label = $session->array_options[$fullExtrafieldKey];
+					}
+
+				}
+
+				$action->label = $label . ' - ' . $langs->trans('AgfSessionDetail') . ' ' . $session->ref;
 				$action->location = $session->placecode;
 				$action->datep = $this->heured;
 				$action->datef = $this->heuref;
@@ -614,11 +666,16 @@ class Agefodd_sesscalendar extends CommonObject{
 	        if ($mode == 1) $out.= img_picto('', 'statut6').' ';
 	        $out.= $langs->trans('AgfStatusCalendar_canceled');
 	    }
-	    else if ($status == self::STATUS_MISSING)
-	    {
-	        if ($mode == 1) $out.= img_picto('', 'statut8').' ';
-	        $out.= $langs->trans('AgfStatusCalendar_missing');
-	    }
+		else if ($status == self::STATUS_MISSING)
+		{
+			if ($mode == 1) $out.= img_picto('', 'statut8').' ';
+			$out.= $langs->trans('AgfStatusCalendar_missing');
+		}
+		else if ($status == self::STATUS_FINISH)
+		{
+			if ($mode == 1) $out.= img_picto('', 'statut9').' ';
+			$out.= $langs->trans('AgfStatusCalendar_finish');
+		}
 
 	    return $out;
 	}

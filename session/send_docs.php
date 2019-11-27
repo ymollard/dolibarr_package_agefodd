@@ -289,6 +289,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 				if (empty($subject))
 					$langs->transnoentities('AgfAttestation') . ' ' . $object->ref;
 				$actiontypecode = 'AC_AGF_ATTES';
+				if($models == 'attestationpresencetraining') $actiontypecode = 'AC_AGF_ATTEP';
 				$actionmsg = $langs->trans('MailSentBy') . ' ' . $from . ' ' . $langs->trans('To') . ' ' . $send_email . ".\n";
 				if ($message) {
 					$actionmsg .= $langs->trans('MailTopic') . ": " . $subject . "\n";
@@ -296,6 +297,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					$actionmsg .= $message;
 				}
 				$actionmsg2 = $langs->trans('ActionATTESTATION_SENTBYMAIL');
+				if($models == 'attestationpresencetraining') $actionmsg2 = $langs->trans('ActionATTESTATION_PRESENCE_SENTBYMAIL');
 			}
 
 			$attachedfiles = $formmail->get_attached_files();
@@ -335,6 +337,8 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 						$result = $interface->run_triggers('CONVENTION_SENTBYMAIL', $object, $user, $langs, $conf);
 					} elseif ($models == 'attestation') {
 						$result = $interface->run_triggers('ATTESTATION_SENTBYMAIL', $object, $user, $langs, $conf);
+					} elseif ($models == 'attestationpresencetraining') {
+						$result = $interface->run_triggers('ATTESTATION_PRESENCE_TRAINING_SENTBYMAIL', $object, $user, $langs, $conf);
 					} elseif ($models == 'convocation') {
 						$result = $interface->run_triggers('CONVOCATION_SENTBYMAIL', $object, $user, $langs, $conf);
 					} elseif ($models == 'conseils') {
@@ -489,7 +493,7 @@ if (! empty($id)) {
 
 			// Init list of files
 			if ($mode == 'init') {
-				$formmail->clear_attached_files();
+				if(empty($removedfile) && empty($addfile)) $formmail->clear_attached_files();
 				$file_array=array();
 				if ($action == 'presend_convention') {
 
@@ -508,7 +512,16 @@ if (! empty($id)) {
 							$file_array[]=$file;
 						}
 					}
-					$filename = 'conseils_' . $agf->id . '.pdf';
+					if (empty($conf->global->AGF_MERGE_ADVISE_AND_CONVOC)) {
+						$filename = 'conseils_' . $agf->id . '.pdf';
+						$file = $conf->agefodd->dir_output . '/' . $filename;
+						if (file_exists($file)) {
+							$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+							$file_array[] = $file;
+						}
+					}
+
+					$filename = 'convocation_' . $agf->id . '_' . $socid . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
@@ -521,48 +534,77 @@ if (! empty($id)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
+					$filename = 'fiche_presence_societe_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_presence_direct_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
+					$filename = 'fiche_presence_direct_societe_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_trainee_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_trainee_direct_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_landscape_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
+					$filename = 'fiche_presence_landscape_societe_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_remise_eval_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 				} elseif ($action == 'presend_presence') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 					$file_array[]=$file;
@@ -611,31 +653,57 @@ if (! empty($id)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
+					$filename = 'fiche_presence_societe_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_presence_direct_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
+					$filename = 'fiche_presence_direct_societe_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
 					$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_trainee_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_trainee_direct_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
 						$file_array[]=$file;
 					}
+
 					$filename = 'fiche_presence_landscape_' . $agf->id . '.pdf';
+					$file = $conf->agefodd->dir_output . '/' . $filename;
+					if (file_exists($file)) {
+						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
+						$file_array[]=$file;
+					}
+
+					$filename = 'fiche_presence_landscape_societe_' . $agf->id . '.pdf';
 					$file = $conf->agefodd->dir_output . '/' . $filename;
 					if (file_exists($file)) {
 						$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
@@ -1374,6 +1442,7 @@ if (! empty($id)) {
 				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierConv3') . "\n\n";
 				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierAcceuil11') . "\n\n";
 				$formmail->withbody .= $langs->transnoentities('AgfPDFCourrierAcceuil13');
+				$formmail->withbody = nl2br($formmail->withbody);
 
 				$formmail->param['models'] = 'convention';
 				$formmail->param['pre_action'] = 'presend_convention';
@@ -2013,6 +2082,104 @@ if (! empty($id)) {
 			}
 
 			$formmail->substit['__PERSONALIZED__'] = '';
+
+
+			/*
+			 * LOAD TRAINERS EXTRAFIELDS REPLACEMENTS
+			 */
+
+			$agf->fetchTrainers();
+			if(is_array($agf->TTrainer)){
+				$nbTrainers = count($agf->TTrainer);
+			}
+
+			// Load contact extrafields list
+			$contactTemps = new Contact($db);
+			$contact_table_element = $contactTemps->table_element;
+			$trainneExtrafields = new ExtraFields($db);
+			$trainneExtrafields->fetch_name_optionals_label($contact_table_element);
+
+			$TExtrafields = array();
+			if(!empty($trainneExtrafields->attributes[$contact_table_element]['elementtype'] )) {
+				foreach ($trainneExtrafields->attributes[$contact_table_element]['elementtype'] as $extrafieldKey => $extrafieldElementType) {
+					$TExtrafields[] = $extrafieldKey;
+				}
+			}
+
+
+			// Load users extrafields list
+			$trainneExtrafields = new ExtraFields($db);
+			$trainneExtrafields->fetch_name_optionals_label($user->table_element);
+			if(!empty($trainneExtrafields->attributes[$user->table_element]['elementtype'])) {
+				foreach ($trainneExtrafields->attributes[$user->table_element]['elementtype'] as $extrafieldKey => $extrafieldElementType) {
+					$TExtrafields[] = $extrafieldKey;
+				}
+			}
+
+
+			$TExtrafields = array_unique($TExtrafields);
+
+			if(!empty($TExtrafields))
+			{
+				// prepare key search
+				$TExtrafieldsOptions = array();
+				foreach ($TExtrafields as $extrafieldKey){
+					$TExtrafieldsOptions['options_'.$extrafieldKey] = $extrafieldKey;
+				}
+
+				// I set empty trainers to allocate data replacement
+				$nbTrainers = $nbTrainers>10?$nbTrainers:10;
+				for ($i = 0; $i <= $nbTrainers; $i++)
+				{
+					$t = $i+1; // more user friendly to start at 1 and not 0
+
+					// To set replacement key to empty
+					foreach ($TExtrafields as $extrafieldKey){
+						$extKey = '__TRAINER_'.$t.'_EXTRAFIELD_'.strtoupper($extrafieldKey).'__';
+						$formmail->substit[$extKey] = '';
+					}
+
+					// Replace with real data if exist
+					if(!empty($agf->TTrainer[$i]))
+					{
+						$trainer =& $agf->TTrainer[$i];
+						if(!empty($trainer->fk_socpeople)){
+							$contactTrainer = new Contact($db);
+							if($contactTrainer->fetch($trainer->fk_socpeople)>0){
+								$contactTrainer->fetch_optionals();
+
+								if(!empty($contactTrainer->array_options)){
+									foreach ($contactTrainer->array_options as $key => $value){
+										$extKey = '__TRAINER_'.$t.'_EXTRAFIELD_'.strtoupper($TExtrafieldsOptions[$key]).'__';
+										$formmail->substit[$extKey] = $value;
+									}
+								}
+							}
+						}
+						elseif(!empty($trainer->fk_user)){
+							$userTrainer = new User($db);
+							if($userTrainer->fetch($trainer->fk_user)>0){
+								$userTrainer->fetch_optionals();
+
+								if(!empty($userTrainer->array_options)){
+									foreach ($userTrainer->array_options as $key => $value){
+										$extKey = '__TRAINER_'.$t.'_EXTRAFIELD_'.strtoupper($TExtrafieldsOptions[$key]).'__';
+										$formmail->substit[$extKey] = $value;
+									}
+								}
+							}
+						}
+
+						// isset($agf->TTrainer[$i]->array_options['option'])
+					}
+
+				}
+
+
+			}
+
+			// <- End trainer extrafields replacement
+
 
 			// Tableau des parametres complementaires
 			$formmail->param['action'] = 'send';

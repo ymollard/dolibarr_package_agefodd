@@ -229,8 +229,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '</table>';
 
-	print '<table style=noborder align="right">';
-	print '<tr><td align="center" colspan=2>';
+	print '<table class="noborder" style="text-align: right;">';
+	print '<tr><td style="text-align: right;" colspan=2>';
 	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
 	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 	print '</td></tr>';
@@ -455,10 +455,17 @@ print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $action != 'editcategory' && $action != 'edittraining') {
 
 	// Send
-	if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
+	if (($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && floatval(DOL_VERSION) > 8) {
 		print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $agf->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a></div>';
 	} else {
-		print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('SendMail') . '</a></div>';
+		$class = "";
+		$title = "";
+		if(floatval(DOL_VERSION) < 9){
+			$class = "classfortooltip";
+			$title = $langs->trans("AGF_ForDoliVersionXMinOnly", 9);
+		}
+
+		print '<div class="inline-block divButAction"><a class="butActionRefused '.$class.'" href="#" title="'.$title.'">' . $langs->trans('SendMail') . '</a></div>';
 	}
 
 

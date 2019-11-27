@@ -26,7 +26,8 @@
 
 dol_include_once('/agefodd/core/modules/agefodd/pdf/pdf_fiche_presence.modules.php');
 
-class pdf_fiche_presence_landscape extends pdf_fiche_presence {
+class pdf_fiche_presence_landscape extends pdf_fiche_presence
+{
 	var $emetteur; // Objet societe qui emet
 
 	// Definition des couleurs utilisées de façon globales dans le document (charte)
@@ -38,18 +39,17 @@ class pdf_fiche_presence_landscape extends pdf_fiche_presence {
 	protected $colorLine;
 
 	/**
-	 * \brief		Constructor
-	 * \param		db		Database handler
+	 * Constructor
+	 *
+	 * @param DoliDb $db handler
 	 */
-	function __construct($db) {
-		global $conf, $langs, $mysoc;
+	function __construct($db)
+	{
+		global $conf, $langs;
 
-		$this->db = $db;
+		parent::__construct($db);
 		$this->name = "fiche_presence_landscape";
 		$this->description = $langs->trans('AgfModPDFFichePres');
-
-		// Dimension page pour format A4 en paysage
-		$this->type = 'pdf';
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray ['height']; // use standard but reverse width and height to get Landscape format
 		$this->page_hauteur = $formatarray ['width']; // use standard but reverse width and height to get Landscape format
@@ -57,30 +57,13 @@ class pdf_fiche_presence_landscape extends pdf_fiche_presence {
 				$this->page_largeur,
 				$this->page_hauteur
 		);
+		$this->marge_haute = 2;
 		$this->marge_gauche = 15;
 		$this->marge_droite = 15;
-		$this->marge_haute = 10;
-		$this->marge_basse = 10;
-		$this->unit = 'mm';
 		$this->oriantation = 'l'; // use Landscape format
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
-		$this->default_font_size=12;
-
-		$this->colorfooter = agf_hex2rgb($conf->global->AGF_FOOT_COLOR);
-		$this->colortext = agf_hex2rgb($conf->global->AGF_TEXT_COLOR);
-		$this->colorhead = agf_hex2rgb($conf->global->AGF_HEAD_COLOR);
-		$this->colorheaderBg = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_BG);
-		$this->colorheaderText = agf_hex2rgb($conf->global->AGF_HEADER_COLOR_TEXT);
-		$this->colorLine = agf_hex2rgb($conf->global->AGF_COLOR_LINE);
-
-		// Get source company
-		$this->emetteur = $mysoc;
-		if (! $this->emetteur->country_code)
-			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
-
-		$this->header_vertical_margin = 3;
 
 		$this->formation_widthcol1 = 20;
 		$this->formation_widthcol2 = 130;
@@ -89,12 +72,17 @@ class pdf_fiche_presence_landscape extends pdf_fiche_presence {
 
 		$this->trainer_widthcol1 = 55;
 		$this->trainer_widthcol2 = 145;
-		$this->trainer_widthtimeslot = 21;
 
 		$this->trainee_widthcol1 = 50;
 		$this->trainee_widthcol2 = 45;
-		$this->trainee_widthtimeslot = 17;
-
-		$this->nbtimeslots = 10;
+		if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
+			$this->trainer_widthtimeslot = 21;
+			$this->trainee_widthtimeslot = 17;
+			$this->nbtimeslots = 10;
+		} else {
+			$this->trainer_widthtimeslot = 23.3;
+			$this->trainee_widthtimeslot = 23.9;
+			$this->nbtimeslots = 9;
+		}
 	}
 }

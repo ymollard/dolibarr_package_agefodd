@@ -906,7 +906,7 @@ class Agefodd extends DolibarrApi
         if((int)$this->session->status !== 4) $this->session->status = 4;
         else $this->session->status = 1;
         
-        if($this->session->updateArchive(DolibarrApiAccess::$user))
+        if($this->session->update(DolibarrApiAccess::$user))
             return $this->getSession($id);
             
             return false;
@@ -3207,10 +3207,11 @@ class Agefodd extends DolibarrApi
      * Download an agefodd file
      * 
      * @param string $filename Name of the file to download
+     * @param int    $entity   ID of the entity where to get the file
      * 
      * @url GET /documents/download
      */
-    function documentsDownload($filename)
+    function documentsDownload($filename, $entity = 0)
     {
         global $conf, $langs;
         
@@ -3223,8 +3224,11 @@ class Agefodd extends DolibarrApi
         }
         
         //--- Finds and returns the document
-        $entity=$conf->entity;
-        
+	if (empty($entity))
+        	$entity=$conf->entity;
+	else if (!isset($conf->agefodd->multidir_output[$entity])) throw new RestException(500, "the entity provided has no folder defined");
+        else $conf->agefodd->dir_output = $conf->agefodd->multidir_output[$entity];
+
         $check_access = dol_check_secure_access_document('agefodd', $filename, $entity, DolibarrApiAccess::$user, '', 'read');
         $accessallowed              = $check_access['accessallowed'];
         $sqlprotectagainstexternals = $check_access['sqlprotectagainstexternals'];
@@ -3292,10 +3296,12 @@ class Agefodd extends DolibarrApi
       * @param int $id              ID of the trainee
       * @param int $sessid          ID of a Session (to filter on just one session)
       * @param int $withcommon      1 to get the common files of the session or 0 to get only the trainee documents
+      * @param int $withThirdpartyDocs 1 to get the documents of the trainee's thirdparty for the session
+      * @param int $entity	    ID of the entity where to search for the files
       * 
       * @url GET /trainees/documents
       */
-     function documentsTraineeList($id, $sessid = 0, $withcommon = 1)
+     function documentsTraineeList($id, $sessid = 0, $withcommon = 1, $withThirdpartyDocs = 1, $entity = 1)
      {
          global $conf;
          
@@ -3304,7 +3310,9 @@ class Agefodd extends DolibarrApi
          if($result < 0) throw new RestException(500, "Error retrieving trainee", array($this->db->lasterror, $this->db->lastqueryerror));
          elseif(empty($result)) throw new RestException(404, "Trainee not found");
          
-         $upload_dir = $conf->agefodd->dir_output;
+	 if (!isset($conf->agefodd->multidir_output[$entity])) throw new RestException(500, "the entity provided has no folder defined");
+
+         $upload_dir = $conf->agefodd->multidir_output[$entity];
          $filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$');
          $files = array();
          
@@ -3321,16 +3329,17 @@ class Agefodd extends DolibarrApi
             if($result < 0) throw new RestException(500, "Error retrieving trainee in session", array($this->db->lasterror, $this->db->lastqueryerror));
             elseif(empty($result)) throw new RestException(404, "Trainee not found in this session");
             
-            $socid = (!empty($this->traineeinsession->fk_soc_link)) ? $this->traineeinsession->fk_soc_link : $this->trainee->socid;
+	    if ($withThirdpartyDocs){
+            	$socid = (!empty($this->traineeinsession->fk_soc_link)) ? $this->traineeinsession->fk_soc_link : $this->trainee->socid;
             
-            $files[$sessid] = $this->_documentsSessionList($sessid, $socid, 0, $withcommon, 1, 0, $filearray);
-            
+           	$files[$sessid] = $this->_documentsSessionList($sessid, $socid, 0, $withcommon, 1, 0, $filearray);
+            }
             if(!empty($filearray)) {
                 foreach ($filearray as $f)
                 {
                     $mod = substr($f['name'], 0, strrpos($f['name'], '_'));
                     if(in_array($mod, array("convocation_trainee", "attestation_trainee", "attestationendtraining_trainee")) && preg_match("/^".$mod."_([0-9]+).pdf$/", $f['name'], $i) && $i[1] == $this->traineeinsession->id) $files[$sessid][] = $f['name'];
-                    if(preg_match("/^attestation_cursus_([0-9]+)_([0-9]+).pdf$/", $f['name'], $i )) return $f['name'];
+                    if(preg_match("/^attestation_cursus_([0-9]+)_([0-9]+).pdf$/", $f['name'], $i ) && $i[2] == $id) $files[$sessid][] = $f['name'];
                 }
             }
          }

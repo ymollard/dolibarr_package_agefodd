@@ -39,6 +39,7 @@ class Agefodd_stagiaire extends CommonObject {
 	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $nom;
 	public $prenom;
+	public $civilite;
 	public $fonction;
 	public $tel1;
 	public $tel2;
@@ -160,15 +161,16 @@ class Agefodd_stagiaire extends CommonObject {
 
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_stagiaire");
 			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
+				 // Call triggers
+                 if(is_file(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php")){
+                     include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+                 }else{ // For backward compatibility
+                     include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+                 }
+				 $interface=new Interfaces($this->db);
+				 $result=$interface->run_triggers('AGEFODD_STAGIAIRE_CREATE',$this,$user,$langs,$conf);
+				 if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				 // End call triggers
 			}
 
 			$result = $this->insertExtraFields();
@@ -191,10 +193,44 @@ class Agefodd_stagiaire extends CommonObject {
 		}
 	}
 
+
+    /**
+     * Load object in memory from database
+     *
+     * @param int $id object
+     * @return int <0 if KO, >0 if OK
+     */
+    public function fetch_by_contact($id) {
+
+        $sql = "SELECT";
+        $sql .= " s.rowid as id";
+        $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
+        $sql .= " WHERE s.fk_socpeople = " . intval($id);
+        $sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+
+        dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
+        $resql = $this->db->query($sql);
+
+        if ($resql) {
+            if ($this->db->num_rows($resql)) {
+                $obj = $this->db->fetch_object($resql);
+                return $this->fetch($obj->id);
+            }
+            else{
+                return 0;
+            }
+        } else {
+            $this->error = "Error " . $this->db->lasterror();
+            dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+            return - 1;
+        }
+    }
+
+
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $id object
+	 * @param  int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
@@ -212,26 +248,24 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON s.civilite = civ.code";
 		$sql .= " WHERE s.rowid = " . $id;
-		$sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+		$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
 
 		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			if ($this->db->num_rows($resql)) {
+			if ($this->db->num_rows($resql)>0) {
 				$obj = $this->db->fetch_object($resql);
 
 				if (! (empty($obj->fk_socpeople))) {
 					$contact = new Contact($this->db);
 					$result = $contact->fetch($obj->fk_socpeople);
-
+					$this->id = $obj->rowid;
 					if ($result > 0) {
-
-						$this->id = $obj->rowid;
 						$this->ref = $obj->rowid; // use for next prev refs
 						$this->nom = $contact->lastname;
 						$this->prenom = $contact->firstname;
-						$this->civilite = $contact->civility_id;
+						$this->civilite = $contact->civility_code;
 						$this->socid = $contact->socid;
 						$this->socname = $contact->socname;
 						$this->fonction = $contact->poste;
@@ -303,9 +337,12 @@ class Agefodd_stagiaire extends CommonObject {
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
-
-		$array_options_keys=array_keys($extrafields->attribute_label);
-
+		$array_options_keys=array();
+		foreach($extrafields->attribute_type as $name=>$type) {
+			if ($type!='separate') {
+				$array_options_keys[]=$name;
+			}
+		}
 		$sql = "SELECT";
 		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilitecode,";
@@ -329,7 +366,7 @@ class Agefodd_stagiaire extends CommonObject {
 			foreach ( $filter as $key => $value ) {
 				if ($key == 'naturalsearch') {
 					$sql .= ' AND (s.nom LIKE \'%' . $this->db->escape($value) . '%\' OR s.prenom LIKE \'%' . $this->db->escape($value) . '%\')';
-				} elseif ($key == 's.fk_socpeople') {
+				} elseif ($key == 's.fk_socpeople' || $key == 's.fk_soc') {
 					$sql .= ' AND ' . $key . ' = ' . $this->db->escape($value) . '';
 				} elseif ($key != 's.tel1') {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
@@ -348,7 +385,7 @@ class Agefodd_stagiaire extends CommonObject {
 			$sql .= $this->db->plimit($limit + 1, $offset);
 		}
 
-		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -442,21 +479,21 @@ class Agefodd_stagiaire extends CommonObject {
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::". __METHOD__. ' '. $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-	
+
 	public function fetch_all_id_by($attribute)
 	{
 		$TRes = array();
-		
+
 		$sql = "SELECT";
 		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilitecode,";
 		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
 		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth";
-		
+
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 		$sql .= " ON s.fk_soc = so.rowid";
@@ -464,7 +501,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " ON s.civilite = civ.code";
 		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
-		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql)
 		{
@@ -472,12 +509,12 @@ class Agefodd_stagiaire extends CommonObject {
 			{
 				$TRes[$obj->{$attribute}] = $obj->rowid;
 			}
-			
+
 			$this->db->free($resql);
 			return $TRes;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__.' '. $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -496,7 +533,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " WHERE s.rowid = " . $id;
 
-		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -512,7 +549,7 @@ class Agefodd_stagiaire extends CommonObject {
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__ .' '. $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -577,15 +614,16 @@ class Agefodd_stagiaire extends CommonObject {
 		}
 		if (! $error) {
 			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
+				 // Call triggers
+                 if(is_file(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php")){
+                     include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+                 }else{ // For backward compatibility
+                     include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
+                 }
+				 $interface=new Interfaces($this->db);
+				 $result=$interface->run_triggers('AGEFODD_STAGIAIRE_MODIFY',$this,$user,$langs,$conf);
+				 if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				 // End call triggers
 			}
 
 			$result = $this->insertExtraFields();

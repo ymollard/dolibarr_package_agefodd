@@ -52,8 +52,10 @@ if (! $user->rights->agefodd->lire) {
 	accessforbidden();
 }
 
+// Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
 $hookmanager->initHooks(array(
 		'agefoddsessioncard'
+		,'globalcard'
 ));
 
 $action = GETPOST('action', 'alpha');
@@ -71,9 +73,11 @@ $parameters = array(
 		'confirm' => $confirm,
 		'arch' => $arch
 );
-$reshook = $hookmanager->executeHooks('doActions', $parameters, $agf, $action); // Note that $action and $object may have been modified by some hooks
+//var_dump($agf->context->action); exit;
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $agf, $action);// Note that $action and $object may have been modified by some hooks
 if ($reshook < 0)
 	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+if (empty($reshook)){
 
 /*
  * Actions delete session
@@ -85,6 +89,53 @@ $saveandclose = GETPOST('saveandclose');
 $modperiod = GETPOST('modperiod', 'int');
 $period_remove = GETPOST('period_remove', 'int');
 $period_remove_all = GETPOST('period_remove_all', 'int');
+
+if ($action == 'confirm_validateregistrants' && $confirm == "yes" && $user->rights->agefodd->creer) {
+
+
+	//On récupère tous les formateurs de la session courante
+	$formateurs = new Agefodd_session_formateur($db);
+	$resultsf = $formateurs->fetch_formateur_per_session($id);
+
+	//On récupère tous les stagiaires de la session courante
+	$stagiaires = new Agefodd_session_stagiaire($db);
+	$resultss = $stagiaires->fetch_stagiaire_per_session($id);
+
+//	var_dump(!empty($resultsf) && !empty($resultss)); exit;
+
+	if(!empty($resultsf) && !empty($resultss)) {		//On confirme tous les inscrits seulement si il y a au moins un stagiaire et un formateur
+
+		foreach ($formateurs->lines as $formateurlines) {
+			$sessionformateur = new Agefodd_session_formateur($db);
+			$sessionformateur->fetch($formateurlines->opsid);
+			$sessionformateur->trainer_status = '2';	//Statut "2" correspond à "Confirmé"
+			$sessionformateur->opsid = $formateurlines->opsid;
+			$sessionformateur->update($user);
+		}
+
+		foreach ($stagiaires->lines as $stagiairelines) {
+			$sessionstagiaire = new Agefodd_session_stagiaire($db);
+			$sessionstagiaire->fetch($stagiairelines->stagerowid);
+			$sessionstagiaire->status_in_session = '2';		//Statut "2" correspond à "Confirmé"
+			$sessionstagiaire->update($user);
+		}
+
+		seteventMessage($langs->trans('SessionRegistrantsConfirm'));
+		Header("Location: card.php?id=" . $id);
+		exit();
+
+	} else {	//Sinon on affiche les erreurs
+
+		if(empty($resultss) && !empty($resultsf)){
+			setEventMessage($langs->trans('AgfErrorSessionNoTrainee'), 'errors');
+		}
+		elseif(!empty($resultss) && empty($resultsf)){
+			setEventMessage($langs->trans('AgfErrorSessionNoTrainer'), 'errors');
+		} else {
+			setEventMessage($langs->trans('AgfErrorSessionNoRegistrant'), 'errors');
+		}
+	}
+}
 
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer) {
 	$agf = new Agsession($db);
@@ -208,7 +259,9 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer) {
 
 		if (empty($arch)) {
 			$agf->status = 1;
+			if (!empty($agf->status_before_archive)) $agf->status = $agf->status_before_archive;
 		} else {
+			$agf->status_before_archive = $agf->status;
 			$agf->status = 4;
 		}
 
@@ -216,10 +269,10 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer) {
 
 		if ($result > 0) {
 			// If update are OK we delete related files
-			foreach ( glob($conf->agefodd->dir_output . "/*_" . $id . "_*.pdf") as $filename ) {
-				if (is_file($filename))
-					unlink("$filename");
-			}
+//			foreach ( glob($conf->agefodd->dir_output . "/*_" . $id . "_*.pdf") as $filename ) {
+//				if (is_file($filename))
+//					unlink("$filename");
+//			}
 
 			Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 			exit();
@@ -450,7 +503,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		$agf->type_session = GETPOST('type_session', 'int');
 		$agf->nb_place = GETPOST('nb_place', 'int');
 		$agf->status = GETPOST('session_status', 'int');
-
+		$agf->color = GETPOST('color');
 		$agf->fk_soc = GETPOST('fk_soc', 'int');
 		$agf->dated = dol_mktime(12, 0, 0, GETPOST('dadmonth', 'int'), GETPOST('dadday', 'int'), GETPOST('dadyear', 'int'));
 		$agf->datef = dol_mktime(12, 0, 0, GETPOST('dafmonth', 'int'), GETPOST('dafday', 'int'), GETPOST('dafyear', 'int'));
@@ -650,6 +703,8 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 	// }
 }
 
+}
+
 /*
  * View
  */
@@ -685,6 +740,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 		$urlreturnsite = '&fk_order=' . $fk_order;
 	}
 
+	print '<div>';
 	print '<table id="session_card" class="border tableforfield" width="100%">';
 
 	print '<tr class="order_place"><td><span class="fieldrequired">' . $langs->trans("AgfLieu") . '</span></td>';
@@ -699,10 +755,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 	print '<td>' . $formAgefodd->select_formation(GETPOST('formation', 'int'), 'formation', 'intitule', 1) . '</td></tr>';
 
 	print '<tr class="order_intituleCusto"><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
-	print '<td><input size="30" type="text" class="flat" id="intitule_custo" name="intitule_custo" value="' . $agf->intitule_custo . '" /></td></tr>';
+	print '<td><input size="30" type="text" class="flat" id="intitule_custo" name="intitule_custo" value="' . dol_escape_htmltag($agf->intitule_custo) . '" /></td></tr>';
 
 	print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
 	print '<td>' . $formAgefodd->select_type_session('type_session', $conf->global->AGF_DEFAULT_SESSION_TYPE) . '</td></tr>';
+
+	print '<tr  class="order_sessionColor"><td>' . $langs->trans("Color") . '</td>';
+        print '<td>';
+        print $formother->selectColor($agf->color, 'color');
+        print '</td></tr>';
 
 	print '<tr class="order_sessionCommercial"><td>' . $langs->trans("AgfSessionCommercial") . '</td>';
 	print '<td>';
@@ -989,7 +1050,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					print '</td></tr>';
 
 					print '<tr class="order_intituleCusto"><td>' . $langs->trans("AgfFormIntituleCust") . '</td>';
-					print '<td><input size="30" type="text" class="flat" id="intitule_custo" name="intitule_custo" value="' . $agf->intitule_custo . '" /></td></tr>';
+					print '<td><input size="30" type="text" class="flat" id="intitule_custo" name="intitule_custo" value="' . dol_escape_htmltag($agf->intitule_custo) . '" /></td></tr>';
 
 					print '<tr class="order_type"><td>' . $langs->trans("AgfFormTypeSession") . '</td>';
 					print '<td>' . $formAgefodd->select_type_session('type_session', $agf->type_session) . '</td></tr>';
@@ -1246,6 +1307,13 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 					dol_agefodd_banner_tab($agf, 'id');
 					print '<div class="underbanner clearboth"></div>';
+
+					/*
+					 * Confirm validate
+					 */
+					if ($action == 'validateregistrants') {
+						print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfValidateRegistrantsOps"), $langs->trans("AgfConfirmValidateRegistrantsSession"), "confirm_validateregistrants", '', '', 1);
+					}
 
 					/*
 					 * Confirm delete
@@ -1586,6 +1654,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								$trainee_info .= strtoupper($stagiaires->lines[$i]->nom) . ' ' . ucfirst($stagiaires->lines[$i]->prenom) . '</a>';
 								$contact_static = new Contact($db);
 								$contact_static->civility_id = $stagiaires->lines[$i]->civilite;
+								$contact_static->civility_code = $stagiaires->lines[$i]->civilite;
 								$trainee_info .= ' (' . $contact_static->getCivilityLabel() . ')';
 
 								if ($agf->type_session == 1 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
@@ -1734,6 +1803,11 @@ if ($action != 'create' && $action != 'edit' && (! empty($agf->id))) {
 	$parameters = array();
 	$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $agf, $action); // Note that $action and $object may have been modified by hook
 	if (empty($reshook)) {
+		if ($user->rights->agefodd->creer) {
+			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=validateregistrants&id=' . $id . '">' . $langs->trans('AgfValidateRegistrants') . '</a>';
+		} else {
+			print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('AgfValidateRegistrants') . '</a>';
+		}
 		if ($user->rights->agefodd->modifier && ! $user->rights->agefodd->session->trainer) {
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '">' . $langs->trans('Modify') . '</a>';
 		} else {

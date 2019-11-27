@@ -465,7 +465,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		//trainee name
 		$pdf->SetXY($this->posxforthcolumn+1, $tab_top+$tab_height/4-3);
 		$this->str = $line->nom . ' ' . $line->prenom;
-		if (! empty($line->poste)) {
+		if (! empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
 			$this->str .= ' (' . $line->poste . ')';
 		}
 		$pdf->MultiCell($this->posxstudentname-$this->posxsecondcolumn, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -544,7 +544,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9);
 		$this->str = $line->nom . ' ' . $line->prenom . ' - ' . dol_trunc($line->socname, 27);
-		if (! empty($line->poste)) {
+		if (! empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
 			$this->str .= ' (' . $line->poste . ')';
 		}
 		//$pdf->Cell($larg_col3, 5, $outputlangs->convToOutputCharset($this->str), TR, 2, "C", 0);

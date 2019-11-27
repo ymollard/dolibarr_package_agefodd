@@ -28,7 +28,8 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 /**
  * Manage traner session object
  */
-class Agefodd_session_formateur {
+class Agefodd_session_formateur
+{
 	protected $db;
 	public $error;
 	public $errors = array ();
@@ -52,7 +53,8 @@ class Agefodd_session_formateur {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function __construct($db) {
+	public function __construct($db)
+	{
 		global $langs;
 
 		$this->db = $db;
@@ -83,7 +85,8 @@ class Agefodd_session_formateur {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0)
+	{
 		global $conf, $langs;
 		$error = 0;
 
@@ -161,7 +164,7 @@ class Agefodd_session_formateur {
 		$sql = "SELECT";
 		$sql .= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql .= " f.fk_socpeople,";
-		$sql .= " sp.lastname, sp.firstname";
+		$sql .= " sp.lastname, sp.firstname, sp.address, sp.zip, sp.town";
 		$sql .= " ,u.lastname as ulastname, u.firstname as ufirstname";
 		$sql .= " ,sf.trainer_status";
 		$sql .= " ,sf.fk_agefodd_formateur_type as trainer_type";
@@ -189,6 +192,9 @@ class Agefodd_session_formateur {
 				if ($obj->type_trainer=='socpeople') {
 					$this->lastname = $obj->lastname;
 					$this->firstname = $obj->firstname;
+					$this->address = $obj->address;
+					$this->zip = $obj->zip;
+					$this->town = $obj->town;
 				} elseif ($obj->type_trainer=='user') {
 					$this->lastname = $obj->ulastname;
 					$this->firstname = $obj->ufirstname;
@@ -220,8 +226,8 @@ class Agefodd_session_formateur {
 		$sql = "SELECT";
 		$sql .= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql .= " f.rowid as formid, f.fk_socpeople, f.fk_user,";
-		$sql .= " sp.lastname as name_socp, sp.firstname as firstname_socp, sp.email as email_socp,";
-		$sql .= " u.lastname as name_user, u.firstname as firstname_user, u.email as email_user";
+		$sql .= " sp.lastname as name_socp, sp.firstname as firstname_socp, sp.email as email_socp, sp.phone as phone_socp,";
+		$sql .= " u.lastname as name_user, u.firstname as firstname_user, u.email as email_user, u.office_phone as phone_user";
 		$sql .= " ,sf.trainer_status";
 		$sql .= " ,st.rowid as trainertype, st.intitule as trainertypelabel";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
@@ -253,12 +259,14 @@ class Agefodd_session_formateur {
 					if (! empty($obj->fk_socpeople)) {
 						$line->lastname = $obj->name_socp;
 						$line->firstname = $obj->firstname_socp;
+						$line->phone = $obj->phone_socp;
 						$line->email = $obj->email_socp;
 					}
 					if (! empty($obj->fk_user)) {
 						$line->lastname = $obj->name_user;
 						$line->firstname = $obj->firstname_user;
 						$line->email = $obj->email_user;
+						$line->phone = $obj->phone_user;
 					}
 
 					$line->socpeopleid = $obj->fk_socpeople;
@@ -519,6 +527,7 @@ class AgfSessionTrainer {
 	public $trainer_status;
 	public $trainer_type;
 	public $trainer_type_label;
+	public $phone;
 
 	/**
 	 * Return label of status of trainer in session (on going, subcribe, confirm, present, patially present,not present,canceled)
@@ -621,6 +630,8 @@ class AgfSessionTrainer {
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
 		}
 	}
+
+
 	public function __construct() {
 		global $langs;
 

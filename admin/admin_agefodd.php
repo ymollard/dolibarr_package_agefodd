@@ -39,6 +39,8 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
 
+$showHiddenConf = GETPOST('showhiddenconf', 'int');
+
 if (! $user->rights->agefodd->admin && ! $user->admin)
 	accessforbidden();
 
@@ -254,15 +256,38 @@ if ($action == 'setvar') {
 	if (! $res > 0)
 		$error ++;
 
+
+	// Marges
+	$TMarges = array('HAUTE', 'BASSE', 'GAUCHE', 'DROITE');
+	$TOrientations = array('P', 'L');
+	foreach ($TOrientations as $orientation) {
+		foreach ($TMarges as $marge) {
+			$margeConf = 'AGF_MARGE_' . $marge . '_' . $orientation;
+			$margeValue = GETPOST($margeConf, 'int');
+			$res = dolibarr_set_const($db, $margeConf, $margeValue, 'chaine', 0, '', $conf->entity);
+			if (! $res > 0)
+				$error ++;
+		}
+	}
+
+
 	$default_training_cat = GETPOST('AGF_DEFAULT_TRAINNING_CAT', 'int');
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT', $default_training_cat, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 	
-
-
 	$default_training_cat_bpf = GETPOST('AGF_DEFAULT_TRAINNING_CAT_BPF', 'int');
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT_BPF', $default_training_cat_bpf, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$defaultstatuscalendar = GETPOST('AGF_DEFAULT_TRAINER_CALENDAR_STATUS', 'int');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINER_CALENDAR_STATUS', $defaultstatuscalendar, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+	$defaultstatuscalendartrainer = GETPOST('AGF_DEFAULT_CALENDAR_STATUS', 'int');
+	$res = dolibarr_set_const($db, 'AGF_DEFAULT_CALENDAR_STATUS', $defaultstatuscalendartrainer, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 
@@ -691,8 +716,8 @@ if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
 							$htmltooltip = '';
 							$htmltooltip .= '' . $langs->trans("Version") . ': <b>' . $module->getVersion() . '</b><br>';
 							$nextval = $module->getNextValue($mysoc, $agf);
-							if ("$nextval" != $langs->trans("AgfNotAvailable")) // Keep " on nextval
-{
+							// Keep " on nextval
+							if ("$nextval" != $langs->trans("AgfNotAvailable")) {
 								$htmltooltip .= '' . $langs->trans("NextValue") . ': ';
 								if ($nextval) {
 									$htmltooltip .= $nextval . '<br>';
@@ -922,6 +947,26 @@ print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfPDFBackgroundLandscape"). ' '. $langs->trans("ErrorOnlyPDFSupported"), 1, 'help');
 print '</td></tr>';
 
+
+
+// Marges
+if(!empty($conf->global->AGF_DISPLAY_MARGE_CONFIG) || !empty($showHiddenConf)){
+	// TODO : add this conf usable for all agefodd PDF : show pdf_conseils.modules.php, marge + $pdf->setPageOrientation
+	$TMarges = array('HAUTE', 'BASSE', 'GAUCHE', 'DROITE');
+	$TOrientations = array('P', 'L');
+	foreach ($TOrientations as $orientation) {
+		foreach ($TMarges as $marge) {
+			print '<tr class="pair"><td>' . $langs->trans("AgfMarge" . ucfirst(strtolower($marge)) . $orientation) . '</td>';
+			print '<td align="left">';
+			print '<input type="text"   name="' . 'AGF_MARGE_' . $marge . '_' . $orientation . '" value="' . $conf->global->{'AGF_MARGE_' . $marge . '_' . $orientation} . '" size="4" >' . $langs->trans('LengthUnitmm') . '</td>';
+			print '<td align="center">';
+			print $form->textwithpicto('', $langs->trans("AgfPDFMargeLeaveEmptyForDefault"), 1, 'help');
+			print '</td></tr>';
+		}
+	}
+}
+
+
 // Default session status
 print '<tr class="impair"><td>' . $langs->trans("AgfDefaultSessionStatus") . '</td>';
 print '<td align="left">';
@@ -948,6 +993,25 @@ print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfNbHourInDaysHelp"), 1, 'help');
 print '</td>';
 print '</tr>';
+
+// Default calendar status
+print '<tr class="impair"><td>' . $langs->trans("AgfDefaultCalendarStatus") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_calendrier_status($conf->global->AGF_DEFAULT_CALENDAR_STATUS, "AGF_DEFAULT_CALENDAR_STATUS");
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
+// Default Trainer status
+print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainerCalendarStatus") . '</td>';
+print '<td align="left">';
+print $formAgefodd->select_calendrier_status($conf->global->AGF_DEFAULT_TRAINER_CALENDAR_STATUS, "AGF_DEFAULT_TRAINER_CALENDAR_STATUS");
+print '</td>';
+print '<td align="center">';
+print '</td>';
+print '</tr>';
+
 
 // Default training cat
 print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainingCat") . '</td>';

@@ -111,7 +111,7 @@ if ($action == 'edit' && $user->rights->agefodd->modifier) {
 		$result = $agf->update($user);
 
 		if ($result > 0) {
-			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+			header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
 			exit();
 		} else {
 			setEventMessage($agf->error, 'errors');
@@ -249,7 +249,10 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 
 		$agf_cal->sessid = GETPOST('sessid', 'int');
 
-		if (! empty($modperiod))
+        // Je récupère le/les calendrier participants avant modificatino du calendrier formateur
+        $TCalendrier = _getCalendrierFromCalendrierFormateur($agf_cal, true, true);
+
+        if (! empty($modperiod))
 			$agf_cal->id = $modperiod;
 		if (! empty($date_session))
 			$agf_cal->date_session = $date_session;
@@ -290,6 +293,23 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 				$error ++;
 				$error_message[] = $agf_cal->error;
 			}
+			else
+            {
+                if (!empty($TCalendrier) && is_array($TCalendrier))
+                {
+                    $agf_calendrier = $TCalendrier[0];
+                    $agf_calendrier->date_session = $agf_cal->date_session;
+                    $agf_calendrier->heured = $agf_cal->heured;
+                    $agf_calendrier->heuref = $agf_cal->heuref;
+                    $agf_calendrier->status = $agf_cal->status;
+//                    $agf_calendrier->calendrier_type = $code_c_session_calendrier_type;
+                    $r=$agf_calendrier->update($user);
+                }
+                elseif (is_string($TCalendrier))
+                {
+                    setEventMessage($TCalendrier, 'errors');
+                }
+            }
 		}
 
 		if (count($warning_message) > 0) {
@@ -334,6 +354,8 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 
 				$agf_cal->heured = $line->heured;
 				$agf_cal->heuref = $line->heuref;
+
+				$agf_cal->status = $line->status;
 
 				// Test if trainer is already book for another training
 				$result = $agf_cal->fetch_all_by_trainer(GETPOST('trainerid', 'int'));
@@ -656,8 +678,10 @@ if (! empty($id)) {
 									$hourhtml .= dol_print_date($trainer_calendar->lines[$j]->date_session, 'daytextshort') . '</td>' . "\n";
 									$hourhtml .= '<td width="100px">' . "\n";
 									if (! $user->rights->agefodd->session->trainer) {
-										$hourhtml .= dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
+                                        $hourDisplay = dol_print_date($trainer_calendar->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($trainer_calendar->lines[$j]->heuref, 'hour');
+										$hourhtml .= _isTrainerFreeBadge($hourDisplay, $trainer_calendar->lines[$j], $formateurs->lines[$i]->formid);
 									}
+									$hourhtml.= '<td>'.Agefodd_sesscalendar::getStaticLibStatut($trainer_calendar->lines[$j]->status, 0).'</td>'."\n";
 									$hourhtml .= '</td></tr>' . "\n";
 								}
 
@@ -962,7 +986,9 @@ if (! empty($id)) {
 								}
 								print '</td>' . "\n";
 								print '<td width="20%">' . dol_print_date($calendrier->lines[$j]->date_session, 'daytext') . '</td>' . "\n";
-								print '<td  width="40%">' . dol_print_date($calendrier->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$j]->heuref, 'hour') . '</td>';
+                                $hourDisplay = dol_print_date($calendrier->lines[$j]->heured, 'hour') . ' - ' . dol_print_date($calendrier->lines[$j]->heuref, 'hour');
+                                $hourDisplay = _isTrainerFreeBadge($hourDisplay, $calendrier->lines[$j], $formateurs->lines[$i]->opsid);
+								print '<td  width="40%">' . $hourDisplay  . '</td>';
 								print '<td>' . Agefodd_sesscalendar::getStaticLibStatut($calendrier->lines[$j]->status, 0) . '</td>';
 
 								// Trainer cost is fully managed into cost management not here
@@ -1022,7 +1048,7 @@ if (! empty($id)) {
 								print $langs->trans("AgfPeriodTimeE") . ' ';
 								print $formAgefodd->select_time('18:00', 'datef');
 								print '</td>';
-								print '<td>' . $formAgefodd->select_calendrier_status('', 'calendar_trainer_status') . '</td>';
+								print '<td>' . $formAgefodd->select_calendrier_status($conf->global->AGF_DEFAULT_TRAINER_CALENDAR_STATUS, 'calendar_trainer_status') . '</td>';
 								// Trainer cost is fully managed into cost management not here
 								if (empty($conf->global->AGF_ADVANCE_COST_MANAGEMENT)) {
 									// Coût horaire
@@ -1101,3 +1127,26 @@ print '</div>';
 
 llxFooter();
 $db->close();
+
+
+function _isTrainerFreeBadge($hourDisplay, $line, $fk_trainer)
+{
+    global $langs;
+
+    $errorsStatus = $warningsStatus = 'default';
+    if($line->status != Agefoddsessionformateurcalendrier::STATUS_DRAFT){
+        $warningsStatus = array();
+    }
+
+    $isTrainerFree = Agefoddsessionformateurcalendrier::isTrainerFree($fk_trainer, $line->heured, $line->heuref, $line->id, $errorsStatus, $warningsStatus);
+    if(!$isTrainerFree->isFree)
+    {
+        if($isTrainerFree->errors > 0){
+            $hourDisplay = '<span class="classfortooltip badge badge-danger" title="'.$langs->trans('TrainerNotFree').'" ><i class="fa fa-exclamation-circle"></i> '.$hourDisplay .'</span>';
+        } elseif ($isTrainerFree->warnings > 0){
+            $hourDisplay = '<span class="classfortooltip badge badge-warning" title="'.$langs->trans('TrainerCouldBeNotFree').'" ><i class="fa fa-exclamation-triangle"></i> '.$hourDisplay .'</span>';
+        }
+    }
+
+    return $hourDisplay;
+}

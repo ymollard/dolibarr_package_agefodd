@@ -42,7 +42,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	public $fk_socpeople_sign;
 	public $fk_soc_link;
 	public $fk_soc_requester;
-	
+
 	/**
 	 * 0 => TraineeSessionStatusProspect (Prospect)
 	 * 1 => TraineeSessionStatusVerbalAgreement (Accord verbal)
@@ -52,11 +52,11 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * 5 => TraineeSessionStatusNotPresent (Non présent)
 	 * 6 => TraineeSessionStatusCancelled (Annulé)
 	 * 7 => TraineeSessionStatusExcuse (Excusé)
-	 * 
+	 *
 	 * @var integer
 	 */
 	public $status_in_session;
-	
+
 	const STATUS_IN_SESSION_PROSPECT = 0;
 	const STATUS_IN_SESSION_VERBAL_AGREEMENT = 1;
 	const STATUS_IN_SESSION_CONFIRMED = 2;
@@ -65,13 +65,16 @@ class Agefodd_session_stagiaire extends CommonObject {
 	const STATUS_IN_SESSION_NOT_PRESENT = 5;
 	const STATUS_IN_SESSION_CANCELED = 6;
 	const STATUS_IN_SESSION_EXCUSED = 7;
-	
+
 	public $labelstatut;
 	public $labelstatut_short;
 	public $fk_user_author = '';
 	public $fk_user_mod = '';
 	public $datec = '';
 	public $tms = '';
+	/**
+	 * @var $lines Agefodd_session_stagiaire[]
+	 */
 	public $lines = array ();
 	public $lines_state = array ();
 	public $hour_foad;
@@ -224,6 +227,11 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= ' so.code_client as soccode, ';
 		$sql .= ' so.nom as socname, ';
 		$sql .= " st.rowid as typeid, st.intitule as type, sa.mail as stamail, sope.email as socpemail,";
+		$sql .= " sope.phone as socpphone,";
+		$sql .= " sope.phone_mobile as socpphone_mobile,";
+		$sql .= " sa.tel1,";
+		$sql .= " sa.tel2,";
+		$sql .= " sope.phone_mobile as socpphone_mobile,";
 		$sql .= " sa.date_birth,";
 		$sql .= " sa.place_birth,";
 		$sql .= " sa.fk_socpeople,";
@@ -289,7 +297,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				} else {
 					$line->date_birth = $this->db->jdate($obj->date_birth);
 				}
-				$line->datebirthformated = dol_print_date($line->date_birth,'%y.%m.%d');
+				$line->datebirthformated = dol_print_date($line->date_birth,'%d/%m/%Y');
 
 				$line->type = $obj->type;
 				$line->fk_socpeople_sign = $obj->fk_socpeople_sign;
@@ -298,6 +306,13 @@ class Agefodd_session_stagiaire extends CommonObject {
 					$line->email = $obj->socpemail;
 				} else {
 					$line->email = $obj->stamail;
+				}
+				if (!empty($line->fk_socpeople)) {
+					$line->tel1 = $obj->socpphone;
+					$line->tel2 = $obj->socpphone_mobile;
+				} else {
+					$line->tel1 = $obj->tel1;
+					$line->tel2 = $obj->tel2;
 				}
 
 				if (empty($obj->poste)) {
@@ -1121,6 +1136,8 @@ class AgfTraineeSessionLine extends CommonObject {
 	public $typeid;
 	public $type;
 	public $email;
+	public $tel1;
+	public $tel2;
 	public $fk_socpeople;
 	public $date_birth;
 	public $place_birth;

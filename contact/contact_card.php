@@ -29,6 +29,7 @@ if (! $res)
 	die("Include of main fails");
 
 require_once ('../class/agsession.class.php');
+require_once ('../lib/agefodd.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/contact.lib.php';
 
@@ -44,7 +45,7 @@ $id = GETPOST('id', 'int');
 $langs->load("companies");
 $langs->load("agefodd@agefodd");
 
-$title = $langs->trans("Contacts");
+$title = (! empty($conf->global->SOCIETE_ADDRESSES_MANAGEMENT) ? $langs->trans("Contacts") : $langs->trans("ContactsAddresses"));
 llxHeader('', $title);
 
 $object = new Contact($db);

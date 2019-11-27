@@ -807,6 +807,80 @@ class Agefodd_training_admlevel extends CommonObject {
 			return 1;
 		}
 	}
+
+
+
+	/**
+	 * Load object in memory from database
+	 *
+	 * @param int $training_id object
+	 * @param int $fk_parent_level id of parent
+	 * @return array array of object
+	 */
+	public function fetch_all_children_nested($training_id, $fk_parent_level = 0) {
+
+		$TNested = array();
+
+		$sql = "SELECT";
+		$sql .= " t.rowid,";
+		$sql .= " t.fk_training,";
+		$sql .= " t.level_rank,";
+		$sql .= " t.fk_parent_level,";
+		$sql .= " t.indice,";
+		$sql .= " t.intitule,";
+		$sql .= " t.delais_alerte,";
+		$sql .= " t.delais_alerte_end,";
+		$sql .= " t.fk_user_author,";
+		$sql .= " t.datec,";
+		$sql .= " t.fk_user_mod,";
+		$sql .= " t.tms,";
+		$sql .= " t.trigger_name,";
+		$sql .= " t.fk_agefodd_training_admlevel";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as t";
+		$sql .= " WHERE t.fk_training=" . intval($training_id);
+        $sql .= " AND t.fk_parent_level=" . intval($fk_parent_level);
+
+		$sql .= " ORDER BY t.indice ASC";
+
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+
+		if ($resql) {
+			$this->line = array ();
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+
+			while ( $i < $num ) {
+				$obj = $this->db->fetch_object($resql);
+
+				$line = new AgfTrainingAdmlvlLine();
+
+				$line->rowid = $obj->rowid;
+				$line->fk_training = $obj->fk_training;
+				$line->level_rank = $obj->level_rank;
+				$line->fk_parent_level = $obj->fk_parent_level;
+				$line->indice = $obj->indice;
+				$line->intitule = $obj->intitule;
+				$line->alerte = $obj->delais_alerte;
+				$line->alerte_end = $obj->delais_alerte_end;
+				$line->fk_agefodd_training_admlevel = $obj->fk_agefodd_training_admlevel;
+				$line->trigger_name = $obj->trigger_name;
+
+				$TNested[$i] = array(
+					'object' => $line,
+					'children' => $this->fetch_all_children_nested($training_id, $line->rowid)
+				);
+				$i ++;
+			}
+			$this->db->free($resql);
+
+			return $TNested;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+			return - 1;
+		}
+	}
 }
 
 /**

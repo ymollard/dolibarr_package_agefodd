@@ -115,6 +115,7 @@ $search_soc_employer = GETPOST('search_soc_employer', 'alpha');
 $search_soc_requester = GETPOST('search_soc_requester', 'alpha');
 $search_session_status = GETPOST('search_session_status');
 $search_product = GETPOST('search_product');
+$search_intitule_custo = GETPOST('search_intitule_custo');
 
 $search_sale = GETPOST('search_sale', 'int');
 
@@ -175,6 +176,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_soc_requester = '';
 	$search_session_status = '';
 	$search_product = '';
+	$search_intitule_custo = '';
 }
 
 $hookmanager->initHooks(array(
@@ -212,6 +214,10 @@ $arrayfields = array(
 		'c.intitule' => array(
 				'label' => "AgfIntitule",
 				'checked' => 1
+		),
+		's.intitule_custo' => array(
+			'label' => "AgfFormIntituleCust",
+			'checked' => 0
 		),
 		'c.ref' => array(
 				'label' => "Ref",
@@ -368,6 +374,10 @@ if (! empty($search_trainning_name)) {
 	$filter['c.intitule'] = $search_trainning_name;
 	$option .= '&search_trainning_name=' . $search_trainning_name;
 }
+if (! empty($search_intitule_custo)) {
+	$filter['s.intitule_custo'] = $search_intitule_custo;
+	$option .= '&search_intitule_custo=' . $search_intitule_custo;
+}
 if (! empty($search_soc)) {
 	$filter['so.nom'] = $search_soc;
 	$option .= '&search_soc=' . $search_soc;
@@ -481,6 +491,10 @@ foreach ( $search_array_options as $key => $val ) {
 	)) || $crit != '0') && (! in_array($typ, array(
 			'link'
 	)) || $crit != '-1')) {
+
+	    if(is_array($crit)){
+            $crit = implode(',',$crit);
+        }
 		$filter['ef.' . $tmpkey] = natural_search('ef.' . $tmpkey, $crit, $mode_search);
 		$option .= '&search_options_' . $tmpkey . '=' . $crit;
 	}
@@ -559,7 +573,7 @@ if ($training_view && ! empty($search_training_ref)) {
 
 	dol_fiche_head($head, 'sessions', $langs->trans("AgfCatalogDetail"), 0, 'label');
 	dol_agefodd_banner_tab($agf, 'idforma');
-	print '<div class="underbanner clearboth"></div>';
+	dol_fiche_end();
 }
 
 if (! empty($site_view)) {
@@ -571,11 +585,9 @@ if (! empty($site_view)) {
 
 	if ($result) {
 		$head = site_prepare_head($agf);
-
 		dol_fiche_head($head, 'sessions', $langs->trans("AgfSessPlace"), 0, 'address');
-
 		dol_agefodd_banner_tab($agf, 'site_view=1&search_site');
-		print '<div class="underbanner clearboth"></div>';
+		dol_fiche_end();
 	}
 }
 
@@ -698,7 +710,7 @@ if ($resql != - 1) {
 	}
 
 	$massactionbutton = $formAgefodd->selectMassSessionsAction();
-	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVER['PHP_SELF'], $option, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);
 
 	$morefilter = '';
 	// If the user can view prospects other than his'
@@ -751,12 +763,17 @@ if ($resql != - 1) {
 	}
 	if (array_key_exists('f.rowid', $arrayfields) && ! empty($arrayfields['f.rowid']['checked'])) {
 		print '<td class="liste_titre">';
-		print $formAgefodd->select_formateur($search_teacher_id, 'search_teacher_id', '', 1);
+		print $formAgefodd->select_formateur_liste($search_teacher_id, 'search_teacher_id', '', 1);
 		print '</td>';
 	}
 	if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_trainning_name" id="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
+		print '</td>';
+	}
+	if (array_key_exists('s.intitule_custo', $arrayfields) && ! empty($arrayfields['s.intitule_custo']['checked'])) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_intitule_custo" id="search_intitule_custo" value="' . $search_intitule_custo . '" size="20">';
 		print '</td>';
 	}
 	if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
@@ -871,6 +888,7 @@ if ($resql != - 1) {
 
 	// Extra fields
 	if (file_exists(DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php')) {
+        $extrafieldsobjectkey = 'agefodd_session';
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php';
 	} else {
 		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
@@ -927,10 +945,10 @@ if ($resql != - 1) {
 
 	print '<tr class="liste_titre">';
 	if (array_key_exists('s.rowid', $arrayfields) && ! empty($arrayfields['s.rowid']['checked'])) {
-		print_liste_field_titre($langs->trans("Id"), $_SERVEUR['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Id"), $_SERVER['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.ref', $arrayfields) && ! empty($arrayfields['s.ref']['checked'])) {
-		print_liste_field_titre($langs->trans("SessionRef"), $_SERVEUR['PHP_SELF'], "s.ref", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("SessionRef"), $_SERVER['PHP_SELF'], "s.ref", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('so.nom', $arrayfields) && ! empty($arrayfields['so.nom']['checked'])) {
 		print_liste_field_titre($langs->trans("Company"), $_SERVER['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
@@ -939,28 +957,31 @@ if ($resql != - 1) {
 		print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+	}
+	if (array_key_exists('s.intitule_custo', $arrayfields) && ! empty($arrayfields['s.intitule_custo']['checked'])) {
+		print_liste_field_titre($langs->trans("AgfFormIntituleCust"), $_SERVER['PHP_SELF'], "s.intitule_custo", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
-		print_liste_field_titre($langs->trans("Ref"), $_SERVEUR['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("Ref"), $_SERVER['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('c.ref_interne', $arrayfields) && ! empty($arrayfields['c.ref_interne']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.type_session', $arrayfields) && ! empty($arrayfields['s.type_session']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVEUR['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVER['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.dated', $arrayfields) && ! empty($arrayfields['s.dated']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVER['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.datef', $arrayfields) && ! empty($arrayfields['s.datef']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVER['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('dicstatus.intitule', $arrayfields) && ! empty($arrayfields['dicstatus.intitule']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfStatusSession"), $_SERVEUR['PHP_SELF'], "dictstatus.intitule", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfStatusSession"), $_SERVER['PHP_SELF'], "dictstatus.intitule", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('p.ref_interne', $arrayfields) && ! empty($arrayfields['p.ref_interne']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfLieu"), $_SERVER['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.sell_price', $arrayfields) && ! empty($arrayfields['s.sell_price']['checked'])) {
 		print_liste_field_titre($langs->trans("AgfCoutFormation"), $_SERVER['PHP_SELF'], "s.sell_price", "", $option, ' name="margininfo1"  ', $sortfield, $sortorder);
@@ -996,31 +1017,31 @@ if ($resql != - 1) {
 		print_liste_field_titre($langs->trans("AgfMarginPlanned"), $_SERVER['PHP_SELF'], "", "", $option, ' name="margininfo11"  ', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.nb_stagiaire', $arrayfields) && ! empty($arrayfields['s.nb_stagiaire']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVER['PHP_SELF'], "s.nb_stagiaire", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.duree_session', $arrayfields) && ! empty($arrayfields['s.duree_session']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR['PHP_SELF'], "s.duree_session", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVER['PHP_SELF'], "s.duree_session", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.notes', $arrayfields) && ! empty($arrayfields['s.notes']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfNote"), $_SERVEUR['PHP_SELF'], "s.notes", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfNote"), $_SERVER['PHP_SELF'], "s.notes", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.fk_socpeople_presta', $arrayfields) && ! empty($arrayfields['s.fk_socpeople_presta']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfTypePresta"), $_SERVEUR['PHP_SELF'], "s.fk_socpeople_presta", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfTypePresta"), $_SERVER['PHP_SELF'], "s.fk_socpeople_presta", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.fk_soc_employer', $arrayfields) && ! empty($arrayfields['s.fk_soc_employer']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfTypeEmployee"), $_SERVEUR['PHP_SELF'], "s.fk_soc_employer", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfTypeEmployee"), $_SERVER['PHP_SELF'], "s.fk_soc_employer", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.fk_soc_requester', $arrayfields) && ! empty($arrayfields['s.fk_soc_requester']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfTypeRequester"), $_SERVEUR['PHP_SELF'], "s.fk_soc_requester", '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfTypeRequester"), $_SERVER['PHP_SELF'], "s.fk_soc_requester", '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('AgfListParticipantsStatus', $arrayfields) && ! empty($arrayfields['AgfListParticipantsStatus']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfListParticipantsStatus"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfListParticipantsStatus"), $_SERVER['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('AgfSheduleBillingState', $arrayfields) && ! empty($arrayfields['AgfSheduleBillingState']['checked'])) {
-	    print_liste_field_titre($langs->trans("AgfSheduleBillingState"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	    print_liste_field_titre($langs->trans("AgfSheduleBillingState"), $_SERVER['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('s.fk_product', $arrayfields) && ! empty($arrayfields['s.fk_product']['checked'])) {
-		print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+		print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVER['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
 	}
 
 	// Extra fields
@@ -1108,6 +1129,9 @@ if ($resql != - 1) {
 
 				print '<td ' . $color_training . '>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 			}
+			if (array_key_exists('s.intitule_custo', $arrayfields) && ! empty($arrayfields['s.intitule_custo']['checked'])) {
+				print '<td>' . stripslashes($line->intitule_custo) . '</td>';
+			}
 			if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
 				print '<td>' . $line->ref . '</td>';
 			}
@@ -1125,7 +1149,7 @@ if ($resql != - 1) {
 			}
 			if (array_key_exists('dicstatus.intitule', $arrayfields) && ! empty($arrayfields['dicstatus.intitule']['checked'])) {
 				print '<td>';
-				print $line->status_lib;
+				print $line->statuslib;
 				print '</td>';
 			}
 
@@ -1268,13 +1292,13 @@ if ($resql != - 1) {
 			}
 
 			if (array_key_exists('AgfSheduleBillingState', $arrayfields) && ! empty($arrayfields['AgfSheduleBillingState']['checked'])) {
-			    
+
 			    $billed = Agefodd_sesscalendar::countBilledshedule($line->id);
 			    $total = Agefodd_sesscalendar::countTotalshedule($line->id);
-			    
+
 			    if (empty($total)) $roundedBilled = 0;
 			    else $roundedBilled = round($billed*100/$total);
-			    
+
 			    print '<td>';
 			    print displayProgress($roundedBilled, '', $billed."/".$total, '6em');
 			    print '</td>';
@@ -1354,6 +1378,9 @@ if ($resql != - 1) {
 				print '</td>';
 			}
 			if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
+				print '<td></td>';
+			}
+			if (array_key_exists('s.intitule_custo', $arrayfields) && ! empty($arrayfields['s.intitule_custo']['checked'])) {
 				print '<td></td>';
 			}
 			if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {
@@ -1471,6 +1498,9 @@ if ($resql != - 1) {
 		print '<td></td>';
 	}
 	if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
+		print '<td></td>';
+	}
+	if (array_key_exists('s.intitule_custo', $arrayfields) && ! empty($arrayfields['s.intitule_custo']['checked'])) {
 		print '<td></td>';
 	}
 	if (array_key_exists('c.ref', $arrayfields) && ! empty($arrayfields['c.ref']['checked'])) {

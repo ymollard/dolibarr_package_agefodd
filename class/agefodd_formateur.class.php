@@ -46,6 +46,7 @@ class Agefodd_teacher extends CommonObject {
 	public $dict_categories = array ();
 	public $trainings = array ();
 	public $thirdparty;
+	public $email;
 
 	/**
 	 * Constructor
@@ -159,10 +160,9 @@ class Agefodd_teacher extends CommonObject {
 		$error = 0;
 		
 		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formateur';
-		if (!empty($user->contactid)) $sql.= ' WHERE fk_socpeople = '.$user->contactid.' AND type_trainer = \'socpeople\'';
-		else $sql.= ' WHERE fk_user = '.$user->id.' AND type_trainer = \'user\'';
+		$sql.= ' WHERE (fk_user = '.$user->id.' AND type_trainer = \'user\')';
+		if (!empty($user->contactid)) $sql.= ' OR (fk_socpeople = '.$user->contactid.' AND type_trainer = \'socpeople\')';
 		$sql.= ' AND entity = '.$conf->entity;
-		
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -337,7 +337,20 @@ class Agefodd_teacher extends CommonObject {
 
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_socpeople, f.fk_user, f.type_trainer,  f.archive,";
-		$sql .= " s.rowid as spid , IF(u.lastname IS NULL, s.lastname, u.lastname) as sp_name, IF(u.firstname IS NULL, s.firstname, u.firstname) as sp_firstname, IF(u.civility IS NULL, s.civility, u.civility) as sp_civilite, ";
+
+		$sql .= " s.rowid as spid , ";
+
+		//$sql .= " IF(u.lastname IS NULL, s.lastname, u.lastname) as sp_name,"; // TODO : remove this comment if all is ok after few tests with CASE style
+		$sql .= " CASE WHEN u.lastname IS NULL THEN s.lastname ELSE u.lastname END  as sp_name,"; // FOR pgsql
+
+		//$sql .= " IF(u.firstname IS NULL, s.firstname, u.firstname) as sp_firstname,"; // TODO : remove this comment if all is ok after few tests with CASE style
+		$sql .= " CASE WHEN u.firstname IS NULL THEN s.firstname ELSE u.firstname END  as sp_firstname,"; // FOR pgsql
+
+		//$sql .= " IF(u.civility IS NULL, s.civility, u.civility) as sp_civilite, "; // TODO : remove this comment if all is ok after few tests with CASE style
+		$sql .= " CASE WHEN u.civility IS NULL THEN s.civility ELSE u.civility END  as sp_civilite,"; // FOR pgsql
+
+
+
 		$sql .= " s.phone as sp_phone, s.email as sp_email, s.phone_mobile as sp_phone_mobile, ";
 		$sql .= " u.lastname as u_name, u.firstname as u_firstname, u.civility as u_civilite, ";
 		$sql .= " u.office_phone as u_phone, u.email as u_email, u.user_mobile as u_phone_mobile";
@@ -546,6 +559,9 @@ class Agefodd_teacher extends CommonObject {
 		if (! isset($this->archive))
 			$this->archive = 0;
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_formateur SET";
+		$sql .= " fk_socpeople =" . (!empty($this->fk_socpeople) ? $this->fk_socpeople : 'NULL') . " ,";
+		$sql .= " fk_user =" . (!empty($this->fk_user) ? $this->fk_user : 'NULL') . " ,";
+		$sql .= " type_trainer ='" . $this->db->escape($this->type_trainer) . "' ,";
 		$sql .= " fk_user_mod=" . $user->id . " ,";
 		$sql .= " archive=" . $this->archive . " ";
 		$sql .= " WHERE rowid = " . $this->id;

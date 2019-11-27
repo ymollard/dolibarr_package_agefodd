@@ -191,7 +191,12 @@ class Agefodd_session_element extends CommonObject {
 
 		$sql .= " propal.ref as propalref,";
 		$sql .= " commande.ref as comref,";
-		$sql .= " facture.facnumber,";
+		if(floatval(DOL_VERSION) > 9){
+            $sql .= " facture.ref as facnumber ,";
+        }
+		else{
+		    $sql .= " facture.facnumber,";
+        }
 		$sql .= " facture_fourn.ref as facfournnumber";
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element as t";
@@ -252,7 +257,15 @@ class Agefodd_session_element extends CommonObject {
 			require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
 		}
 		if ($type == 'fac') {
-			$sql .= " f.rowid, f.fk_soc, f.facnumber as ref, f.datec, f.total_ttc as amount, soc.nom as socname";
+			$sql .= " f.rowid, f.fk_soc,  f.datec, f.total_ttc as amount, soc.nom as socname";
+
+            if(floatval(DOL_VERSION) > 9){
+                $sql .= " ,f.ref as ref";
+            }
+            else{
+                $sql .= " ,f.facnumber as ref";
+            }
+
 			$sql .= " FROM " . MAIN_DB_PREFIX . "facture as f";
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe as soc ON soc.rowid=f.fk_soc";
 
@@ -267,7 +280,7 @@ class Agefodd_session_element extends CommonObject {
 		}
 		$sql .= " WHERE (fk_soc = " . $socid . " OR fk_soc IN (SELECT parent FROM " . MAIN_DB_PREFIX . "societe WHERE rowid=" . $socid . "))";
 
-		dol_syslog(get_class($this) . "::fetch_element_per_soc", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -308,7 +321,7 @@ class Agefodd_session_element extends CommonObject {
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_element_per_soc " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__.' '. $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -464,7 +477,13 @@ class Agefodd_session_element extends CommonObject {
 
 		$sql .= " propal.ref as propalref,";
 		$sql .= " commande.ref as comref,";
-		$sql .= " facture.facnumber";
+
+        if(floatval(DOL_VERSION) > 9){
+            $sql .= " facture.ref as facnumber ";
+        }
+        else{
+            $sql .= " facture.facnumber ";
+        }
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element as t";
 		$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "propal as propal ON propal.rowid=t.fk_element AND t.element_type='propal'";
@@ -704,13 +723,14 @@ class Agefodd_session_element extends CommonObject {
 	/**
 	 * Set invoice ref where propal or order is already linked
 	 *
-	 * @param int $id to find
-	 * @param int $type or propal
-	 * @param int $invoiceid to link
-	 * @return int <0 if KO, >0 if OK
+	 * @param $user user oprate
+	 * @param $id id of source lement
+	 * @param $type type of element
+	 * @param $invoiceid invoice to link
+	 * @return int int <0 if KO, >0 if OK
+	 * @throws Exception
 	 */
 	public function add_invoice($user, $id, $type, $invoiceid) {
-		global $langs;
 
 		$sql = "SELECT";
 		$sql .= " f.rowid, f.fk_element, f.element_type, f.fk_soc, f.fk_session_agefodd ";
@@ -720,6 +740,9 @@ class Agefodd_session_element extends CommonObject {
 		}
 		if ($type == 'commande') {
 			$sql .= " WHERE f.fk_element = " . $id . " AND f.element_type='order'";
+		}
+		if ($type == 'facture') {
+			$sql .= " WHERE f.fk_element = " . $id . " AND f.element_type='invoice'";
 		}
 
 		dol_syslog(get_class($this) . "::add_invoice", LOG_DEBUG);

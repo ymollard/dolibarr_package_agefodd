@@ -44,7 +44,8 @@ class Agefoddcalendrier extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function __construct($db) {
+	public function __construct($db)
+	{
 		$this->db = $db;
 		return 1;
 	}
@@ -55,8 +56,10 @@ class Agefoddcalendrier extends CommonObject {
 	 * @param User $user that create
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
+	 * @throws Exception
 	 */
-	public function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0)
+	{
 		global $conf, $langs;
 		$error = 0;
 
@@ -147,10 +150,11 @@ class Agefoddcalendrier extends CommonObject {
 		$sql .= " t.heured,";
 		$sql .= " t.heuref";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_calendrier as t";
-		$sql .= " WHERE t.rowid = " . $id;
+		$sql .= " WHERE t.rowid = " . intval($id);
 		$sql .= " AND t.entity IN (" . getEntity('agefodd'/*'agsession'*/) . ")";
 
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
+
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -162,6 +166,9 @@ class Agefoddcalendrier extends CommonObject {
 				$this->heured = $obj->heured;
 				$this->heuref = $obj->heuref;
 			}
+            else {
+                return 0;
+            }
 			$this->db->free($resql);
 
 			return 1;

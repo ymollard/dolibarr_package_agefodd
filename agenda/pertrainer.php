@@ -376,7 +376,7 @@ $paramnoaction = preg_replace('/action=[a-z_]+/', '', $param);
 
 $head = agf_calendars_prepare_head($paramnoaction);
 
-dol_fiche_head($head, $tabactive, $langs->trans('Agenda'), 0, 'action');
+dol_fiche_head($head, $tabactive, $langs->trans('AgfMenuAgenda'), 0, 'action');
 $formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action,$filter_session_status,$filter_trainee);
 dol_fiche_end();
 
@@ -426,7 +426,7 @@ if (! empty($filter_contact)) {
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid ";
 if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
-	if (! empty($filter_trainer)) {
+	if (! empty($filter_trainer) && !empty($onlysession)) {
 		$sql .= " AND ca.code='AC_AGF_SESST' ";
 	}
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as trainercal ON trainercal.fk_agefodd_session_formateur = trainer_session.rowid ";
@@ -437,7 +437,7 @@ if (! empty($filter_trainee)) {
 $sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . 'societe as socsess ON agf.fk_soc = socsess.rowid ';
 
 $sql .= ' WHERE a.entity IN (' . getEntity('agefodd'/*'session'*/) . ')';
-$sql .= ' AND a.elementtype=\'agefodd_agsession\'';
+$sql .= ' AND a.elementtype IN (\'agefodd_agsession\', \'agefodd_formateur\' )';
 if ($action == 'show_day') {
 	$sql .= " AND (";
 	$sql .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
@@ -484,9 +484,10 @@ if (! empty($filter_trainer)) {
 	} else {
 		$sql .= " AND trainer_session.fk_agefodd_formateur=" . $filter_trainer;
 	}
-} else {
+}else {
 	$sql .= " AND ca.code<>'AC_AGF_SESST'";
 }
+
 if (! empty($onlysession) && empty($filter_trainer)) {
 	$sql .= " AND ca.code='AC_AGF_SESS'";
 }
@@ -555,6 +556,11 @@ if ($resql) {
 
 		$event->fk_element = $obj->fk_element;
 		$event->elementtype = $obj->elementtype;
+
+        if ($obj->code == 'AC_AGF_NOTAV') {
+            $event->type_color = $obj->color;
+        }
+
 
 		// Defined date_start_in_calendar and date_end_in_calendar property
 		// They are date start and end of action but modified to not be outside calendar view.
@@ -896,20 +902,24 @@ function show_day_events2($username, $day, $month, $year, $monthshown, $style, &
 						          // if ($username->id != $event->userownerid) continue; // We discard record if event is from another user than user we want to show
 
 				// Define $color (Hex string like '0088FF') and $cssclass of event
-				if ($event->trainer_status == 0)
-					$color = 'F8F816';
-				if ($event->trainer_status == 1)
-					$color = '66ff99';
-				if ($event->trainer_status == 2)
-					$color = '33ff33';
-				if ($event->trainer_status == 3)
-					$color = '3366ff';
-				if ($event->trainer_status == 4)
-					$color = '33ccff';
-				if ($event->trainer_status == 5)
-					$color = 'cc6600';
-				if ($event->trainer_status == 6)
-					$color = 'cc0000';
+				$statusColor = array(
+				    0 => 'F8F816',
+                    1 => '66ff99',
+                    2 => '33ff33',
+                    3 => '3366ff',
+                    4 => '33ccff',
+                    5 => 'cc6600',
+                    6 => 'cc0000',
+                );
+
+				if($event->type_code == 'AC_AGF_NOTAV')
+                {
+                    $color = str_replace("#", "", $colorsbytype[$event->type_code]);
+                }
+				elseif(isset($event->trainer_status)){
+                    $color = $statusColor[$event->trainer_status];
+                }
+
 					// $cssclass=$cssclass.' '.$cssclass.'_day_'.$ymd;
 
 				// Define all rects with event (cases1 is first half hour, cases2 is second half hour)

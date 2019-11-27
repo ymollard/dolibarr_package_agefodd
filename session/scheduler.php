@@ -108,6 +108,7 @@ llxHeader('', $langs->trans("AgfSessionDetail"), '', '', 0, 0, $morejs, $morecss
 $head = session_prepare_head($object);
 dol_fiche_head($head, 'scheduler', $langs->trans('AgfSessionDetail'), 0, 'action');
 
+dol_agefodd_banner_tab($object, 'id');
 
 echo '<div id="agf_session_scheduler"></div>';
 
@@ -125,12 +126,7 @@ $inputs_hidden = '<input type="hidden" name="fk_agefodd_session" value="'.$objec
 
 $select_calendrier_type = '<label>'.$langs->trans("AgfCalendarType").'</label> '.$formagefodd->select_calendrier_type('', 'calendrier_type');
 
-$TStatus = array(
-    '0' => $langs->trans('AgfStatusCalendar_previsionnel'),
-    '1' => $langs->trans('AgfStatusCalendar_confirmed'),
-    '2' => $langs->trans('AgfStatusCalendar_missing'),
-    '-1' => $langs->trans('AgfStatusCalendar_canceled')
-);
+$TStatus = Agefodd_sesscalendar::getListStatus();
 $select_calendrier_status = $langs->trans('Status') . '&nbsp;' . $form->selectarray('calendrier_status', $TStatus);
 
 ob_start();

@@ -97,6 +97,64 @@ if (!empty($massaction))
         case "delete":
             $action = 'delete_calsel';
             break;
+		case "setStatus_DRAFT":
+		case "setStatus_CONFIRMED":
+		case "setStatus_MISSING":
+		case "setStatus_FINISH":
+		case "setStatus_CANCELED":
+
+
+			if($massaction == "setStatus_DRAFT"){
+				$statusToSet = Agefodd_sesscalendar::STATUS_DRAFT;
+			}elseif($massaction == "setStatus_CONFIRMED"){
+				$statusToSet = Agefodd_sesscalendar::STATUS_CONFIRMED;
+			}elseif($massaction == "setStatus_MISSING"){
+				$statusToSet = Agefodd_sesscalendar::STATUS_MISSING;
+			}elseif($massaction == "setStatus_FINISH"){
+				$statusToSet = Agefodd_sesscalendar::STATUS_FINISH;
+			}else{ // realised
+				$statusToSet = Agefodd_sesscalendar::STATUS_CANCELED;
+			}
+
+			if (count($toselect) > 0) {
+				foreach ( $toselect as $lineid ) {
+					$calrem = new Agefodd_sesscalendar($db);
+					$result = $calrem->fetch($lineid);
+					if ($result < 0) {
+						setEventMessage($calrem->error, 'errors');
+						$error ++;
+					}
+					else
+					{
+						$calrem->status = $statusToSet;
+						$res = $calrem->update($user);
+						if ($res < 0) {
+							setEventMessage($calrem->error, 'errors');
+							$error ++;
+						}
+
+						if (! $error) {
+							//Update also trainer time for status only
+							$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($calrem);
+							if (is_array($TTrainerCalendar) && count($TTrainerCalendar)>0) {
+								foreach($TTrainerCalendar as $tainercal) {
+									$tainercal->status=GETPOST('calendar_status');
+									$result = $tainercal->update($user);
+									if ($result < 0) {
+										$error++;
+										setEventMessage($tainercal->error, 'errors');
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			if (! $error) {
+				Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
+				exit();
+			}
+			break;
 
         case "bill":
             if (count($toselect) > 0) {
@@ -158,22 +216,44 @@ if (!empty($massaction))
 
 if ($action == 'confirm_delete_period' && $confirm == "yes" && !empty($user->rights->agefodd->modifier)) {
 
+	$error=0;
+
 	$agf = new Agefodd_sesscalendar($db);
-	$result = $agf->remove($modperiod);
-
+	$result = $agf->fetch($modperiod);
 	if ($result > 0) {
-	    if (! empty($conf->global->AGF_USE_REAL_HOURS)){
-	        // nettoyage des heures réelles
-	        $sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
-	        $sql.= " WHERE fk_calendrier = " . $modperiod;
 
-	        $db->query($sql);
-	    }
+		$result = $agf->remove($modperiod);
+		if ($result > 0) {
 
-		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
-		exit();
+			if (! empty($conf->global->AGF_USE_REAL_HOURS)){
+				// nettoyage des heures réelles
+				$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_heures";
+				$sql.= " WHERE fk_calendrier = " . $modperiod;
+
+				$db->query($sql);
+			}
+
+			//delete also trainer time
+			$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($agf);
+			if (is_array($TTrainerCalendar) && count($TTrainerCalendar) > 0) {
+				foreach ($TTrainerCalendar as $tainercal) {
+					$result = $tainercal->delete($user);
+					if ($result < 0) {
+						$error++;
+						setEventMessage($tainercal->error, 'errors');
+					}
+				}
+			}
+		} else {
+			setEventMessage($agf->error, 'errors');
+		}
 	} else {
 		setEventMessage($agf->error, 'errors');
+	}
+
+	if (empty($error)) {
+		Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . '&anchor=period');
+		exit();
 	}
 }
 
@@ -189,6 +269,18 @@ if ($action == 'confirm_delete_period_all' && $confirm == "yes" && !empty($user-
 			$result = $agf_line->remove($line->id);
 			if ($result < 0) {
 				setEventMessage($agf_line->error, 'errors');
+			}
+
+			//delete also trainer time
+			$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($line);
+			if (is_array($TTrainerCalendar) && count($TTrainerCalendar) > 0) {
+				foreach ($TTrainerCalendar as $tainercal) {
+					$result = $tainercal->delete($user);
+					if ($result < 0) {
+						$error++;
+						setEventMessage($tainercal->error, 'errors');
+					}
+				}
 			}
 		}
 	}
@@ -214,6 +306,8 @@ if ($action == 'confirm_delete_period_all' && $confirm == "yes" && !empty($user-
  * - trainer update
  */
 if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
+
+	$error=0;
 
 	if (! empty($period_update)) {
 
@@ -250,10 +344,26 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 		$result = $agf->update($user);
 
 		if ($result > 0) {
+			//Update also trainer time for status only
+			$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($agf);
+			if (is_array($TTrainerCalendar) && count($TTrainerCalendar)>0) {
+				foreach($TTrainerCalendar as $tainercal) {
+					$tainercal->status=GETPOST('calendar_status');
+					$result = $tainercal->update($user);
+					if ($result < 0) {
+						$error++;
+						setEventMessage($tainercal->error, 'errors');
+					}
+				}
+			}
+		} else {
+			$error++;
+			setEventMessage($agf->error, 'errors');
+		}
+
+		if (empty($error)) {
 			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . "&anchor=period");
 			exit();
-		} else {
-			setEventMessage($agf->error, 'errors');
 		}
 	}
 
@@ -290,6 +400,10 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 				$heure_tmp_arr = explode(':', $tmpl_calendar->heuref);
 				$agf->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($agf->date_session, "%m"), dol_print_date($agf->date_session, "%d"), dol_print_date($agf->date_session, "%Y"));
 
+				if (!empty($conf->global->AGF_DEFAULT_CALENDAR_STATUS)) {
+					$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
+				}
+
 				$result = $agf->create($user);
 				if ($result < 0) {
 					$error ++;
@@ -323,6 +437,10 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 			if (! empty($heuref_tmp)) {
 				$heure_tmp_arr = explode(':', $heuref_tmp);
 				$agf->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, GETPOST('datenewmonth', 'int'), GETPOST('datenewday', 'int'), GETPOST('datenewyear', 'int'));
+			}
+
+			if (!empty($conf->global->AGF_DEFAULT_CALENDAR_STATUS)) {
+				$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
 			}
 
 			if (!$error) $result = $agf->create($user);
@@ -376,6 +494,11 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 						$heure_tmp_arr = explode(':', $datedaytodate1f);
 						$agf->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
 					}
+
+					if (!empty($conf->global->AGF_DEFAULT_CALENDAR_STATUS)) {
+						$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
+					}
+
 					$result = $agf->create($user);
 					if ($result < 0) {
 						$error ++;
@@ -391,6 +514,10 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 						$agf->heured = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
 						$heure_tmp_arr = explode(':', $datedaytodate2f);
 						$agf->heuref = dol_mktime($heure_tmp_arr[0], $heure_tmp_arr[1], 0, dol_print_date($treatmentdate, "%m"), dol_print_date($treatmentdate, "%d"), dol_print_date($treatmentdate, "%Y"));
+
+						if (!empty($conf->global->AGF_DEFAULT_CALENDAR_STATUS)) {
+							$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
+						}
 
 						$result = $agf->create($user);
 						if ($result < 0) {
@@ -417,10 +544,28 @@ if ($action == 'delete_calsel' && !empty($user->rights->agefodd->modifier)) {
 	if (count($toselect) > 0) {
 		foreach ( $toselect as $lineid ) {
 			$calrem = new Agefodd_sesscalendar($db);
-			$result = $calrem->remove($lineid);
+			$result = $calrem->fetch($lineid);
 			if ($result < 0) {
 				setEventMessage($calrem->error, 'errors');
 				$error ++;
+			} else {
+				$result = $calrem->remove($lineid);
+				if ($result < 0) {
+					setEventMessage($calrem->error, 'errors');
+					$error++;
+				} else {
+					//Update delete trainer time
+					$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($calrem);
+					if (is_array($TTrainerCalendar) && count($TTrainerCalendar) > 0) {
+						foreach ($TTrainerCalendar as $tainercal) {
+							$result = $tainercal->delete($user);
+							if ($result < 0) {
+								$error++;
+								setEventMessage($tainercal->error, 'errors');
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -532,7 +677,19 @@ if ($id) {
 			    $arrayofaction['bill'] = $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('Billed').'"';
 			    $arrayofaction['tobill'] = $langs->trans('AgfChangeStatutTo').' "'.$langs->trans('ToBill').'"';
 			}
+
+
+
+			$arrayofaction["setStatus_DRAFT"]=$langs->trans('setStatus_DRAFT');
+			$arrayofaction["setStatus_CONFIRMED"]=$langs->trans('setStatus_CONFIRMED');
+			$arrayofaction["setStatus_MISSING"]=$langs->trans('setStatus_MISSING');
+			$arrayofaction["setStatus_FINISH"]=$langs->trans('setStatus_FINISH');
+			$arrayofaction["setStatus_CANCELED"]=$langs->trans('setStatus_CANCELED');
+
+
+			$arrayofaction['separator']='---------------------';
 			$arrayofaction['delete']=$langs->trans('Delete');
+
 
 			$massactionbutton = $formAgefodd->selectMassAction('', $arrayofaction);
 
@@ -623,7 +780,10 @@ if ($id) {
 			}
 
 			if ((($agf->duree_session * 3600) != $duree) && (empty($conf->global->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
-				print '<tr><td colspan="4" align="center">'.img_warning();
+				$colspan=4;
+				if (!empty($conf->global->AGF_MANAGE_SESSION_CALENDAR_FACTURATION)) $colspan++;
+				if (!empty($user->rights->agefodd->modifier)) $colspan+=3;
+				print '<tr><td colspan="'.$colspan.'" align="center">'.img_warning();
 				if (($agf->duree_session * 3600) < $duree)
 					print $langs->trans("AgfCalendarSup");
 				if (($agf->duree_session * 3600) > $duree)

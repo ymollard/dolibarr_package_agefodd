@@ -143,6 +143,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 				Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id);
 				exit();
 			} else {
+				$action='edit';
 				setEventMessage($agf->error, 'errors');
 			}
 		} else {
@@ -302,7 +303,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 
 				$agf->nom = $contact->lastname;
 				$agf->prenom = $contact->firstname;
-				$agf->civilite = $contact->civility_id;
+				$agf->civilite = $contact->civility_code;
 				$agf->socid = $contact->socid;
 				$agf->fonction = $contact->poste;
 				$agf->tel1 = $contact->phone_pro;
@@ -554,7 +555,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print img_picto($langs->trans("CreateANewContactFromTraineeFormInfo"), 'help');
 	print '</td>';
 	print '<td colspan="3">';
-	if (GETPOST('create_contact', 'int') > 0) {
+	if (GETPOST('create_contact', 'int') > 0 || !empty($conf->global->AGF_NEW_TRAINEE_CREATE_CONTACT_DEFAULT)) {
 		$checkedYes = 'checked="checked"';
 		$checkedNo = '';
 	} else {
@@ -591,7 +592,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 	include_once DOL_DOCUMENT_ROOT .'/cron/class/cronjob.class.php';
 	$status=3; // 3 is not a status so we select all
-	$filter = array(
+	$filtercron = array(
 		'jobtype' => 'method',
 		'classesname' => 'agefodd/cron/cron.php',
 		'objectname' => 'cron_agefodd',
@@ -599,7 +600,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 		'methodename' => 'sendAgendaToTrainee',
 	);
 	$cronJob = new Cronjob($db);
-	$cronJob->fetch_all('DESC', 't.rowid',0, 0, $status, $filter);
+	$cronJob->fetch_all('DESC', 't.rowid',0, 0, $status, $filtercron);
 	if(!empty($cronJob->lines))
 	{
 		print '<tr><td>' . $form->textwithtooltip( $langs->trans("AgfSendAgendaMail") ,$langs->trans("AgfSendAgendaMailHelp"),2,1,img_help(1,'')). '</td>';
@@ -630,8 +631,10 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	}
 
 	$agf = new Agsession($db);
-
 	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter);
+	if ($resql<0) {
+		setEventMessages(null,$agf->errors,'errors');
+	}
 	$sessions = array ();
 	foreach ( $agf->lines as $line ) {
 		$sessions[$line->rowid] = $line->ref_interne . ' - ' . $line->intitule . ' - ' . dol_print_date($line->dated, 'daytext');
@@ -671,13 +674,16 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</table>';
 	print '</div>';
 
-	print '<table style=noborder align="right">';
-	print '<tr><td align="center" colspan=2>';
+	print '<div class="tabsAction">';
+	print '<table style="noborder" align="right">';
+	print '<tr><td align="center">';
 	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
 	print '<input type="submit" class="butAction" name="saveandstay" value="' . $langs->trans("AgfSaveAndStay") . '"> &nbsp; ';
 	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 	print '</td></tr>';
 	print '</table>';
+	print '</div>';
+
 	print '</form>';
 }
 else
@@ -830,8 +836,10 @@ else
 
 				print '</table>';
 				print '</div>';
-				print '<table style=noborder align="right">';
-				print '<tr><td align="center" colspan=2>';
+
+				print '<div class="tabsAction">';
+				print '<table style="noborder" align="right">';
+				print '<tr><td align="center">';
 				print '<input type="submit" class="butAction" name="save" value="' . $langs->trans("Save") . '"> &nbsp; ';
 				print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 				if (! empty($agf->fk_socpeople)) {
@@ -839,6 +847,9 @@ else
 				}
 				print '</td></tr>';
 				print '</table>';
+				print '</div>';
+
+
 				print '</form>';
 
 				print '</div>' . "\n";
@@ -861,6 +872,7 @@ else
 
 				$contact_static = new Contact($db);
 				$contact_static->civility_id = $agf->civilite;
+				$contact_static->civility_code = $agf->civilite;
 
 				print '<td>' . $contact_static->getCivilityLabel() . '</td></tr>';
 
@@ -943,10 +955,18 @@ else
 			if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $action != 'presend') {
 
 				// Send
-				if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {
+				if (($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && floatval(DOL_VERSION) > 8) {
 					print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $agf->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a></div>';
 				} else {
-					print '<div class="inline-block divButAction"><a class="butActionRefused" href="#">' . $langs->trans('SendMail') . '</a></div>';
+
+					$class = "";
+					$title = "";
+					if(floatval(DOL_VERSION) < 9){
+						$class = "classfortooltip";
+						$title = $langs->trans("AGF_ForDoliVersionXMinOnly", 9);
+					}
+
+					print '<div class="inline-block divButAction"><a class="butActionRefused '.$class.'" href="#" title="'.$title.'">' . $langs->trans('SendMail') . '</a></div>';
 				}
 
 				if ($user->rights->agefodd->creer || $user->rights->agefodd->modifier) {

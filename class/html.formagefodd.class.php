@@ -129,7 +129,7 @@ class FormAgefodd extends Form
 			if ($num) {
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
-					$label = stripslashes($obj->intitule);
+					$label = dol_html_entity_decode(stripslashes($obj->intitule), ENT_QUOTES);
 					if (! empty($obj->ref_interne)) {
 						$label .= ' (' . $obj->ref_interne . ')';
 					}
@@ -831,9 +831,10 @@ class FormAgefodd extends Form
 			$filter = str_replace('FROM', 'TOREPLACE', $filter);
 			$urloption = 'htmlname=' . $htmlname . '&outjson=1&filter=' . $filter;
 
-			print ajax_autocompleter($selectid, $htmlname, dol_buildpath('/agefodd/ajax/formateur.php', 1), $urloption, $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT, 0, '');
+			$return = ajax_autocompleter($selectid, $htmlname, dol_buildpath('/agefodd/ajax/formateur.php', 1), $urloption, $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT, 0, '');
 
-			print '<input type="text" class="minwidth100" name="search_' . $htmlname . '" id="search_' . $htmlname . '" value="' . $selected_input_value . '" />';
+			$return.= '<input type="text" class="minwidth100" name="search_' . $htmlname . '" id="search_' . $htmlname . '" value="' . $selected_input_value . '" />';
+			return $return;
 		} else {
 			return $this->select_formateur_liste($selectid, $htmlname, $filter, $showempty, $forcecombo, $event);
 		}
@@ -2048,12 +2049,7 @@ class FormAgefodd extends Form
 	public function select_calendrier_status($selected = '', $htmlname = 'calendar_status') {
 		global $conf, $langs;
 		dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
-		$TStatus = array(
-				Agefodd_sesscalendar::STATUS_DRAFT => $langs->trans('AgfStatusCalendar_previsionnel'),
-				Agefodd_sesscalendar::STATUS_CONFIRMED => $langs->trans('AgfStatusCalendar_confirmed'),
-				Agefodd_sesscalendar::STATUS_MISSING => $langs->trans('AgfStatusCalendar_missing'),
-				Agefodd_sesscalendar::STATUS_CANCELED => $langs->trans('AgfStatusCalendar_canceled')
-		);
+		$TStatus = Agefodd_sesscalendar::getListStatus();
 		return $this->selectarray($htmlname, $TStatus, $selected);
 	}
 
