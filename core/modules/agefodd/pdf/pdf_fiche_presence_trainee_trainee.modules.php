@@ -94,7 +94,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->db = $db;
         $this->type = 'pdf';
         $this->name = "fiche_presence_trainee_trainee";
-        $this->trainer_widthcol1 = $this->trainee_widthcol1 = 55;
+        $this->trainer_widthcol1 = $this->trainee_widthcol1 = 65;
         $this->description = $langs->trans('AgfModPDFFichePres');
 
         // Dimension page pour format A4 en paysage
@@ -447,7 +447,9 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      */
     protected function _showBodyRow($leftColWidth, $dateColWidth, $leftHeaderCellText, $TSessionDate)
     {
-        $rowHeight = $this->_getYSpacing(1.0); // augmenter à 1.5 pour avoir des cases plus grandes pour signer
+
+//        $rowHeight = $this->_getYSpacing(1 + substr_count($leftHeaderCellText, "\n")); // augmenter à 1.5 pour avoir des cases plus grandes pour signer
+        $rowHeight = max($this->_getYSpacing(1.5), $this->pdf->getStringHeight($this->trainer_widthcol1, $leftHeaderCellText));
         $pageStart = $this->pdf->getPage();
         $rowStartY = $this->pdf->GetY();
         $colStartX = $this->pdf->GetX();
@@ -471,6 +473,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
             $rowHeight,
             'M',
             false);
+        $rowHeight = max($rowHeight, $this->pdf->GetY() - $rowStartY);
         if ($this->pdf->getPage() > $pageStart) {
             // this method is wrapped in _tryToPrint;
             // if we know there will be a rollback + page break, no need to print the remaining cells.
@@ -511,6 +514,8 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
     }
 
     /**
+     * Override this method to customize the contents of this cell.
+     *
      * @param $tableTitle
      * @param $leftColWidth
      * @param $dateColWidth
@@ -518,19 +523,19 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      */
     protected function _showHeaderRowWithTitle($tableTitle, $leftColWidth, $dateColWidth, $TSessionDate)
     {
-        $fontHeight = $this->_getYSpacing(1);
+        $height = $this->pdf->getStringHeight($this->espaceH_dispo, $tableTitle);
 
         // Titre du tableau ('Les formateurs')
         $this->pdf->SetFont('', 'bi', $this->default_font_size - 1);
-        $this->pdf->MultiCell($this->espaceH_dispo, $fontHeight, $tableTitle, '', 'L', 0, 1);
+        $this->pdf->MultiCell($this->espaceH_dispo, $height, $tableTitle, '', 'L', 0, 1);
         $this->pdf->SetFont('', '-', $this->default_font_size);
-        $this->pdf->SetY($this->pdf->GetY()-1.6);
 
         // Ligne des titres (≠ titre du tableau)
         $this->_showHeaderRow($leftColWidth, $dateColWidth, $TSessionDate);
     }
 
     /**
+     * @param Agefodd_stagiaire $agfTrainee
      * @return string  Content of the cell with the trainee's name + other trainee-related information
      */
     protected function _getTraineeNameCellContent($agfTrainee)
@@ -539,30 +544,30 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $cellContent = '';
 
         if (!empty($agfTrainee->civilite)) {
-            if ($this->agfTrainee->civilite == 'MR') {
+            if ($agfTrainee->civilite == 'MR') {
                 $cellContent .= 'M. ';
-            } elseif ($this->agfTrainee->civilite == 'MME' || $this->agfTrainee->civilite == 'MLE') {
+            } elseif ($agfTrainee->civilite == 'MME' || $agfTrainee->civilite == 'MLE') {
                 $cellContent .= 'Mme. ';
             } else {
-                $cellContent .= $this->agfTrainee->civilite . ' ';
+                $cellContent .= $agfTrainee->civilite . ' ';
             }
         }
         $cellContent .= $agfTrainee->nom . ' ' . $agfTrainee->prenom;
         if (!empty($agfTrainee->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
-            $cellContent .= ' (' . $this->agfTrainee->poste . ')';
+            $cellContent .= ' (' . $agfTrainee->poste . ')';
         }
         if (!empty($agfTrainee->date_birth) && !empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
             $this->outputlangs->load("other");
-            $cellContent .= "\n" . $this->outputlangs->trans('DateToBirth') . ' : ' . dol_print_date($this->agfTrainee->date_birth, 'day');
+            $cellContent .= "\n" . $this->outputlangs->trans('DateToBirth') . ' : ' . dol_print_date($agfTrainee->date_birth, 'day');
         }
         if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
-            if (!empty($this->agfTrainee->socname)) {
-                $cellContent .= '-' . dol_trunc($this->agfTrainee->socname, 27);
+            if (!empty($agfTrainee->socname)) {
+                $cellContent .= '-' . dol_trunc($agfTrainee->socname, 27);
             }
         }
         if (is_object($this->dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
             $c = new Societe($this->db);
-            $c->fetch($this->agfTrainee->socid);
+            $c->fetch($agfTrainee->socid);
 
             if (count($this->dao->entities) > 0) {
                 foreach ($this->dao->entities as $e) {
@@ -636,8 +641,8 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
     /**
      * Get a vertical spacing proportional to the font size.
-     * @param $factor Approximately: the desired vertical spacing measured in "lines" of text using current font
-     * @return float  Vertical spacing in millimeters that can be used in $this->pdf->SetY()
+     * @param float $factor  Approximately: the desired vertical spacing measured in "lines" of text using current font
+     * @return float Vertical spacing in millimeters that can be used in $this->pdf->SetY()
      */
     protected function _getYSpacing($factor)
     {
