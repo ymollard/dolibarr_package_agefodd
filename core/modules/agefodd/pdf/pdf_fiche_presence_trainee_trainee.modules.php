@@ -83,7 +83,8 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
     /**
      * @param DoliDB $db Database handler
      */
-    function __construct($db) {
+    function __construct($db)
+    {
         /**
          @var Societe $mysoc
          @var Translate $langs
@@ -128,7 +129,8 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      * @param int       $sessionTraineeId rowid of llx_agefodd_session_stagiaire
      * @return int
      */
-    function write_file($sessionId, $outputlangs, $fileName, $sessionTraineeId) {
+    function write_file($sessionId, $outputlangs, $fileName, $sessionTraineeId)
+    {
         global $langs, $conf, $mysoc;
         $this->outputlangs = is_object($outputlangs) ? $outputlangs : $langs;
         $this->session = new Agsession($this->db);
@@ -152,8 +154,8 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf = pdf_getInstance_agefodd($this->session, $this, $this->format, $this->unit, $this->orientation);
         $this->pdf->Open();
         $this->_setMetaData();
-        $this->pdf->SetAutoPageBreak(1, $this->getRealHeightLine('foot'));
-        $this->_setDefaultColorAndStyle();
+        $this->pdf->SetAutoPageBreak(1, $this->getRealHeightLine('foot') + 50);
+        $this->_resetColorsAndStyle();
         if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION) {$this->pdf->SetCompression(false);}
 
         $headerHeight = $this->getRealHeightLine('head');
@@ -234,7 +236,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
         foreach ($datesByMonth as $monthYear => $TTSessionDate) {
             foreach ($TTSessionDate as $TSessionDate) {
-                $this->_pagebody($TSessionDate);
+                $this->_addPageForMonthDates($TSessionDate);
             }
         }
 
@@ -267,12 +269,16 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
     }
 
     /**
-     * @param Agefodd_sesscalendar[] $TSessionDate  Array of session dates to be displayed on a single page
+     * Adds a logical "page" to the PDF (this page can be more than one PDF page, but not less).
+     *
+     * @param Agefodd_sesscalendar[] $TSessionDate  Array of session dates to be displayed on a page
+     *                                              Typically all the dates in the same month, but
+     *                                              it can be less if there are too many dates to fit
+     *                                              on a page width.
      * @return void
      */
-    function _pagebody($TSessionDate)
+    function _addPageForMonthDates($TSessionDate)
     {
-//        print '<div class="pagebody" style="border: solid 1px black; margin: 10px;">Affichage d’une "page" logique (un mois ou une portion de mois)<br>';
         global $conf, $mysoc;
         // Set path to the background PDF File
         if (empty($conf->global->MAIN_DISABLE_FPDI) && !empty($conf->global->AGF_ADD_PDF_BACKGROUND_P)) {
@@ -285,19 +291,76 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         if (!empty($tplidx))
             $this->pdf->useTemplate($tplidx);
 
-        $height_for_footer = 40;
-        if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER))
-            $height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
-
         $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 
-        if (0) $this->_showTrainerTableForPage($TSessionDate);
-        if (0) $this->_showTraineeTableForPage($TSessionDate);
         $this->_tryToPrint('_showTrainerTableForPage', 1, array($TSessionDate));
         $this->_tryToPrint('_showTraineeTableForPage', 1, array($TSessionDate));
-//        print '</div>';
     }
 
+    /**
+     * Add trainer table to the PDF. The trainer table lists trainers (one per row) and has empty slots, one per
+     * date, for the trainers to put their signatures into.
+     *
+     * Note: to be used with _tryToPrint('showTrainerTableForPage').
+     * @see _tryToPrint
+     *
+     * @param Agefodd_sesscalendar[] $TSessionDate
+     */
+    protected function _showTrainerTableForPage($TSessionDate)
+    {
+        $this->_resetColorsAndStyle();
+        $tableTitle = $this->_getTrainerTableTitle();
+        $dateColWidth = $this->_getDateColWidth($this->trainer_widthcol1, count($TSessionDate));
+
+        // Titre et ligne d’en-tête
+        $this->_showHeaderRowWithTitle($tableTitle, $this->trainer_widthcol1, $dateColWidth, $TSessionDate);
+
+        // Lignes de contenu
+        $trainerN = 0;
+        foreach ($this->TAgfTrainer as $agfTrainer) {
+            $this->_showBodyRow(
+                $this->trainer_widthcol1,
+                $dateColWidth,
+                $this->_getTrainerNameCellContent($agfTrainer),
+                $TSessionDate);
+            $trainerN++;
+        }
+        $this->pdf->SetY($this->pdf->GetY() + 5);
+    }
+
+    /**
+     * Add trainee table to the PDF. The trainee table has only one trainee (because this is a per-trainee document)
+     * and has empty slots, one per date, for the trainee to put their signature into.
+     *
+     * Note: to be used with _tryToPrint('showTraineeTableForPage').
+     * @see _tryToPrint
+     *
+     * @param Agefodd_sesscalendar[] $TSessionDate
+     */
+    protected function _showTraineeTableForPage($TSessionDate)
+    {
+        $this->_resetColorsAndStyle();
+        $leftMostCellContent = $this->_getTraineeNameCellContent($this->agfTrainee);
+        $tableTitle = $this->_getTraineeTableTitle();
+        $espacementTables = 5;
+        $dateColWidth = $this->_getDateColWidth($this->trainer_widthcol1, count($TSessionDate));
+
+        // Titre et ligne d’en-tête
+        $this->_showHeaderRowWithTitle($tableTitle, $this->trainer_widthcol1, $dateColWidth, $TSessionDate);
+
+        // Ligne de contenu
+        $this->_showBodyRow($this->trainer_widthcol1, $dateColWidth, $leftMostCellContent, $TSessionDate);
+        $this->pdf->SetY($this->pdf->GetY() + $espacementTables);
+    }
+
+    /**
+     * Adds the header row of a trainee or trainer table.
+     * @see _showBodyRow
+     *
+     * @param float $leftColWidth
+     * @param float $dateColWidth
+     * @param Agefodd_sesscalendar[] $TSessionDate  Array of dates for which a table column will be added.
+     */
     protected function _showHeaderRow($leftColWidth, $dateColWidth, $TSessionDate)
     {
         $subRow1Height = $this->_getYSpacing(1.5);
@@ -371,7 +434,16 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->SetY($this->pdf->GetY());
     }
 
-    protected function _showBodyRow($leftColWidth, $dateColWidth, $leftHeaderCellContent, $TSessionDate)
+    /**
+     * Adds a normal row to a trainee or trainer table.
+     * @see _showHeaderRow
+     *
+     * @param float $leftColWidth                   Width of the first column (header/name column)
+     * @param float $dateColWidth                   Width of the columns for agefodd dates
+     * @param string $leftHeaderCellText            Content of the leftmost cell (typically trainer/trainee name).
+     * @param Agefodd_sesscalendar[] $TSessionDate  Array of dates for which a table column exists.
+     */
+    protected function _showBodyRow($leftColWidth, $dateColWidth, $leftHeaderCellText, $TSessionDate)
     {
         $rowHeight = $this->_getYSpacing(1);
         $pageStart = $this->pdf->getPage();
@@ -382,7 +454,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->MultiCell(
             $leftColWidth,
             $rowHeight,
-            $leftHeaderCellContent,
+            $leftHeaderCellText,
             'LTRB',
             'L',
             0,
@@ -397,24 +469,20 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
             'M',
             false);
         if ($this->pdf->getPage() > $pageStart) {
-//            var_dump('—————————————————————————————————————');
+            // this method is wrapped in _tryToPrint;
+            // if we know there will be a rollback + page break, no need to print the remaining cells.
             return;
         }
         $colStartX += $leftColWidth;
 
         // autres cellules
-        // note à moi-même : NE JAMAIS PLUS UTILISER LE PARAMÈTRE LN (le laisser toujours à 1).
-        // parce que comme le curseur est "remonté" à la fin de l’appel avec ln=0,
-        // les mécanismes de saut de page auto ne voient pas que la page a changé / doit changer.
-        $nbSlots = count($TSessionDate);
         $slotNum = 1;
         foreach ($TSessionDate as $dateSlot) {
-//            $ln = ($slotNum == $nbSlots) ? 1 : 0; // si dernière cellule de la ligne, on update Y, sinon X
             $ln = 1;
             $this->pdf->MultiCell(
                 $dateColWidth,
                 $rowHeight,
-                '',
+                '', // cellule vide pour la signature.
                 'LTRB',
                 'C',
                 0,
@@ -430,21 +498,23 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
                 false);
             $colStartX += $dateColWidth;
             if ($this->pdf->getPage() > $pageStart) {
-//                var_dump('—————————————————————————————————————');
-                return; // _tryToPrint will take care of re-calling the method
+                // this method is wrapped in _tryToPrint;
+                // if we know there will be a rollback + page break, no need to print the remaining cells.
+                return;
             }
             $slotNum++;
         }
     }
 
-    protected function _showTrainerTableForPage($TSessionDate)
+    /**
+     * @param $tableTitle
+     * @param $leftColWidth
+     * @param $dateColWidth
+     * @param Agefodd_sesscalendar[] $TSessionDate
+     */
+    protected function _showHeaderRowWithTitle($tableTitle, $leftColWidth, $dateColWidth, $TSessionDate)
     {
-//        var_dump('_showTrainerTableForPage [Y = '.$this->pdf->GetY().']');
-        $this->_setDefaultColorAndStyle();
-        $tableTitle = $this->_getTrainerTableTitleContent();
         $fontHeight = $this->_getYSpacing(1);
-
-        $dateColWidth = $this->_getDateColWidth($this->trainer_widthcol1, count($TSessionDate));
 
         // Titre du tableau ('Les formateurs')
         $this->pdf->SetFont('', 'bi', $this->default_font_size - 1);
@@ -453,43 +523,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->SetY($this->pdf->GetY()-1.6);
 
         // Ligne des titres (≠ titre du tableau)
-        $this->_showHeaderRow($this->trainer_widthcol1, $dateColWidth, $TSessionDate);
-
-        // Lignes de contenu
-        $trainerN = 0;
-        foreach ($this->TAgfTrainer as $agfTrainer) {
-            $this->_showBodyRow(
-                $this->trainer_widthcol1,
-                $dateColWidth,
-                $this->_getTrainerNameCellContent($agfTrainer),
-                $TSessionDate);
-            $trainerN++;
-        }
-        $this->pdf->SetY($this->pdf->GetY() + 5);
-    }
-
-    protected function _showTraineeTableForPage($TSessionDate)
-    {
-//        var_dump('_showTraineeTableForPage [Y = '.$this->pdf->GetY().']');
-        $this->_setDefaultColorAndStyle();
-        $leftMostCellContent = $this->_getTraineeNameCellContent($this->agfTrainee);
-        $tableTitle = $this->_getTraineeTableTitleContent();
-        $espacementTables = 5;
-        $fontHeight = $this->_getYSpacing(1);
-
-        $dateColWidth = $this->_getDateColWidth($this->trainer_widthcol1, count($TSessionDate));
-
-        $this->pdf->SetFont('', 'bi', $this->default_font_size - 1);
-        $this->pdf->MultiCell($this->espaceH_dispo, $fontHeight, $tableTitle, '', 'L', 0, 1);
-        $this->pdf->SetFont('', '-', $this->default_font_size);
-        $this->pdf->SetY($this->pdf->GetY()-1.6);
-
-        // Ligne des titres (≠ titre du tableau)
-        $this->_showHeaderRow($this->trainer_widthcol1, $dateColWidth, $TSessionDate);
-
-        // Ligne de contenu
-        $this->_showBodyRow($this->trainer_widthcol1, $dateColWidth, $leftMostCellContent, $TSessionDate);
-        $this->pdf->SetY($this->pdf->GetY() + $espacementTables);
+        $this->_showHeaderRow($leftColWidth, $dateColWidth, $TSessionDate);
     }
 
     /**
@@ -538,33 +572,52 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         return $cellContent;
     }
 
+    /**
+     * Override this method to customize the contents of this cell.
+     *
+     * @param $agfTrainer
+     * @return string  Name and surname of the trainer.
+     */
     protected function _getTrainerNameCellContent($agfTrainer)
     {
         return $agfTrainer->firstname . ' ' . $agfTrainer->lastname;
     }
 
-    protected function _getTraineeTableTitleContent()
+    /**
+     * Override this method to customize the contents of this cell.
+     *
+     * @return string  Title of the 'trainee' table (depending on the trainee's gender)
+     */
+    protected function _getTraineeTableTitle()
     {
-        switch($this->agfTrainee->civilite) {
-            case 'MLE': case 'MME':
-                $translationKey = 'AgfFichePresByTraineeTraineeTitleF';
-                break;
-            case 'MR':
-                $translationKey = 'AgfFichePresByTraineeTraineeTitleM';
-                break;
-            default:
-                $translationKey = 'AgfFichePresByTraineeTraineeTitle';
-                break;
+        $translationKey = 'AgfFichePresByTraineeTraineeTitle';
+        $TtranslationKey = array(
+            'MLE' => 'AgfFichePresByTraineeTraineeTitleF',
+            'MME' => 'AgfFichePresByTraineeTraineeTitleF',
+            'MR' => 'AgfFichePresByTraineeTraineeTitleM'
+        );
+        if (array_key_exists($this->agfTrainee->civilite, $TtranslationKey)) {
+            $translationKey = $TtranslationKey[$this->agfTrainee->civilite];
         }
         return $this->outputlangs->trans($translationKey);
     }
 
-    protected function _getTrainerTableTitleContent()
+    /**
+     * Override this method to customize the contents of this cell.
+     *
+     * @return string  Title of the 'trainers' table (currently always the same string).
+     */
+    protected function _getTrainerTableTitle()
     {
-        $translationKey = 'AgfFichePresByTraineeTrainerTitle';
-        return $this->outputlangs->trans($translationKey);
+        return $this->outputlangs->trans('AgfFichePresByTraineeTrainerTitle');
     }
 
+    /**
+     * Override this method to customize the contents of these cells.
+     *
+     * @param $dateSlot
+     * @return string  Formatted date and schedule of a session.
+     */
     protected function _getDateSlotContent($dateSlot)
     {
         return dol_print_date($dateSlot->date_session)
@@ -578,6 +631,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
     }
 
     /**
+     * Get a vertical spacing proportional to the font size.
      * @param $factor Approximately: the desired vertical spacing measured in "lines" of text using current font
      * @return float  Vertical spacing in millimeters that can be used in $this->pdf->SetY()
      */
@@ -588,6 +642,9 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         return $glyphHeight * $factor * 1.7;
     }
 
+    /**
+     * Set metadata (title, subject, creator, author, keywords) of the PDF file
+     */
     protected function _setMetaData() {
         global $user;
         $this->pdf->SetTitle($this->outputlangs->convToOutputCharset($this->outputlangs->transnoentities('AgfPDFFichePres1') . " " . $this->session->ref));
@@ -604,8 +661,6 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      * \param outputlangs Object lang for output
      */
     function _pagehead() {
-//        var_dump('_pagehead() [GetY() -> '.$this->pdf->GetY().']');
-//        xdebug_print_function_stack();
         global $conf, $langs, $mysoc;
 
         $this->outputlangs->load("main");
@@ -860,7 +915,6 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table);
 
         $this->pdf->SetY($this->posY + 1);
-//        var_dump('END _pagehead() [GetY() -> '.$this->pdf->GetY().']');
     }
 
     /**
@@ -871,25 +925,43 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      * \remarks Need this->emetteur object
      */
     function _pagefoot() {
-//        var_dump('_pagefoot()');
         $this->pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
         $this->pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
         $this->pdf->SetAutoPageBreak(0);
-        return pdf_agfpagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $this->session, 1, $hidefreetext);
+        $margin_bottom_inc_footer = pdf_agfpagefoot(
+            $this->pdf,
+            $this->outputlangs,
+            '',
+            $this->emetteur,
+            $this->marge_basse,
+            $this->marge_gauche,
+            $this->page_hauteur,
+            $this->session,
+            1,
+            0
+        );
+        return $margin_bottom_inc_footer;
     }
 
-    /** @var TCPDF $pdf */
     /**
-     * @param TCPDF  $pdf
-     * @param string $method Name of a method to be called by _tryToPrint; the method will be called with $pdf as the first argument
-     * @param bool   $autoPageBreak
-     * @param array  $param (Optional) : additional parameters to be passed to the method
-     * @return float New Y "cursor" position on the PDF document.
+     * Ensures a block (a paragraph, a table, etc.) is not split across pages when
+     * it is added to the PDF. Either the block fits wholly on the current page or
+     * it will be printed (wholly) on a new page.
+     * Note: in any case, the block has to fit on a page. If it is higher than the
+     * available space, the behaviour of _tryToPrint is not defined.
+     *
+     * Example: $this->_tryToPrint('_showProductTable', true, $productId)
+     *
+     * @param string $method        Name of a method that prints a block to the PDF
+     * @param bool $autoPageBreak   Infinite recursion avoidance flag. Leave at True
+     *                              (only _tryToPrint() itself will call with False)
+     * @param array $callbackParams Optional array of parameters passed to the
+     *                              block-printing method
+     * @return float  New Y position
      */
     public function _tryToPrint($method, $autoPageBreak = true, $callbackParams = array())
     {
         global $conf, $outputlangs;
-//        var_dump('start _tryToPrint("'.$method.'"); current Y: ' . $this->pdf->GetY());
 
         $callback = array($this, $method);
 
@@ -897,45 +969,39 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         {
 
             $this->pdf->startTransaction();
-//            print '<div style="padding-left: 10%; border: solid 1px blue;">startTransaction()<br>';
-            $posYBefore = $this->pdf->GetY();
-//            var_dump('$posYBefore:  [Y = '.$this->pdf->GetY().']');
             $pageposBefore=$this->pdf->getPage();
 
             // START FIRST TRY
             call_user_func_array($callback, $callbackParams);
-
             $pageposAfter=$this->pdf->getPage();
-
             // END FIRST TRY
 
-            if($autoPageBreak && $pageposAfter > $pageposBefore )
-            {
-                $pagenb = $pageposBefore;
-//                print 'rollbackTransaction()';
-//                print '</div>';
+            // page break needed -> roll back, add new page and retry
+            if($autoPageBreak && $pageposAfter > $pageposBefore) {
                 $this->pdf->rollbackTransaction(true);
-//                var_dump('current Y:' . $this->pdf->GetY());
 
                 // prepare pages to receive content
                 $this->pdf->AddPage();
 
-//                var_dump('calling _tryToPrint again [Y = ' . $this->pdf->GetY() .']');
                 // RESTART DISPLAY BLOCK - without auto page break
                 $this->pdf->SetY($this->getRealHeightLine('head') + $this->marge_haute);
                 return $this->_tryToPrint($method, false, $callbackParams);
-            }
-            else // No pagebreak
-            {
-//                print 'commitTransaction()';
-//                print '</div>';
+            } else {
+                // No pagebreak -> commit
                 $this->pdf->commitTransaction();
             }
         }
         return $this->pdf->GetY();
     }
 
-    /** @var TCPDF $pdf */
+    /**
+     * The original _tryToPrint() method (not used, just copied as a reference).
+     * @param $pdf
+     * @param $method
+     * @param bool $autoPageBreak
+     * @param array $param
+     * @return mixed
+     */
     public function _tryToPrintOriginal(&$pdf, $method, $autoPageBreak = true, $param = array())
     {
         global $conf, $outputlangs;
@@ -1003,7 +1069,12 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         }
     }
 
-    public function _setOrientation($orientation='P') {
+    /**
+     * Set TCPDF orientation + swaps this->page_largeur and $this->page_hauteur for landscape.
+     * @param string $orientation  Either 'P' (portrait) or 'L' (landscape)
+     */
+    public function _setOrientation($orientation='P')
+    {
 
         $this->orientation = $this->oriantation = 'L';
         $formatarray = pdf_getFormat();
@@ -1016,7 +1087,10 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->format = array($this->page_largeur, $this->page_hauteur);
     }
 
-    public function _setDefaultColorAndStyle()
+    /**
+     * Reset text color, draw color, line style and font.
+     */
+    public function _resetColorsAndStyle()
     {
         $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
         $this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
