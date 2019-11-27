@@ -350,7 +350,11 @@ class ReportCommercial extends AgefoddExportExcel
 		// General
 		$result = $this->fetch_data($filter);
 		if ($this->debug) {
-			print implode("<BR>",$this->TFacture);
+			print '<table>';
+			foreach( $this->TFacture as $fid => $datadedug) {
+				print $datadedug;
+			}
+			print '</table>';
 		}
 		if ($result < 0) {
 			return $result;
@@ -492,8 +496,8 @@ class ReportCommercial extends AgefoddExportExcel
 				FROM '  . MAIN_DB_PREFIX . 'societe s
 				LEFT JOIN ' . MAIN_DB_PREFIX . 'societe parent ON (parent.rowid = s.parent)
 				LEFT JOIN ' . MAIN_DB_PREFIX . 'societe_commerciaux sc ON (sc.fk_soc = s.rowid)
-				WHERE s.entity = ' . getEntity('societe') . '
-				AND COALESCE(parent.rowid, 0) = ' . $parentID . '
+				WHERE s.entity = ' . getEntity('societe').'
+				AND COALESCE(parent.rowid, 0) = ' . $parentID. '
 				AND s.fk_typent != 103';
 
 		// On n'applique les filtres que sur la maison-mère
@@ -756,8 +760,9 @@ class ReportCommercial extends AgefoddExportExcel
 			for($i = 0; $i < $num; $i++)
 			{
 				$obj = $this->db->fetch_object($resql);
-				if($this->debug && ! in_array($obj->rowid, $this->TFacture)) {
-					$this->TFacture[] = $obj->facid;
+				if($this->debug && ! array_key_exists($obj->facid, $this->TFacture)) {
+					$this->TFacture[$obj->facid] = '<tr><td>'.$companyID. '</td><td>.'. $type. '</td><td>'. $obj->facid.'<td></tr>';
+					//$this->TFacture[$obj->facid] = $obj->facid;
 				}
 				$TDataRow[2 + $maxYear - $obj->year] += $obj->total;
 			}
@@ -934,7 +939,8 @@ class ReportCommercial extends AgefoddExportExcel
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca opca ON (opca.fk_session_trainee = ass.rowid AND opca.fk_soc_trainee = ags.fk_soc)
 					WHERE ags.fk_soc = ' . $companyID . '
 					AND COALESCE(CASE WHEN s2.fk_soc_OPCA < 0 THEN 0 ELSE s2.fk_soc_OPCA END, 0) = 0
-					AND COALESCE(opca.rowid, 0) = 0
+					AND COALESCE(IFNULL(opca.fk_soc_OPCA,0), opca.rowid, 0) = 0
+					AND ags.fk_soc=f.fk_soc
 				)';
 
 				break;
