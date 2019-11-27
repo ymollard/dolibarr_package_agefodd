@@ -154,11 +154,12 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf = pdf_getInstance_agefodd($this->session, $this, $this->format, $this->unit, $this->orientation);
         $this->pdf->Open();
         $this->_setMetaData();
-        $this->pdf->SetAutoPageBreak(1, $this->getRealHeightLine('foot') + 50);
+        $headerHeight = $this->getRealHeightLine('head');
+        $this->footerHeight = $this->getRealHeightLine('foot');
+        $this->pdf->setPageOrientation($this->orientation, 1, $this->footerHeight);
         $this->_resetColorsAndStyle();
         if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION) {$this->pdf->SetCompression(false);}
 
-        $headerHeight = $this->getRealHeightLine('head');
         // Left, Top, Right
         $this->pdf->SetMargins($this->marge_gauche, $headerHeight + 10, $this->marge_droite, 1);
 
@@ -288,6 +289,8 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
         // New page
         $this->pdf->AddPage();
+        $this->pdf->setPageOrientation($this->orientation, 1, $this->footerHeight);
+
         if (!empty($tplidx))
             $this->pdf->useTemplate($tplidx);
 
@@ -325,7 +328,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
                 $TSessionDate);
             $trainerN++;
         }
-        $this->pdf->SetY($this->pdf->GetY() + 5);
+        $this->pdf->SetY($this->pdf->GetY()+3);
     }
 
     /**
@@ -342,7 +345,6 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->_resetColorsAndStyle();
         $leftMostCellContent = $this->_getTraineeNameCellContent($this->agfTrainee);
         $tableTitle = $this->_getTraineeTableTitle();
-        $espacementTables = 5;
         $dateColWidth = $this->_getDateColWidth($this->trainer_widthcol1, count($TSessionDate));
 
         // Titre et ligne d’en-tête
@@ -350,7 +352,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
         // Ligne de contenu
         $this->_showBodyRow($this->trainer_widthcol1, $dateColWidth, $leftMostCellContent, $TSessionDate);
-        $this->pdf->SetY($this->pdf->GetY() + $espacementTables);
+        $this->pdf->SetY($this->pdf->GetY());
     }
 
     /**
@@ -445,12 +447,13 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      */
     protected function _showBodyRow($leftColWidth, $dateColWidth, $leftHeaderCellText, $TSessionDate)
     {
-        $rowHeight = $this->_getYSpacing(1);
+        $rowHeight = $this->_getYSpacing(1.0); // augmenter à 1.5 pour avoir des cases plus grandes pour signer
         $pageStart = $this->pdf->getPage();
         $rowStartY = $this->pdf->GetY();
         $colStartX = $this->pdf->GetX();
 
         // cellule de gauche
+//        $this->pdf->writeHTMLCell($leftColWidth, $rowHeight, $colStartX, $rowStartY, $leftHeaderCellText, 'LTRB', 1);
         $this->pdf->MultiCell(
             $leftColWidth,
             $rowHeight,
@@ -479,6 +482,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $slotNum = 1;
         foreach ($TSessionDate as $dateSlot) {
             $ln = 1;
+//            $this->pdf->writeHTMLCell($dateColWidth, $rowHeight, $colStartX, $rowStartY, '', 'LTRB', 1);
             $this->pdf->MultiCell(
                 $dateColWidth,
                 $rowHeight,
@@ -914,7 +918,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
         $this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table);
 
-        $this->pdf->SetY($this->posY + 1);
+        $this->pdf->SetY($this->posY-2);
     }
 
     /**
@@ -967,7 +971,6 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
         if (is_callable($callback))
         {
-
             $this->pdf->startTransaction();
             $pageposBefore=$this->pdf->getPage();
 
@@ -982,6 +985,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
                 // prepare pages to receive content
                 $this->pdf->AddPage();
+                $this->pdf->setPageOrientation($this->orientation, 1, $this->footerHeight);
 
                 // RESTART DISPLAY BLOCK - without auto page break
                 $this->pdf->SetY($this->getRealHeightLine('head') + $this->marge_haute);
@@ -996,6 +1000,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
 
     /**
      * The original _tryToPrint() method (not used, just copied as a reference).
+     * @TODO: delete this method once all page break issues are solved.
      * @param $pdf
      * @param $method
      * @param bool $autoPageBreak
@@ -1070,12 +1075,11 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
     }
 
     /**
-     * Set TCPDF orientation + swaps this->page_largeur and $this->page_hauteur for landscape.
+     * Swaps this->page_largeur and $this->page_hauteur for landscape.
      * @param string $orientation  Either 'P' (portrait) or 'L' (landscape)
      */
     public function _setOrientation($orientation='P')
     {
-
         $this->orientation = $this->oriantation = 'L';
         $formatarray = pdf_getFormat();
         $this->page_largeur = $formatarray['height']; // use standard but reverse width and height to get Landscape format
