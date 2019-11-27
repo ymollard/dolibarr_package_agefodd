@@ -301,25 +301,9 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			$error ++;
 		}
 
-		$result = $agf->fetchOtherSessionSameplacedate();
-		if ($result < 0) {
-			setEventMessage($agf->error, 'errors');
-			$error ++;
-		} else {
-
-			if (is_array($agf->lines_place) && count($agf->lines_place) > 0) {
-				$sessionplaceerror = '';
-				foreach ( $agf->lines_place as $linesess ) {
-
-					if ($linesess->typeevent=='session') {
-						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
-					} elseif ($linesess->typeevent=='event') {
-						$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherEvent') . '<a href=' . dol_buildpath('/comm/action/list.php', 1) . '?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&search_options_agf_site='.$fk_session_place . '" target="_blanck">' . $linesess->rowid . '</a><br>';
-					}
-				}
-				setEventMessage($sessionplaceerror, 'warnings');
-			}
-		}
+        $TMessage = $agf->checkOtherSessionSamePlaceDate();
+        if (!empty($agf->error)) setEventMessage($agf->error, 'errors');
+        elseif (!empty($TMessage)) setEventMessage($TMessage, 'warnings');
 
 		// If customer is selected contact is required
 		$custid = GETPOST('fk_soc', 'int');
@@ -560,32 +544,12 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				setEventMessage($agf->error, 'errors');
 				$error ++;
 			}
+
+			$TMessage = $agf->checkOtherSessionSamePlaceDate();
+			if (!empty($agf->error)) setEventMessage($agf->error, 'errors');
+			elseif (!empty($TMessage)) setEventMessage($TMessage, 'warnings');
 		}
 
-		$agf->id = $new_session_id;
-		$result = $agf->fetchOtherSessionSameplacedate();
-		if ($result < 0) {
-			setEventMessage($agf->error, 'errors');
-			$error ++;
-		} else {
-
-			if (is_array($agf->lines_place) && count($agf->lines_place) > 0) {
-				$sessionplaceerror = '';
-				foreach ( $agf->lines_place as $linesess ) {
-					if ($linesess->rowid != $new_session_id) {
-						if ($linesess->typeevent=='session') {
-							$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherSession') . '<a href=' . dol_buildpath('/agefodd/session/list.php', 1) . '?site_view=1&search_id=' . $linesess->rowid . '&search_site=' . $fk_session_place . ' target="_blanck">' . $linesess->rowid . '</a><br>';
-						} elseif ($linesess->typeevent=='event') {
-							$sessionplaceerror .= $langs->trans('AgfPlaceUseInOtherEvent') . '<a href=' . dol_buildpath('/comm/action/list.php', 1) . '?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&search_options_agf_site='.$fk_session_place . '" target="_blanck">' . $linesess->rowid . '</a><br>';
-						}
-
-					}
-				}
-				if (! empty($sessionplaceerror)) {
-					setEventMessage($sessionplaceerror, 'warnings');
-				}
-			}
-		}
 
 		if ($error == 0 && ! empty($fk_propal)) {
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
@@ -1443,10 +1407,38 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 						print '<table class="border order_cost" width="100%">';
 						print '<tr class="liste_titre"><td></td><td></td><td width="20%">' . $langs->trans("Planned") . '</td><td width="20%">' . $langs->trans("Engaged") . '</td><td width="20%">' . $langs->trans("Done") . '</td><td width="20%">' . $langs->trans("Result") . '</td></tr>';
 
+						// Le calcul du réalisé formateur doit tenir compte du fait que certaines factures fournisseurs règlent les prestations faites pour plusieurs session
+						$agf_formateurs = new Agefodd_session_formateur($db);
+						$nbform = $agf_formateurs->fetch_formateur_per_session($id);
+						$invoice_trainer_array=array();
+						if(!empty($agf_formateurs->lines)) {
+							foreach ( $agf_formateurs->lines as $line_trainer ) {
+								$contact_stat = new Contact($db);
+								$contact_stat->fetch($line_trainer->socpeopleid);
+								$contact_stat->fetch_thirdparty();
+								$soc_trainer_id = $contact_stat->thirdparty->id;
+
+								$agf_finn = new Agefodd_session_element($db);
+								$agf_finn->fetch_by_session_by_thirdparty($id,$soc_trainer_id,array('\'invoice_supplier_trainer\'','\'invoice_supplierline_trainer\''));
+								$invoice_trainer_array=array_merge($invoice_trainer_array,$agf_finn->lines);
+							}
+						}
+
+						if(!empty($invoice_trainer_array)) {
+							$cost_trainer_for_session=0;
+							foreach($invoice_trainer_array as &$objj) {
+								$fourninvoice = new FactureFournisseur($db);
+								$fourninvoice->fetch($objj->fk_element);
+								$agff = new Agsession($db);
+								$agff->fetch_all_by_order_invoice_propal('', '', '', '', '', '', '', $fourninvoice->id, '');
+								$cost_trainer_for_session += price2num($fourninvoice->total_ht / count($agff->lines), 'MT');
+							}
+						}
+
 						print '<tr><td ><strong>' . $langs->trans("TaxRevenue") . '</strong></td><td >' . $langs->trans("AgfCoutFormation") . '</td>';
 						print '<td>' . price($agf->sell_price_planned) . '</td><td>' . price($engaged_revenue) . '</td><td>' . price($paied_revenue) . '</td><td>' . price($paied_revenue - $agf->sell_price_planned) . '</td></tr>';
 						print '<tr><td rowspan="4" ><strong>' . $langs->trans("Expense") . '</strong></td><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
-						print '<td>' . price($agf->cost_trainer_planned) . '</td><td>' . price($cost_trainer_engaged) . '</td><td>' . price($agf->cost_trainer) . '</td><td>' . price($agf->cost_trainer_planned - $agf->cost_trainer) . '</td></tr>';
+						print '<td>' . price($agf->cost_trainer_planned) . '</td><td>' . price($cost_trainer_engaged) . '</td><td>' . price(/*$agf->cost_trainer*/$cost_trainer_for_session) . '</td><td>' . price($agf->cost_trainer_planned - $agf->cost_trainer) . '</td></tr>';
 						$spend_cost += $agf->cost_trainer;
 						$spend_cost_planned += $agf->cost_trainer_planned;
 						$spend_cost_engaged += $cost_trainer_engaged;

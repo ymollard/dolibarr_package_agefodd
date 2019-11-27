@@ -356,6 +356,11 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 					}
 				}
 			}
+
+            $TMessage = $agf->checkOtherSessionCalendarSamePlaceDate();
+            if (!empty($agf->error)) setEventMessage($agf->error, 'errors');
+            elseif (!empty($TMessage)) setEventMessage($TMessage, 'warnings');
+
 		} else {
 			$error++;
 			setEventMessage($agf->error, 'errors');
@@ -409,6 +414,12 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 					$error ++;
 					$error_message .= $agf->error;
 				}
+				else
+                {
+                    $TMessage = $agf->checkOtherSessionCalendarSamePlaceDate();
+                    if (!empty($agf->error)) setEventMessage($agf->error, 'errors');
+                    elseif (!empty($TMessage)) setEventMessage($TMessage, 'warnings');
+                }
 			}
 		} else {
 
@@ -448,6 +459,12 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 				$error ++;
 				$error_message = $agf->error;
 			}
+			else
+            {
+                $TMessage = $agf->checkOtherSessionCalendarSamePlaceDate();
+                if (!empty($agf->error)) setEventMessage($agf->error, 'errors');
+                elseif (!empty($TMessage)) setEventMessage($TMessage, 'warnings');
+            }
 		}
 
 		if (! $error) {
@@ -504,6 +521,12 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 						$error ++;
 						$error_message .= $agf->error;
 					}
+					else
+                    {
+                        $TMessage = $agf->checkOtherSessionCalendarSamePlaceDate();
+                        if (!empty($agf->error)) setEventMessage($agf->error, 'errors');
+                        elseif (!empty($TMessage)) setEventMessage($TMessage, 'warnings');
+                    }
 
 					if (! empty($datedaytodate2d) && ! empty($datedaytodate2f)) {
 						$agf = new Agefodd_sesscalendar($db);
@@ -727,7 +750,7 @@ if ($id) {
 				if ($calendrier->lines[$i]->id == $modperiod && ! empty($period_remove))
 					print '<tr style="background:#d5baa8">' . "\n";
 				else
-					print '<tr>' . "\n";
+					print '<tr id="calendar-'.$calendrier->lines[$i]->date_session.'">' . "\n";
 
 					// print '<input type="hidden" name="modperiod" value="' . . '">' . "\n";
 					// print '<input type="hidden" name="anchor" value="period">' . "\n";
@@ -925,11 +948,11 @@ if ($id) {
 
 			print '<td>' . $langs->trans("AgfPDFFichePres9") . ' ';
 			$form->select_date($agf->dated, 'datedaytodatestart');
-			print $langs->trans("AgfPDFFichePres10") . ' ';
+			print '<br />'.$langs->trans("AgfPDFFichePres10") . ' ';
 			$form->select_date($agf->datef, 'datedaytodateend');
 			print '</td>';
 
-			print '<td>';
+			print '<td class="nowrap">';
 
 			print $langs->trans("AgfPeriodTimeB"). ' ';
 			print $formAgefodd->select_time(empty($datedaytodate1d) ? $conf->global->AGF_1DAYSHIFT : $datedaytodate1d, 'datedaytodate1d');

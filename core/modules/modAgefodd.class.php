@@ -58,7 +58,7 @@ class modAgefodd extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Trainning Management Assistant Module";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '4.8.2';
+		$this->version = '4.8.4';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -1543,13 +1543,13 @@ class modAgefodd extends DolibarrModules
 
 		// Add here list of php file(s) stored in core/boxes that contains class to show a box.
 		// Example:
-		$this->boxes[$r][1] = "box_agefodd_board.php";
+		$this->boxes[$r][1] = "box_agefodd_board.php@agefodd";
 		$r++;
-		$this->boxes[$r][1] = "box_agefodd_lastsession.php";
+		$this->boxes[$r][1] = "box_agefodd_lastsession.php@agefodd";
 		$r++;
-		$this->boxes[$r][1] = "box_agefodd_preferedtraining.php";
+		$this->boxes[$r][1] = "box_agefodd_preferedtraining.php@agefodd";
 		$r++;
-		$this->boxes[$r][1] = "box_agefodd_stats.php";
+		$this->boxes[$r][1] = "box_agefodd_stats.php@agefodd";
 
 
 		// Permissions
@@ -1758,6 +1758,41 @@ class modAgefodd extends DolibarrModules
             $this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
             $this->rights[$r][4] = 'questionnaire';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
             $this->rights[$r][5] = 'send';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        }
+
+
+        // MORE External access rights for agefodd
+
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;
+            $this->rights[$r][1] = 'AgfEATrainerAgenda';
+            $this->rights[$r][3] = 0;
+            $this->rights[$r][4] = 'external_trainer_agenda';
+        }
+
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;
+            $this->rights[$r][1] = 'AgfEATrainee';
+            $this->rights[$r][3] = 0;
+            $this->rights[$r][4] = 'external_trainee_read';
+        }
+
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;
+            $this->rights[$r][1] = 'AgfEATrainerTimeslotDelete';
+            $this->rights[$r][3] = 0;
+            $this->rights[$r][4] = 'external_trainer_time_slot_delete';
+        }
+
+        $r ++;
+        if (!empty($conf->externalaccess->enabled)) {
+            $this->rights[$r][0] = $this->numero . $r;
+            $this->rights[$r][1] = 'AgfEATrainerAndTraineeAccessSessionLink';
+            $this->rights[$r][3] = 0;
+            $this->rights[$r][4] = 'external_access_link_attatchement';
         }
 
 		// Main menu entries

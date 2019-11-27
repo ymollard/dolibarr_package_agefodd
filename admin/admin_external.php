@@ -143,8 +143,8 @@ dol_fiche_head($head, 'external', $langs->trans("Module103000Name"), -1, "agefod
 
 if ($conf->use_javascript_ajax) {
     print ' <script type="text/javascript">';
-    print 'window.fnHideExternalOptions=function() {$( "#externaloption" ).prev().hide(); $( "#externaloption" ).hide();};' . "\n";
-    print 'window.fnDisplayExternalOptions=function() {$( "#externaloption" ).prev().show(); $( "#externaloption" ).show();};' . "\n";
+    print 'window.fnHideExternalOptions=function() { $( ".externaloption" ).hide();};' . "\n";
+    print 'window.fnDisplayExternalOptions=function() { $( ".externaloption" ).show();};' . "\n";
     print ' </script>';
 }
 
@@ -199,9 +199,9 @@ if(!empty($conf->externalaccess->enabled))
     print '</tr>';
 
     print '</table>';
-    
 
-    print '<table class="noborder" width="100%" id="externaloption">';
+
+    print '<table class="noborder externaloption" width="100%">';
 
 	print '<tr class="liste_titre" >';
 	print '<th colspan="3" class="left"><i class="fa fa-cog" aria-hidden="true"></i> ' . $langs->trans("Options")." ".$langs->trans('AgfExternalAccess') . '</th>';
@@ -304,7 +304,7 @@ if(!empty($conf->externalaccess->enabled))
 print '</table>';
 
 
-print '<table class="noborder" width="100%" id="externaloption">';
+print '<table class="noborder externaloption" width="100%">';
 
 $formMail = new FormMail($db);
 $models = $formMail->fetchAllEMailTemplate('agf_trainee', $user, $langs);
