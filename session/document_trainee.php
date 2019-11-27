@@ -111,7 +111,7 @@ if (($action == 'create' || $action == 'refresh') && $user->rights->agefodd->cre
 		if(strpos($model, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($model, array('rfltr_agefodd_'=>''));
 	}
 
-	$result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, $session_trainee_id, $cour, $path_external_model, $id_external_model);
+    $result = agf_pdf_create($db, $id, '', $model, $outputlangs, $file, $session_trainee_id, $cour, $path_external_model, $id_external_model);
 }
 
 /*
@@ -573,7 +573,7 @@ if ($action == 'confirm_generateall' && $user->rights->agefodd->creer && $confir
 	foreach ( $agf_trainee->lines as $line ) {
 
 		if ((($typemodel == 'attestation_trainee'  || $typemodel == 'attestationendtraining_trainee') && ($line->status_in_session == 3 || $line->status_in_session == 4))
-				|| ($typemodel == 'convocation_trainee')) {
+				|| ($typemodel == 'convocation_trainee') || ($typemodel == 'fiche_presence_trainee_trainee')) {
 			$file = $typemodel . '_' . $line->stagerowid . '.pdf';
 
 			$typemodel_override = $typemodel;
@@ -602,9 +602,7 @@ if ($action == 'confirm_generateall' && $user->rights->agefodd->creer && $confir
 			$result = agf_pdf_create($db, $id, '', $typemodel_override, $outputlangs, $file, $line->stagerowid, $cour, $path_external_model, $id_external_model);
 		} elseif ($typemodel == 'attestation_trainee' || $typemodel == 'attestationendtraining_trainee') {
 			setEventMessage($langs->trans('AgfOnlyPresentTraineeGetAttestation', $line->nom . ' ' . $line->prenom), 'warnings');
-		} elseif ($typemodel == 'fiche_presence_trainee_trainee') {
-		    // TODO: setEventMessages?
-        }
+		}
 	}
 }
 
