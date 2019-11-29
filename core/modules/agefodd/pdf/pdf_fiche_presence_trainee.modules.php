@@ -567,7 +567,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$this->str = $this->outputlangs->transnoentities('Session')." :";
 		$this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
 		$this->pdf->SetXY($this->posX + $this->larg_col1, $this->posY);
-		$this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->ref_object->id), 0, 'L');
+		$this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->ref_object->id . '#' . $this->ref_object->ref), 0, 'L');
 		$this->haut_col2 += $hauteur + 1;
 		// Lieu
 		$this->pdf->SetXY($this->posX + $this->larg_col1 + $this->larg_col2, $this->posYintitule);
@@ -620,12 +620,12 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$this->pdf->SetXY($this->posX-2, $this->posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres24');
-		$this->pdf->Cell($this->larg_col1+2, $this->h_ligne + 8, $this->outputlangs->convToOutputCharset($this->str), TLR, 2, "C", 0);
+		$this->pdf->Cell($this->larg_col1+2, $this->h_ligne + 8, $this->outputlangs->convToOutputCharset($this->str), 'TLR', 2, "C", 0);
 		// Horaire
 		$this->pdf->SetXY($this->posX + $this->larg_col1, $this->posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres25');
-		$this->pdf->Cell($this->larg_col2, $this->h_ligne + 8, $this->outputlangs->convToOutputCharset($this->str), TLR, 2, "C", 0);
+		$this->pdf->Cell($this->larg_col2, $this->h_ligne + 8, $this->outputlangs->convToOutputCharset($this->str), 'TLR', 2, "C", 0);
 
 		// Trainee
 		$this->posY_trainee = $this->posY;
@@ -660,23 +660,23 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$this->pdf->SetXY($this->posX + $this->larg_col1 + $this->larg_col2, $this->posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres18');
-		$this->pdf->Cell($this->larg_col3, 5, $this->outputlangs->convToOutputCharset($this->str), R, 2, "C", 0);
+		$this->pdf->Cell($this->larg_col3, 5, $this->outputlangs->convToOutputCharset($this->str), 'R', 2, "C", 0);
 		$this->pdf->SetXY($this->posX + $this->larg_col1 + $this->larg_col2, $this->posY + 3);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 5);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres19');
-		$this->pdf->Cell($this->larg_col3, 5, $this->outputlangs->convToOutputCharset($this->str), R, 2, "C", 0);
+		$this->pdf->Cell($this->larg_col3, 5, $this->outputlangs->convToOutputCharset($this->str), 'R', 2, "C", 0);
 		$this->posY = $this->pdf->GetY();
 
 		// Trainer
 		$this->pdf->SetXY($this->posX + $this->larg_col1 + $this->larg_col2 + $this->larg_col3, $this->posY_trainee);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres12'); // ."\n".$this->outputlangs->transnoentities('AgfPDFFichePres13');
-		$this->pdf->MultiCell(0, 2, $this->outputlangs->convToOutputCharset($this->str), TLR, "C");
+		$this->pdf->MultiCell(0, 2, $this->outputlangs->convToOutputCharset($this->str), 'TLR', "C");
 		$this->posY_trainer = $this->pdf->GetY();
 		$this->pdf->SetXY($this->posX + $this->larg_col1 + $this->larg_col2 + $this->larg_col3, $this->posY_trainer);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 5);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres13'); // ."\n".$this->outputlangs->transnoentities('AgfPDFFichePres13');
-		$this->pdf->MultiCell(0, 2, $this->outputlangs->convToOutputCharset($this->str), BLR, "C");
+		$this->pdf->MultiCell(0, 2, $this->outputlangs->convToOutputCharset($this->str), 'BLR', "C");
 
 		$this->posY_trainer = $this->pdf->GetY();
 		$this->posX_trainer = $this->posX + $this->larg_col1 + $this->larg_col2 + $this->larg_col3;
@@ -685,7 +685,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 			$this->pdf->SetXY($this->posX_trainer, $this->posY_trainer);
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 7);
 			$this->str = strtoupper($trainer_line->lastname) . "\n" . ucfirst($trainer_line->firstname);
-			$this->pdf->MultiCell(0, 3, $this->outputlangs->convToOutputCharset($this->str), LR, "L", false, 1, $this->posX_trainer, $this->posY_trainer);
+			$this->pdf->MultiCell(0, 3, $this->outputlangs->convToOutputCharset($this->str), 'LR', "L", false, 1, $this->posX_trainer, $this->posY_trainer);
 			// $w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y=''
 
 			$this->posY = $this->pdf->GetY();
