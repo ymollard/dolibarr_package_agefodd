@@ -349,6 +349,8 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 	if ($result < 0) {
 		setEventMessage($agf_trainee->error, 'errors');
 	}
+	// tableau des fichiers envoyés aux stagiaires
+    $TSentFile = array();
 
 	foreach ( $agf_trainee->lines as $line ) {
 
@@ -401,6 +403,8 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 			if (! file_exists($file))
 				$sendmail_check = false;
 
+            $TSentFile[$agf_trainee->id] = $file;
+
 			$filepath = array (
 					$file
 			);
@@ -429,6 +433,8 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 			if (! file_exists($file))
 				$sendmail_check = false;
 
+            $TSentFile[$agf_trainee->id] = $file;
+
 			$filepath = array (
 					$file
 			);
@@ -438,23 +444,25 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 			$mimetype = array (
 					dol_mimetype($file)
 			);
-		} elseif ($models == 'fiche_presence_trainee_trainee') {
-		    $subject = $langs->transnoentities('AgfSendFeuillePresence', $object->formintitule);
-		    $message = str_replace('\n', "\n", $langs->transnoentities('AgfSendFeuillePresenceBody', $object->formintitule));
+        } elseif ($models == 'fiche_presence_trainee_trainee') {
+            $subject = $langs->transnoentities('AgfSendFeuillePresence', $object->formintitule);
+            $message = str_replace('\n', "\n", $langs->transnoentities('AgfSendFeuillePresenceBody', $object->formintitule));
 
-		    $actiontypecode = 'AC_AGF_PRES';
-		    $actionmsg = $langs->trans('MailSentBy') . ' ' . $from . ' ' . $langs->trans('To') . ' ' . $send_email . ".\n";
-		    if ($message) {
-				$actionmsg .= $langs->trans('MailTopic') . ": " . $subject . "\n";
-				$actionmsg .= $langs->trans('TextUsedInTheMessageBody') . ":\n";
-				$actionmsg .= $message;
+            $actiontypecode = 'AC_AGF_PRES';
+            $actionmsg = $langs->trans('MailSentBy') . ' ' . $from . ' ' . $langs->trans('To') . ' ' . $send_email . ".\n";
+            if ($message) {
+                $actionmsg .= $langs->trans('MailTopic') . ": " . $subject . "\n";
+                $actionmsg .= $langs->trans('TextUsedInTheMessageBody') . ":\n";
+                $actionmsg .= $message;
             }
-			$actionmsg2 = $langs->trans('ActionFICHEPRESENCE_SENTBYMAIL');
+            $actionmsg2 = $langs->trans('ActionFICHEPRESENCE_SENTBYMAIL');
 
             $file = $conf->agefodd->dir_output . '/' . 'fiche_presence_trainee_trainee_' . $line->stagerowid . '.pdf';
 
             if (! file_exists($file))
                 $sendmail_check = false;
+
+            $TSentFile[$agf_trainee->id] = $file;
 
             $filepath = array (
                 $file
@@ -549,6 +557,18 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 			}
 		}
 	}
+
+	$agf_session = new Agsession($db);
+	$agf_session->fetch($id);
+
+	$parameters = array(
+	    'TSentFile' => $TSentFile,
+        'from' => $from,
+        'mimetype' => $mimetype,
+        'sendmail_check' => &$sendmail_check
+    );
+	$reshook = $hookmanager->executeHooks('afterSendMassMail', $parameters, $agf_session, $action); // Note that $action and $object may have been modified by some hooks
+    if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 }
 
 if ($action == 'confirm_generateall' && $user->rights->agefodd->creer && $confirm=='yes') {
