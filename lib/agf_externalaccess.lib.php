@@ -1419,7 +1419,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
  */
 function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 {
-    global $langs, $db, $conf, $user;
+    global $langs, $db, $hookmanager, $conf, $user;
 
 	$langs->load('agfexternalaccess@agefodd');
 
@@ -1469,6 +1469,16 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
             }
         }
     }
+
+    $parameters = array('files' => $files);
+
+    $reshook=$hookmanager->executeHooks('agf_getPageViewSessionCardAddAttachments', $parameters, $agsession);
+    if (!empty($reshook)) {
+        $files = $hookmanager->resArray;
+    } else {
+        $files += $hookmanager->resArray;
+    }
+
 
     $out = '';
     $out.= '<!-- getPageViewSessionCardExternalAccess_files -->
