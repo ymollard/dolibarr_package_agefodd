@@ -1711,9 +1711,12 @@ class Agsession extends CommonObject
 		}
 	}
 
-	/**
-	 * Fetch trainers objects
-	 */
+    /**
+     * Fetch trainers objects
+     * @param int $sessid  ID of Agsession
+     * @return int         if error: -1, if success: the number of trainers loaded in $this->TTrainer
+     * @throws Exception
+     */
 	public function fetchTrainers($sessid = 0) {
 		global $conf;
 

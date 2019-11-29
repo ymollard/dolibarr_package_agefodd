@@ -317,7 +317,7 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 					} else {
 						$langs->load("other");
 						if ($mailfile->error) {
-							setEventMessage($langs->trans('ErrorFailedToSendMail', $from, $send_email), 'errors');
+							setEventMessage($langs->transnoentities('ErrorFailedToSendMail', dol_escape_htmltag($from), $send_email), 'errors');
 							dol_syslog($langs->trans('ErrorFailedToSendMail', $from, $send_email) . ' : ' . $mailfile->error);
 						} else {
 							setEventMessage('No mail sent. Feature is disabled by option MAIN_DISABLE_ALL_MAILS', 'errors');
@@ -539,7 +539,7 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 					} else {
 						$langs->load("other");
 						if ($mailfile->error) {
-							setEventMessage($langs->trans('ErrorFailedToSendMail', $from, $send_email) . ":<br/>" . $mailfile->error, 'errors');
+							setEventMessage($langs->transnoentities('ErrorFailedToSendMail', dol_escape_htmltag($from), $send_email) . ":<br/>" . $mailfile->error, 'errors');
 							dol_syslog($langs->trans('ErrorFailedToSendMail', $from, $send_email) . ' : ' . $mailfile->error);
 						} else {
 							setEventMessage('No mail sent. Feature is disabled by option MAIN_DISABLE_ALL_MAILS', 'errors');
