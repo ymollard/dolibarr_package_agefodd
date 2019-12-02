@@ -320,7 +320,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $dateColWidth = $this->_getDateColWidth($this->trainer_widthcol1, count($TSessionDate));
 
         // Titre et ligne d’en-tête
-        $this->_showHeaderRowWithTitle($tableTitle, $this->trainer_widthcol1, $dateColWidth, $TSessionDate);
+        $this->_showHeaderRowWithTitle($tableTitle, $this->trainer_widthcol1, $dateColWidth, $TSessionDate, 'trainer');
 
         // Lignes de contenu
         $trainerN = 0;
@@ -352,7 +352,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $dateColWidth = $this->_getDateColWidth($this->trainer_widthcol1, count($TSessionDate));
 
         // Titre et ligne d’en-tête
-        $this->_showHeaderRowWithTitle($tableTitle, $this->trainer_widthcol1, $dateColWidth, $TSessionDate);
+        $this->_showHeaderRowWithTitle($tableTitle, $this->trainer_widthcol1, $dateColWidth, $TSessionDate, 'trainee');
 
         // Ligne de contenu
         $this->_showBodyRow($this->trainer_widthcol1, $dateColWidth, $leftMostCellContent, $TSessionDate);
@@ -366,14 +366,32 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      * @param float $leftColWidth
      * @param float $dateColWidth
      * @param Agefodd_sesscalendar[] $TSessionDate  Array of dates for which a table column will be added.
+     * @param string $type Either 'trainer' or 'trainee'
      */
-    protected function _showHeaderRow($leftColWidth, $dateColWidth, $TSessionDate)
+    protected function _showHeaderRow($leftColWidth, $dateColWidth, $TSessionDate, $type='trainee')
     {
-        $subRow1Height = $this->_getYSpacing(1.5);
-        $subRow2Height = $this->_getYSpacing(2);
-        $rowHeight = $subRow1Height + $subRow2Height;
+        global $conf;
 
         $leftHeaderCellContent = $this->outputlangs->transnoentities('AgfPDFFichePres16'); // "Nom et prénom"
+        $rightHeaderCellContent = $this->outputlangs->transnoentities('AgfPDFFichePres18');
+        $rightHeaderCellAdditionalContent = '';
+        $showAdditionalText = empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER);
+        if ($showAdditionalText) {
+            $rightHeaderCellAdditionalContent = $this->outputlangs->transnoentities(
+                $type === 'trainee' ? 'AgfPDFFichePres_meaningOfSignatureTrainee' : 'AgfPDFFichePres13'
+            );
+        }
+
+        $subRow1Height = $this->_getYSpacing(1.5);
+        $subRow2Height = $this->_getYSpacing(2);
+        $rowHeight = $subRow1Height + $subRow2Height; // idéalement il faudrait calculer cette hauteur après avoir affiché les cellules de droite…
+        if ($showAdditionalText) {
+            // si on affiche le texte 'atteste par sa signature […]', ça crée une sous-cellule supplémentaire.
+            $subRow1Height1 = $this->_getYSpacing(1);
+            $subRow1Height2 = $this->_getYSpacing(1);
+            $subRow1Height = $subRow1Height1 + $subRow1Height2;
+            $rowHeight = $subRow1Height + $subRow2Height;
+        }
 
         // cellule de gauche
         $this->pdf->MultiCell(
@@ -394,23 +412,64 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
             'M',
             false);
         $dateColStartX = $this->pdf->GetX();
-        $this->pdf->MultiCell(
-            $this->espaceH_dispo - $leftColWidth,
-            $subRow1Height,
-            $this->outputlangs->transnoentities('AgfPDFFichePres18'), // "Signature"
-            'LTRB',
-            'C',
-            0,
-            1,
-            '',
-            '',
-            true,
-            0,
-            false,
-            true,
-            $subRow1Height,
-            'M',
-            false);
+        $this->pdf->SetFont('', '', $this->default_font_size + 2);
+        if ($showAdditionalText) {
+            $this->pdf->MultiCell(
+                $this->espaceH_dispo - $leftColWidth,
+                $subRow1Height1,
+                $rightHeaderCellContent, // "Signature"
+                'LTR',
+                'C',
+                0,
+                2,
+                '',
+                '',
+                true,
+                0,
+                false,
+                true,
+                $subRow1Height1,
+                'M',
+                false);
+            $this->pdf->SetX($dateColStartX);
+            $this->pdf->SetFont('', '', $this->default_font_size);
+            $this->pdf->MultiCell(
+                $this->espaceH_dispo - $leftColWidth,
+                $subRow1Height2,
+                $rightHeaderCellAdditionalContent, // "Signature"
+                'LRB',
+                'C',
+                '',
+                2,
+                '',
+                '',
+                true,
+                0,
+                false,
+                true,
+                $subRow1Height2,
+                'M',
+                false);
+        } else {
+            $this->pdf->MultiCell(
+                $this->espaceH_dispo - $leftColWidth,
+                $subRow1Height,
+                $rightHeaderCellContent, // "Signature"
+                'LTRB',
+                'C',
+                0,
+                2,
+                '',
+                '',
+                true,
+                0,
+                false,
+                true,
+                $subRow1Height,
+                'M',
+                false);
+            $this->pdf->SetFont('', '', $this->default_font_size);
+        }
         $this->pdf->SetX($dateColStartX);
 
         // autres cellules
@@ -524,8 +583,9 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
      * @param $leftColWidth
      * @param $dateColWidth
      * @param Agefodd_sesscalendar[] $TSessionDate
+     * @param string $type  Either 'trainer' or 'trainee'
      */
-    protected function _showHeaderRowWithTitle($tableTitle, $leftColWidth, $dateColWidth, $TSessionDate)
+    protected function _showHeaderRowWithTitle($tableTitle, $leftColWidth, $dateColWidth, $TSessionDate, $type='trainee')
     {
         $height = $this->pdf->getStringHeight($this->espaceH_dispo, $tableTitle);
 
@@ -535,7 +595,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf->SetFont('', '-', $this->default_font_size);
 
         // Ligne des titres (≠ titre du tableau)
-        $this->_showHeaderRow($leftColWidth, $dateColWidth, $TSessionDate);
+        $this->_showHeaderRow($leftColWidth, $dateColWidth, $TSessionDate, $type);
     }
 
     /**

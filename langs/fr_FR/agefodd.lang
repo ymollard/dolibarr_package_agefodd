@@ -1654,7 +1654,8 @@ setStatus_CANCELED=Appliquer l'état "Annulé"
 AgfNbTiersPart=Tiers des inscrits
 AgfNbSessEffective=Sessions effectives
 
-AgfHideCompanyFichePres = Masquer la colonne société dans les feuilles d'émargements pour l'ajouter dans le nom du participants
+AgfHideCompanyFichePres = Masquer la colonne société dans les feuilles d'émargement pour l'ajouter dans le nom du participants
+AgfHideLegalTextBelowSignatureFichePres=Masquer la mention légale sous le titre "Signature" dans les feuilles d'émargement par participant
 AgfEATrainerAndTraineeAccessSessionLink=Portail formateur et apprenant - Voir les liens (URL) associé à la session
 
 AgfDefaultCalendarStatus=Statut par defaut des creneaux session
@@ -1675,3 +1676,4 @@ AgfFichePresByTraineeTrainerTitle=Le formateur/La formatrice
 AgfFichePresByTraineeTrainerTitleM=Le formateur
 AgfFichePresByTraineeTrainerTitleF=La formatrice
 AgfDateNotSet=Date de session non définie
+AgfPDFFichePres_meaningOfSignatureTrainee=atteste par sa signature avoir reçu la formation ci-dessus nommée.
