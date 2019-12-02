@@ -397,7 +397,7 @@ class FormAgefodd extends Form
 
 			print ajax_autocompleter($selectid, $htmlname, '../ajax/lieu.php', $urloption, $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT, 0, '');
 
-			print '<input type="text" class="minwidth100" name="search_' . $htmlname . '" id="search_' . $htmlname . '" value="' . $selected_input_value . '" />';
+			print img_picto($langs->trans("Search"), 'search', 'style="vertical-align: middle;"').' <input type="text" class="minwidth100" name="search_' . $htmlname . '" id="search_' . $htmlname . '" value="' . $selected_input_value . '" placeholder="'.$langs->trans("Label").'" />';
 		} else {
 			return $this->select_site_forma_liste($selectid, $htmlname, $showempty, $forcecombo, $event, $class);
 		}
