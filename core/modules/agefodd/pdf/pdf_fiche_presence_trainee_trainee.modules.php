@@ -154,14 +154,6 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->pdf = pdf_getInstance_agefodd($this->session, $this, $this->format, $this->unit, $this->orientation);
         $this->pdf->Open();
         $this->_setMetaData();
-        $headerHeight = $this->getRealHeightLine('head');
-        $this->footerHeight = $this->getRealHeightLine('foot');
-        $this->pdf->setPageOrientation($this->orientation, 1, $this->footerHeight);
-        $this->_resetColorsAndStyle();
-        if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION) {$this->pdf->SetCompression(false);}
-
-        // Left, Top, Right
-        $this->pdf->SetMargins($this->marge_gauche, $headerHeight + 10, $this->marge_droite, 1);
 
         // Load multicompany entities
         if (!empty($conf->multicompany->enabled)) {
@@ -195,6 +187,15 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         $this->TAgfTrainer = $agfTrainer->lines;
         if (!empty($this->error)) return 0;
         // END LOAD AGEFODD DATA
+
+        $headerHeight = $this->getRealHeightLine('head');
+        $this->footerHeight = $this->getRealHeightLine('foot');
+        $this->pdf->setPageOrientation($this->orientation, 1, $this->footerHeight);
+        $this->_resetColorsAndStyle();
+        if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION) {$this->pdf->SetCompression(false);}
+
+        // Left, Top, Right
+        $this->pdf->SetMargins($this->marge_gauche, $headerHeight + 10, $this->marge_droite, 1);
 
         // compute how many date slots we can fit in one row (depends on the length of the data in the first column)
         $firstColWidth = $this->trainer_widthcol1; // TODO: compute dynamically (according to contents)
@@ -747,7 +748,7 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
         }
 
         $staticsoc = new Societe($this->db);
-        $staticsoc->fetch($this->session->socid);
+        $staticsoc->fetch($this->agfTrainee->socid);
 
         // Fill header with background color
         $this->pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
