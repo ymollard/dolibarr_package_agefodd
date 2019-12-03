@@ -590,6 +590,25 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+//Data intégrity on session element
+
+$sql = 'SELECT fk_element FROM '.MAIN_DB_PREFIX.'agefodd_session_element WHERE element_type=\'propal\' AND fk_element NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'propal);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Propal id '.$obj->fk_element.' dans '.MAIN_DB_PREFIX.'agefodd_session_element who is not in llx_propal <BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_element WHERE element_type=\'propal\' AND fk_element NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'propal)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+
+
 
 if($dolibarr_main_db_type != 'pgsql')
 {
