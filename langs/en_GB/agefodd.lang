@@ -1119,3 +1119,4 @@ AgfThirdpartyOfTraineeMandatory=Cannot create trainnee without thirdparty linked
 AgfUseTrainingProgramModule=USe modules into training program (experimental)
 AgfForSession=for the session
 AgfCloneTrainingModules=Clone modules training programm ?
+AgfDateNotSet=Session schedule undefined

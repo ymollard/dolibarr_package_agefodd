@@ -1340,7 +1340,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 					$agf->printSessionInfo(false);
 
 					/*
-					 * Manage founding ressources depend type inter-enterprise or extra-enterprise
+					 * Manage funding resources depend on type inter-enterprise or extra-enterprise
 					 */
 					if (! $agf->type_session > 0 && ! empty($conf->global->AGF_MANAGE_OPCA)) {
 						print '<tr class="tr_order_OPCA"><td colspan="4">';
