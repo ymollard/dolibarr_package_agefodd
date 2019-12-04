@@ -1007,6 +1007,20 @@ function document_send_line($mdle, $socid = 0, $nom_courrier = '', $conv = '')
 			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&socid=' . $socid . '&action=presend_attestationendtraining&mode=init">' . img_picto($langs->trans('SendMail'), 'stcomm0') . '</a>';
 		} else
 			return $langs->trans('AgfDocNotDefined');
+	} elseif ($mdle == 'certificateA4' || $mdle == 'certificatecard') {
+		$filename = $mdle . '_' . $id . '_' . $socid . '.pdf';
+		$file = $conf->agefodd->dir_output . '/' . $filename;
+		if (file_exists($file)) {
+			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&socid=' . $socid . '&action=presend_attestationendtraining&mode=init">' . img_picto($langs->trans('SendMail'), 'stcomm0') . '</a>';
+		} else
+			return $langs->trans('AgfDocNotDefined');
+	} elseif ($mdle == 'attestationpresencetraining') {
+		$filename = $mdle . '_' . $id . '_' . $socid . '.pdf';
+		$file = $conf->agefodd->dir_output . '/' . $filename;
+		if (file_exists($file)) {
+			return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&socid=' . $socid . '&action=presend_attestationpresencetraining&mode=init">' . img_picto($langs->trans('SendMail'), 'stcomm0') . '</a>';
+		} else
+			return $langs->trans('AgfDocNotDefined');
 	}
 }
 
