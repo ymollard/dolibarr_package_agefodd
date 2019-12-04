@@ -61,7 +61,9 @@ $limit = $conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
-
+if ($page == - 1 || empty($page)) {
+	$page = 0;
+}
 if (empty($sortorder))
 	$sortorder = "DESC";
 if (empty($sortfield))
@@ -113,7 +115,7 @@ if ($action == 'builddoc' && $user->rights->agefodd->creer) {
 }
 elseif ($action == 'confirm_deldoc' && $confirm == "yes" && $user->rights->agefodd->creer) {
     $file = $conf->agefodd->dir_output . '/attestation_cursus_' . $cursus_id . '_' . $id . '.pdf';
-    
+
     if (is_file($file))
         unlink($file);
     else {
@@ -144,13 +146,13 @@ if (! empty($id) && ! empty($cursus_id)) {
 		$head = trainee_prepare_head($agf, 1);
 
 		dol_fiche_head($head, 'cursusdetail', $langs->trans("AgfStagiaireDetail"), 0, 'user');
-		
+
 		dol_agefodd_banner_tab($agf, 'id');
 		print '<div class="underbanner clearboth"></div>';
 
 		//delete pagination
 		print '<script>$("div.pagination").first().hide();</script>';
-		
+
 		// Cursus Detail
 		$agf_cursus = new Agefodd_cursus($db);
 		$result = $agf_cursus->fetch($cursus_id);
@@ -187,7 +189,7 @@ if (! empty($id) && ! empty($cursus_id)) {
 		// Session list
 		print_barre_liste($langs->trans("AgfSessionDetail"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", count($agf_cursus->lines));
 
-		if (count($agf_cursus->lines) > 0) {
+		if (is_array($agf_cursus->lines) && count($agf_cursus->lines) > 0) {
 			print '<table class="noborder"  width="100%">';
 			print '<tr class="liste_titre">';
 			print_liste_field_titre($langs->trans("AgfMenuSess"), $_SERVER ['PHP_SELF'], "s.rowid", '', '&id=' . $id . '&cursus_id=' . $cursus_id, '', $sortfield, $sortorder);
@@ -313,7 +315,7 @@ if (! empty($id) && ! empty($cursus_id)) {
 		print '<a href="' . DOL_URL_ROOT . '/document.php?modulepart=agefodd&file=attestation_cursus_' . $cursus_id . '_' . $id . '.pdf" alt="' . $legende . '" title="' . $legende . '">';
 		print '<img src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/pdf2.png" border="0" align="absmiddle" hspace="2px" ></a>';
 		print '</td></tr></table>';
-		
+
 	}
 }
 
