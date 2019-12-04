@@ -49,21 +49,20 @@ $cursus_id = GETPOST('cursus_id', 'int');
 $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 
-if ($page == - 1) {
-	$page = 0;
-}
+
 
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
 
+if ($page == - 1 || empty($page)) {
+	$page = 0;
+}
 $limit = $conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
-if ($page == - 1 || empty($page)) {
-	$page = 0;
-}
+
 if (empty($sortorder))
 	$sortorder = "DESC";
 if (empty($sortfield))
@@ -186,10 +185,14 @@ if (! empty($id) && ! empty($cursus_id)) {
 			setEventMessage($agf_cursus->error, 'errors');
 		}
 
-		// Session list
-		print_barre_liste($langs->trans("AgfSessionDetail"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", count($agf_cursus->lines));
+		if (is_array($agf_cursus->lines)) {
+			$numCusrsusline=count($agf_cursus->lines);
+		}
 
-		if (is_array($agf_cursus->lines) && count($agf_cursus->lines) > 0) {
+		// Session list
+		print_barre_liste($langs->trans("AgfSessionDetail"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", $numCusrsusline);
+
+		if ($numCusrsusline > 0) {
 			print '<table class="noborder"  width="100%">';
 			print '<tr class="liste_titre">';
 			print_liste_field_titre($langs->trans("AgfMenuSess"), $_SERVER ['PHP_SELF'], "s.rowid", '', '&id=' . $id . '&cursus_id=' . $cursus_id, '', $sortfield, $sortorder);
