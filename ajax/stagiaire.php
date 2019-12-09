@@ -107,7 +107,7 @@ else
 	
 	$form = new FormAgefodd($db);
 	
-	$arrayresult = $form->select_stagiaire_list("", $htmlname,  "(s.nom LIKE '%$searchkey%' OR s.prenom LIKE '%$searchkey%' OR so.nom LIKE '%$searchkey%') ".$filter, 0, 0, array(),1);
+	$arrayresult = $form->select_stagiaire_list("", $htmlname,  "(s.nom LIKE '%$searchkey%' OR s.prenom LIKE '%$searchkey%' OR so.nom LIKE '%$searchkey%' OR CONCAT(s.nom, ' ', s.prenom) LIKE '%$searchkey%' OR CONCAT(s.prenom, ' ', s.nom) LIKE '%$searchkey%') ".$filter, 0, 0, array(),1);
 	
 	$db->close();
 

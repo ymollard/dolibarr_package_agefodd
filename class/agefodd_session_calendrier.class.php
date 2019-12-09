@@ -222,6 +222,7 @@ class Agefodd_sesscalendar extends CommonObject{
             return -1;
         }
 
+        dol_include_once('/agefodd/class/agefodd_place.class.php');
         $place = new Agefodd_place($this->db);
         if ($place->fetch($session->fk_session_place) < 0)
         {

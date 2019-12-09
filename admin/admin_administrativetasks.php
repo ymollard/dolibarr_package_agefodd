@@ -104,67 +104,49 @@ if ($action == 'sessionlevel_update') {
 
     if ($result > 0) {
 
-        // Up level of action
-        if (GETPOST('sesslevel_up')) {
-            $result2 = $agf->shift_indice($user, 'less');
-            if ($result1 != 1) {
-                setEventMessage($agf->error, 'errors');
-            }
-        }
 
-        // Down level of action
-        if (GETPOST('sesslevel_down')) {
-            $result1 = $agf->shift_indice($user, 'more');
-            if ($result1 != 1) {
-                setEventMessage($agf->error, 'errors');
-            }
-        }
+		$agf->intitule = GETPOST('intitule', 'alpha');
+		$agf->delais_alerte = GETPOST('delai', 'int');
+		$agf->delais_alerte_end = GETPOST('delai_end', 'int');
 
-        // Update action
-        if (GETPOST('sesslevel_update')) {
-            $agf->intitule = GETPOST('intitule', 'alpha');
-            $agf->delais_alerte = GETPOST('delai', 'int');
-            $agf->delais_alerte_end = GETPOST('delai_end', 'int');
+		// prevent mysql error
+		if(empty($agf->delais_alerte)){ $agf->delais_alerte = 0 ; }
+		if(empty($agf->delais_alerte_end)){ $agf->delais_alerte_end= 0 ; }
 
-            // prevent mysql error
-            if(empty($agf->delais_alerte)){ $agf->delais_alerte = 0 ; }
-            if(empty($agf->delais_alerte_end)){ $agf->delais_alerte_end= 0 ; }
+		if (! empty($parent_level)) {
+			if ($parent_level != $agf->fk_parent_level) {
+				$agf->fk_parent_level = $parent_level;
 
-            if (! empty($parent_level)) {
-                if ($parent_level != $agf->fk_parent_level) {
-                    $agf->fk_parent_level = $parent_level;
+				$agf_static = new Agefodd_session_admlevel($db);
+				$result_stat = $agf_static->fetch($agf->fk_parent_level);
 
-                    $agf_static = new Agefodd_session_admlevel($db);
-                    $result_stat = $agf_static->fetch($agf->fk_parent_level);
+				if ($result_stat > 0) {
+					if (! empty($agf_static->id)) {
+						$agf->level_rank = $agf_static->level_rank + 1;
+						$agf->indice = ebi_get_adm_get_next_indice_action($agf_static->id);
 
-                    if ($result_stat > 0) {
-                        if (! empty($agf_static->id)) {
-                            $agf->level_rank = $agf_static->level_rank + 1;
-                            $agf->indice = ebi_get_adm_get_next_indice_action($agf_static->id);
+					} else { // no parent : This case may not occur but we never know
+						$agf->indice = (ebi_get_adm_level_number() + 1) . '00';
+						$agf->level_rank = 0;
+					}
+				} else {
+					setEventMessage($agf_static->error, 'errors');
+				}
+			}
+		} else {
+			// no parent
+			$agf->fk_parent_level = 0;
+			$agf->level_rank = 0;
+		}
 
-                        } else { // no parent : This case may not occur but we never know
-                            $agf->indice = (ebi_get_adm_level_number() + 1) . '00';
-                            $agf->level_rank = 0;
-                        }
-                    } else {
-                        setEventMessage($agf_static->error, 'errors');
-                    }
-                }
-            } else {
-                // no parent
-                $agf->fk_parent_level = 0;
-                $agf->level_rank = 0;
-            }
-
-            if ($agf->level_rank > 3) {
-                setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"), 'errors');
-            } else {
-                $result1 = $agf->update($user);
-                if ($result1 != 1) {
-                    setEventMessage($agf->error, 'errors');
-                }
-            }
-        }
+		if ($agf->level_rank > 3) {
+			setEventMessage($langs->trans("AgfAdminNoMoreThan3Level"), 'errors');
+		} else {
+			$result1 = $agf->update($user);
+			if ($result1 != 1) {
+				setEventMessage($agf->error, 'errors');
+			}
+		}
 
     } else {
         setEventMessage('This action do not exists', 'errors');
