@@ -143,8 +143,8 @@ dol_fiche_head($head, 'external', $langs->trans("Module103000Name"), -1, "agefod
 
 if ($conf->use_javascript_ajax) {
     print ' <script type="text/javascript">';
-    print 'window.fnHideExternalOptions=function() {$( "#externaloption" ).prev().hide(); $( "#externaloption" ).hide();};' . "\n";
-    print 'window.fnDisplayExternalOptions=function() {$( "#externaloption" ).prev().show(); $( "#externaloption" ).show();};' . "\n";
+    print 'window.fnHideExternalOptions=function() { $( ".externaloption" ).hide();};' . "\n";
+    print 'window.fnDisplayExternalOptions=function() { $( ".externaloption" ).show();};' . "\n";
     print ' </script>';
 }
 
@@ -199,9 +199,9 @@ if(!empty($conf->externalaccess->enabled))
     print '</tr>';
 
     print '</table>';
-    
 
-    print '<table class="noborder" width="100%" id="externaloption">';
+
+    print '<table class="noborder externaloption" width="100%">';
 
 	print '<tr class="liste_titre" >';
 	print '<th colspan="3" class="left"><i class="fa fa-cog" aria-hidden="true"></i> ' . $langs->trans("Options")." ".$langs->trans('AgfExternalAccess') . '</th>';
@@ -283,12 +283,28 @@ if(!empty($conf->externalaccess->enabled))
     print '</td>';
     print '<td></td>';
     print '</tr>';
+
+	// Ajoute une option permettant d’ajouter le nom des stagiaires dans la liste des session sur le portail
+    print '<tr  class="oddeven"><td>' . $langs->trans("AgfEAAddTrainneNameInSessionSelectList") . '</td>';
+    print '<td align="left">';
+    if ($conf->use_javascript_ajax) {
+		print ajax_constantonoff('AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST');
+	} else {
+		$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+		);
+		print $form->selectarray("AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST", $arrval, $conf->global->AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST);
+	}
+    print '</td>';
+    print '<td></td>';
+    print '</tr>';
 }
 
 print '</table>';
 
 
-print '<table class="noborder" width="100%" id="externaloption">';
+print '<table class="noborder externaloption" width="100%">';
 
 $formMail = new FormMail($db);
 $models = $formMail->fetchAllEMailTemplate('agf_trainee', $user, $langs);

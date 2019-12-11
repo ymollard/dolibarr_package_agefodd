@@ -58,7 +58,7 @@ if (! $user->rights->agefodd->agefodd_place->lire) {
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
 $page = GETPOST("page", 'int');
-if ($page == - 1) {
+if ($page == - 1 || empty($page)) {
 	$page = 0;
 }
 $offset = $conf->liste_limit * $page;
@@ -109,7 +109,7 @@ if ($object->id) {
 
 	dol_agefodd_banner_tab($object, 'id');
 	print '<div class="underbanner clearboth"></div>';
-	
+
 	$form = new Form($db);
 
 	// Construit liste des fichiers

@@ -22,9 +22,9 @@
  * \author Florian Henry
  */
 //require_once DOL_DOCUMENT_ROOT. '/includes/phpoffice/phpexcel/Classes/PHPExcel.php';
-require_once '../includes/phpoffice/phpexcel/Classes/PHPExcel.php';
+dol_include_once('/agefodd/includes/phpoffice/phpexcel/Classes/PHPExcel.php');
 //require_once DOL_DOCUMENT_ROOT. '/includes/phpoffice/phpexcel/Classes/PHPExcel/Style/Alignment.php';
-require_once '../includes/phpoffice/phpexcel/Classes/PHPExcel/Style/Alignment.php';
+dol_include_once('/agefodd/includes/phpoffice/phpexcel/Classes/PHPExcel/Style/Alignment.php');
 require_once DOL_DOCUMENT_ROOT. '/core/lib/date.lib.php';
 
 /**

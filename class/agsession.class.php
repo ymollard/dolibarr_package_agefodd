@@ -541,9 +541,7 @@ class Agsession extends CommonObject
 
 		// Load source object
 		$object->fetch($fromid);
-		if (empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
-			$object->contactid = $object->sourcecontactid;
-		}
+		$object->contactid = $object->sourcecontactid;
 		$object->id = 0;
 		$object->statut = 0;
 		$object->nb_stagiaire = 0;
@@ -2483,7 +2481,7 @@ class Agsession extends CommonObject
 			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 			$extrafields = new ExtraFields($this->db);
 			$extrafields->fetch_name_optionals_label($this->table_element);
-			IF(!empty($extrafields->attributes[$this->table_element]['label'])) $array_options_keys = array_keys($extrafields->attributes[$this->table_element]['label']);
+			if(!empty($extrafields->attributes[$this->table_element]['label'])) $array_options_keys = array_keys($extrafields->attributes[$this->table_element]['label']);
 		}
 
 		$sql = "SELECT s.rowid, s.ref as sessionref, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
@@ -2766,8 +2764,10 @@ class Agsession extends CommonObject
 
 					// Formatage comme du Dolibarr standard pour ne pas être perdu
 					$line->array_options = array();
-					foreach ( $array_options_keys as $key ) {
-						$line->array_options['options_'.$key] = $obj->{$key};
+					if (is_array($array_options_keys) && count($array_options_keys)>0) {
+						foreach ( $array_options_keys as $key ) {
+							$line->array_options['options_'.$key] = $obj->{$key};
+						}
 					}
 
 					if (!in_array($line->rowid, $Tsessid)) {
@@ -5157,6 +5157,37 @@ class Agsession extends CommonObject
 		return $date_conv;
 	}
 
+	public function checkOtherSessionSamePlaceDate()
+    {
+        $TMessage = array();
+
+        $result = $this->fetchOtherSessionSameplacedate(); // set attribute 'error' if needed
+        if ($result > 0)
+        {
+            global $langs;
+
+            if (is_array($this->lines_place) && count($this->lines_place) > 0)
+            {
+                foreach ($this->lines_place as $linesess)
+                {
+                    if ($linesess->rowid != $this->id)
+                    {
+                        if ($linesess->typeevent == 'session')
+                        {
+                            $TMessage[] = $langs->trans('AgfPlaceUseInOtherSession').'<a href="'.dol_buildpath('/agefodd/session/list.php', 1).'?site_view=1&search_id='.$linesess->rowid.'&search_site='.$linesess->fk_session_place.'" target="_blank">'.$linesess->rowid.'</a>';
+                        }
+                        elseif ($linesess->typeevent == 'event') // @FIXME [PH] - le test devrait il pas porter sur == 'actioncomm' ?
+                        {
+                            $TMessage[] = $langs->trans('AgfPlaceUseInOtherEvent').'<a href="'.dol_buildpath('/comm/action/list.php', 1).'?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&status=&search_options_agf_site='.$linesess->fk_session_place.'" target="_blank">'.$linesess->rowid.'</a>';
+                        }
+                    }
+                }
+            }
+        }
+
+        return $TMessage;
+    }
+
 	/**
 	 */
 	public function fetchOtherSessionSameplacedate() {
@@ -5228,6 +5259,7 @@ class Agsession extends CommonObject
 					while ( $obj = $this->db->fetch_object($resql) ) {
 						$line = new AgfSessionLine();
 						$line->rowid = $obj->rowid;
+						$line->fk_session_place = $this->fk_session_place;
 						$line->typeevent='session';
 						$this->lines_place[] = $line;
 					}
@@ -5255,6 +5287,7 @@ class Agsession extends CommonObject
 						while ( $obj = $this->db->fetch_object($resql) ) {
 							$line = new AgfSessionLine();
 							$line->rowid = $obj->rowid;
+                            $line->fk_session_place = $this->fk_session_place;
 							$line->typeevent='actioncomm';
 							$this->lines_place[] = $line;
 						}

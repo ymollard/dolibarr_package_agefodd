@@ -40,7 +40,7 @@ function convertHundredthHoursToReadable($hours)
  */
 function getMenuAgefoddExternalAccess()
 {
-	global $langs, $user;
+	global $langs, $user, $hookmanager;
 
 	$context = Context::getInstance();
 	$html = '	<!-- getMenuAgefoddExternalAccess -->
@@ -71,6 +71,20 @@ function getMenuAgefoddExternalAccess()
         $link = $context->getRootUrl('agefodd_trainee_session_list');
         $html.= getService($langs->trans('AgfMenuSessTrainee'),'fa-graduation-cap',$link);
     }
+
+	if (is_object($hookmanager))
+	{
+		$params = array ();
+		$reshook = $hookmanager->executeHooks('addAgefoddExternalAccessServices', $params);
+
+		if (!empty($reshook)){
+			// override full output
+			$html = $hookmanager->resPrint;
+		}
+		else{
+			$html.= $hookmanager->resPrint;
+		}
+	}
 
 	$html.= '</div>
 			</div>
@@ -1652,7 +1666,23 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
                 )
                 {
                     $countNbSessionAvailable++;
-                    $optionSessions .= '<option value="' . $line->rowid . '">' . $line->sessionref . ' : ' . $line->intitule . '</option>';
+                    $optionLabel = $line->sessionref . ' : ' . $line->intitule;
+                    if(!empty($conf->global->AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST)){
+						$optionLabel.= '';
+						$sessionStagiaire = new Agefodd_session_stagiaire($db);
+						$sessionStagiaire->fetch_stagiaire_per_session($line->rowid);
+						if(!empty($sessionStagiaire->lines)){
+							$i = 0;
+							$optionLabel.= ' (';
+							foreach ($sessionStagiaire->lines as $stagiare){
+								$optionLabel.= ($i>0?', ':'').$stagiare->getFullName($langs);
+								$i++;
+							}
+							$optionLabel.= ')';
+						}
+
+					}
+                    $optionSessions .= '<option value="' . $line->rowid . '">' . $optionLabel . '</option>';
                 }
 			}
 		}
@@ -2344,7 +2374,7 @@ function agf_UserIsTrainee($user){
 function getPageViewAgendaOtherExternalAccess()
 {
 
-	global $db, $conf, $user, $langs;
+	global $db, $conf, $user, $langs, $hookmanager;
 
 	include_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
 
@@ -2383,6 +2413,12 @@ function getPageViewAgendaOtherExternalAccess()
 
 	// Get start date
 	$heured = GETPOST('heured');
+	$heuredDate = GETPOST('heured-date');
+	$heuredTime = GETPOST('heured-time');
+	if(empty($heured) && !empty($heuredDate) && !empty($heuredTime)){
+		$heured = $heuredDate.'T'.$heuredTime; // it's a fix for firefox and datetime-local
+	}
+
 	$startDate 	= new DateTime();
 	if(empty($heured) && !empty($event->id)){
 		$startDate->setTimestamp ( $event->datep );
@@ -2393,10 +2429,18 @@ function getPageViewAgendaOtherExternalAccess()
 
 	if(!empty($startDate)){
 		$heured = $startDate->format('Y-m-d\TH:i');
+		$heuredDate = $startDate->format('Y-m-d');
+		$heuredTime = $startDate->format('H:i');
 	}
 
 	// Get end date
-	$heuref = GETPOST('heuref');
+	$heuref = GETPOST('heuref'); // envoyer par le calendrier
+	$heurefDate = GETPOST('heuref-date');
+	$heurefTime = GETPOST('heuref-time');
+	if(empty($heuref) && !empty($heurefDate) && !empty($heurefTime)){
+		$heured = $heurefDate.'T'.$heurefTime; // it's a fix for firefox and datetime-local
+	}
+
 	$endDate = new DateTime();
 	if(empty($heuref) && !empty($event->id)){
 		$endDate->setTimestamp ( $event->datef );
@@ -2407,6 +2451,8 @@ function getPageViewAgendaOtherExternalAccess()
 
 	if(!empty($endDate)){
 		$heuref = $endDate->format('Y-m-d\TH:i');
+		$heurefDate = $endDate->format('Y-m-d');
+		$heurefTime = $endDate->format('H:i');
 	}
 
 	$TAvailableType = getEnventOtherTAvailableType();
@@ -2430,7 +2476,7 @@ function getPageViewAgendaOtherExternalAccess()
 		$html.='<input type="hidden" name="type" value="'.$type.'" />';
 	}
 
-	$html.='<h4>'.$typeTitle.'</h4>';
+	$html.='<h4 class="mb-3">'.$typeTitle.'</h4>';
 
 	if(!empty($id)){
 		$html.='<input type="hidden" name="id" value="'.$id.'" />';
@@ -2441,13 +2487,28 @@ function getPageViewAgendaOtherExternalAccess()
 		<div class="col">
 			<div class="form-group">
 				<label for="heured">'.$langs->trans('StartDateTime').'</label>
-				<input '.($action == 'view' ? 'readonly' : '').' type="datetime-local" class="form-control" id="heured" required name="heured" value="'.$heured.'">
+				<div class="row">
+					<div class="col">
+					  <input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="heured-date" required name="heured-date" value="'.$heuredDate.'">
+					</div>
+					<div class="col">
+					  <input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" id="heured-time" required name="heured-time" value="'.$heuredTime.'">
+					</div>
+			  	</div>
+			
 			</div>
 		</div>
 		<div class="col">
 			<div class="form-group">
 				<label for="heuref">'.$langs->trans('EndDateTime').'</label>
-				<input '.($action == 'view' ? 'readonly' : '').' type="datetime-local" class="form-control" id="heuref" required name="heuref" value="'.$heuref.'">
+				<div class="row">
+					<div class="col">
+					  <input '.($action == 'view' ? 'readonly' : '').' type="date" class="form-control" id="heuref-date" required name="heuref-date" value="'.$heurefDate.'">
+					</div>
+					<div class="col">
+					  <input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" id="heuref-time" required name="heuref-time" value="'.$heurefTime.'">
+					</div>
+			  	</div>
 			</div>
 		</div>
 	</div>
@@ -2456,8 +2517,22 @@ function getPageViewAgendaOtherExternalAccess()
 	<div class="form-group">
 		<label for="actionnote">'.$langs->trans('Notes').'</label>
 		<textarea '.($action == 'view' ? 'readonly' : '').' type="datetime-local" class="form-control" id="actionnote" name="note" >'.dol_htmlentities($event->note).'</textarea>
-	</div>
-	';
+	</div>';
+
+    $parameters = array(
+         'heured'  => $heured
+        , 'heuredDat' => $heuredDate
+        , 'heuredTime' => $heuredTime
+        , 'heuref' => $heuref
+        , 'heurefDate' => $heurefDate
+        , 'heurefTime' => $heurefTime
+    );
+
+
+    $hookmanager->executeHooks('formObjectOptions', $parameters, $event, $action);
+    if (!empty($hookmanager->resPrint)) $html.= $hookmanager->resPrint;
+
+
 
     $html.='<p>';
     $html.='<button class="btn btn-danger pull-left" type="button" data-toggle="modal" data-target="#deleteeventotherconfirm"  ><i class="fa fa-trash" ></i> '.$langs->trans('Delete').'</button>';
