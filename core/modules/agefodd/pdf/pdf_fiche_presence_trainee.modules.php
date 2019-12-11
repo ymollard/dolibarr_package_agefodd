@@ -304,7 +304,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
 		$this->pdf->SetXY($this->posX + 55, $this->posY);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres21');
+		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($this->ref_object->datef);
 		$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
 		$this->pdf->SetXY($this->posX + 92, $this->posY);

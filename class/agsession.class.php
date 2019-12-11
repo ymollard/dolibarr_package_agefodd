@@ -541,9 +541,7 @@ class Agsession extends CommonObject
 
 		// Load source object
 		$object->fetch($fromid);
-		if (empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
-			$object->contactid = $object->sourcecontactid;
-		}
+		$object->contactid = $object->sourcecontactid;
 		$object->id = 0;
 		$object->statut = 0;
 		$object->nb_stagiaire = 0;

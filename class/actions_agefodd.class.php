@@ -1417,7 +1417,7 @@ class ActionsAgefodd
 								}
 								$ref_value .= $outputlangs->convToOutputCharset($sessiondetail->formrefint);
 							}
-							$ref_value .= ' (' . $sessiondetail->id . ')';
+							$ref_value .= ' '.$sessiondetail->id.'#'.$sessiondetail->ref.' ';
 							$this->results[get_class($sessiondetail) . $sessiondetail->id . '_1'] = array(
 								'ref_title' => $outputlangs->transnoentities("AgefoddRefFormationSessionId"),
 								'ref_value' => $ref_value,
@@ -1439,7 +1439,7 @@ class ActionsAgefodd
 							$date_f = dol_print_date($sessiondetail->datef, '%d/%m/%Y');
 							$this->results[get_class($sessiondetail) . $sessiondetail->id . '_2'] = array(
 								'ref_title' => $outputlangs->transnoentities("AgefoddSessIdAndDates"),
-								'ref_value' => $sessiondetail->id . ' / ' . $date_d . ' - ' . $date_f,
+								'ref_value' => $sessiondetail->id .'#'. $sessiondetail->ref. ' / ' . $date_d . ' - ' . $date_f,
 								'date_value' => ''
 							);
 						}
@@ -1831,7 +1831,7 @@ class ActionsAgefodd
 		 */
 		$sql = "SELECT
 					SUM(
-						CASE 
+						CASE
 							WHEN s.status <> 4 THEN 1
 							WHEN s.status_before_archive IN (1, 2, 5, 6) THEN 1
 							ELSE 0
