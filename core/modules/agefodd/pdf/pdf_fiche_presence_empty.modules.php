@@ -619,7 +619,7 @@ class pdf_fiche_presence_empty extends ModelePDFAgefodd {
 		$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
 		$pdf->SetXY($posX + 55, $posY);
-		$this->str = $outputlangs->transnoentities('AgfPDFFichePres21');
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($agf->datef);
 		$pdf->Cell(20, 4, $outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
 		$pdf->SetXY($posX + 92, $posY);
