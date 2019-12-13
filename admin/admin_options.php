@@ -188,6 +188,11 @@ if ($action == 'setvarother') {
         if (! $res > 0)
             $error ++;
 
+        $hide_legal_text_below_signature = GETPOST('AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER', 'int');
+        $res = dolibarr_set_const($db, 'AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER', $hide_legal_text_below_signature, 'yesno', 0, '', $conf->entity);
+        if (! $res > 0)
+            $error ++;
+
         $add_hide_dt_info = GETPOST('AGF_HIDE_REF_PROPAL_DT_INFO', 'int');
         $res = dolibarr_set_const($db, 'AGF_HIDE_REF_PROPAL_DT_INFO', $add_hide_dt_info, 'yesno', 0, '', $conf->entity);
         if (! $res > 0)
@@ -1218,6 +1223,14 @@ if (!empty($conf->multicompany->enabled)){
     print '</tr>';
     $var=!$var;
 }
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHideLegalTextBelowSignatureFichePres") . '</td>';
+print '<td align="left">';
+print ajax_constantonoff('AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfInvoiceCalcAmountDivByQty") . '</td>';
 print '<td align="left">';

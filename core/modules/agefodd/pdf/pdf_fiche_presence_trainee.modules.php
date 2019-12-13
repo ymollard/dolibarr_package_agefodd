@@ -567,7 +567,7 @@ class pdf_fiche_presence_trainee extends ModelePDFAgefodd
 		$this->str = $this->outputlangs->transnoentities('Session')." :";
 		$this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
 		$this->pdf->SetXY($this->posX + $this->larg_col1, $this->posY);
-		$this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->ref_object->id), 0, 'L');
+		$this->pdf->MultiCell($this->larg_col2, 4, $this->outputlangs->convToOutputCharset($this->ref_object->id . '#' . $this->ref_object->ref), 0, 'L');
 		$this->haut_col2 += $hauteur + 1;
 		// Lieu
 		$this->pdf->SetXY($this->posX + $this->larg_col1 + $this->larg_col2, $this->posYintitule);
