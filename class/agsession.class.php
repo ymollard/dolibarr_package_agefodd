@@ -5408,8 +5408,10 @@ class Agsession extends CommonObject
 		}
 
 		$this->convention_notes='';
+		$this->convention_id='';
 		// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
+			$this->convention_id=$obj_agefodd_convention->id;
 			$this->TConventionFinancialLine=array();
 			$this->convention_notes=dol_nl2br($obj_agefodd_convention->notes);
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
