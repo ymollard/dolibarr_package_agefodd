@@ -1515,7 +1515,7 @@ class ActionsAgefodd
 		$agftrainerid = GETPOST('agftrainerid', "int");
 		if (!empty($agftrainerid))
 		{
-			$eventarray = $parameters['eventarray'];
+			$eventarray = &$parameters['eventarray'];
 			$sql = "SELECT a.id,";
 			$sql.= " a.datep,";		// Start
 			$sql.= " a.datep2,";	// End
@@ -1588,7 +1588,7 @@ class ActionsAgefodd
 			}
 
 			$this->results = $eventarray;
-			return 1;
+			return 0;
 		}
 
 		return 0;
