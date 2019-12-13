@@ -1513,7 +1513,7 @@ class ActionsAgefodd
 		global $db, $conf;
 
 		$agftrainerid = GETPOST('agftrainerid', "int");
-		if (!empty($agftrainerid))
+		if (!empty($agftrainerid) && empty($conf->global->AGF_DONT_ADD_TRAINER_INDISPO_IN_ICS))
 		{
 			$eventarray = &$parameters['eventarray'];
 			$sql = "SELECT a.id,";
