@@ -1174,6 +1174,7 @@ class ActionsAgefodd
 		$this->results['agf_trainee'] = $langs->trans('AgfMailToSendTrainee');
 		$this->results['agf_trainer'] = $langs->trans('AgfMailToSendTrainer');
 		$this->results['cron_session'] = $langs->trans('AgfMailToSendCronSession');
+		$this->results['attestationpresencetraining'] = $langs->trans('AgfMailToSendAttestationPresence');
 
 		return 0;
 	}
@@ -1831,7 +1832,7 @@ class ActionsAgefodd
 		 */
 		$sql = "SELECT
 					SUM(
-						CASE 
+						CASE
 							WHEN s.status <> 4 THEN 1
 							WHEN s.status_before_archive IN (1, 2, 5, 6) THEN 1
 							ELSE 0

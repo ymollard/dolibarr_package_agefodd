@@ -1383,7 +1383,7 @@ AgfMailToSendCloture=Module formation - Pour l'envoi du courrier accompagnant le
 AgfMailToSendConseil=Module formation - Pour l'envoi des conseils pratiques
 AgfMailToSendConvocation=Module formation - Pour l'envoi des convocations
 AgfMailToSendCourrierAcceuil=Module formation - Pour l'envoi des courriers d'accueil
-AgfMailToSendAttestationEndTraining=Module formation - Pour l'envoi des attestations de fin de formation
+AgfMailToSendAttestationEndTraining=Module formation - Pour l'envoi des attestations de fin (et certificats) de formation
 AgfMailToSendAttestationParticipants=Module formation - Pour l'envoi de l'attestation de formation par participant
 AgfMailToSendConventionParticipants=Module formation - Pour l'envoi des convocations par participant
 AgfMailToSendAttestationEndTrainingParticipants=Module formation - Pour l'envoi des attestations de fin de formation par participant
@@ -1655,3 +1655,6 @@ agfsessplaceexport=Lieu
 agfteacherexport=Formateur
 ConfirmDelete=Confirmer la suppression
 AgfCloneTrainingModules=Cloner programme de formation des modules ?
+
+
+AgfMailToSendAttestationPresence=Module formation - Pour l'envoi de l'attestation de présence
