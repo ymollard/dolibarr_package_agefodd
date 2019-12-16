@@ -277,6 +277,14 @@ if ($action == 'setvarother') {
     if (! $res > 0)
         $error ++;
 
+
+	$fieldsOrder = GETPOST('RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION');
+	$res = dolibarr_set_const($db, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION', $fieldsOrder, 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
+
+
+
     if (! $error) {
         setEventMessage($langs->trans("SetupSaved"), 'mesgs');
     } else {
@@ -325,7 +333,7 @@ print '<table class="noborder" width="100%">';
 
 // Affichage du logo commanditaire
 print '<tr class="pair"><td>' . $langs->trans("AgfUseCustomerLogo") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_USE_LOGO_CLIENT');
 } else {
@@ -343,7 +351,7 @@ print '</tr>';
 
 // Forcer la liaison d'une facture sans nécessiter de bon de commande
 print '<tr class="impair"><td>' . $langs->trans("AgfUseFacWhithoutOrder") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_USE_FAC_WITHOUT_ORDER');
 } else {
@@ -361,7 +369,7 @@ print '</tr>';
 
 // Utilisation du contact agefodd ou dolibarr a la creation de la session
 print '<tr class="pair"><td>' . $langs->trans("AgfUseSessionDolContact") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
 
     $input_array = array (
@@ -409,7 +417,7 @@ if (! $conf->use_javascript_ajax || empty($conf->global->CONTACT_USE_SEARCH_TO_S
     print '<td align="center">';
     print '</td>';
 } else {
-    print '<td align="left">';
+    print '<td align="right">';
     if ($conf->use_javascript_ajax) {
         print ajax_constantonoff('AGF_CONTACT_USE_SEARCH_TO_SELECT');
 
@@ -546,7 +554,7 @@ if ($conf->global->AGF_USE_STAGIAIRE_TYPE) {
         print $langs->trans("NotAvailableWhenAjaxDisabled");
         print '</td>';
     } else {
-        print '<td align="left">';
+        print '<td align="right">';
         if ($conf->use_javascript_ajax) {
             print ajax_constantonoff('AGF_STAGTYPE_USE_SEARCH_TO_SELECT');
         } else {
@@ -564,7 +572,7 @@ if ($conf->global->AGF_USE_STAGIAIRE_TYPE) {
 
 // Lors de la creation de session -> creation d'un evenement dans l'agenda Dolibarr
 print '<tr class="impair"><td>' . $langs->trans("AgfAgendaModuleUse") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_DOL_AGENDA');
 } else {
@@ -581,7 +589,7 @@ print '</tr>';
 
 // Active la gestion du temps formateur
 print '<tr class="pair"><td>' . $langs->trans("AgfAgendaUseForTrainer") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_DOL_TRAINER_AGENDA');
 } else {
@@ -598,7 +606,7 @@ print '</tr>';
 
 // Update global variable MAIN_USE_COMPANY_NAME_OF_CONTACT
 print '<tr class="pair"><td>' . $langs->trans("AgfUseMainNameOfContact") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('MAIN_USE_COMPANY_NAME_OF_CONTACT');
 } else {
@@ -616,7 +624,7 @@ print '</tr>';
 
 // Update global variable AGF_MANAGE_CERTIF
 print '<tr class="impair"><td>' . $langs->trans("AgfManageCertification") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     $input_array = array (
         'alert' => array (
@@ -655,7 +663,7 @@ if ($conf->use_javascript_ajax) {
 
     // Update global variable AGF_DEFAULT_CREATE_CERTIF
     print '<tr id ="CertifAutoAdd" class="impair"><td>' . $langs->trans("AgfCertifAutoAdd") . '</td>';
-    print '<td align="left">';
+    print '<td align="right">';
     print ajax_constantonoff('AGF_DEFAULT_CREATE_CERTIF');
     print '</td>';
     print '<td align="center">';
@@ -676,7 +684,7 @@ if ($conf->use_javascript_ajax) {
     if (! empty($conf->global->AGF_MANAGE_CERTIF)) {
         // Update global variable AGF_DEFAULT_CREATE_CERTIF
         print '<tr id ="CertifAutoAdd" class="impair"><td>' . $langs->trans("AgfCertifAutoAdd") . '</td>';
-        print '<td align="left">';
+        print '<td align="right">';
         $arrval = array (
             '0' => $langs->trans("No"),
             '1' => $langs->trans("Yes")
@@ -692,7 +700,7 @@ if ($conf->use_javascript_ajax) {
 
 // Update global variable AGF_MANAGE_OPCA
 print '<tr class="pair"><td>' . $langs->trans("AgfManageOPCA") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     $input_array = array (
         'alert' => array (
@@ -730,7 +738,7 @@ if ($conf->use_javascript_ajax) {
 
     // Update global variable MAIN_USE_COMPANY_NAME_OF_CONTACT
     print '<tr id ="OPCAAdrr" class="impair"><td>' . $langs->trans("AgfLinkOPCAAddrToContact") . '</td>';
-    print '<td align="left">';
+    print '<td align="right">';
     print ajax_constantonoff('AGF_LINK_OPCA_ADRR_TO_CONTACT');
     print '</td>';
     print '<td align="center">';
@@ -751,7 +759,7 @@ if ($conf->use_javascript_ajax) {
     if (! empty($conf->global->AGF_MANAGE_OPCA)) {
         // Update global variable AGF_LINK_OPCA_ADRR_TO_CONTACT
         print '<tr id ="OPCAAdrr" class="impair"><td>' . $langs->trans("AgfLinkOPCAAddrToContact") . '</td>';
-        print '<td align="left">';
+        print '<td align="right">';
         $arrval = array (
             '0' => $langs->trans("No"),
             '1' => $langs->trans("Yes")
@@ -767,7 +775,7 @@ if ($conf->use_javascript_ajax) {
 
 // Update global variable AGF_FCKEDITOR_ENABLE_TRAINING
 print '<tr class="impair"><td>' . $langs->trans("AgfUseWISIWYGTraining") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_FCKEDITOR_ENABLE_TRAINING');
 } else {
@@ -784,7 +792,7 @@ print '</tr>';
 
 // Update global variable AGF_SESSION_TRAINEE_STATUS_AUTO
 print '<tr class="pair"><td>' . $langs->trans("AgfUseSubscriptionStatusAuto") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_SESSION_TRAINEE_STATUS_AUTO');
 } else {
@@ -802,7 +810,7 @@ print '</tr>';
 
 // Update global variable AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR
 print '<tr class="impair"><td>' . $langs->trans("AgfAddTraineeNameIntoDoc") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR');
 } else {
@@ -820,7 +828,7 @@ print '</tr>';
 
 // Update global variable AGF_ADD_AVGPRICE_DOCPROPODR
 print '<tr class="pair"><td>' . $langs->trans("AgfDisplayAvgPricePropalInvoice") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_ADD_AVGPRICE_DOCPROPODR');
 } else {
@@ -838,7 +846,7 @@ print '</tr>';
 
 // Update global variable AGF_MANAGE_CURSUS
 print '<tr class="impair"><td>' . $langs->trans("AgfManageCursus") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_MANAGE_CURSUS');
 } else {
@@ -856,7 +864,7 @@ print '</tr>';
 
 // Update global variable AGF_ADVANCE_COST_MANAGEMENT
 print '<tr class="pair"><td>' . $langs->trans("AgfManageCost") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     $input_array = array (
         'set' => array (
@@ -880,7 +888,7 @@ print '</tr>';
 
 // Update global variable AGF_CONTACT_NOT_MANDATORY_ON_SESSION
 print '<tr class="impair"><td>' . $langs->trans("AgfContacCustMandatory") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_CONTACT_NOT_MANDATORY_ON_SESSION', $input_array);
 } else {
@@ -898,7 +906,7 @@ print '</tr>';
 
 // Update global variable AGF_FILTER_TRAINER_TRAINING
 print '<tr class="pair"><td>' . $langs->trans("AgfFilterTrainerTraining") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_FILTER_TRAINER_TRAINING', $input_array);
 } else {
@@ -916,7 +924,7 @@ print '</tr>';
 
 // Update global variable AGF_REF_PROPAL_AUTO
 print '<tr class="pair"><td>' . $langs->trans("AgfRefPropalAuto") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_REF_PROPAL_AUTO', $input_array);
 } else {
@@ -935,7 +943,7 @@ print '</tr>';
 
 // Update global variable AGF_MANAGE_BPF
 print '<tr class="impair"><td>' . $langs->trans("AgfManageBPF") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_MANAGE_BPF');
 } else {
@@ -953,7 +961,7 @@ print '</tr>';
 
 // Update global variable AGF_ADD_PROGRAM_TO_CONV
 print '<tr class="pair"><td>' . $langs->trans("AgfAddProgramToConv") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_ADD_PROGRAM_TO_CONV');
 } else {
@@ -970,7 +978,7 @@ print '</tr>';
 
 // Update global variable AGF_ADD_PROGRAM_TO_CONVMAIL
 print '<tr class="impair"><td>' . $langs->trans("AgfAddProgramToConvMail") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_ADD_PROGRAM_TO_CONVMAIL');
 } else {
@@ -987,7 +995,7 @@ print '</tr>';
 
 // Update global variable AGF_ADD_SIGN_TO_CONVOC
 print '<tr class="impair"><td>' . $langs->trans("AgfAddSignImageToConvoc") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_ADD_SIGN_TO_CONVOC');
 } else {
@@ -1004,7 +1012,7 @@ print '</tr>';
 
 // Update global variable AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC
 print '<tr class="impair"><td>' . $langs->trans("AgfAllowConventionWithoutFinancial") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_ALLOW_CONV_WITHOUT_FINNACIAL_DOC');
 } else {
@@ -1022,7 +1030,7 @@ print '</tr>';
 
 // Update global variable AGF_USE_REAL_HOURS
 print '<tr class="pair"><td>' . $langs->trans("AgfUseRealHours") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_USE_REAL_HOURS');
 } else {
@@ -1045,7 +1053,7 @@ if (! $conf->use_javascript_ajax) {
 
 // Update global variable AGF_GROUP_BY_DAY_CAL
 print '<tr class="pair"><td>' . $langs->trans("AgfGroupEventByDayInCalendar") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_GROUP_BY_DAY_CAL');
 } else {
@@ -1063,7 +1071,7 @@ print '</tr>';
 
 // Update global variable AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS
 print '<tr class="pair"><td>' . $langs->trans("AgfTraineeDisplayGroupByStatus") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_DISPLAY_TRAINEE_GROUP_BY_STATUS');
 } else {
@@ -1085,7 +1093,7 @@ if (! $conf->use_javascript_ajax) {
 
 // Update global variable AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY
 print '<tr class="pair"><td>' . $langs->trans("AgfTrainerAvailabilityOnlyWarning") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY');
 } else {
@@ -1107,7 +1115,7 @@ if (! $conf->use_javascript_ajax) {
 
 
 print '<tr class="impair"><td>' . $langs->trans("AgfPrintTrainingRefAndSessIdOnPDF") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_PRINT_TRAINING_REF_AND_SESS_ID_ON_PDF');
 } else {
@@ -1123,7 +1131,7 @@ print '</td>';
 print '</tr>';
 
 print '<tr class="impair"><td>' . $langs->trans("AgfPrintTrainingTitleAndSessInfoOnPDF") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_PRINT_TRAINING_LABEL_REF_INTERNE_AND_SESS_ID_DATES');
 } else {
@@ -1140,7 +1148,7 @@ print '</tr>';
 
 $var = true;
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfPrintInternalRefOnPDF") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 if ($conf->use_javascript_ajax) {
     print ajax_constantonoff('AGF_PRINT_INTERNAL_REF_ON_PDF');
 } else {
@@ -1157,7 +1165,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfPrintFieldsWithCustomOrder") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print '<input type="text" id="AGF_CUSTOM_ORDER" name="AGF_CUSTOM_ORDER" size="75%" value="'.$conf->global->AGF_CUSTOM_ORDER.'"/>';
 print '</td>';
 print '<td>';
@@ -1167,7 +1175,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfAddCustomColumnsOnFilter") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_ADD_CUSTOM_COLUMNS_ON_FILTER');
 print '</td>';
 print '<td></td>';
@@ -1175,7 +1183,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfViewTripAnsMissionCostPerParticipant") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_VIEW_TRIP_AND_MISSION_COST_PER_PARTICIPANT');
 print '</td>';
 print '<td></td>';
@@ -1183,7 +1191,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfFilterSessionListOnCourantMonth") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH');
 print '</td>';
 print '<td></td>';
@@ -1191,7 +1199,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfExtendSessionAssociationToNonRelatedSessions") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_ASSOCIATE_PROPAL_WITH_NON_RELATED_SESSIONS');
 print '</td>';
 print '<td></td>';
@@ -1199,7 +1207,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDisplayBirthDateFichePres") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_ADD_DTBIRTH_FICHEPRES');
 print '</td>';
 print '<td></td>';
@@ -1207,7 +1215,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHideCompanyFichePres") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_HIDE_SOCIETE_FICHEPRES');
 print '</td>';
 print '<td></td>';
@@ -1216,7 +1224,7 @@ $var=!$var;
 
 if (!empty($conf->multicompany->enabled)){
     print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDisplayEntityNameFichePres") . '</td>';
-    print '<td align="left">';
+    print '<td align="right">';
     print ajax_constantonoff('AGF_ADD_ENTITYNAME_FICHEPRES');
     print '</td>';
     print '<td></td>';
@@ -1225,7 +1233,7 @@ if (!empty($conf->multicompany->enabled)){
 }
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHideLegalTextBelowSignatureFichePres") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER');
 print '</td>';
 print '<td></td>';
@@ -1233,7 +1241,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfInvoiceCalcAmountDivByQty") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_INVOICE_BY_QTY');
 print '</td>';
 print '<td></td>';
@@ -1241,7 +1249,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfAddIndexOnTraineePresencePDF") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_ADD_INDEX_TRAINEE');
 print '</td>';
 print '<td></td>';
@@ -1249,7 +1257,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHidePropalDtInfo") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_HIDE_REF_PROPAL_DT_INFO');
 print '</td>';
 print '<td></td>';
@@ -1257,7 +1265,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfHideInvoiceDtInfo") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_HIDE_REF_INVOICE_DT_INFO');
 print '</td>';
 print '<td></td>';
@@ -1265,7 +1273,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDoNotAutoLinkInvoice") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_NOT_AUTO_LINK_INVOICE');
 print '</td>';
 print '<td></td>';
@@ -1273,7 +1281,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDoNotAutoLinkCommande") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_NOT_AUTO_LINK_COMMANDE');
 print '</td>';
 print '<td></td>';
@@ -1281,7 +1289,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfMergeAdviseAndConvoc") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_MERGE_ADVISE_AND_CONVOC');
 print '</td>';
 print '<td></td>';
@@ -1289,7 +1297,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfUseSiteInAgendaStd") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 $arrval = array (
 		'0' => $langs->trans("No"),
 		'1' => $langs->trans("Yes")
@@ -1301,7 +1309,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfManageSessionCalendarFacturation") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_MANAGE_SESSION_CALENDAR_FACTURATION');
 print '</td>';
 print '<td></td>';
@@ -1309,7 +1317,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfUseTrainingProgramModule") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_USE_TRAINING_MODULE');
 print '</td>';
 print '<td></td>';
@@ -1317,7 +1325,7 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfSendAgendaToTraineeDefaultMailModel") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 
 $formMail = new FormMail($db);
 $models = $formMail->fetchAllEMailTemplate('cron_session', $user, $langs);
@@ -1345,12 +1353,28 @@ print '</tr>';
 $var=!$var;
 
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfCreateContactDefautNewTrainee") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print ajax_constantonoff('AGF_NEW_TRAINEE_CREATE_CONTACT_DEFAULT');
 print '</td>';
 print '<td></td>';
 print '</tr>';
 $var=!$var;
+
+
+if(empty($conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION)){
+	$conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION = 'thirdparty';
+	$res = dolibarr_set_const($db, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION', 'thirdparty', 'chaine', 0, '', $conf->entity);
+}
+// type de relation par défaut dans l'onglet session de formation d'un tier
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDefaultRelationLinkSelectedOnThirdPartyTrainningSession") . '</td>';
+print '<td align="right">';
+print $formAgefodd->select_type_affect($conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+
 
 print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
 
