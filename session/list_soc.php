@@ -66,6 +66,9 @@ $training_view = GETPOST("training_view", 'int');
 $site_view = GETPOST('site_view', 'int');
 $status_view = GETPOST('status', 'array');
 $search_type_affect = GETPOST('search_type_affect', 'alpha');
+if(empty($search_type_affect) && !empty($conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION)){
+	$search_type_affect = $conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION;
+}
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {

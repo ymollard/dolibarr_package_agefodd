@@ -541,9 +541,7 @@ class Agsession extends CommonObject
 
 		// Load source object
 		$object->fetch($fromid);
-		if (empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
-			$object->contactid = $object->sourcecontactid;
-		}
+		$object->contactid = $object->sourcecontactid;
 		$object->id = 0;
 		$object->statut = 0;
 		$object->nb_stagiaire = 0;
@@ -1711,9 +1709,12 @@ class Agsession extends CommonObject
 		}
 	}
 
-	/**
-	 * Fetch trainers objects
-	 */
+    /**
+     * Fetch trainers objects
+     * @param int $sessid  ID of Agsession
+     * @return int         if error: -1, if success: the number of trainers loaded in $this->TTrainer
+     * @throws Exception
+     */
 	public function fetchTrainers($sessid = 0) {
 		global $conf;
 
@@ -5410,8 +5411,10 @@ class Agsession extends CommonObject
 		}
 
 		$this->convention_notes='';
+		$this->convention_id='';
 		// Chargement des spécifique participants/convention
 		if (! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
+			$this->convention_id=$obj_agefodd_convention->id;
 			$this->TConventionFinancialLine=array();
 			$this->convention_notes=dol_nl2br($obj_agefodd_convention->notes);
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
