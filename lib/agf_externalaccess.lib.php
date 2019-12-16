@@ -947,9 +947,9 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 		$out.= ' <td data-order="'.$item->date_session.'" data-search="'.$date_session.'" ><a href="'.$url.'&action=view">'.$date_session.'</a></td>';
 
 		$heured = dol_print_date($item->heured, '%H:%M');
-		$out.= ' <td data-order="'.$heured.'" data-search="'.$heured.'" ><a href="'.$url.'&action=view">'.$heured.'</a></td>';
+		$out.= ' <td data-order="'.$item->heured.'" data-search="'.$heured.'" ><a href="'.$url.'&action=view">'.$heured.'</a></td>';
 		$heuref = dol_print_date($item->heuref, '%H:%M');
-		$out.= ' <td data-order="'.$heuref.'" data-search="'.$heuref.'" ><a href="'.$url.'&action=view">'.$heuref.'</a></td>';
+		$out.= ' <td data-order="'.$item->heuref.'" data-search="'.$heuref.'" ><a href="'.$url.'&action=view">'.$heuref.'</a></td>';
 		$duree = ($item->heuref - $item->heured) / 60 / 60;
 		$out.= ' <td class="text-center" data-order="'.$duree.'" data-search="'.$duree.'" ><a href="'.$url.'&action=view">'.$duree.'</a></td>';
 		if ($item->status == Agefoddsessionformateurcalendrier::STATUS_DRAFT) $statut = $langs->trans('AgfStatusCalendar_previsionnel');
@@ -1105,9 +1105,9 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
         $out.= ' <td data-order="'.$item->date_session.'" data-search="'.$date_session.'" >'.$date_session.'</td>';
 
         $heured = dol_print_date($item->heured, '%H:%M');
-        $out.= ' <td data-order="'.$heured.'" data-search="'.$heured.'" >'.$heured.'</td>';
+        $out.= ' <td data-order="'.$item->heured.'" data-search="'.$heured.'" >'.$heured.'</td>';
         $heuref = dol_print_date($item->heuref, '%H:%M');
-        $out.= ' <td data-order="'.$heuref.'" data-search="'.$heuref.'" >'.$heuref.'</td>';
+        $out.= ' <td data-order="'.$item->heuref.'" data-search="'.$heuref.'" >'.$heuref.'</td>';
         $duree = ($item->heuref - $item->heured) / 60 / 60;
         $out.= ' <td class="text-center" data-order="'.$duree.'" data-search="'.$duree.'" >'.convertHundredthHoursToReadable($duree).'</td>';
         $statut = Agefoddsessionformateurcalendrier::getStaticLibStatut($item->status, 0);
