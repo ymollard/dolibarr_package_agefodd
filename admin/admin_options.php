@@ -278,8 +278,8 @@ if ($action == 'setvarother') {
         $error ++;
 
 
-	$fieldsOrder = GETPOST('RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION');
-	$res = dolibarr_set_const($db, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION', $fieldsOrder, 'chaine', 0, '', $conf->entity);
+	$fieldsOrder = GETPOST('RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION');
+	$res = dolibarr_set_const($db, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION', $fieldsOrder, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 
@@ -1361,14 +1361,14 @@ print '</tr>';
 $var=!$var;
 
 
-if(empty($conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION)){
-	$conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION = 'thirdparty';
-	$res = dolibarr_set_const($db, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION', 'thirdparty', 'chaine', 0, '', $conf->entity);
+if(empty($conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION)){
+	$conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION = 'thirdparty';
+	$res = dolibarr_set_const($db, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION', 'thirdparty', 'chaine', 0, '', $conf->entity);
 }
 // type de relation par défaut dans l'onglet session de formation d'un tier
-print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDefaultRelationLinkSelectedOnThirdPartyTrainningSession") . '</td>';
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AgfDefaultRelationLinkSelectedOnThirdPartyTrainingSession") . '</td>';
 print '<td align="right">';
-print $formAgefodd->select_type_affect($conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINNING_SESSION');
+print $formAgefodd->select_type_affect($conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION');
 print '</td>';
 print '<td></td>';
 print '</tr>';

@@ -1668,3 +1668,4 @@ agfsessplaceexport=Lieu
 agfteacherexport=Formateur
 ConfirmDelete=Confirmer la suppression
 AgfCloneTrainingModules=Cloner programme de formation des modules ?
+AgfDefaultRelationLinkSelectedOnThirdPartyTrainingSession=Type de relation par défaut dans l'onglet session de formation d'un tier
