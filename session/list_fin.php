@@ -67,6 +67,7 @@ $search_invoiceref = GETPOST('search_invoiceref', 'alpha');
 $search_propalref = GETPOST('search_propalref', 'alpha');
 $search_propalid = GETPOST('search_propalid', 'alpha');
 
+
 $link_element = GETPOST("link_element");
 if (! empty($link_element)) {
 	$action = 'link_element';
@@ -552,6 +553,7 @@ if ($resql != - 1) {
 	$arg_url .= '&search_fournorderid=' . $search_fournorderid;
 	print_liste_field_titre($langs->trans("Id"), $_SERVER['PHP_SELF'], "s.rowid", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Ref"), $_SERVER['PHP_SELF'], "s.ref", "", $arg_url, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfSessionCommercial"), $_SERVER['PHP_SELF'], "sale.lastname", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER['PHP_SELF'], "c.intitule", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER['PHP_SELF'], "c.ref", "", $arg_url, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVER['PHP_SELF'], "s.dated", "", $arg_url, '', $sortfield, $sortorder);
@@ -602,6 +604,8 @@ if ($resql != - 1) {
 	}
 
 	print '<tr class="liste_titre">';
+
+	print '<td>&nbsp;</td>';
 
 	print '<td>&nbsp;</td>';
 
@@ -674,6 +678,23 @@ if ($resql != - 1) {
 			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="document.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->refsession . '</a></td>';
 		} else {
 			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="cost.php?id=' . $line->rowid . '&socid=' . $object_socid . '&mainmenu=agefodd">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->refsession . '</a></td>';
+		}
+		if (! empty($line->fk_user_com))
+		{
+			$comm = new User($db);
+			$comm->fetch($line->fk_user_com);
+			if (! empty($comm->id))
+			{
+				print '<td>'.$comm->getNomUrl().'</td>';
+			}
+			else
+			{
+				print '<td>&nbsp;</td>';
+			}
+		}
+		else
+		{
+			print '<td>&nbsp;</td>';
 		}
 		print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 		print '<td>' . $line->ref . '</td>';

@@ -2571,6 +2571,8 @@ class Agsession extends CommonObject
 		$sql .= " ON socppresta.rowid = s.fk_socpeople_presta";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
 		$sql .= " ON s.rowid = sale.fk_session_agefodd";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as ucom";
+		$sql .= " ON ucom.rowid = sale.fk_user_com";
 
 		$add_extrafield_link = true;
 		if (is_array($filter)) {
@@ -3391,6 +3393,7 @@ class Agsession extends CommonObject
 		$sql .= " ,s.duree_session,";
 		$sql .= " p.ref_interne,";
 		$sql .= " s.ref as refsession";
+		$sql .= ",sale.fk_user_com";
 		if (! empty($invoiceid)) {
             if(floatval(DOL_VERSION) > 9){
                 $sql .= " ,invoice.ref as invoiceref";
@@ -3422,6 +3425,8 @@ class Agsession extends CommonObject
 		$sql .= " ON s.rowid = sa.fk_agefodd_session";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as ord_inv";
 		$sql .= " ON s.rowid = ord_inv.fk_session_agefodd";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
+		$sql .= " ON s.rowid = sale.fk_session_agefodd";
 
 		if (! empty($invoiceid)) {
 			$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture as invoice ";
@@ -3534,6 +3539,7 @@ class Agsession extends CommonObject
 					if (! empty($fournorderid)) {
 					    $line->fournorderref = $obj->fournorderref;
 					}
+					$line->fk_user_com = $obj->fk_user_com;
 
 					$this->lines[] = $line;
 
