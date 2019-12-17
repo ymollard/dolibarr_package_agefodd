@@ -114,6 +114,7 @@ $search_socpeople_presta = GETPOST('search_socpeople_presta', 'alpha');
 $search_soc_employer = GETPOST('search_soc_employer', 'alpha');
 $search_soc_requester = GETPOST('search_soc_requester', 'alpha');
 $search_session_status = GETPOST('search_session_status');
+$search_session_status_before_archive = GETPOST('search_session_status_before_archive');
 $search_product = GETPOST('search_product');
 $search_intitule_custo = GETPOST('search_intitule_custo');
 
@@ -177,6 +178,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_session_status = '';
 	$search_product = '';
 	$search_intitule_custo = '';
+	$search_session_status_before_archive = '';
 }
 
 $hookmanager->initHooks(array(
@@ -245,6 +247,11 @@ $arrayfields = array(
 		'dicstatus.intitule' => array(
 				'label' => "AgfStatusSession",
 				'checked' => 1
+		),
+		's.status_before_archive' => array(
+			'label' => 'AgfStatusBeforeArchiveSession',
+			'checked' => 1,
+			'enabled' => 1
 		),
 		'p.ref_interne' => array(
 				'label' => "AgfLieu",
@@ -435,6 +442,13 @@ if ($search_type_session != '' && $search_type_session != - 1) {
 	$filter['s.type_session'] = $search_type_session;
 	$option .= '&search_type_session=' . $search_type_session;
 }
+
+if (!empty($search_session_status_before_archive))
+{
+	$filter['s.status_before_archive'] = $search_session_status_before_archive;
+	$option .= '&search_session_status_before_archive='.$search_session_status_before_archive;
+}
+
 if (! empty($status_view)) {
 	$filter['s.status'] = $status_view;
 	$option .= '&status=' . $status_view;
@@ -810,6 +824,11 @@ if ($resql != - 1) {
 		print $formAgefodd->select_session_status($search_session_status, 'search_session_status', 't.active=1', 1);
 		print '</td>';
 	}
+	if (! empty($arrayfields['s.status_before_archive']['checked'])) {
+		print '<td class="liste_titre">';
+		print $formAgefodd->select_session_status($search_session_status_before_archive, 'search_session_status_before_archive', '', 1);
+		print '</td>';
+	}
 	if (array_key_exists('p.ref_interne', $arrayfields) && ! empty($arrayfields['p.ref_interne']['checked'])) {
 		print '<td class="liste_titre">';
 		print $formAgefodd->select_site_forma($search_site, 'search_site', 1, 0, array(), 'maxwidth200');
@@ -979,6 +998,9 @@ if ($resql != - 1) {
 	}
 	if (array_key_exists('dicstatus.intitule', $arrayfields) && ! empty($arrayfields['dicstatus.intitule']['checked'])) {
 		print_liste_field_titre($langs->trans("AgfStatusSession"), $_SERVER['PHP_SELF'], "dictstatus.intitule", "", $option, '', $sortfield, $sortorder);
+	}
+	if (! empty($arrayfields['s.status_before_archive']['checked'])) {
+		print_liste_field_titre($langs->trans("AgfStatusBeforeArchiveSession"), $_SERVER['PHP_SELF'], "s.status_before_archive", "", $option, '', $sortfield, $sortorder);
 	}
 	if (array_key_exists('p.ref_interne', $arrayfields) && ! empty($arrayfields['p.ref_interne']['checked'])) {
 		print_liste_field_titre($langs->trans("AgfLieu"), $_SERVER['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
@@ -1150,6 +1172,11 @@ if ($resql != - 1) {
 			if (array_key_exists('dicstatus.intitule', $arrayfields) && ! empty($arrayfields['dicstatus.intitule']['checked'])) {
 				print '<td>';
 				print $line->statuslib;
+				print '</td>';
+			}
+			if (! empty($arrayfields['s.status_before_archive']['checked'])) {
+				print '<td>';
+				print $line->archivestatuslib;
 				print '</td>';
 			}
 
@@ -1399,6 +1426,9 @@ if ($resql != - 1) {
 				print '<td></td>';
 			}
 			if (array_key_exists('dicstatus.intitule', $arrayfields) && ! empty($arrayfields['dicstatus.intitule']['checked'])) {
+				print '<td></td>';
+			}
+			if (! empty($arrayfields['s.status_before_archive']['checked'])) {
 				print '<td></td>';
 			}
 			if (array_key_exists('p.ref_interne', $arrayfields) && ! empty($arrayfields['p.ref_interne']['checked'])) {

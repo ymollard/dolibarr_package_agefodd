@@ -840,6 +840,7 @@ AgfStatusSession_NOT=Non réalisée
 AgfStatusSession_ARCH=Archivée
 AgfDefaultSessionStatus=Statut de la session par defaut
 AgfStatusSession=Statut de la session
+AgfStatusBeforeArchiveSession=Statut de la session avant archivage
 AgfMenuSessDraftList=Sessions envisagées
 AgfMenuSessListOpe=Suivi admnistratif
 AgfMenuSessListTrainer=Sessions par formateur
