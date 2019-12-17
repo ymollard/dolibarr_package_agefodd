@@ -2488,6 +2488,7 @@ class Agsession extends CommonObject
 		}
 
 		$sql = "SELECT s.rowid, s.ref as sessionref, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
+		$sql .= " s.status_before_archive, dictstatusba.intitule as archivestatuslib, dictstatusba.code as archivestatuscode,";
 		$sql .= " s.date_res_trainer, s.color, ";
 		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
@@ -2557,6 +2558,8 @@ class Agsession extends CommonObject
 		$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON s.status = dictstatus.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatusba";
+		$sql .= " ON s.status_before_archive = dictstatusba.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_contact as sessioncontact";
 		$sql .= " ON s.rowid = sessioncontact.fk_session_agefodd";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_contact as agefoddcontact";
@@ -2756,6 +2759,7 @@ class Agsession extends CommonObject
 					$line->trainingcolor = $obj->trainingcolor;
 					$line->fk_product = $obj->fk_product;
 					$line->status = $obj->status;
+					$line->status_before_archive = $obj->status_before_archive;
 					$line->nb_place = $obj->nb_place;
 
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
@@ -2764,6 +2768,16 @@ class Agsession extends CommonObject
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
 					$line->statuslib = $label;
+
+					if (!empty($obj->archivestatuslib))
+					{
+						if ($obj->archivestatuslib == $langs->trans('AgfStatusSession_' . $obj->archivestatuscode)) {
+							$label = stripslashes($obj->archivestatuslib);
+						} else {
+							$label = $langs->trans('AgfStatusSession_' . $obj->archivestatuscode);
+						}
+						$line->archivestatuslib = $label;
+					}
 
 					// Formatage comme du Dolibarr standard pour ne pas être perdu
 					$line->array_options = array();
