@@ -213,6 +213,10 @@ $arrayfields = array(
 				'label' => "AgfFormateur",
 				'checked' => 1
 		),
+		'sale.fk_user_com' => array(
+				'label' => "AgfSessionCommercial",
+				'checked' => 1
+		),
 		'c.intitule' => array(
 				'label' => "AgfIntitule",
 				'checked' => 1
@@ -780,6 +784,11 @@ if ($resql != - 1) {
 		print $formAgefodd->select_formateur_liste($search_teacher_id, 'search_teacher_id', '', 1);
 		print '</td>';
 	}
+	if (!empty($arrayfields['sale.fk_user_com']['checked']))
+	{
+		print '<td class="liste_titre">';
+		print '</td>';
+	}
 	if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_trainning_name" id="search_trainning_name" value="' . $search_trainning_name . '" size="20">';
@@ -975,6 +984,9 @@ if ($resql != - 1) {
 	if (array_key_exists('f.rowid', $arrayfields) && ! empty($arrayfields['f.rowid']['checked'])) {
 		print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 	}
+	if (array_key_exists('sale.fk_user_com', $arrayfields) && ! empty($arrayfields['sale.fk_user_com']['checked'])) {
+		print_liste_field_titre($langs->trans("AgfSessionCommercial"), $_SERVER['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+	}
 	if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
 		print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
 	}
@@ -1135,6 +1147,21 @@ if ($resql != - 1) {
 				}
 				if (! empty($trainer->id)) {
 					print $trainer->getNomUrl();
+				} else {
+					print '&nbsp;';
+				}
+				print '</td>';
+			}
+			if (!empty($arrayfields['sale.fk_user_com']['checked']))
+			{
+				print '<td>';
+				$commercial = new User($db);
+				if (!empty($line->fk_user_com))
+				{
+					$commercial->fetch($line->fk_user_com);
+				}
+				if (! empty($commercial->id)) {
+					print $commercial->getNomUrl();
 				} else {
 					print '&nbsp;';
 				}
@@ -1404,6 +1431,21 @@ if ($resql != - 1) {
 				}
 				print '</td>';
 			}
+			if (!empty($arrayfields['sale.fk_user_com']['checked']))
+			{
+				print '<td>';
+				$commercial = new User($db);
+				if (!empty($line->fk_user_com))
+				{
+					$commercial->fetch($line->fk_user_com);
+				}
+				if (! empty($commercial->id)) {
+					print $commercial->getNomUrl();
+				} else {
+					print '&nbsp;';
+				}
+				print '</td>';
+			}
 			if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
 				print '<td></td>';
 			}
@@ -1527,6 +1569,10 @@ if ($resql != - 1) {
 	if (array_key_exists('f.rowid', $arrayfields) && ! empty($arrayfields['f.rowid']['checked'])) {
 		print '<td></td>';
 	}
+	if (!empty($arrayfields['sale.fk_user_com']['checked']))
+	{
+		print '<td></td>';
+	}
 	if (array_key_exists('c.intitule', $arrayfields) && ! empty($arrayfields['c.intitule']['checked'])) {
 		print '<td></td>';
 	}
@@ -1549,6 +1595,9 @@ if ($resql != - 1) {
 		print '<td></td>';
 	}
 	if (array_key_exists('dicstatus.intitule', $arrayfields) && ! empty($arrayfields['dicstatus.intitule']['checked'])) {
+		print '<td></td>';
+	}
+	if (! empty($arrayfields['s.status_before_archive']['checked'])) {
 		print '<td></td>';
 	}
 	if (array_key_exists('p.ref_interne', $arrayfields) && ! empty($arrayfields['p.ref_interne']['checked'])) {

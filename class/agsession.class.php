@@ -2532,6 +2532,7 @@ class Agsession extends CommonObject
 			$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE (status_in_session=2 OR status_in_session=1 OR status_in_session=3) AND fk_session_agefodd=s.rowid) as nb_confirm,";
 			$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire WHERE status_in_session=6 AND fk_session_agefodd=s.rowid) as nb_cancelled";
 		}
+		$sql .= ",sale.fk_user_com";
 
 		foreach ( $array_options_keys as $key ) {
 			$sql.= ',ef.'.$key;
@@ -2568,6 +2569,8 @@ class Agsession extends CommonObject
 		$sql .= " ON socp.rowid = agefoddcontact.fk_socpeople";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socppresta";
 		$sql .= " ON socppresta.rowid = s.fk_socpeople_presta";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
+		$sql .= " ON s.rowid = sale.fk_session_agefodd";
 
 		$add_extrafield_link = true;
 		if (is_array($filter)) {
@@ -2578,11 +2581,6 @@ class Agsession extends CommonObject
 					$sql .= " ON s.rowid = ef.fk_object";
 					break;
 				}
-			}
-
-			if (key_exists('sale.fk_user_com', $filter)) {
-				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
-				$sql .= " ON s.rowid = sale.fk_session_agefodd";
 			}
 		}
 
@@ -2761,6 +2759,7 @@ class Agsession extends CommonObject
 					$line->status = $obj->status;
 					$line->status_before_archive = $obj->status_before_archive;
 					$line->nb_place = $obj->nb_place;
+					$line->fk_user_com = $obj->fk_user_com;
 
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
 						$label = stripslashes($obj->statuslib);
