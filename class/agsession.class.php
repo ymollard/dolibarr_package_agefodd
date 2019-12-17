@@ -3172,21 +3172,26 @@ class Agsession extends CommonObject
 		$sql .= " ,s.intitule_custo";
 		$sql .= " ,s.duree_session";
 		$sql .= " ,s.ref as sessionref";
-			$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
-			$sql .= " ON c.rowid = s.fk_formation_catalogue";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
-			$sql .= " ON p.rowid = s.fk_session_place";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
-			$sql .= " ON s.rowid = sa.fk_agefodd_session";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
-			$sql .= " ON sf.fk_session = s.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
-			$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
-			$sql .= " ON f.fk_socpeople = socpf.rowid";
-			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
-			$sql .= " ON s.status = dictstatus.rowid";
+		$sql .= " ,sale.fk_user_com";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
+		$sql .= " ON c.rowid = s.fk_formation_catalogue";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p";
+		$sql .= " ON p.rowid = s.fk_session_place";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
+		$sql .= " ON s.rowid = sa.fk_agefodd_session";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
+		$sql .= " ON sf.fk_session = s.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
+		$sql .= " ON f.rowid = sf.fk_agefodd_formateur";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socpf";
+		$sql .= " ON f.fk_socpeople = socpf.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
+		$sql .= " ON s.status = dictstatus.rowid";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
+		$sql .= " ON s.rowid = sale.fk_session_agefodd";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as ucom";
+		$sql .= " ON ucom.rowid = sale.fk_user_com";
 
 		if ($filter['type_affect'] == 'thirdparty') {
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
@@ -3338,6 +3343,7 @@ class Agsession extends CommonObject
 					$line->duree_session = $obj->duree_session;
 					$line->intitule_custo = $obj->intitule_custo;
 					$line->sessionref = $obj->sessionref;
+					$line->fk_user_com = $obj->fk_user_com;
 
 					if ($obj->statuslib == $langs->trans('AgfStatusSession_' . $obj->statuscode)) {
 						$label = stripslashes($obj->statuslib);
