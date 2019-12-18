@@ -895,7 +895,7 @@ function getAgefoddTraineeDocumentPath($agsession, $trainee, $model)
  */
 function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &$agf_calendrier_formateur)
 {
-	global $langs, $user, $hookmanager;
+	global $langs, $user, $hookmanager, $conf;
 
 	$context = Context::getInstance();
 
