@@ -105,6 +105,12 @@ if ($action == 'setvarother') {
     if (! $res > 0)
         $error ++;
 
+    $confKey = 'AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS';
+    $nbInList = GETPOST($confKey, 'alpha');
+    $res = dolibarr_set_const($db, $confKey, $nbInList, 'chaine', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
+
     
     // Vue éclatée des heures participant sur la liste des sessions
     $heuresEclateeExclues = serialize(GETPOST('AGF_EA_ECLATE_HEURES_EXCLUES'));
@@ -296,6 +302,22 @@ if(!empty($conf->externalaccess->enabled))
 		);
 		print $form->selectarray("AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST", $arrval, $conf->global->AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST);
 	}
+    print '</td>';
+    print '<td></td>';
+    print '</tr>';
+
+	// Option de configuration du nombre d'éléments afficher sur les listes du portail
+    print '<tr  class="oddeven"><td>' . $langs->trans("AgfEANumberOfElementsInLists") . '</td>';
+    print '<td align="left">';
+
+	$arrval = array (
+		'10' 	=> 10,
+		'25' 	=> 25,
+		'50' 	=> 50,
+		'100' 	=> 100,
+	);
+	print $form->selectarray("AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS", $arrval, $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS);
+
     print '</td>';
     print '<td></td>';
     print '</tr>';

@@ -181,6 +181,7 @@ function getPageViewTraineeSessionListExternalAccess()
         $out.= '<script type="text/javascript" >
 					$(document).ready(function(){
 						$("#session-list").DataTable({
+							"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
 							stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
 							"language": {
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
@@ -442,6 +443,7 @@ function getPageViewSessionListExternalAccess()
 		$out.= '<script type="text/javascript" >
 					$(document).ready(function(){
 						$("#session-list").DataTable({
+							"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
 							stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
 							"language": {
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
@@ -1009,6 +1011,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 	$out.= '<script type="text/javascript" >
 				$(document).ready(function(){
 					$("#session-list").DataTable({
+						"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
 						stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
 						"language": {
 							"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
@@ -1217,6 +1220,7 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
     $out.= '<script type="text/javascript" >
 				$(document).ready(function(){
 					$("#session-list").DataTable({
+						"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
 						stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
 						"language": {
 							"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
