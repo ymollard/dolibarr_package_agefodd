@@ -2569,7 +2569,7 @@ class Agsession extends CommonObject
 		$sql .= " ON socp.rowid = agefoddcontact.fk_socpeople";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as socppresta";
 		$sql .= " ON socppresta.rowid = s.fk_socpeople_presta";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
 		$sql .= " ON s.rowid = sale.fk_session_agefodd";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as ucom";
 		$sql .= " ON ucom.rowid = sale.fk_user_com";
@@ -3190,7 +3190,7 @@ class Agsession extends CommonObject
 		$sql .= " ON f.fk_socpeople = socpf.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_status_type as dictstatus";
 		$sql .= " ON s.status = dictstatus.rowid";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
 		$sql .= " ON s.rowid = sale.fk_session_agefodd";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as ucom";
 		$sql .= " ON ucom.rowid = sale.fk_user_com";
@@ -3427,7 +3427,7 @@ class Agsession extends CommonObject
 		$sql .= " ON s.rowid = sa.fk_agefodd_session";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_element as ord_inv";
 		$sql .= " ON s.rowid = ord_inv.fk_session_agefodd";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
 		$sql .= " ON s.rowid = sale.fk_session_agefodd";
 
 		if (! empty($invoiceid)) {
