@@ -40,7 +40,7 @@ class modAgefodd extends DolibarrModules
 	 * @param DoliDB Database handler
 	 */
 	function __construct($db) {
-		global $conf;
+		global $conf, $langs;
 
 		$this->db = $db;
 
@@ -2542,6 +2542,15 @@ class modAgefodd extends DolibarrModules
 				'target' => '',
 				'user' => 0
 		);
+
+
+		dol_include_once('/agefodd/scripts/update_rights.php');
+		$TRights = getRightsToUpdate();
+		$retfixrights = 0;
+		if (!empty($TRights))
+		{
+			$this->warnings_activation = array('always'=>$langs->trans('AgfInitWarningNeedBackupBefore'));
+		}
 
 	}
 
