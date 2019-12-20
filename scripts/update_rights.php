@@ -87,8 +87,8 @@ function fixAgefoddRights($TRights = array(), $mod_number = 0)
 
 	if ($fail)
 	{
-		print_r($db->lastqueryerror);
-		var_dump($db->lasterror()); exit;
+//		print_r($db->lastqueryerror);
+//		var_dump($db->lasterror()); exit;
 		$db->rollback();
 		return -2;
 	}
