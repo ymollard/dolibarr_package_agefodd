@@ -222,7 +222,7 @@ print '<form name="SessionLevel_create" action="' . $_SERVER ['PHP_SELF'] . '" m
 print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 print '<input type="hidden" name="action" value="sessionlevel_create">' . "\n";
 print '<td>' . $langs->trans("Add") . ' <input type="text" name="intitule" value="" size="30" placeholder="' . $langs->trans("AgfIntitule") . '"/></td>';
-print '<td>' . $formAgefodd->select_action_training_adm('', 'parent_level', 0, $trainingid) . '</td>';
+print '<td>' . $formAgefodd->select_action_session_adm('', 'parent_level', 0, $trainingid) . '</td>';
 print '<td><input type="number" step="1" name="delai" value=""/></td>';
 print '<td><input type="number" step="1" name="delai_end" value=""/></td>';
 print '<td><input type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/edit_add.png" border="0" name="sesslevel_update" alt="' . $langs->trans("Save") . '"></td>';

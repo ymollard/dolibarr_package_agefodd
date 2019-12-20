@@ -358,6 +358,31 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				}
 			}
 
+			// Cachet et signature
+			$posY += 2;
+			$posX -= 2;
+			$pdf->SetXY($posX, $posY);
+			$str = $outputlangs->transnoentities('AgfPDFFichePres20');
+			$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+			$pdf->SetXY($posX + 55, $posY);
+			$str = $outputlangs->transnoentities('AgfPDFFichePres21') . dol_print_date($agf->datef);
+			$pdf->Cell(20, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+			$pdf->SetXY($posX + 92, $posY);
+			$str = $outputlangs->transnoentities('AgfPDFFichePres22');
+			$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+			$posY = $pdf->GetY();
+
+			// Incrustation image tampon
+			if ($conf->global->AGF_INFO_TAMPON) {
+				$dir = $conf->agefodd->dir_output . '/images/';
+				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+				if (file_exists($img_tampon))
+					$pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
+			}
+
 			// Pied de page
 			$this->_pagefoot($pdf, $agf, $outputlangs);
 			if (method_exists($pdf, 'AliasNbPages')) {

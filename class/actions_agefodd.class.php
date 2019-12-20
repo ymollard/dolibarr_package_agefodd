@@ -1174,6 +1174,7 @@ class ActionsAgefodd
 		$this->results['agf_trainee'] = $langs->trans('AgfMailToSendTrainee');
 		$this->results['agf_trainer'] = $langs->trans('AgfMailToSendTrainer');
 		$this->results['cron_session'] = $langs->trans('AgfMailToSendCronSession');
+		$this->results['attestationpresencetraining'] = $langs->trans('AgfMailToSendAttestationPresence');
 
 		return 0;
 	}
@@ -1417,7 +1418,7 @@ class ActionsAgefodd
 								}
 								$ref_value .= $outputlangs->convToOutputCharset($sessiondetail->formrefint);
 							}
-							$ref_value .= ' (' . $sessiondetail->id . ')';
+							$ref_value .= ' '.$sessiondetail->id.'#'.$sessiondetail->ref.' ';
 							$this->results[get_class($sessiondetail) . $sessiondetail->id . '_1'] = array(
 								'ref_title' => $outputlangs->transnoentities("AgefoddRefFormationSessionId"),
 								'ref_value' => $ref_value,
@@ -1439,7 +1440,7 @@ class ActionsAgefodd
 							$date_f = dol_print_date($sessiondetail->datef, '%d/%m/%Y');
 							$this->results[get_class($sessiondetail) . $sessiondetail->id . '_2'] = array(
 								'ref_title' => $outputlangs->transnoentities("AgefoddSessIdAndDates"),
-								'ref_value' => $sessiondetail->id . ' / ' . $date_d . ' - ' . $date_f,
+								'ref_value' => $sessiondetail->id .'#'. $sessiondetail->ref. ' / ' . $date_d . ' - ' . $date_f,
 								'date_value' => ''
 							);
 						}
@@ -1506,6 +1507,92 @@ class ActionsAgefodd
 			$this->resprints = $sql;
 			return 1;
 		}
+	}
+
+	function addMoreEventsExport($parameters, &$object, &$action, HookManager $hookmanager)
+	{
+		global $db, $conf;
+
+		$agftrainerid = GETPOST('agftrainerid', "int");
+		if (!empty($agftrainerid) && empty($conf->global->AGF_DONT_ADD_TRAINER_INDISPO_IN_ICS))
+		{
+			$eventarray = &$parameters['eventarray'];
+			$sql = "SELECT a.id,";
+			$sql.= " a.datep,";		// Start
+			$sql.= " a.datep2,";	// End
+			$sql.= " a.durationp,";			// deprecated
+			$sql.= " a.datec, a.tms as datem,";
+			$sql.= " a.label, a.code, a.note, a.fk_action as type_id,";
+			$sql.= " a.fk_soc,";
+			$sql.= " a.fk_user_author, a.fk_user_mod,";
+			$sql.= " a.fk_user_action,";
+			$sql.= " a.fk_contact, a.percent as percentage,";
+			$sql.= " a.fk_element, a.elementtype,";
+			$sql.= " a.priority, a.fulldayevent, a.location, a.punctual, a.transparency,";
+			$sql.= " c.id as type_id, c.code as type_code, c.libelle";
+			$sql.= " FROM ".MAIN_DB_PREFIX."actioncomm as a";
+			$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_actioncomm as c ON c.id = a.fk_action";
+
+			$sql.= " WHERE a.entity IN (".getEntity('agenda').")";
+			if (array_key_exists('notolderthan', $parameters['filters']) && $parameters['filters']['notolderthan'] != '') $sql.=" AND a.datep >= '".$this->db->idate(dol_now()-($parameters['filters']['notolderthan']*24*60*60))."'";
+			$sql.= " AND a.code = 'AC_AGF_NOTAV'";
+			$sql.= ' AND a.fk_element = '.intval($agftrainerid);
+			$sql.= " AND a.elementtype = 'agefodd_formateur' ";
+
+			$sql.= " ORDER BY a.datep";
+
+			$resql = $db->query($sql);
+			if ($resql)
+			{
+				if ($db->num_rows($resql))
+				{
+					$diff = 0;
+					while ($obj=$this->db->fetch_object($resql))
+					{
+						$qualified=true;
+
+						// 'eid','startdate','duration','enddate','title','summary','category','email','url','desc','author'
+						$event=array();
+						$event['uid']='dolibarragenda-'.$this->db->database_name.'-'.$obj->id."@".$_SERVER["SERVER_NAME"];
+						$event['type']='event';
+						$datestart=$this->db->jdate($obj->datep)-(empty($conf->global->AGENDA_EXPORT_FIX_TZ)?0:($conf->global->AGENDA_EXPORT_FIX_TZ*3600));
+						$dateend=$this->db->jdate($obj->datep2)-(empty($conf->global->AGENDA_EXPORT_FIX_TZ)?0:($conf->global->AGENDA_EXPORT_FIX_TZ*3600));
+						$duration=($datestart && $dateend)?($dateend - $datestart):0;
+						$event['summary']=$obj->label.($obj->socname?" (".$obj->socname.")":"");
+						$event['desc']=$obj->note;
+						$event['startdate']=$datestart;
+						$event['enddate']=$dateend;		// Not required with type 'journal'
+						$event['duration']=$duration;	// Not required with type 'journal'
+						$event['author']=dolGetFirstLastname($obj->firstname, $obj->lastname);
+						$event['priority']=$obj->priority;
+						$event['fulldayevent']=$obj->fulldayevent;
+						$event['location']=$obj->location;
+						$event['transparency']=(($obj->transparency > 0)?'OPAQUE':'TRANSPARENT');		// OPAQUE (busy) or TRANSPARENT (not busy)
+						$event['punctual']=$obj->punctual;
+						$event['category']=$obj->libelle;	// libelle type action
+						// Define $urlwithroot
+						$urlwithouturlroot=preg_replace('/'.preg_quote(DOL_URL_ROOT,'/').'$/i','',trim($dolibarr_main_url_root));
+						$urlwithroot=$urlwithouturlroot.DOL_URL_ROOT;			// This is to use external domain name found into config file
+						//$urlwithroot=DOL_MAIN_URL_ROOT;						// This is to use same domain name than current
+						$url=$urlwithroot.'/comm/action/card.php?id='.$obj->id;
+						$event['url']=$url;
+						$event['created']=$this->db->jdate($obj->datec)-(empty($conf->global->AGENDA_EXPORT_FIX_TZ)?0:($conf->global->AGENDA_EXPORT_FIX_TZ*3600));
+						$event['modified']=$this->db->jdate($obj->datem)-(empty($conf->global->AGENDA_EXPORT_FIX_TZ)?0:($conf->global->AGENDA_EXPORT_FIX_TZ*3600));
+
+						if ($qualified && $datestart)
+						{
+							$eventarray[]=$event;
+						}
+						$diff++;
+					}
+				}
+			}
+
+			$this->results = $eventarray;
+			return 0;
+		}
+
+		return 0;
 	}
 
 	/**
@@ -1831,7 +1918,7 @@ class ActionsAgefodd
 		 */
 		$sql = "SELECT
 					SUM(
-						CASE 
+						CASE
 							WHEN s.status <> 4 THEN 1
 							WHEN s.status_before_archive IN (1, 2, 5, 6) THEN 1
 							ELSE 0

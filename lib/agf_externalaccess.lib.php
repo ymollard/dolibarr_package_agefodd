@@ -181,6 +181,7 @@ function getPageViewTraineeSessionListExternalAccess()
         $out.= '<script type="text/javascript" >
 					$(document).ready(function(){
 						$("#session-list").DataTable({
+							"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
 							stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
 							"language": {
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
@@ -442,6 +443,7 @@ function getPageViewSessionListExternalAccess()
 		$out.= '<script type="text/javascript" >
 					$(document).ready(function(){
 						$("#session-list").DataTable({
+							"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
 							stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
 							"language": {
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
@@ -893,7 +895,7 @@ function getAgefoddTraineeDocumentPath($agsession, $trainee, $model)
  */
 function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &$agf_calendrier_formateur)
 {
-	global $langs, $user, $hookmanager;
+	global $langs, $user, $hookmanager, $conf;
 
 	$context = Context::getInstance();
 
@@ -947,9 +949,9 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 		$out.= ' <td data-order="'.$item->date_session.'" data-search="'.$date_session.'" ><a href="'.$url.'&action=view">'.$date_session.'</a></td>';
 
 		$heured = dol_print_date($item->heured, '%H:%M');
-		$out.= ' <td data-order="'.$heured.'" data-search="'.$heured.'" ><a href="'.$url.'&action=view">'.$heured.'</a></td>';
+		$out.= ' <td data-order="'.$item->heured.'" data-search="'.$heured.'" ><a href="'.$url.'&action=view">'.$heured.'</a></td>';
 		$heuref = dol_print_date($item->heuref, '%H:%M');
-		$out.= ' <td data-order="'.$heuref.'" data-search="'.$heuref.'" ><a href="'.$url.'&action=view">'.$heuref.'</a></td>';
+		$out.= ' <td data-order="'.$item->heuref.'" data-search="'.$heuref.'" ><a href="'.$url.'&action=view">'.$heuref.'</a></td>';
 		$duree = ($item->heuref - $item->heured) / 60 / 60;
 		$out.= ' <td class="text-center" data-order="'.$duree.'" data-search="'.$duree.'" ><a href="'.$url.'&action=view">'.$duree.'</a></td>';
 		if ($item->status == Agefoddsessionformateurcalendrier::STATUS_DRAFT) $statut = $langs->trans('AgfStatusCalendar_previsionnel');
@@ -1009,6 +1011,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 	$out.= '<script type="text/javascript" >
 				$(document).ready(function(){
 					$("#session-list").DataTable({
+						"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
 						stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
 						"language": {
 							"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
@@ -1105,9 +1108,9 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
         $out.= ' <td data-order="'.$item->date_session.'" data-search="'.$date_session.'" >'.$date_session.'</td>';
 
         $heured = dol_print_date($item->heured, '%H:%M');
-        $out.= ' <td data-order="'.$heured.'" data-search="'.$heured.'" >'.$heured.'</td>';
+        $out.= ' <td data-order="'.$item->heured.'" data-search="'.$heured.'" >'.$heured.'</td>';
         $heuref = dol_print_date($item->heuref, '%H:%M');
-        $out.= ' <td data-order="'.$heuref.'" data-search="'.$heuref.'" >'.$heuref.'</td>';
+        $out.= ' <td data-order="'.$item->heuref.'" data-search="'.$heuref.'" >'.$heuref.'</td>';
         $duree = ($item->heuref - $item->heured) / 60 / 60;
         $out.= ' <td class="text-center" data-order="'.$duree.'" data-search="'.$duree.'" >'.convertHundredthHoursToReadable($duree).'</td>';
         $statut = Agefoddsessionformateurcalendrier::getStaticLibStatut($item->status, 0);
@@ -1217,6 +1220,7 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
     $out.= '<script type="text/javascript" >
 				$(document).ready(function(){
 					$("#session-list").DataTable({
+						"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
 						stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
 						"language": {
 							"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
@@ -1433,7 +1437,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
  */
 function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 {
-    global $langs, $db, $conf, $user;
+    global $langs, $db, $hookmanager, $conf, $user;
 
 	$langs->load('agfexternalaccess@agefodd');
 
@@ -1483,6 +1487,16 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
             }
         }
     }
+
+    $parameters = array('files' => $files);
+
+    $reshook=$hookmanager->executeHooks('agf_getPageViewSessionCardAddAttachments', $parameters, $agsession);
+    if (!empty($reshook)) {
+        $files = $hookmanager->resArray;
+    } else {
+        $files += $hookmanager->resArray;
+    }
+
 
     $out = '';
     $out.= '<!-- getPageViewSessionCardExternalAccess_files -->

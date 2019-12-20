@@ -2231,58 +2231,58 @@ function agf_getMailTemplate($id)
  */
 function get_agf_session_mails_infos(Agsession $agsession)
 {
-	global $db;
+    global $db;
 
-	if (empty($agsession->id)) {
-		return 0;
-	}
+    if (empty($agsession->id)) {
+        return 0;
+    }
 
-	$emailInfos = array();
+    $emailInfos = array();
 
-	// Recupération des stagiaires
-	dol_include_once('agefodd/class/agefodd_session_stagiaire.class.php');
+    // Recupération des stagiaires
+    dol_include_once('agefodd/class/agefodd_session_stagiaire.class.php');
 
-	$session_stagiaire = new Agefodd_session_stagiaire($db);
-	$session_stagiaire->fetch_stagiaire_per_session($agsession->id);
+    $session_stagiaire = new Agefodd_session_stagiaire($db);
+    $session_stagiaire->fetch_stagiaire_per_session($agsession->id);
 
-	if (!empty($session_stagiaire->lines)) {
-		foreach ($session_stagiaire->lines as $sessionLine) {
+    if (!empty($session_stagiaire->lines)) {
+        foreach ($session_stagiaire->lines as $sessionLine) {
 
-			$infos = new stdClass();
-			$infos->nom = $sessionLine->nom;
-			$infos->prenom = $sessionLine->prenom;
-			$infos->civilite = $sessionLine->civilitel;
-			$infos->socname = $sessionLine->socname;
-			$infos->email = $sessionLine->email;
+            $infos = new stdClass();
+            $infos->nom = $sessionLine->nom;
+            $infos->prenom = $sessionLine->prenom;
+            $infos->civilite = $sessionLine->civilitel;
+            $infos->socname = $sessionLine->socname;
+            $infos->email = $sessionLine->email;
 
-			$emailInfos[] = $infos;
-		}
-	}
-
-
-	// Recupération des stagiaires
-	dol_include_once('agefodd/class/agefodd_session_formateur.class.php');
-
-	$session_formateur = new Agefodd_session_formateur($db);
-	$session_formateur->fetch_formateur_per_session($agsession->id);
-
-	if (!empty($session_formateur->lines)) {
-		foreach ($session_formateur->lines as $sessionLine) {
+            $emailInfos[] = $infos;
+        }
+    }
 
 
-			$infos = new stdClass();
-			$infos->nom = $sessionLine->name_user;
-			$infos->prenom = $sessionLine->firstname_user;
-			$infos->civilite = '';
-			$infos->socname = '';
-			$infos->email = $sessionLine->email;
+    // Recupération des stagiaires
+    dol_include_once('agefodd/class/agefodd_session_formateur.class.php');
 
-			$emailInfos[] = $infos;
+    $session_formateur = new Agefodd_session_formateur($db);
+    $session_formateur->fetch_formateur_per_session($agsession->id);
 
-		}
-	}
+    if (!empty($session_formateur->lines)) {
+        foreach ($session_formateur->lines as $sessionLine) {
 
 
-	return $emailInfos;
+            $infos = new stdClass();
+            $infos->nom = $sessionLine->name_user;
+            $infos->prenom = $sessionLine->firstname_user;
+            $infos->civilite = '';
+            $infos->socname = '';
+            $infos->email = $sessionLine->email;
+
+            $emailInfos[] = $infos;
+
+        }
+    }
+
+
+    return $emailInfos;
 
 }
