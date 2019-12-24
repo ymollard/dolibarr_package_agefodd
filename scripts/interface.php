@@ -10,7 +10,6 @@ if (! $res)
 dol_include_once('/core/lib/functions.lib.php');
 
 
-c
 global $db;
 
 /*
