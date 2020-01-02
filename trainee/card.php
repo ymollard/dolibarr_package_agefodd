@@ -71,8 +71,15 @@ if ($reshook < 0)
 //Select mail models is same action as presend
 if (GETPOST('modelselected')) $action = 'presend';
 
-// Cansel action
-if (isset($_POST['cancel'])) $action = '';
+// Cancel action
+if (isset($_POST['cancel'])) {
+	$action = '';
+	if (strlen($url_back) > 0)
+	{
+		Header("Location: ".$url_back);
+		exit;
+	}
+}
 
 
 $form = new Form($db);
@@ -439,6 +446,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 
 	print '<form name="create" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	print '<input type="hidden" name="session_id" value="' . $session_id . '">';
 	print '<input type="hidden" name="action" value="create_confirm">';
 	if ($url_back)
 		print '<input type="hidden" name="url_back" value="' . $url_back . '">' . "\n";
