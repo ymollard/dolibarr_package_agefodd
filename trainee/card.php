@@ -302,7 +302,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 
 				$agf->nom = $contact->lastname;
 				$agf->prenom = $contact->firstname;
-				$agf->civilite = $contact->civility_id;
+				$agf->civilite = $contact->civility_code;
 				$agf->socid = $contact->socid;
 				$agf->fonction = $contact->poste;
 				$agf->tel1 = $contact->phone_pro;

@@ -47,6 +47,10 @@ class ReportCommercial extends AgefoddExportExcel
 
 	public $subro_extrafield_exists = false;
 
+	public $TFacture=array();
+
+	public $debug=false;
+
 	/**
 	 * Constructor
 	 *
@@ -345,6 +349,13 @@ class ReportCommercial extends AgefoddExportExcel
 
 		// General
 		$result = $this->fetch_data($filter);
+		if ($this->debug) {
+			print '<table>';
+			foreach( $this->TFacture as $fid => $datadedug) {
+				print $datadedug;
+			}
+			print '</table>';
+		}
 		if ($result < 0) {
 			return $result;
 		}
@@ -353,7 +364,6 @@ class ReportCommercial extends AgefoddExportExcel
 		if ($result < 0) {
 			return $result;
 		}
-
 
 		// Construct header (column name) with year array fill in fetch_ca method
 		$array_column_header = array ();
@@ -486,8 +496,8 @@ class ReportCommercial extends AgefoddExportExcel
 				FROM '  . MAIN_DB_PREFIX . 'societe s
 				LEFT JOIN ' . MAIN_DB_PREFIX . 'societe parent ON (parent.rowid = s.parent)
 				LEFT JOIN ' . MAIN_DB_PREFIX . 'societe_commerciaux sc ON (sc.fk_soc = s.rowid)
-				WHERE s.entity = ' . getEntity('societe') . '
-				AND COALESCE(parent.rowid, 0) = ' . $parentID . '
+				WHERE s.entity = ' . getEntity('societe').'
+				AND COALESCE(parent.rowid, 0) = ' . $parentID. '
 				AND s.fk_typent != 103';
 
 		// On n'applique les filtres que sur la maison-mère
@@ -626,7 +636,7 @@ class ReportCommercial extends AgefoddExportExcel
 			$salesrepInitials = $commercial->_initials;
 		}
 
-
+		//
 		$TChildren = $this->fetch_companies($filter, $societe->rowid);
 
 		if($TChildren < 0)
@@ -736,7 +746,7 @@ class ReportCommercial extends AgefoddExportExcel
 		foreach($TTypesTodo as $type)
 		{
 			$sql = $this->get_ca_data_sql_query($type, $companyID, $filter);
-
+			dol_syslog(get_class($this).'::'.__METHOD__. ' $companyID='.$companyID.' $type='.$type);
 			$resql = $this->db->query($sql);
 
 			if(! $resql)
@@ -750,7 +760,10 @@ class ReportCommercial extends AgefoddExportExcel
 			for($i = 0; $i < $num; $i++)
 			{
 				$obj = $this->db->fetch_object($resql);
-
+				if($this->debug && ! array_key_exists($obj->facid, $this->TFacture)) {
+					$this->TFacture[$obj->facid] = '<tr><td>'.$companyID. '</td><td>.'. $type. '</td><td>'. $obj->facid.'<td></tr>';
+					//$this->TFacture[$obj->facid] = $obj->facid;
+				}
 				$TDataRow[2 + $maxYear - $obj->year] += $obj->total;
 			}
 		}
@@ -820,7 +833,7 @@ class ReportCommercial extends AgefoddExportExcel
 		if($type == 'opcaintranoextra')
 		{
 			$multiplier = '(
-				SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE COUNT(CASE WHEN ags.fk_soc = ' . $companyID . ' THEN 1 ELSE NULL END) / COUNT(*) END
+				SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE COUNT(CASE WHEN ' . $companyID . ' IN (ags.fk_soc,ass.fk_soc_link) THEN 1 ELSE NULL END) / COUNT(*) END
 				FROM ' . MAIN_DB_PREFIX . 'facture f2
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f2.rowid AND se.element_type = "invoice")
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session s2 ON (s2.rowid = se.fk_session_agefodd)
@@ -830,7 +843,6 @@ class ReportCommercial extends AgefoddExportExcel
 				AND f.fk_soc = f2.fk_soc
 				AND f.fk_soc = s2.fk_soc_OPCA
 				AND s2.is_OPCA > 0
-				AND ass.status_in_session = 3
 			)';
 		}
 
@@ -850,7 +862,7 @@ class ReportCommercial extends AgefoddExportExcel
 		if($type == 'noopcaintra' || $type == 'noopcaintranoextra')
 		{
 			$multiplier = '(
-				SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE COUNT( CASE WHEN COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . ' THEN 1 ELSE NULL END) / COUNT(*) END
+				SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE COUNT( CASE WHEN ' . $companyID . ' IN (ags.fk_soc, s2.fk_soc, s2.fk_soc_requester,ass.fk_soc_link) THEN 1 ELSE NULL END) / COUNT(*) END
 				FROM ' . MAIN_DB_PREFIX . 'facture f2
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f2.rowid AND se.element_type = "invoice")
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session s2 ON (s2.rowid = se.fk_session_agefodd)
@@ -861,7 +873,11 @@ class ReportCommercial extends AgefoddExportExcel
 			)';
 		}
 
-		$sql = 'SELECT YEAR(' . $dateField . ') AS year, MONTH(' . $dateField . ') AS month, COALESCE( SUM(' . $multiplier . ' * fd.total_ht), 0) as total
+		$sql = 'SELECT ';
+		if ($this->debug) {
+			$sql .= ' f.rowid as facid, ';
+		}
+		$sql.= ' YEAR(' . $dateField . ') AS year, MONTH(' . $dateField . ') AS month, COALESCE( SUM(' . $multiplier . ' * fd.total_ht), 0) as total
 				FROM ' . MAIN_DB_PREFIX . 'facture f
 				INNER JOIN ' . MAIN_DB_PREFIX . 'facturedet fd ON (fd.fk_facture = f.rowid)
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f.rowid AND se.element_type = "invoice")
@@ -905,7 +921,7 @@ class ReportCommercial extends AgefoddExportExcel
 					FROM ' . MAIN_DB_PREFIX . 'agefodd_session s2
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
-					WHERE COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
+					WHERE COALESCE(ass.fk_soc_link,ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
 					AND COALESCE(CASE WHEN s2.fk_soc_OPCA < 0 THEN 0 ELSE s2.fk_soc_OPCA END, 0) = 0
 				)';
 
@@ -923,7 +939,8 @@ class ReportCommercial extends AgefoddExportExcel
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca opca ON (opca.fk_session_trainee = ass.rowid AND opca.fk_soc_trainee = ags.fk_soc)
 					WHERE ags.fk_soc = ' . $companyID . '
 					AND COALESCE(CASE WHEN s2.fk_soc_OPCA < 0 THEN 0 ELSE s2.fk_soc_OPCA END, 0) = 0
-					AND COALESCE(opca.rowid, 0) = 0
+					AND COALESCE(IFNULL(opca.fk_soc_OPCA,0), opca.rowid, 0) = 0
+					AND ags.fk_soc=f.fk_soc
 				)';
 
 				break;
@@ -970,7 +987,7 @@ class ReportCommercial extends AgefoddExportExcel
 					FROM ' . MAIN_DB_PREFIX . 'agefodd_session s2
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = s2.rowid)
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
-					WHERE COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
+					WHERE COALESCE(ass.fk_soc_link ,ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
 					AND COALESCE(CASE WHEN s2.fk_soc_OPCA < 0 THEN 0 ELSE s2.fk_soc_OPCA END, 0) = 0
 					AND COALESCE(s2.is_OPCA, 0) = 0
 				)';
@@ -988,7 +1005,7 @@ class ReportCommercial extends AgefoddExportExcel
 					LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
 					WHERE s2.fk_soc_OPCA = f.fk_soc
 					AND s2.type_session = 0
-					AND COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
+					AND COALESCE(ass.fk_soc_link,ags.fk_soc, s2.fk_soc, s2.fk_soc_requester) = ' . $companyID . '
 				)';
 
 				break;
@@ -1030,9 +1047,12 @@ class ReportCommercial extends AgefoddExportExcel
 		}
 
 		$sql.= '
-				AND YEAR(' . $dateField . ') IN (' . implode(', ', $this->year_to_report_array) . ')
-
-				GROUP BY YEAR(' . $dateField . '), MONTH(' . $dateField . ')
+				AND YEAR(' . $dateField . ') IN (' . implode(', ', $this->year_to_report_array) . ')';
+		$sql.= ' GROUP BY ';
+		if ($this->debug) {
+			$sql .= ' f.rowid, ';
+		}
+		$sql.= 'YEAR(' . $dateField . '), MONTH(' . $dateField . ')
 				ORDER BY YEAR(' . $dateField . ') DESC, MONTH(' . $dateField . ') DESC';
 
 		return $sql;

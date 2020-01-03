@@ -459,9 +459,7 @@ class Agsession extends CommonObject
 
 		// Load source object
 		$object->fetch($fromid);
-		if (empty($conf->global->AGF_CONTACT_DOL_SESSION)) {
-			$object->contactid = $object->sourcecontactid;
-		}
+		$object->contactid = $object->sourcecontactid;
 		$object->id = 0;
 		$object->statut = 0;
 		$object->nb_stagiaire = 0;
@@ -2646,7 +2644,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $label;
+					$line->statuslib = $label;
 
 					// Formatage comme du Dolibarr standard pour ne pas être perdu
 					$line->array_options = array();
@@ -2845,7 +2843,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $obj->statuscode . ' - ' . $label;
+					$line->statuslib = $obj->statuscode . ' - ' . $label;
 
 					$this->lines[$i] = $line;
 					$i ++;
@@ -2999,7 +2997,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $label;
+					$line->statuslib = $label;
 
 					$this->lines[$i] = $line;
 					$i ++;
@@ -3158,7 +3156,10 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-		$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
+		if (!empty($sortfield)) {
+			$sql .=  $this->db->order($sortfield, $sortorder);
+		}
+
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
@@ -3207,7 +3208,7 @@ class Agsession extends CommonObject
 					} else {
 						$label = $langs->trans('AgfStatusSession_' . $obj->statuscode);
 					}
-					$line->status_lib = $label;
+					$line->statuslib = $label;
 
 					$this->lines[$i] = $line;
 					$i ++;
@@ -5447,10 +5448,10 @@ class Agsession extends CommonObject
 
 					if ($line->date_session != $old_date) {
 						$this->dthour_text .= "<br>";
-						$this->dthour_text .= dol_print_date($line->date_session, 'daytext','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour','tzuser',$langs);
+						$this->dthour_text .= dol_print_date($line->date_session, 'daytext','tzserver',$langs) . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour','',$langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour','',$langs);
 					} else {
 						$this->dthour_text .= ', ';
-						$this->dthour_text .= dol_print_date($line->heured, 'hour','tzuser',$langs) . ' - ' . dol_print_date($line->heuref, 'hour','tzuser',$langs);
+						$this->dthour_text .= dol_print_date($line->heured, 'hour','',$langs) . ' - ' . dol_print_date($line->heuref, 'hour','',$langs);
 					}
 					$old_date = $line->date_session;
 				}
