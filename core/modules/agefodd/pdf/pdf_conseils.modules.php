@@ -483,9 +483,12 @@ class pdf_conseils extends ModelePDFAgefodd {
 	function _pagefoot(&$pdf, $object, $outputlangs) {
 		global $conf, $langs, $mysoc;
 
+		$pdf->SetAutoPageBreak(0, 0);
 		$pdf->SetDrawColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
 		$pdf->SetTextColor($this->colorfooter [0], $this->colorfooter [1], $this->colorfooter [2]);
-		return pdf_agfpagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,1,$hidefreetext);
+		$pdf_agfpagefoot = pdf_agfpagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,1);
+		$pdf->SetAutoPageBreak(1, 0);
+		return $pdf_agfpagefoot;
 	}
 
 }
