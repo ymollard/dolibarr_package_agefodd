@@ -3461,7 +3461,7 @@ class Agsession extends CommonObject
 		}
 		$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 
-		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne, ord_inv.rowid";
+		$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne, ord_inv.rowid, sale.fk_user_com";
 
 		if (! empty($invoiceid)) {
 			if(floatval(DOL_VERSION) > 9){
