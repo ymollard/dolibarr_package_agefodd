@@ -40,7 +40,7 @@ class modAgefodd extends DolibarrModules
 	 * @param DoliDB Database handler
 	 */
 	function __construct($db) {
-		global $conf;
+		global $conf, $langs;
 
 		$this->db = $db;
 
@@ -1556,56 +1556,56 @@ class modAgefodd extends DolibarrModules
 		$this->rights = array();
 		$r = 0;
 
-		$this->rights[$r][0] = 103001;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Voir les sessions';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'lire';
 
 		$r ++;
-		$this->rights[$r][0] = 103002;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Modifier les sessions';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'modifier';
 
 		$r ++;
-		$this->rights[$r][0] = 103003;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Creer les sessions';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'creer';
 
 		$r ++;
-		$this->rights[$r][0] = 103004;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Suppression des sessions';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'supprimer';
 
 		$r ++;
-		$this->rights[$r][0] = 103005;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Voir stats';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'viewstats';
 
 		$r ++;
-		$this->rights[$r][0] = 103006;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'export';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'export';
 
 		$r ++;
-		$this->rights[$r][0] = 103007;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'agenda';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'agenda';
 
 		$r ++;
-		$this->rights[$r][0] = 103008;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'agendatrainer';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'agendatrainer';
 		$r ++;
 
 		$r ++;
-		$this->rights[$r][0] = 103009;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Voir les formations du catalogue';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
@@ -1613,7 +1613,7 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'lire';
 
 		$r ++;
-		$this->rights[$r][0] = 103010;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Creer/Modifier les formations du catalogue';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
@@ -1621,7 +1621,7 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'creer';
 
 		$r ++;
-		$this->rights[$r][0] = 103011;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Supprimer les formations du catalogue';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
@@ -1629,7 +1629,7 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'supprimer';
 
 		$r ++;
-		$this->rights[$r][0] = 103012;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Voir les sites (lieux)';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
@@ -1637,7 +1637,7 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'lire';
 
 		$r ++;
-		$this->rights[$r][0] = 103013;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Creer/Modifier les sites (lieux)';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
@@ -1645,7 +1645,7 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'creer';
 
 		$r ++;
-		$this->rights[$r][0] = 103014;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Supprimer les sites (lieux)';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
@@ -1653,7 +1653,7 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'supprimer';
 
 		$r ++;
-		$this->rights[$r][0] = 103015;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'Visibilité transverse des session';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
@@ -1661,7 +1661,7 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'all';
 
 		$r ++;
-		$this->rights[$r][0] = 103016;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'See session margin';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
@@ -1669,14 +1669,14 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'margin';
 
 		$r ++;
-		$this->rights[$r][0] = 103017;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'See reports';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'report';
 
 		$r ++;
-		$this->rights[$r][0] = 103018;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'See reports BPF';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
@@ -1684,14 +1684,14 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'bpf';
 
 		$r ++;
-		$this->rights[$r][0] = 103019;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'admin agefodd';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'admin';
 
 		$r ++;
-		$this->rights[$r][0] = $this->numero + $r;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'See location agenda';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 0;
@@ -1699,7 +1699,7 @@ class modAgefodd extends DolibarrModules
 		$this->rights[$r][5] = 'all';
 
 		$r ++;
-		$this->rights[$r][0] = $this->numero + $r;
+		$this->rights[$r][0] = $this->numero . $r;
 		$this->rights[$r][1] = 'trainermode';
 		$this->rights[$r][2] = 'r';
 		$this->rights[$r][3] = 0;
@@ -1708,7 +1708,7 @@ class modAgefodd extends DolibarrModules
 
 		$r ++;
         if (!empty($conf->externalaccess->enabled)) {
-            $this->rights[$r][0] = $this->numero + $r;
+            $this->rights[$r][0] = $this->numero . $r;
             $this->rights[$r][1] = 'AgfEATrainerRead';
             $this->rights[$r][2] = 'r';
             $this->rights[$r][3] = 0;
@@ -1717,7 +1717,7 @@ class modAgefodd extends DolibarrModules
 
         $r ++;
         if (!empty($conf->externalaccess->enabled)) {
-		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][0] = $this->numero . $r;
 		    $this->rights[$r][1] = 'AgfEATrainerWrite';
 		    $this->rights[$r][2] = 'w';
 		    $this->rights[$r][3] = 0;
@@ -1726,7 +1726,7 @@ class modAgefodd extends DolibarrModules
 
         $r ++;
         if (!empty($conf->externalaccess->enabled)) {
-		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][0] = $this->numero . $r;
 		    $this->rights[$r][1] = 'AgfEATrainerDownload';
 		    $this->rights[$r][2] = 'r';
 		    $this->rights[$r][3] = 0;
@@ -1735,7 +1735,7 @@ class modAgefodd extends DolibarrModules
 
         $r ++;
         if (!empty($conf->externalaccess->enabled)) {
-		    $this->rights[$r][0] = $this->numero + $r;
+		    $this->rights[$r][0] = $this->numero . $r;
 		    $this->rights[$r][1] = 'AgfEATrainerUpload';
 		    $this->rights[$r][2] = 'w';
 		    $this->rights[$r][3] = 0;
@@ -2543,6 +2543,15 @@ class modAgefodd extends DolibarrModules
 				'user' => 0
 		);
 
+
+		dol_include_once('/agefodd/scripts/update_rights.php');
+		$TRights = getRightsToUpdate();
+		$retfixrights = 0;
+		if (!empty($TRights))
+		{
+			$this->warnings_activation = array('always'=>$langs->trans('AgfInitWarningNeedBackupBefore'));
+		}
+
 	}
 
 	/**
@@ -2589,7 +2598,16 @@ class modAgefodd extends DolibarrModules
 				$result_cleanright = run_sql($dir . 'clean_admin_right.sql', 1, '', 1);
 			}
 		}
-		$reult = $result && $result_cleanright;
+
+		dol_include_once('/agefodd/scripts/update_rights.php');
+		$TRights = getRightsToUpdate();
+		$retfixrights = 0;
+		if (!empty($TRights))
+		{
+			$retfixrights = fixAgefoddRights($TRights, $this->numero);
+		}
+
+		$result = $result && $result_cleanright && ($retfixrights >= 0);
 
 		if (! $result) {
 			setEventMessage('Problem during Migration, please contact your administrator', 'errors');
