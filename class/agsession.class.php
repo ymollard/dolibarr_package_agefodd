@@ -2633,7 +2633,7 @@ class Agsession extends CommonObject
 							$intervalday = $value . ' DAY';
 						}
 						$sql .= ' AND s.dated>= DATE_ADD(NOW(), INTERVAL -' . $intervalday . ')';
-					} elseif (strpos($key, 'date')) { // To allow $filter['YEAR(s.dated)']=>$year
+					} elseif (strpos($key, 'date') && strpos($key, 'ef.') === false) { // To allow $filter['YEAR(s.dated)']=>$year
 						$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 					} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'sale.fk_user_com') || ($key == 's.rowid') || $key == 's.fk_formation_catalogue' || $key == 's.fk_product') {
 						$sql .= ' AND ' . $key . ' = ' . $value;
