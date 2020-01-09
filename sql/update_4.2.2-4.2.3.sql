@@ -1,5 +1,4 @@
--- VMYSQL4.1 ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN delais_alerte_end integer NOT NULL DEFAULT 0 AFTER delais_alerte;
--- VPGSQL8.2 ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN delais_alerte_end integer NOT NULL DEFAULT 0;
+ALTER TABLE llx_agefodd_session_adminsitu ADD COLUMN delais_alerte_end integer NOT NULL DEFAULT 0;
 
 UPDATE llx_agefodd_session_admlevel SET delais_alerte_end=0 WHERE delais_alerte_end IS NULL;
 
