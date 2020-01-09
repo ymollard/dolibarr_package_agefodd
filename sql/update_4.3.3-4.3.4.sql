@@ -1,1 +1,2 @@
-ALTER TABLE llx_agefodd_convention ADD COLUMN doc_lang varchar(6) DEFAULT NULL AFTER model_doc;
+-- VMYSQL4.1 ALTER TABLE llx_agefodd_convention ADD COLUMN doc_lang varchar(6) DEFAULT NULL AFTER model_doc;
+-- VPGSQL8.2 ALTER TABLE llx_agefodd_convention ADD COLUMN doc_lang varchar(6) DEFAULT NULL;
