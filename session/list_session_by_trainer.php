@@ -131,7 +131,7 @@ $sql .= " JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue fc ON (fc.rowid
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur sf ON (sf.fk_session = s.rowid  ) ";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ON (sc.fk_agefodd_session = s.rowid ) ";
 
-$sql .= " WHERE 1 = 1 ";
+
 
 
 

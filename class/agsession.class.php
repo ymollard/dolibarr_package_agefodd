@@ -5892,7 +5892,7 @@ class Agsession extends CommonObject
 		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p ON (p.rowid = s.fk_element AND s.element_type = \'propal\')';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd ON (pd.fk_propal = p.rowid)';
-		$sql_tmp.= ' WHERE 1';
+		$sql_tmp.= ' WHERE 1=1 ';
 		if (!empty($sql_filterSession)) {
 			$sql_tmp.=$sql_filterSession;
 		}
@@ -5915,7 +5915,7 @@ class Agsession extends CommonObject
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p2 ON (p2.rowid = s.fk_element AND s.element_type = \'propal\')';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd2 ON (pd2.fk_propal = p2.rowid)';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = pd2.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
-			$sql_tmp.= ' WHERE 1';
+			$sql_tmp.= ' WHERE 1=1 ';
 			if (!empty($sql_filterSession)) {
 				$sql_tmp.=$sql_filterSession;
 			}
@@ -5938,7 +5938,7 @@ class Agsession extends CommonObject
 		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facture f ON (f.rowid = s.fk_element AND s.element_type = \'invoice\')';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facturedet fd ON (fd.fk_facture = f.rowid)';
-		$sql_tmp.= ' WHERE 1';
+		$sql_tmp.= ' WHERE 1=1 ';
 		if (!empty($sql_filterSession)) {
 			$sql_tmp.=$sql_filterSession;
 		}
@@ -5961,7 +5961,7 @@ class Agsession extends CommonObject
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facture f ON (f.rowid = s.fk_element AND s.element_type = \'invoice\')';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facturedet fd ON (fd.fk_facture = f.rowid)';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = fd.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
-			$sql_tmp.= ' WHERE 1';
+			$sql_tmp.= ' WHERE 1=1 ';
 			if (!empty($sql_filterSession)) {
 				$sql_tmp.=$sql_filterSession;
 			}

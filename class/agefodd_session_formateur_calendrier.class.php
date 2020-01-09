@@ -334,7 +334,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf ON sf.rowid=s.fk_agefodd_session_formateur";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer.rowid=sf.fk_agefodd_formateur";
-		$sql .= " WHERE 1";
+		$sql .= " WHERE 1=1 ";
 		// $field_value => contient déjà les guillemets
 		foreach ($TParam as $field_name => $field_value)
 		{
