@@ -5985,6 +5985,92 @@ class Agsession extends CommonObject
 			return -1;
 		}
 	}
+
+	public function documentsSessionList($sessid, $socid = 0, $trainerid = 0, $withcommon = 1, $withuncommon = 1, $withtrainer = 1, $filearray = array()) {
+
+		global $conf;
+
+		$trainerinsession = new Agefodd_session_formateur($this->db);
+		$trainerinsession->fetch_formateur_per_session($this->id);
+		$TFormateurs = array();
+		if(!empty($this->trainerinsession->lines)){
+			foreach ($this->trainerinsession->lines as $line)
+			{
+				$TFormateurs[$line->formid] = $line->opsid;
+			}
+		}
+
+		if(empty($filearray)) {
+			$upload_dir = $conf->agefodd->dir_output;
+			$filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$');
+		}
+
+		$files = array();
+		if (!empty($filearray)){
+			$TCommonModels = array(
+				"conseils",
+				"fiche_presence",
+				"fiche_presence_direct",
+				"fiche_presence_empty",
+				"fiche_presence_landscape",
+				"fiche_presence_trainee",
+				"fiche_presence_trainee_direct",
+				"fiche_evaluation",
+				"fiche_remise_eval",
+				"chevalet",
+				"attestationendtraining_empty"
+			);
+
+			$TUnCommonModels = array(
+				"attestation",
+				"attestationendtraining",
+				"attestationpresencecollective",
+				"attestationpresencetraining",
+				"convocation",
+				"certificateA4",
+				"certificatecard",
+				"courrier-accueil",
+				"courrier-cloture",
+				"courrier-convention"
+			);
+
+			foreach ($filearray as $file) {
+				if($withcommon){
+					// fiche pedago
+					if(preg_match("/^fiche_pedago(.*)_([0-9]+).pdf$/", $file['name'], $i) && $i[2] == $this->fk_formation_catalogue){
+						$files[] = $file['name'];
+					}
+					// documents communs
+					$mod = substr($file['name'], 0, strrpos($file['name'], '_'));
+					if(in_array($mod, $TCommonModels) && preg_match("/^".$mod."_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $sessid) $files[] = $file['name'];
+				}
+
+				if($withuncommon){
+					$mod = substr($file['name'], 0, strpos($file['name'], '_'));
+					if((in_array($mod, $TUnCommonModels) && preg_match("/^".$mod."_([0-9]+)_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $sessid)
+						|| ($mod == "convention" && preg_match("/^".$mod."_([0-9]+)_([0-9]+)_([0-9]+).pdf$/", $file['name'], $i) && $i[1] == $sessid)
+					)
+					{
+						if(empty($socid)) $files[] = $file['name'];
+						elseif ($i[2] == $socid) $files[] = $file['name'];
+					}
+				}
+
+				if($withtrainer)
+				{
+					if((preg_match("/^mission_trainer_([0-9]+).pdf$/", $file['name'], $i) && in_array($i[1], $TFormateurs))
+						|| (preg_match("/^contrat_trainer_([0-9]+).pdf$/", $file['name'], $i) && in_array($i[1], $TFormateurs))
+					)
+					{
+						if(empty($trainerid)) $files[] = $file['name'];
+						elseif ($i[1] == $TFormateurs[$trainerid]) return $files[] = $file['name'];
+					}
+				}
+			}
+		}
+
+		return $files;
+	}
 }
 
 /**

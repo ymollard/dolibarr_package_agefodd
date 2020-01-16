@@ -2148,26 +2148,25 @@ class ActionsAgefodd
 		global $conf;
 		if ($conf->attachments->enabled) {
 
-			/*dol_include_once('/agefodd/class/agsession.class.php');
+			dol_include_once('/agefodd/class/agsession.class.php');
 			$agf = new Agsession($this->db);
-			$Tsession = $agf->fetch_all_by_order_invoice_propal('', '', 0, 0,
+			$result = $agf->fetch_all_by_order_invoice_propal('', '', 0, 0,
 				get_class($object) == 'Commande' ? $object->id : 0,
 				get_class($object) == 'Facture' ? $object->id : 0,
 				get_class($object) == 'Propal' ? $object->id : 0,
 				get_class($object) == 'FactureFournisseur' ? $object->id : 0,
 				get_class($object) == 'CommandeFournisseur' ? $object->id : 0);
-			if ($Tsession < 0) {
+
+			if ($result < 0) {
 				setEventMessage('From hook attachMoreFiles agefodd :' . $agf->error, 'errors');
-			} else {
-				dol_include_once('/agefodd/class/api_agefodd.class.php');
-				$api = new Agefodd();
-				foreach($Tsession as $session) {
-					$doclist[]=$api->_documentsSessionList($session->id);
+			} elseif (is_array($agf->lines) && count($agf->lines)>0) {
+				foreach($agf->lines as $session) {
+					$doclist[]=$agf->_documentsSessionList($session->id);
 				}
 			}
 
 			$this->results['AttachmentsTitleAgefodd'] = array($doclist);
-		}*/
+		}
 		return 0;
 	}
 }
