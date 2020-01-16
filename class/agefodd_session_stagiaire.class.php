@@ -72,6 +72,9 @@ class Agefodd_session_stagiaire extends CommonObject {
 	public $fk_user_mod = '';
 	public $datec = '';
 	public $tms = '';
+	/**
+	 * @var $lines Agefodd_session_stagiaire[]
+	 */
 	public $lines = array ();
 	public $lines_state = array ();
 	public $hour_foad;

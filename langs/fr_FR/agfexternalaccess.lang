@@ -16,6 +16,7 @@ AgfSendCopyOfTraineeEmailToTrainer=Envoyer une copie du mail au formateur
 AgfEATrainerTitle=Configuration des formateurs
 AgfUserForMailSending=Compte utilisateur à utiliser pour envoyer les emails depuis le portail client
 AgfEAUseUserEmailSmptConf=Lors de l'envoi d'email à partir du portail client, utiliser la configuration email sortant standard au lieu d'utiliser celle des emails de masse
+AgfEANumberOfElementsInLists=Configuration du nombre d'éléments afficher sur les listes du portail
 
 AgfActivateAccessForTrainees=Activer l'accès externe pour les stagiaires (il est nécessaire d'attribuer des droits utilisateurs au contacts liées aux stagiaires)
 AgfEATraineeTitle=Configurations des stagiaires
@@ -95,3 +96,6 @@ AgfRecap=Récapitulatif
 AgfSessionSummaryTimeDone=Total des créneaux au statut réalisés
 AgfLinksExternal=Autre(s) lien(s)
 HourInvalid=Heure invalide
+ArchivedSessions=Sessions archivées
+AgfEAAddTrainneNameInSessionSelectList=Afficher les noms des stagiaires sur la liste des sessions lors de la création du créneau horaire
+

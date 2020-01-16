@@ -791,7 +791,7 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 				$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
 				$pdf->SetXY($posX + 55, $posY);
-				$str = $outputlangs->transnoentities('AgfPDFFichePres21');
+				$str = $outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($agf->datef);
 				$pdf->Cell(20, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
 				$pdf->SetXY($posX + 92, $posY);

@@ -305,10 +305,14 @@ class Agefodd_convention {
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $id object
+	 * @param int   $sessid              session id
+	 * @param int   $socid               socid
+	 * @param array $filterTraineeStatus Filter on status of trainee
 	 * @return int <0 if KO, >0 if OK
+	 * @throws Exception
 	 */
-	public function fetch_all($sessid, $socid = 0) {
+	public function fetch_all($sessid, $socid = 0, $filterTraineeStatus=array()) {
+
 		global $langs;
 
 		$sql = "SELECT";
@@ -367,7 +371,9 @@ class Agefodd_convention {
 					$sql_trainee .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire as convtrainee ";
 					$sql_trainee .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as s ON s.rowid=convtrainee.fk_agefodd_session_stagiaire";
 					$sql_trainee .= " WHERE convtrainee.fk_agefodd_convention = " . $line->id;
-
+					if (count($filterTraineeStatus)>0) {
+						$sql_trainee .= " AND s.status_in_session IN (".implode(",", $filterTraineeStatus).")";
+					}
 					dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
 					$resqltrainee = $this->db->query($sql_trainee);
 					if ($resqltrainee) {

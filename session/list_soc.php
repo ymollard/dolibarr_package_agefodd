@@ -60,12 +60,16 @@ $search_training_ref = GETPOST("search_training_ref", 'alpha');
 $search_start_date = dol_mktime(0, 0, 0, GETPOST('search_start_datemonth', 'int'), GETPOST('search_start_dateday', 'int'), GETPOST('search_start_dateyear', 'int'));
 $search_end_date = dol_mktime(0, 0, 0, GETPOST('search_end_datemonth', 'int'), GETPOST('search_end_dateday', 'int'), GETPOST('search_end_dateyear', 'int'));
 $search_site = GETPOST("search_site");
+$search_sale = GETPOST("search_sale", 'int');
 $search_training_ref_interne = GETPOST('search_training_ref_interne', 'alpha');
 $search_type_session = GETPOST("search_type_session", 'int');
 $training_view = GETPOST("training_view", 'int');
 $site_view = GETPOST('site_view', 'int');
 $status_view = GETPOST('status', 'array');
 $search_type_affect = GETPOST('search_type_affect', 'alpha');
+if(empty($search_type_affect) && !empty($conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION)){
+	$search_type_affect = $conf->global->RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION;
+}
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
@@ -79,6 +83,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_type_session = "";
 	$status_view = "";
 	$search_type_affect = "";
+	$search_sale = "";
 }
 
 if (empty($search_type_affect)) {
@@ -128,6 +133,11 @@ if (! empty($status_view)) {
 if (! empty($search_type_affect)) {
 	$filter ['type_affect'] = $search_type_affect;
 	$option.='&search_type_affect='.$search_type_affect;
+}
+if (! empty($search_sale) && $search_sale > 0)
+{
+	$filter ['sale.fk_user_com'] = $search_sale;
+	$option.='&search_sale='.$search_sale;
 }
 if (! empty($socid)) {
 	$option.='&socid='.$socid;
@@ -280,6 +290,7 @@ if ($result >= 0) {
 	print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "s.ref", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "socpf.lastname", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfSessionCommercial"), $_SERVER ['PHP_SELF'], "ucom.lastname", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
@@ -327,6 +338,10 @@ if ($result >= 0) {
 
 	print '<td class="liste_titre">';
 	print $formAgefodd->select_formateur($search_teacher_id, 'search_teacher_id', '', 1);
+	print '</td>';
+
+	print '<td class="liste_titre">';
+	print $form->select_dolusers($search_sale, 'search_sale', 1);
 	print '</td>';
 
 	print '<td class="liste_titre">';
@@ -487,6 +502,21 @@ if ($result >= 0) {
 			if (! empty($trainer->id)) {
 				print ucfirst(strtolower($trainer->civilite)) . ' ' . strtoupper($trainer->name) . ' ' . ucfirst(strtolower($trainer->firstname));
 			} else {
+				print '&nbsp;';
+			}
+			print '</td>';
+
+			print '<td>';
+			$commercial = new User($db);
+			if (! empty($line->fk_user_com)){
+				$commercial->fetch($line->fk_user_com);
+			}
+			if (! empty($commercial->id))
+			{
+				print $commercial->getNomUrl();
+			}
+			else
+			{
 				print '&nbsp;';
 			}
 			print '</td>';

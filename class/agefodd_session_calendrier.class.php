@@ -172,6 +172,132 @@ class Agefodd_sesscalendar extends CommonObject{
 		}
 	}
 
+	public function checkOtherSessionCalendarSamePlaceDate()
+    {
+        $TMessage = array();
+
+        $result = $this->fetchOtherSessionSameplacedate(); // set attribute 'error' if needed
+        if ($result > 0)
+        {
+            global $langs;
+
+            if (is_array($this->lines_place) && count($this->lines_place) > 0)
+            {
+                foreach ($this->lines_place as $linesess)
+                {
+                    if ($linesess->rowid != $this->id)
+                    {
+                        if ($linesess->typeevent == 'session')
+                        {
+//                            $TMessage[] = $langs->trans('AgfPlaceUseInOtherSession').'<a href="'.dol_buildpath('/agefodd/session/list.php', 1).'?site_view=1&search_id='.$linesess->rowid.'&search_site='.$linesess->fk_session_place.'" target="_blank">'.$linesess->rowid.'</a>';
+                            $TMessage[] = $langs->trans('AgfPlaceUseInOtherSession').'<a href="'.dol_buildpath('/agefodd/session/calendar.php', 1).'?id='.$linesess->rowid.'#calendar-'.$this->date_session.'" target="_blank">'.$linesess->rowid.'</a>';
+                        }
+                        elseif ($linesess->typeevent == 'actioncomm')
+                        {
+                            $TMessage[] = $langs->trans('AgfPlaceUseInOtherEvent').'<a href="'.dol_buildpath('/comm/action/list.php', 1).'?contextpage=actioncommlist&actioncode=0&filtert=-1&usergroup=-1&status=&search_options_agf_site='.$linesess->fk_session_place.'" target="_blank">'.$linesess->rowid.'</a>';
+                        }
+                    }
+                }
+            }
+        }
+
+        return $TMessage;
+    }
+
+    public function fetchOtherSessionSameplacedate()
+    {
+        global $conf;
+
+        $this->lines_place = array();
+
+        if (empty($this->id))
+        {
+            return 1;
+        }
+
+        $session = new Agsession($this->db);
+        if ($session->fetch($this->sessid) < 0)
+        {
+            $this->error = $session->error;
+            return -1;
+        }
+
+        dol_include_once('/agefodd/class/agefodd_place.class.php');
+        $place = new Agefodd_place($this->db);
+        if ($place->fetch($session->fk_session_place) < 0)
+        {
+            $this->error = $session->error;
+            return -2;
+        }
+
+        if ($place->control_occupation)
+        {
+            $sql = "SELECT ";
+            $sql .= "DISTINCT ag.rowid FROM " . MAIN_DB_PREFIX . "agefodd_session as ag ";
+            $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier as agcal ON ag.rowid=agcal.fk_agefodd_session";
+            $sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_status_type as agf_status ON (ag.status = agf_status.rowid  AND agf_status.code<>\'NOT\')';
+            $sql .= " WHERE ag.fk_session_place=" . $place->id;
+            $sql .= " AND ((agcal.heuref >= '" . $this->db->idate($this->heured) . "') ";
+            $sql .= " AND (agcal.heured <= '" . $this->db->idate($this->heuref) . "') )";
+            $sql .= " AND agcal.fk_agefodd_session!=" . $this->sessid;
+
+            dol_syslog(get_class($this) . "::" . __METHOD__ . " sql=" . $sql, LOG_DEBUG);
+            $resql = $this->db->query($sql);
+            if ($resql)
+            {
+                while ($obj = $this->db->fetch_object($resql))
+                {
+                    $line = new AgfSessionLine();
+                    $line->rowid = $obj->rowid;
+                    $line->fk_session_place = $place->id;
+                    $line->typeevent = 'session';
+                    $this->lines_place[] = $line;
+                }
+            }
+            else
+            {
+                $this->error = "Error ".$this->db->lasterror();
+                dol_syslog(get_class($this)."::".__METHOD__.$this->error, LOG_ERR);
+                return -3;
+            }
+
+
+            if (!empty($conf->global->AGF_USE_SITE_IN_AGENDA))
+            {
+                //find event on calendar (not only session)
+                $sql = "SELECT ";
+                $sql .= "DISTINCT actcomm.id as rowid FROM ".MAIN_DB_PREFIX."actioncomm as actcomm ";
+                $sql .= " INNER JOIN ".MAIN_DB_PREFIX."actioncomm_extrafields as actcomm_extra ON actcomm.id=actcomm_extra.fk_object";
+                $sql .= " WHERE actcomm_extra.agf_site=".$place->id;
+                $sql .= " AND (actcomm.datep BETWEEN '".$this->db->idate($this->heured)."' AND '".$this->db->idate($this->heuref)."') ";
+                $sql .= " AND (actcomm.datep2 BETWEEN '".$this->db->idate($this->heured)."' AND '".$this->db->idate($this->heuref)."') ";
+
+                dol_syslog(get_class($this)."::".__METHOD__." sql=".$sql, LOG_DEBUG);
+                $resql = $this->db->query($sql);
+                if ($resql)
+                {
+                    while ($obj = $this->db->fetch_object($resql))
+                    {
+                        $line = new AgfSessionLine();
+                        $line->rowid = $obj->rowid;
+                        $line->fk_session_place = $place->id;
+                        $line->typeevent = 'actioncomm';
+                        $this->lines_place[] = $line;
+                    }
+                }
+                else
+                {
+                    $this->error = "Error ".$this->db->lasterror();
+                    dol_syslog(get_class($this)."::".__METHOD__.$this->error, LOG_ERR);
+                    return -4;
+                }
+            }
+
+        }
+
+        return 1;
+    }
+
 	/**
 	 * Load object in memory from database
 	 *

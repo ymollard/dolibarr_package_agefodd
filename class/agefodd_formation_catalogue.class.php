@@ -287,7 +287,7 @@ class Formation extends CommonObject {
 				$this->sanction = $obj->sanction;
 				$this->color = $obj->color;
 				$this->qr_code_info = $obj->qr_code_info;
-				
+
 				require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
     			$extrafields = new ExtraFields($this->db);
     			$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
@@ -297,7 +297,7 @@ class Formation extends CommonObject {
 			}
 			$this->db->free($resql);
 
-			
+
 
 			return 1;
 		} else {
@@ -794,16 +794,19 @@ class Formation extends CommonObject {
             require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
             $extrafields = new ExtraFields($this->db);
             $extrafields->fetch_name_optionals_label($this->table_element);
-            $array_options_keys = array_keys($extrafields->attributes[$this->table_element]['label']);
+            if (is_array($extrafields->attributes[$this->table_element]['label'])) {
+                $array_options_keys = array_keys($extrafields->attributes[$this->table_element]['label']);
+            }
         }
 
         $sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.ref, c.datec, c.duree,c.nb_place, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
 		$sql .= "dictcatbpf.code as catcodebpf ,dictcatbpf.intitule as catlibbpf,";
 		$sql .= " (SELECT MAX(sess1.datef) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.status IN (4,5)) as lastsession,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.status IN (4,5)) as nbsession";
-		foreach ($array_options_keys as $key)
-		{
-			$sql.= ', ef.'.$key;
+		if (is_array($array_options_keys) && count($array_options_keys) > 0) {
+			foreach ($array_options_keys as $key) {
+				$sql .= ', ef.' . $key;
+			}
 		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as a";
@@ -887,9 +890,10 @@ class Formation extends CommonObject {
 
 					// Formatage comme du Dolibarr standard pour ne pas être perdu
 					$line->array_options = array();
-					foreach ($array_options_keys as $key)
-					{
-						$line->array_options['options_'.$key] = $obj->{$key};
+					if (is_array($array_options_keys) && count($array_options_keys) > 0) {
+						foreach ($array_options_keys as $key) {
+							$line->array_options['options_' . $key] = $obj->{$key};
+						}
 					}
 
 					$this->lines[$i] = $line;

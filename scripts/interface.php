@@ -10,7 +10,6 @@ if (! $res)
 dol_include_once('/core/lib/functions.lib.php');
 
 
-
 global $db;
 
 /*
@@ -86,7 +85,7 @@ $data['msg'] = '';
 			if (!empty($resql))
 			{
 				$obj = $db->fetch_object($resql);
-				
+
 				$data['nb_place'] = $obj->nb_place;
 				if ($fk_place>0)
 				{

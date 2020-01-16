@@ -1109,3 +1109,4 @@ AgfNobodyTrainer=No trainer subs.
 AgfThirdpartyOfTraineeMandatory=Cannot create trainnee without thirdparty linked
 AgfUseTrainingProgramModule=USe modules into training program (experimental)
 AgfForSession=para la sesion
+AgfCloneTrainingModules=¿ Duplicar temario de formación de los modulos ?
