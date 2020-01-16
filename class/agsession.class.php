@@ -1804,7 +1804,7 @@ class Agsession extends CommonObject
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session SET";
 		$sql .= " fk_user_mod=" . $this->db->escape($user->id) . ",";
 		$sql .= " status=" . (isset($this->status) ? $this->status : "1") . ",";
-		$sql .= " status_before_archive=" . (isset($this->status_before_archive) ? $this->status_before_archive : null) . "";
+		$sql .= " status_before_archive=" . (isset($this->status_before_archive) ? $this->status_before_archive : "NULL") . "";
 		$sql .= " WHERE rowid=" . $this->id;
 
 		$this->db->begin();
