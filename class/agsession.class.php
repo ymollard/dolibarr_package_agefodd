@@ -5989,7 +5989,12 @@ class Agsession extends CommonObject
 	public function documentsSessionList($sessid, $socid = 0, $trainerid = 0, $withcommon = 1, $withuncommon = 1, $withtrainer = 1, $filearray = array()) {
 
 		global $conf;
+		//Mean we probably comme here without fetch all session attribute
+		if (empty($this->fk_formation_catalogue)) {
+			$this->fetch($sessid);
+		}
 
+		dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 		$trainerinsession = new Agefodd_session_formateur($this->db);
 		$trainerinsession->fetch_formateur_per_session($this->id);
 		$TFormateurs = array();
@@ -6056,14 +6061,14 @@ class Agsession extends CommonObject
 					}
 				}
 
-				if($withtrainer)
-				{
-					if((preg_match("/^mission_trainer_([0-9]+).pdf$/", $file['name'], $i) && in_array($i[1], $TFormateurs))
+				if($withtrainer) {
+					if ((preg_match("/^mission_trainer_([0-9]+).pdf$/", $file['name'], $i) && in_array($i[1], $TFormateurs))
 						|| (preg_match("/^contrat_trainer_([0-9]+).pdf$/", $file['name'], $i) && in_array($i[1], $TFormateurs))
-					)
-					{
-						if(empty($trainerid)) $files[] = $file['name'];
-						elseif ($i[1] == $TFormateurs[$trainerid]) return $files[] = $file['name'];
+					) {
+						if (empty($trainerid))
+							$files[] = $file['name'];
+						elseif ($i[1] == $TFormateurs[$trainerid])
+							return $files[] = $file['name'];
 					}
 				}
 			}
