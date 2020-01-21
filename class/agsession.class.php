@@ -1804,7 +1804,7 @@ class Agsession extends CommonObject
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session SET";
 		$sql .= " fk_user_mod=" . $this->db->escape($user->id) . ",";
 		$sql .= " status=" . (isset($this->status) ? $this->status : "1") . ",";
-		$sql .= " status_before_archive=" . (isset($this->status_before_archive) ? $this->status_before_archive : null) . "";
+		$sql .= " status_before_archive=" . (isset($this->status_before_archive) ? $this->status_before_archive : "NULL") . "";
 		$sql .= " WHERE rowid=" . $this->id;
 
 		$this->db->begin();
@@ -2633,7 +2633,7 @@ class Agsession extends CommonObject
 							$intervalday = $value . ' DAY';
 						}
 						$sql .= ' AND s.dated>= DATE_ADD(NOW(), INTERVAL -' . $intervalday . ')';
-					} elseif (strpos($key, 'date')) { // To allow $filter['YEAR(s.dated)']=>$year
+					} elseif (strpos($key, 'date') && strpos($key, 'ef.') === false) { // To allow $filter['YEAR(s.dated)']=>$year
 						$sql .= ' AND ' . $key . ' = \'' . $value . '\'';
 					} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status') || ($key == 'sale.fk_user_com') || ($key == 's.rowid') || $key == 's.fk_formation_catalogue' || $key == 's.fk_product') {
 						$sql .= ' AND ' . $key . ' = ' . $value;

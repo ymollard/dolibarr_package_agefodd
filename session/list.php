@@ -192,8 +192,7 @@ include DOL_DOCUMENT_ROOT . '/core/actions_changeselectedfields.inc.php';
 $agf_session = new Agsession($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf_session->table_element, true);
-
-$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
+$search_array_options = $extrafields->getOptionalsFromPost('agefodd_session', '', 'search_');
 
 $arrayfields = array(
 		's.rowid' => array(
@@ -490,6 +489,7 @@ foreach ( $search_array_options as $key => $val ) {
 	$tmpkey = preg_replace('/search_options_/', '', $key);
 	$typ = $extrafields->attribute_type[$tmpkey];
 	$mode_search = 0;
+	if (in_array($typ, array('date')) && !empty($crit)) $crit=date('Y-m-d', $crit);
 	if (in_array($typ, array(
 			'int',
 			'double',
