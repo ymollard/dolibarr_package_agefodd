@@ -5985,6 +5985,25 @@ class Agsession extends CommonObject
 			return -1;
 		}
 	}
+
+	/**
+	 * actually showPublicOutputField doesn't exist in Dolibarr but I will probably create then for Dolibarr 12
+	 * So param will probably have different param so I created referenceletter_showPublicOutputField to prevent conflict
+	 *
+	 * @param $key
+	 * @param $value
+	 * @return mixed
+	 */
+	public function referenceletter_showPublicOutputField($key,$value){
+
+		if($key=='nb_place'){
+			return intval($this->{$key});
+		}
+
+		// if no replace action return default
+		return $value;
+	}
+
 }
 
 /**
