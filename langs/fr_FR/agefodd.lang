@@ -1675,3 +1675,4 @@ AgfCloneTrainingModules=Cloner programme de formation des modules ?
 AgfMailToSendAttestationPresence=Module formation - Pour l'envoi de l'attestation de présence
 
 AgfDefaultRelationLinkSelectedOnThirdPartyTrainingSession=Type de relation par défaut dans l'onglet session de formation d'un tier
+EndHour = Heure de fin
