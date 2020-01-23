@@ -124,23 +124,6 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 	{
 		global $user, $langs, $conf, $hookmanager;
 
-		$agfsta = new Agefodd_session_stagiaire($this->db);
-		$resql = $agfsta->fetch_stagiaire_per_session($agf);
-
-//		$soc = array();
-//
-//		foreach ($agfsta->lines as $line){
-//			if (!in_array($line->socid, $soc)) {
-//				$soc[] = $line->socid;
-//			}
-//		}
-//
-//		foreach($soc as $key=>$value) {
-//			var_dump('hey'.$value);
-//		}
-//
-//		var_dump($soc); exit;
-
 		if (! is_object($outputlangs))
 			$outputlangs = $langs;
 
@@ -266,17 +249,31 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 		}
 
 		//On récupère l'id des sociétés des participants
-		$agfsta = new Agefodd_session_stagiaire($this->db);
-		$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
+		$agfstaglobal = new Agefodd_session_stagiaire($this->db);
+		$resql = $agfstaglobal->fetch_stagiaire_per_session($agf->id);
 		$socstagiaires = array();
-		foreach ($agfsta->lines as $line){
-			if (!in_array($line->socid, $socstagiaires)) {
-				$socstagiaires[] = $line->socid;
-			}
+
+		$TStagiaireStatusToExclude = array();
+
+		if (! empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
+			$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
 		}
 
-		//Pour chaque société, on crée une série de feuilles de présence
-		foreach($socstagiaires as $key=>$socstagiaires_id) {
+		foreach ($agfstaglobal->lines as $line) {
+			if (! empty($TStagiaireStatusToExclude) && in_array($line->status_in_session, $TStagiaireStatusToExclude)) {
+				continue;
+			}
+
+			if (! isset($socstagiaires[$line->socid])) {
+				$socstagiaires[$line->socid] = new stdClass();
+				$socstagiaires[$line->socid]->lines = array();
+			}
+
+			$socstagiaires[$line->socid]->lines[] = $line;
+		}
+
+		//Pour chaque société ayant un participant à afficher, on crée une série de feuilles de présence
+		foreach($socstagiaires as $socstagiaires_id => $agfsta) {
 
 			foreach ($session_hours as $key => $lines_array) {
 				// New page
@@ -608,9 +605,6 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 				/**
 				 * *** Bloc stagiaire ****
 				 */
-//				$agfsta = new Agefodd_session_stagiaire($this->db);
-				$resql = $agfsta->fetch_stagiaire_per_session($agf->id, $socstagiaires_id);
-
 				$pdf->SetXY($posX - 2, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), 'BI', 9);
 				$str = $outputlangs->transnoentities('AgfPDFFichePres15');
@@ -703,12 +697,6 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 
 
 				foreach ($agfsta->lines as $line) {
-
-					if (!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
-						$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
-						$status_stagiaire = (int)$line->status_in_session;
-						if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) continue;
-					}
 
 					if (!empty($conf->global->AGF_ADD_INDEX_TRAINEE)) {
 						$str = $nbsta_index . '. ';
