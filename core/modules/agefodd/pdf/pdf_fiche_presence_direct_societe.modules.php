@@ -154,17 +154,31 @@ class pdf_fiche_presence_direct_societe extends ModelePDFAgefodd {
 			$pdf->SetAutoPageBreak(1, 0);
 
 			//On récupère l'id des sociétés des participants
-			$agfsta = new Agefodd_session_stagiaire($this->db);
-			$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
+			$agfstaglobal = new Agefodd_session_stagiaire($this->db);
+			$resql = $agfstaglobal->fetch_stagiaire_per_session($agf->id);
 			$socstagiaires = array();
-			foreach ($agfsta->lines as $line){
-				if (!in_array($line->socid, $socstagiaires)) {
-					$socstagiaires[] = $line->socid;
+
+			$TStagiaireStatusToExclude = array();
+
+			if (! empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
+				$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+			}
+
+			foreach ($agfstaglobal->lines as $line) {
+				if (! empty($TStagiaireStatusToExclude) && in_array($line->status_in_session, $TStagiaireStatusToExclude)) {
+					continue;
 				}
+
+				if (! isset($socstagiaires[$line->socid])) {
+					$socstagiaires[$line->socid] = new stdClass();
+					$socstagiaires[$line->socid]->lines = array();
+				}
+
+				$socstagiaires[$line->socid]->lines[] = $line;
 			}
 
 			//Pour chaque société, on crée une série de feuilles de présence
-			foreach($socstagiaires as $key=>$socstagiaires_id) {
+			foreach($socstagiaires as $socstagiaires_id => $agfsta) {
 
 				// New page
 				$pdf->AddPage();
@@ -207,9 +221,6 @@ class pdf_fiche_presence_direct_societe extends ModelePDFAgefodd {
 				/**
 				 * *** Bloc stagiaire ****
 				 */
-//				$agfsta = new Agefodd_session_stagiaire($this->db);
-				$resql = $agfsta->fetch_stagiaire_per_session($agf->id, $socstagiaires_id);
-
 				$posY = $pdf->GetY() + 25;
 
 				$larg_col1 = 40;
@@ -263,12 +274,6 @@ class pdf_fiche_presence_direct_societe extends ModelePDFAgefodd {
 				$posYstart = $posY;
 
 				foreach ($agfsta->lines as $line) {
-
-					if (!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
-						$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
-						$status_stagiaire = (int)$line->status_in_session;
-						if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) continue;
-					}
 
 					// Nom
 					$pdf->SetXY($posX, $posY);
