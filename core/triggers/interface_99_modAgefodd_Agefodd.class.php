@@ -1208,6 +1208,8 @@ class InterfaceAgefodd {
 					}
 				}
 			}
+		}elseif($action == 'CONTACT_DELETE') {
+			$this->db->query('UPDATE '.MAIN_DB_PREFIX.'agefodd_stagiaire SET fk_socpeople = NULL WHERE fk_socpeople NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'socpeople)');
 		}
 		elseif ($action == 'USER_MODIFY')
         {
