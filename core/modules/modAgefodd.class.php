@@ -2562,7 +2562,7 @@ class modAgefodd extends DolibarrModules
 	 * @return int if OK, 0 if KO
 	 */
 	function init($options = '') {
-		global $conf;
+		global $conf, $db, $langs;
 
 		$sql = array();
 
@@ -2602,10 +2602,23 @@ class modAgefodd extends DolibarrModules
 		dol_include_once('/agefodd/scripts/update_rights.php');
 		$TRights = getRightsToUpdate();
 		$retfixrights = 0;
+
+
 		if (!empty($TRights))
 		{
 			$retfixrights = fixAgefoddRights($TRights, $this->numero);
+			if($retfixrights == -2)
+			{
+				setEventMessage($langs->trans('AGFInitRightsErrors', 'errors'));
+				// suppression des droits erronés
+				$res = $db->query("DELETE FROM ".MAIN_DB_PREFIX."rights_def WHERE id > 1030000 AND   r.module = 'agefodd'  AND entity = ".$conf->entity);
+			}
+			elseif($retfixrights === 1){
+				setEventMessage($langs->trans('AGFInitRightsSuccess'));
+			}
 		}
+
+
 
 		$result = $result && $result_cleanright && ($retfixrights >= 0);
 
