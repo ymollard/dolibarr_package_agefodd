@@ -1569,7 +1569,7 @@ class modAgefodd extends DolibarrModules
 
 		$r ++;
 		$this->rights[$r][0] = $this->numero . $r;
-		$this->rights[$r][1] = 'AGFR_EditSessions';
+		$this->rights[$r][1] = 'AGFR_CreateSessions';
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'creer';
 
@@ -2545,7 +2545,7 @@ class modAgefodd extends DolibarrModules
 
 
 		dol_include_once('/agefodd/scripts/update_rights.php');
-		$TRights = getRightsToUpdate();
+		$TRights = getRightsToUpdate($this);
 		$retfixrights = 0;
 		if (!empty($TRights))
 		{
@@ -2622,7 +2622,7 @@ class modAgefodd extends DolibarrModules
 		$sql = array();
 
 		dol_include_once('/agefodd/scripts/update_rights.php');
-		$TRights = getRightsToUpdate();
+		$TRights = getRightsToUpdate($this);
 		$retfixrights = 1; // default ok for return part
 
 		if (!empty($TRights) && is_array($TRights))
@@ -2632,7 +2632,7 @@ class modAgefodd extends DolibarrModules
 			{
 				setEventMessage($langs->trans('AGFInitRightsErrors', 'errors'));
 				// suppression des droits erronés
-				$res = $db->query("DELETE FROM ".MAIN_DB_PREFIX."rights_def WHERE id > 1030000 AND   r.module = 'agefodd'  AND entity = ".$conf->entity);
+				$res = $db->query("DELETE FROM ".MAIN_DB_PREFIX."rights_def WHERE id > 1030000 AND   r.module = '".$this->rights_class."'  AND entity = ".$conf->entity);
 			}
 			elseif($retfixrights === 1){
 				setEventMessage($langs->trans('AGFInitRightsSuccess'));

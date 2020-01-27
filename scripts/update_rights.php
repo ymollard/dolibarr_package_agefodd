@@ -4,13 +4,17 @@
  * script to normalize agefodd rights
  */
 
-function getRightsToUpdate()
+/**
+ * @param $modAgefodd modAgefodd
+ * @return array
+ */
+function getRightsToUpdate($modAgefodd)
 {
 	global $db;
 
 	$TRights = array();
 	$sql = "SELECT DISTINCT r.id, r.libelle, r.module, r.entity, r.perms, r.subperms, r.type, r.bydefault FROM ".MAIN_DB_PREFIX."rights_def r";
-	$sql.= " WHERE r.module = 'agefodd'";
+	$sql.= " WHERE r.module = '".$modAgefodd->rights_class."'";
 	$sql.= " AND r.id > 103000 AND r.id <= 103025";
 
 	$resql = $db->query($sql);
