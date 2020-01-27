@@ -139,7 +139,7 @@ class modAgefodd extends DolibarrModules
 		$this->depends = array(
 				'modSociete',
 				'modPropale',
-				'modComptabilite',
+				// 'modComptabilite', Ne plus utiliser , je le laisse en comment car il revient de temps en temps
 				'modFacture',
 				'modBanque',
 				'modFournisseur',
