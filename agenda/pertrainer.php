@@ -137,10 +137,13 @@ if ($filter_trainee == -1) {
 	$filter_trainee=0;
 }
 
-$onlysession = GETPOST('onlysession', 'int');
-if ($onlysession != '0') {
-	$onlysession = 1;
+$onlysession = 1;
+$issetOnlySession = GETPOSTISSET('onlysession');
+if (!empty($issetOnlySession)) {
+	$onlysession = GETPOST('onlysession','int');
+	$onlysession = intval($onlysession);
 }
+
 $filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth', 'int'), GETPOST('dt_start_filterday', 'int'), GETPOST('dt_start_filteryear', 'int'));
 
 $maxprint = (isset($_GET["maxprint"]) ? GETPOST("maxprint") : $conf->global->AGENDA_MAX_EVENTS_DAY_VIEW);
@@ -316,6 +319,7 @@ if (is_array($filter_session_status) && count($filter_session_status)>0){
 
 }
 $param .= "&amp;maxprint=" . $maxprint;
+$param .= "&amp;onlysession=" . $onlysession;
 
 $prev = dol_get_first_day_week($day, $month, $year);
 // print "day=".$day." month=".$month." year=".$year;
@@ -464,7 +468,7 @@ if ($action == 'show_day') {
 }
 
 // Fix indisponibilite formateur
-$sql.= ' AND CASE ';
+$sql.= ' AND 1 = CASE ';
 $sql.= ' 		WHEN ca.code = \'AC_AGF_NOTAV\' AND a.fk_element = trainer.rowid  AND a.elementtype = \'agefodd_formateur\' THEN 1  ';
 $sql.= '		WHEN ca.code != \'AC_AGF_NOTAV\' THEN 1 ';
 $sql.= '     ELSE 0 ';
