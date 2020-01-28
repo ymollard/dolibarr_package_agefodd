@@ -463,6 +463,13 @@ if ($action == 'show_day') {
 	$sql .= ')';
 }
 
+// Fix indisponibilite formateur
+$sql.= ' AND CASE ';
+$sql.= ' 		WHEN ca.code = \'AC_AGF_NOTAV\' AND a.fk_element = trainer.rowid  AND a.elementtype = \'agefodd_formateur\' THEN 1  ';
+$sql.= '		WHEN ca.code != \'AC_AGF_NOTAV\' THEN 1 ';
+$sql.= '     ELSE 0 ';
+$sql.= ' END ';
+
 if (! empty($filter_commercial)) {
 	$sql .= " AND salesman.fk_user_com=" . $filter_commercial;
 }
