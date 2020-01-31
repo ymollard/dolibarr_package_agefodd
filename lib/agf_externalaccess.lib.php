@@ -449,7 +449,7 @@ function getPageViewSessionListExternalAccess()
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 							},
 							responsive: true,
-							order: [[ '.(empty($conf->global->AGF_EA_SORT_FIELDS_IN_SESSION_LISTS) ? '3' : $conf->global->AGF_EA_SORT_FIELDS_IN__SESSION_LISTS).', "desc" ]],
+							order: [[ '.(empty($conf->global->AGF_EA_SORT_FIELDS_IN_SESSION_LISTS) ? 3 : $conf->global->AGF_EA_SORT_FIELDS_IN_SESSION_LISTS).', "desc" ]],
 							columnDefs: [{
 								orderable: false,
 								"aTargets": [-1, 2]
