@@ -500,12 +500,9 @@ class ReportCommercial extends AgefoddExportExcel
 				AND COALESCE(parent.rowid, 0) = ' . $parentID. '
 				AND s.fk_typent != 103';
 
-		// On n'applique les filtres que sur la maison-mère
+		// On n'applique les filtres que sur la maison-mère, sauf client/prospect
 		if(empty($parentID))
 		{
-			$sql .= '
-				AND s.client IN (' . implode(', ', $filter['s.client']) . ')';
-
 			if (! empty($filter['soc.rowid']))
 			{
 				if (! is_array($filter['soc.rowid']))
@@ -535,6 +532,11 @@ class ReportCommercial extends AgefoddExportExcel
 				AND s.datec <= "' . $filter['startyear'] . '"
 				AND s.datec > "' . ($filter['startyear'] - $filter['nbyears']) . '"';
 			}
+		}
+		else
+		{
+			$sql .= '
+				AND s.client IN (' . implode(', ', $filter['s.client']) . ')';
 		}
 
 		$sql.= '
