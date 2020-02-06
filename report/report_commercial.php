@@ -233,7 +233,7 @@ print '<table class="border" width="100%">';
 print '<tr>';
 print '<td class="fieldrequired">' . $langs->trans('AgfReportCommercialBaseYear').'</td>';
 print '<td>';
-print $formother->selectyear($search_year ? $search_year : -1, 'search_year', 0, 15, 0);
+print $formother->selectyear($search_year ? $search_year : -1, 'search_year', 0, 15, 1);
 print '</td>';
 print '</tr>';
 
