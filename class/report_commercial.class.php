@@ -748,7 +748,6 @@ class ReportCommercial extends AgefoddExportExcel
 		foreach($TTypesTodo as $type)
 		{
 			$sql = $this->get_ca_data_sql_query($type, $companyID, $filter);
-if ($companyID == 10213 && $type == 'noopcaintranoextra') echo '<p>' . $sql . '</p>';
 			dol_syslog(get_class($this).'::'.__METHOD__. ' $companyID='.$companyID.' $type='.$type);
 			$resql = $this->db->query($sql);
 
@@ -1036,18 +1035,15 @@ if ($companyID == 10213 && $type == 'noopcaintranoextra') echo '<p>' . $sql . '<
 				break;
 		}
 
-		if (count($this->year_to_report_array) == 1) {
-			$sql .= '
-				AND YEAR(' . $dateField . ') = ' . intval($this->year_to_report_array[0]);
-		} else {
-			$sql .= '
+		$sql.= '
 				AND YEAR(' . $dateField . ') IN (' . implode(', ', $this->year_to_report_array) . ')';
-		}
-		
+
 		$sql.= ' GROUP BY ';
+
 		if ($this->debug) {
 			$sql .= ' f.rowid, ';
 		}
+
 		$sql.= 'YEAR(' . $dateField . '), MONTH(' . $dateField . ')
 				ORDER BY YEAR(' . $dateField . ') DESC, MONTH(' . $dateField . ') DESC';
 
