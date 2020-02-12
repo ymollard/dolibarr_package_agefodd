@@ -64,7 +64,11 @@ if ($action == 'setvarother') {
         $heuresEclatee = GETPOST('AGF_EA_ECLATE_HEURES_PAR_TYPE');
         $res = dolibarr_set_const($db, 'AGF_EA_ECLATE_HEURES_PAR_TYPE', $heuresEclatee, 'chaine', 0, '', $conf->entity);
         if ($res < 0) $error++;
-        
+
+        // Ferme la popin (modal) de visualisation d’un créneau lors de la sauvegarde
+        $closeSessionSlotPopin = GETPOST('AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT');
+        $res = dolibarr_set_const($db, 'AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT', $closeSessionSlotPopin, 'chaine', 0, '', $conf->entity);
+        if ($res < 0) $error++;
     }
 
 
@@ -301,6 +305,22 @@ if(!empty($conf->externalaccess->enabled))
 			'1' => $langs->trans("Yes")
 		);
 		print $form->selectarray("AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST", $arrval, $conf->global->AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST);
+	}
+    print '</td>';
+    print '<td></td>';
+    print '</tr>';
+
+    // Option pour fermer la pop-in de modification de créneau de session sur le portail lors de la sauvegarde
+    print '<tr  class="oddeven"><td>' . $langs->trans("AgfEACloseModalAfterUpdateSessionSlot") . '</td>';
+    print '<td align="left">';
+    if ($conf->use_javascript_ajax) {
+		print ajax_constantonoff('AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT');
+	} else {
+		$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes")
+		);
+		print $form->selectarray("AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT", $arrval, $conf->global->AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT);
 	}
     print '</td>';
     print '<td></td>';
