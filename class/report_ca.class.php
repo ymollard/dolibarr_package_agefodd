@@ -682,11 +682,11 @@ class ReportCA extends AgefoddExportExcel {
 					$sql .= " ON socrequester.rowid = s.fk_soc_requester";
 				}
 				if (array_key_exists('sale.fk_user', $filter)) {
-					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ass";
+					$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ass";
 					$sql .= " ON ass.fk_session_agefodd = s.rowid";
-					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire trainee";
+					$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire trainee";
 					$sql .= " ON trainee.rowid = ass.fk_stagiaire";
-					$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sale";
+					$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sale";
 					$sql .= " ON sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)";
 				}
 
@@ -705,7 +705,7 @@ class ReportCA extends AgefoddExportExcel {
 						if ($key == 's.type_session') {
 							$sql .= ' AND ' . $key . ' = ' . $this->db->escape($value);
 						} elseif ($key == 'sale.fk_user') {
-							$sql .= ' AND ' . $value . ' IN (';
+							$sql .= ' AND (' . $value . ' IN (';
 							$sql .= '	SELECT sale.fk_user';
 							$sql .= '	FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass';
 							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire trainee ON trainee.rowid = ass.fk_stagiaire';
@@ -718,6 +718,11 @@ class ReportCA extends AgefoddExportExcel {
 							//$sql .= '	AND f2.fk_soc = COALESCE(IF(s.type_session = 1, IF(opca.fk_soc_OPCA <= 0, NULL, opca.fk_soc_OPCA), s.fk_soc_OPCA), trainee.fk_soc)';
 							$sql .= '	AND f2.fk_soc = COALESCE(CASE WHEN s.type_session = 1 THEN CASE WHEN opca.fk_soc_OPCA <= 0 THEN NULL ELSE opca.fk_soc_OPCA END ELSE s.fk_soc_OPCA END, trainee.fk_soc)'; // TODO : remove this comment if all is ok after few tests with CASE style
 							$sql .= '	AND sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)';
+							$sql .= ')';
+							$sql .= ' OR ';
+							$sql .= ' (' . $value . ' IN (SELECT salecom.fk_user FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux as salecom ';
+							$sql .= ' WHERE salecom.fk_soc=s.fk_soc AND s.rowid NOT IN (SELECT asscom.fk_session_agefodd FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire asscom))';
+							$sql .= ' )';
 							$sql .= ')';
 						} elseif ($key == 'so.parent|sorequester.parent') {
 							$sql .= ' AND (so.parent=' . $this->db->escape($value) . ' OR socrequester.parent=' . $this->db->escape($value);
@@ -831,7 +836,7 @@ class ReportCA extends AgefoddExportExcel {
 						if ($key == 's.type_session') {
 							$sql .= ' AND ' . $key . ' = ' . $this->db->escape($value);
 						} elseif ($key == 'sale.fk_user') {
-							$sql .= ' AND ' . $value . ' IN (';
+							$sql .= ' AND (' . $value . ' IN (';
 							$sql .= '	SELECT sale.fk_user';
 							$sql .= '	FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass';
 							$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire trainee ON trainee.rowid = ass.fk_stagiaire';
@@ -844,6 +849,11 @@ class ReportCA extends AgefoddExportExcel {
 							//$sql .= '	AND f2.fk_soc = COALESCE(IF(s.type_session = 1, IF(opca.fk_soc_OPCA <= 0, NULL, opca.fk_soc_OPCA), s.fk_soc_OPCA), trainee.fk_soc)'; // TODO : remove this comment if all is ok after few tests with CASE style
 							$sql .= '	AND f2.fk_soc = COALESCE(CASE WHEN s.type_session = 1 THEN CASE WHEN opca.fk_soc_OPCA <= 0 THEN NULL ELSE opca.fk_soc_OPCA END ELSE s.fk_soc_OPCA END, trainee.fk_soc)';
 							$sql .= '	AND sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)';
+							$sql .= ')';
+							$sql .= ' OR ';
+							$sql .= ' (' . $value . ' IN (SELECT  salecom.fk_user FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux as salecom ';
+							$sql .= ' WHERE salecom.fk_soc=s.fk_soc AND s.rowid NOT IN (SELECT asscom.fk_session_agefodd FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire asscom))';
+							$sql .= ' )';
 							$sql .= ')';
 						} elseif ($key == 'so.parent|sorequester.parent') {
 							$sql .= ' AND (so.parent=' . $this->db->escape($value) . ' OR socrequester.parent=' . $this->db->escape($value);
