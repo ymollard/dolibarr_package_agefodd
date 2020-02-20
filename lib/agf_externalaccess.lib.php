@@ -1844,7 +1844,14 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	}
 
 	$calendrier_type = !empty($agf_calendrier->calendrier_type) ? $agf_calendrier->calendrier_type : '';
-	$out.= '
+    //Type du créneau par défaut si plusieurs participants : défini dans la configuration du module
+    if(!empty($conf->global->AGF_SESSION_CARD_TIMESLOT_DEFAULT_TYPE))
+    {
+        $stagiaires = new Agefodd_session_stagiaire($db);
+        if ($stagiaires->fetch_stagiaire_per_session($agsession->id) > 1) $calendrier_type = $conf->global->AGF_SESSION_CARD_TIMESLOT_DEFAULT_TYPE;
+    }
+
+    $out.= '
 		<blockquote class="blockquote">
 			<p>'.$agsession->ref.'</p>
 			<p>'.$agsession->trainer_ext_information.'</p>

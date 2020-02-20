@@ -16,6 +16,7 @@ AgfSendCopyOfTraineeEmailToTrainer=Envoyer une copie du mail au formateur
 AgfEATrainerTitle=Configuration des formateurs
 AgfUserForMailSending=Compte utilisateur à utiliser pour envoyer les emails depuis le portail client
 AgfEAUseUserEmailSmptConf=Lors de l'envoi d'email à partir du portail client, utiliser la configuration email sortant standard au lieu d'utiliser celle des emails de masse
+AgfSessionCardTimeDefaultType=Configuration du type de créneau par défaut si il contient plusieurs participants
 AgfEANumberOfElementsInLists=Configuration du nombre d'éléments afficher sur les listes du portail
 
 AgfActivateAccessForTrainees=Activer l'accès externe pour les stagiaires (il est nécessaire d'attribuer des droits utilisateurs au contacts liées aux stagiaires)
