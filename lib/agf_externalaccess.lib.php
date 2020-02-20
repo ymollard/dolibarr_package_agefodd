@@ -449,7 +449,7 @@ function getPageViewSessionListExternalAccess()
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 							},
 							responsive: true,
-							order: [[ 3, "desc" ]],
+							order: [[ '.(!isset($conf->global->AGF_EA_SORT_FIELDS_IN_SESSION_LISTS) ? 3 : $conf->global->AGF_EA_SORT_FIELDS_IN_SESSION_LISTS).', '.(empty($conf->global->AGF_EA_SORT_ORDER_IN_SESSION_LISTS) ? "\"desc\"" : "\"".$conf->global->AGF_EA_SORT_ORDER_IN_SESSION_LISTS."\"").' ]],
 							columnDefs: [{
 								orderable: false,
 								"aTargets": [-1, 2]
@@ -548,7 +548,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 			<div class="tab-pane fade'.((empty($tab) || $tab == 'calendrier-info-tab') ? ' show active' : '').'" id="nav-calendrier-info" role="tabpanel" aria-labelledby="nav-calendrier-info-tab">'.getPageViewSessionCardExternalAccess_creneaux($agsession, $trainer, $agf_calendrier_formateur).'</div>
 			<div class="tab-pane fade'.(($tab == 'calendrier-summary-tab') ? ' show active' : '').'" id="nav-calendrier-summary" role="tabpanel" aria-labelledby="nav-calendrier-summary-tab">'.getPageViewSessionCardExternalAccess_summary($agsession, $trainer, $agf_calendrier_formateur).'</div>
             <div class="tab-pane fade'.(($tab == 'session-files-tab') ? ' show active' : '').'" id="nav-session-files" role="tabpanel" aria-labelledby="nav-session-files-tab">'.getPageViewSessionCardExternalAccess_files($agsession, $trainer).'</div>
-		
+
 	';
 
 
@@ -1017,7 +1017,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 							"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 						},
 						responsive: true,
-						order: [[ 1, "desc" ]],
+						order: [[ 1, '.(empty($conf->global->AGF_EA_SORT_ORDER_IN_CRENEAUX_LISTS) ? "\"desc\"" : "\"".$conf->global->AGF_EA_SORT_ORDER_IN_CRENEAUX_LISTS."\"").' ]],
 						columnDefs: [{
 							orderable: false,
 							"aTargets": [-1]
@@ -1578,7 +1578,7 @@ function getPageViewSessionCardExternalAccess_files($agsession, $trainer)
 			$(document).ready(function() {
 				$(\'#createsharelink\').change(function() {
 					let hiddenInput =  $(\'#createsharelink_hid\');
-					
+
 					if (hiddenInput.length == 0) {
 						$(\'#formuserfile\').prepend(\'<input type="hidden" name="createsharelink_hid" id="createsharelink_hid" value="" />\');
 						hiddenInput =  $(\'#createsharelink_hid\');
@@ -1802,7 +1802,9 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 	// CLOSE IFRAME
 	$fromaction = GETPOST('fromaction');
-	if($context->iframe && $fromaction === 'add' && $action === 'view'){
+	if ($context->iframe && $fromaction === 'add' && $action === 'view'){
+		$out.= '<script >window.parent.closeModal();</script>';
+	} elseif ($context->iframe && $fromaction === 'update' && $action === 'view' && $conf->global->AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT) {
 		$out.= '<script >window.parent.closeModal();</script>';
 	}
 
@@ -1967,7 +1969,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 				var heured = document.getElementById("heured");
 				var heuref = document.getElementById("heuref");
-			
+
 				heured.addEventListener("change", function (event) {
 					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
 						heured.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
@@ -1977,7 +1979,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 						heuref.setCustomValidity("");
 					}
 				});
-				
+
 				heuref.addEventListener("change", function (event) {
 					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
 						heuref.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
@@ -2003,19 +2005,19 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 					} else {
 						$("#code_c_session_calendrier_type").prop(\'required\',false);
 					}
-					
+
 					// get Hours
                     var start = document.getElementById("heured").value;
                     var end = document.getElementById("heuref").value;
                     var duration = agfTimeDiff(start, end);
-					
+
 					if(agfTimeDiff(start, end, false) < 0){
 						window.alert("'.$langs->transnoentities('HourInvalid').'");
 						$(this).val($(this).data("lastValue")); // restore last value
 						return;
 					}
-					
-					
+
+
 					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_FINISH.'\')
 					{
                         $(".traineeHourSpended").each(function( index ) {
@@ -2029,7 +2031,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
                             }
                         });
 					}
-					
+
 					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_MISSING.'\')
 					{
                         $(".traineeHourSpended").each(function( index ) {
@@ -2040,7 +2042,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
                             }
                         });
 					}
-					
+
 					// Si le statut passe à annulé, les heures participants doivent passer à 0 car la session n\'a pas eu lieu
 					if(formStatus == \''.Agefoddsessionformateurcalendrier::STATUS_CANCELED.'\')
 					{
@@ -2064,7 +2066,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 					var hours = Math.floor(diff / 1000 / 60 / 60);
 					diff -= hours * 1000 * 60 * 60;
 					var minutes = Math.floor(diff / 1000 / 60);
-					
+
                 	return ((hours < 9 && hours >= 0) ? "0" : "") + hours + ":" + (minutes < 9 ? "0" : "") + minutes;
                 }
                 else{
@@ -2226,6 +2228,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		}
 
 		$buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$buttonsValue.'" />';
+
 	}
 
 	if(empty($user->rights->agefodd->external_trainer_time_slot_delete)){
@@ -2509,7 +2512,7 @@ function getPageViewAgendaOtherExternalAccess()
 					  <input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" id="heured-time" required name="heured-time" value="'.$heuredTime.'">
 					</div>
 			  	</div>
-			
+
 			</div>
 		</div>
 		<div class="col">
@@ -2526,8 +2529,8 @@ function getPageViewAgendaOtherExternalAccess()
 			</div>
 		</div>
 	</div>
-	
-	
+
+
 	<div class="form-group">
 		<label for="actionnote">'.$langs->trans('Notes').'</label>
 		<textarea '.($action == 'view' ? 'readonly' : '').' type="datetime-local" class="form-control" id="actionnote" name="note" >'.dol_htmlentities($event->note).'</textarea>
@@ -2622,7 +2625,7 @@ function getPageViewAgendaFormateurExternalAccess(){
 
 	fullcalendar_scheduler_businessHours_weekend_start = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_START : '10:00').'";
 	fullcalendar_scheduler_businessHours_weekend_end = "'.(!empty($conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END) ? $conf->global->FULLCALENDARSCHEDULER_BUSINESSHOURS_WEEKEND_END : '16:00').'";
-    
+
 
 
 	document.addEventListener(\'DOMContentLoaded\', function() {
@@ -2655,9 +2658,9 @@ function getPageViewAgendaFormateurExternalAccess(){
 		    		html: true,
 		    		trigger: "hover"
 		    });
-		    
+
 		},
-		eventSources: [ 
+		eventSources: [
 			{
 				url: fullcalendarscheduler_interface,
 				extraParams: {
@@ -2681,16 +2684,16 @@ function getPageViewAgendaFormateurExternalAccess(){
 		//document.getElementById(\'loading\').style.display = bool ? \'block\' : \'none\';
 		},
 		eventClick: function(info) {
-		    
+
     		info.jsEvent.preventDefault(); // don\'t let the browser navigate
     		//console.log ( info.event.extendedProps.session_formateur_calendrier );
     		//console.log ( info.event );
-    		
+
 			if (info.event.url.length > 0){
 			    //console.log(info.event);
 			    // Open url in new window
 			    //window.open(info.event.url, "_blank");
-			    
+
 			    $("#calendarModalLabel").html(info.event.title);
 			    $("#calendarModalIframe").attr("src",info.event.url + "&iframe=1");
 
@@ -2698,7 +2701,7 @@ function getPageViewAgendaFormateurExternalAccess(){
 			    $("#calendarModalIframe").on("load", function() {
 			        var calendarIframeHeight = 0;
 					calendarIframeHeight = $(this).contents().find("#section-session-card-calendrier-formateur").height();
-					
+
 					if( $( window ).height() < (calendarIframeHeight + 200) ){
 						$("#calendarModalIframe").height($( window ).height() - 200);
 					}
@@ -2710,17 +2713,17 @@ function getPageViewAgendaFormateurExternalAccess(){
 					}
 				});
 
-			    
-			    
+
+
 			    // Deactivate original link
 			    return false;
 			}
 		},
-		
+
 		dateClick: function(info) {
 			//newEventModal(info.startStr);
 		},
-		
+
 		select: function(info) {
 			newEventModal(info.startStr, info.endStr);
 		}
@@ -2730,13 +2733,13 @@ function getPageViewAgendaFormateurExternalAccess(){
     $("#calendarModal").on("hide.bs.modal", function (e) {
 		calendar.refetchEvents();
 	});
-	
 
-    
-    
+
+
+
     calendar.render();
-    
-    
+
+
  	function newEventModal(start, end = 0){
  	     console.log(start);
  	    $("#calendarModalLabel").html("'.$langs->trans('Agf_fullcalendarscheduler_title_dialog_create_event').'");
@@ -2744,13 +2747,13 @@ function getPageViewAgendaFormateurExternalAccess(){
     	$("#calendarModal").modal();
     	$("#calendarModalIframe").on("load", function() { $("#calendarModalIframe").height($( window ).height() - 200); });
 
- 	    
+
  	}
-		    
-    
+
+
   });
-		
-	
+
+
 	window.closeModal = function(){
     	$("#calendarModal").modal(\'hide\');
 	};
@@ -2768,7 +2771,7 @@ function getPageViewAgendaFormateurExternalAccess(){
 				</div>
 
 				<div class="modal-body">
-				<iframe id="calendarModalIframe" src="" width="100%" height="300" frameborder="0" allowtransparency="true"></iframe>  
+				<iframe id="calendarModalIframe" src="" width="100%" height="300" frameborder="0" allowtransparency="true"></iframe>
 				</div>
 			</div>
 		</div>

@@ -1196,7 +1196,9 @@ class Formation extends CommonObject {
 			{
 				if($link->label=="PRG"){
 					$fopen = fopen($link->url, 'r');
-					file_put_contents($conf->agefodd->dir_output.'/'.'fiche_pedago_'.$this->id.'.pdf', $fopen);
+					if ($fopen !== false) {
+						file_put_contents($conf->agefodd->dir_output . '/' . 'fiche_pedago_' . $this->id . '.pdf', $fopen);
+					}
 					return 1;
 				}
 			}

@@ -1405,7 +1405,14 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 						print '<tr class="tr_order_cost"><td colspan="4">';
 						print '<table class="border order_cost" width="100%">';
-						print '<tr class="liste_titre"><td></td><td></td><td width="20%">' . $langs->trans("Planned") . '</td><td width="20%">' . $langs->trans("Engaged") . '</td><td width="20%">' . $langs->trans("Done") . '</td><td width="20%">' . $langs->trans("Result") . '</td></tr>';
+						print '<tr class="liste_titre">'."\n";
+						print '		<td></td>'."\n";
+						print '		<td></td>'."\n";
+						print '		<td width="20%">' . $langs->trans("Planned") . '</td>'."\n";
+						print '		<td width="20%">' . $langs->trans("Engaged") . '</td>'."\n";
+						print '		<td width="20%">' . $langs->trans("Done") . '</td>'."\n";
+						print '		<td width="20%">' . $langs->trans("Result") . '</td>'."\n";
+						print '</tr>';
 
 						// Le calcul du réalisé formateur doit tenir compte du fait que certaines factures fournisseurs règlent les prestations faites pour plusieurs session
 						$agf_formateurs = new Agefodd_session_formateur($db);
@@ -1435,22 +1442,45 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 							}
 						}
 
-						print '<tr><td ><strong>' . $langs->trans("TaxRevenue") . '</strong></td><td >' . $langs->trans("AgfCoutFormation") . '</td>';
-						print '<td>' . price($agf->sell_price_planned) . '</td><td>' . price($engaged_revenue) . '</td><td>' . price($paied_revenue) . '</td><td>' . price($paied_revenue - $agf->sell_price_planned) . '</td></tr>';
-						print '<tr><td rowspan="4" ><strong>' . $langs->trans("Expense") . '</strong></td><td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>';
-						print '<td>' . price($agf->cost_trainer_planned) . '</td><td>' . price($cost_trainer_engaged) . '</td><td>' . price(/*$agf->cost_trainer*/$cost_trainer_for_session) . '</td><td>' . price($agf->cost_trainer_planned - $agf->cost_trainer) . '</td></tr>';
-						$spend_cost += $agf->cost_trainer;
+						print '<tr>'."\n";
+						print '		<td ><strong>' . $langs->trans("TaxRevenue") . '</strong></td>'."\n";
+						print '		<td >' . $langs->trans("AgfCoutFormation") . '</td>';
+						print '		<td>' . price($agf->sell_price_planned) . '</td>'."\n";
+						print '		<td>' . price($engaged_revenue) . '</td>'."\n";
+						print '		<td>' . price($paied_revenue) . '</td>'."\n";
+						print '		<td>' . price($paied_revenue - $agf->sell_price_planned) . '</td>'."\n";
+						print '</tr>';
+
+						print '<tr>'."\n";
+						print '		<td rowspan="4" ><strong>' . $langs->trans("Expense") . '</strong></td>'."\n";
+						print '		<td width="20%">' . $langs->trans("AgfCoutFormateur") . '</td>'."\n";
+						print '		<td>' . price($agf->cost_trainer_planned) . '</td>'."\n";
+						print '		<td>' . price($cost_trainer_engaged) . '</td>'."\n";
+						print '		<td>' . price(/*$agf->cost_trainer*/$cost_trainer_for_session) . '</td>'."\n";
+						print '		<td>' .price($agf->cost_trainer_planned - $cost_trainer_for_session) . '</td>'."\n";
+						print '		</td>'."\n";
+						print '</tr>';
+
+						$spend_cost += $cost_trainer_for_session;
 						$spend_cost_planned += $agf->cost_trainer_planned;
 						$spend_cost_engaged += $cost_trainer_engaged;
 
-						print '<tr><td width="20%">' . $langs->trans("AgfCoutSalle") . '</td>';
-						print '<td>' . price($agf->cost_site_planned) . '</td><td>' . price($cost_site_engaged) . '</td><td>' . price($agf->cost_site) . '</td><td>' . price($agf->cost_site_planned - $agf->cost_site) . '</td></tr>';
+						print '<tr>'."\n";
+						print '		<td width="20%">' . $langs->trans("AgfCoutSalle") . '</td>';
+						print '		<td>' . price($agf->cost_site_planned) . '</td>'."\n";
+						print '		<td>' . price($cost_site_engaged) . '</td>'."\n";
+						print '		<td>' . price($agf->cost_site) . '</td>'."\n";
+						print '		<td>' . price($agf->cost_site_planned - $agf->cost_site) . '</td>'."\n";
+						print '</tr>';
 						$spend_cost += $agf->cost_site;
 						$spend_cost_planned += $agf->cost_site_planned;
 						$spend_cost_engaged += $cost_site_engaged;
 
-						print '<tr><td width="20%">' . $langs->trans("AgfCoutDeplacement") . '</td>';
-						if (! empty($conf->global->AGF_VIEW_TRIP_AND_MISSION_COST_PER_PARTICIPANT)) {
+
+						print '<tr>'."\n";
+						print '		<td width="20%">' . $langs->trans("AgfCoutDeplacement") . '</td>';
+						if (! empty($conf->global->AGF_VIEW_TRIP_AND_MISSION_COST_PER_PARTICIPANT))
+						{
 							if (! empty($agf->nb_stagiaire)) {
 								$costparticipantplanned = price2num($agf->cost_trip_planned / $agf->nb_stagiaire, 'MT');
 								$costparticipantengaged = price2num($cost_trip_engaged / $agf->nb_stagiaire, 'MT');
@@ -1460,35 +1490,57 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								$costparticipantengaged = price2num($cost_trip_engaged, 'MT');
 								$costparticipant = price2num($agf->cost_trip, 'MT');
 							}
-							print '<td>' . price($costparticipantplanned) . '</td><td>' . price($costparticipantengaged) . '</td><td>' . price($costparticipant) . '</td><td>' . price($costparticipantplanned - $costparticipant) . '</td></tr>';
+
+							print '		<td>' . price($costparticipantplanned) . '</td>'."\n";
+							print '		<td>' . price($costparticipantengaged) . '</td>'."\n";
+							print '		<td>' . price($costparticipant) . '</td>'."\n";
+							print '		<td>' . price($costparticipantplanned - $costparticipant) . '</td>'."\n";
+
 							$spend_cost += $costparticipant;
 							$spend_cost_planned += $costparticipantplanned;
 							$spend_cost_engaged += $costparticipantengaged;
 						} else {
-							print '<td>' . price($agf->cost_trip_planned) . '</td><td>' . price($cost_trip_engaged) . '</td><td>' . price($agf->cost_trip) . '</td><td>' . price($agf->cost_trip_planned - $agf->cost_trip) . '</td></tr>';
+							print '		<td>' . price($agf->cost_trip_planned) . '</td>'."\n";
+							print '		<td>' . price($cost_trip_engaged) . '</td>'."\n";
+							print '		<td>' . price($agf->cost_trip) . '</td>'."\n";
+							print '		<td>' . price($agf->cost_trip_planned - $agf->cost_trip) . '</td>'."\n";
 							$spend_cost += $agf->cost_trip;
 							$spend_cost_planned += $agf->cost_trip_planned;
 							$spend_cost_engaged += $cost_trip_engaged;
 						}
 
-						print '<tr class="liste_total"><td width="20%"><strong>' . $langs->trans("AgfCoutTotal") . '</strong></td>';
+						print '</tr>';
+
+
+						print '<tr class="liste_total">'."\n";
+						print '		<td width="20%"><strong>' . $langs->trans("AgfCoutTotal") . '</strong></td>';
 						if ($agf->nb_stagiaire > 0) {
 							$traineeCost = ' (' . $langs->trans('AgfTraineeCost') . ':' . price($spend_cost / $agf->nb_stagiaire) . ' ' . $langs->trans('Currency' . $conf->currency) . ')';
 						}
+						print '		<td><strong>' . price($spend_cost_planned) . '</strong></td>'."\n";
+						print '		<td><strong>' . price($spend_cost_engaged) . '</strong></td>'."\n";
+						print '		<td><strong>' . price($spend_cost) . '</strong></td>'."\n";
+						print '		<td><strong>' . price($spend_cost_planned - $spend_cost) . '</strong></td>'."\n";
+						print '</tr>';
 
-						print '<td><strong>' . price($spend_cost_planned) . '</strong></td><td><strong>' . price($spend_cost_engaged) . '</strong></td><td><strong>' . price($spend_cost) . '</strong></td><td><strong>' . price($spend_cost_planned - $spend_cost) . '</strong></td></tr>';
 
-						print '<tr class="liste_total"><td width="20%"><strong>' . $langs->trans("Benefits") . '</strong></td><td></td>';
+						print '<tr class="liste_total">'."\n";
+						print '		<td width="20%"><strong>' . $langs->trans("Benefits") . '</strong></td>'."\n";
+						print '		<td></td>';
 
-						print '<td><strong>' . price($agf->sell_price_planned - $spend_cost_planned) . '</strong> (' . calcul_margin_percent($agf->sell_price_planned, $spend_cost_planned) . ')</td>';
-						print '<td><strong>' . price($engaged_revenue - $spend_cost_engaged) . '</strong> (' . calcul_margin_percent($engaged_revenue, $spend_cost_engaged) . ')</td>';
-						print '<td><strong>' . price($paied_revenue - $spend_cost) . '</strong> (' . calcul_margin_percent($paied_revenue, $spend_cost) . ')</td>';
-						print '<td></td>';
+						print '		<td><strong>' . price($agf->sell_price_planned - $spend_cost_planned) . '</strong> (' . calcul_margin_percent($agf->sell_price_planned, $spend_cost_planned) . ')</td>';
+						print '		<td><strong>' . price($engaged_revenue - $spend_cost_engaged) . '</strong> (' . calcul_margin_percent($engaged_revenue, $spend_cost_engaged) . ')</td>';
+						print '		<td><strong>' . price($paied_revenue - $spend_cost) . '</strong> (' . calcul_margin_percent($paied_revenue, $spend_cost) . ')</td>';
+						print '		<td></td>';
 
-						print '</tr></table>';
+						print '		</tr>'."\n";
+						print '</table>';
 
 						print '</td></tr>';
 					}
+
+
+
 					/*
 					 * Manage trainers
 					 */

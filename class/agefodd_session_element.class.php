@@ -923,10 +923,10 @@ class Agefodd_session_element extends CommonObject {
 							$sessions = $this->get_linked_sessions($obj->fk_element, $obj->element_type);
 							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) { // facture fournisseur
 								foreach ( $facturefourn->lines as $line ) {
-								    if(!($action == 'confirm_deleteline' && $lineid == $line->id)) $this->trainer_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+								    if(!($action == 'confirm_deleteline' && $lineid == $line->id)) $this->trainer_cost_amount += ($sessions !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
 								}
 							} else { // ligne de facture fournisseur
-							    $this->trainer_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($facturefourn->total_ht / $sessions['total']) * $sessions[$id] : $facturefourn->total_ht;
+							    $this->trainer_cost_amount += ($sessions !== false && !empty($sessions['total'])) ? ($facturefourn->total_ht / $sessions['total']) * $sessions[$id] : $facturefourn->total_ht;
 							}
 							$this->invoicetrainerdraft = $this->invoicetrainerdraft || ($facturefourn->statut == 0);
 
@@ -942,10 +942,10 @@ class Agefodd_session_element extends CommonObject {
 							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
 
 							    foreach ( $facturefourn->lines as $line ) {
-							        if(!($action == 'confirm_deleteline' && $lineid == $line->id)) $this->trip_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+							        if(!($action == 'confirm_deleteline' && $lineid == $line->id)) $this->trip_cost_amount += ($sessions !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
 							    }
 							} else {
-							    $this->trip_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($facturefourn->total_ht / $sessions['total']) * $sessions[$id] : $facturefourn->total_ht;
+							    $this->trip_cost_amount += ($sessions !== false && !empty($sessions['total'])) ? ($facturefourn->total_ht / $sessions['total']) * $sessions[$id] : $facturefourn->total_ht;
 							}
 							dol_syslog(get_class($this) . "::fetch_by_session invoice_supplier_missions facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
 						}
@@ -958,10 +958,10 @@ class Agefodd_session_element extends CommonObject {
 
 							if (is_array($facturefourn->lines) && count($facturefourn->lines) > 0) {
 							    foreach ( $facturefourn->lines as $line ) {
-							        if(!($action == 'confirm_deleteline' && $lineid == $line->id)) $this->room_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+							        if(!($action == 'confirm_deleteline' && $lineid == $line->id)) $this->room_cost_amount += ($sessions !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
 							    }
 							} else {
-							    $this->room_cost_amount += ($session !== false && !empty($sessions['total'])) ? ($facturefourn->total_ht / $sessions['total']) * $sessions[$id] : $facturefourn->total_ht;
+							    $this->room_cost_amount += ($sessions !== false && !empty($sessions['total'])) ? ($facturefourn->total_ht / $sessions['total']) * $sessions[$id] : $facturefourn->total_ht;
 							}
 							dol_syslog(get_class($this) . "::fetch_by_session  invoice_supplier_room facturefourn->total_ht=" . $facturefourn->total_ht, LOG_DEBUG);
 						}
@@ -972,7 +972,7 @@ class Agefodd_session_element extends CommonObject {
 						else
 							$commandefourn = new CommandeFournisseurLigne($this->db);
 
-						$commandefourn->fetch($obj->fk_element);
+						$res = $commandefourn->fetch($obj->fk_element);
 						$sessions = $this->get_linked_sessions($obj->fk_element, $obj->element_type);
 
 						if (is_array($commandefourn->lines) && count($commandefourn->lines) > 0)
@@ -981,11 +981,11 @@ class Agefodd_session_element extends CommonObject {
 							foreach ($commandefourn->lines as $line)
 							{
 								if (!($action == 'confirm_deleteline' && $lineid == $line->id))
-									$this->trainer_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+									$this->trainer_engaged_amount += ($sessions !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
 							}
 						} else
 						{ // ligne de facture fournisseur
-							$this->trainer_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($commandefourn->total_ht / $sessions['total']) * $sessions[$id] : $commandefourn->total_ht;
+							$this->trainer_engaged_amount += ($sessions !== false && !empty($sessions['total'])) ? ($commandefourn->total_ht / $sessions['total']) * $sessions[$id] : $commandefourn->total_ht;
 						}
 						$this->ordertrainerdraft = $this->ordertrainerdraft || ($commandefourn->statut == 0);
 
@@ -1008,11 +1008,11 @@ class Agefodd_session_element extends CommonObject {
 							foreach ($commandefourn->lines as $line)
 							{
 								if (!($action == 'confirm_deleteline' && $lineid == $line->id))
-									$this->trip_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+									$this->trip_engaged_amount += ($sessions !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
 							}
 						} else
 						{
-							$this->trip_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($commandefourn->total_ht / $sessions['total']) * $sessions[$id] : $commandefourn->total_ht;
+							$this->trip_engaged_amount += ($sessions !== false && !empty($sessions['total'])) ? ($commandefourn->total_ht / $sessions['total']) * $sessions[$id] : $commandefourn->total_ht;
 						}
 						dol_syslog(get_class($this)."::fetch_by_session order_supplier_missions facturefourn->total_ht=".$commandefourn->total_ht, LOG_DEBUG);
 					}
@@ -1032,11 +1032,11 @@ class Agefodd_session_element extends CommonObject {
 							foreach ($commandefourn->lines as $line)
 							{
 								if (!($action == 'confirm_deleteline' && $lineid == $line->id))
-									$this->room_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
+									$this->room_engaged_amount += ($sessions !== false && !empty($sessions['total'])) ? ($line->total_ht / $sessions['total']) * $sessions[$id] : $line->total_ht;
 							}
 						} else
 						{
-							$this->room_engaged_amount += ($session !== false && !empty($sessions['total'])) ? ($commandefourn->total_ht / $sessions['total']) * $sessions[$id] : $commandefourn->total_ht;
+							$this->room_engaged_amount += ($sessions !== false && !empty($sessions['total'])) ? ($commandefourn->total_ht / $sessions['total']) * $sessions[$id] : $commandefourn->total_ht;
 						}
 						dol_syslog(get_class($this)."::fetch_by_session  order_supplier_room facturefourn->total_ht=".$commandefourn->total_ht, LOG_DEBUG);
 					}

@@ -305,7 +305,7 @@ if (! empty($search_fournorderid) || ! empty($search_fournordereref)) {
 	$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $fournorder->ref_client, $fournorder, 0, 'string', '', 0, 1);
 	$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $fournorder->ref_client, $fournorder, 0, 'string', '', null, null, '', 1);
 	// Thirdparty
-	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . $fournorder->thirdparty->getNomUrl(1);
+	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . (!empty($fournorder->thirdparty)?$fournorder->thirdparty->getNomUrl(1):'');
 	$morehtmlref .= '</div>';
 	if (function_exists('dol_banner_tab')) {
 		dol_banner_tab($fournorder, 'search_fournorderref', $linkback, 1, 'ref', 'ref', $morehtmlref);
