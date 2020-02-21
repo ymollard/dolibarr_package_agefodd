@@ -1802,7 +1802,9 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 	// CLOSE IFRAME
 	$fromaction = GETPOST('fromaction');
-	if($context->iframe && $fromaction === 'add' && $action === 'view'){
+	if ($context->iframe && $fromaction === 'add' && $action === 'view'){
+		$out.= '<script >window.parent.closeModal();</script>';
+	} elseif ($context->iframe && $fromaction === 'update' && $action === 'view' && $conf->global->AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT) {
 		$out.= '<script >window.parent.closeModal();</script>';
 	}
 
@@ -2235,6 +2237,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		}
 
 		$buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$buttonsValue.'" />';
+
 	}
 
 	if(empty($user->rights->agefodd->external_trainer_time_slot_delete)){

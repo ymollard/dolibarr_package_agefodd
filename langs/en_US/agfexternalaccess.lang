@@ -23,6 +23,7 @@ AgfActivateAccessForTrainees=Activer l'accès externe pour les stagiaires (il es
 AgfEATraineeTitle=Configurations des stagiaires
 AgfNumberOfHoursBeforeLockingAbsenceRequests=Nombres d'heures avant le blocage des requettes d'absences
 AgfNumberOfHoursBeforeLockingAbsenceRequestsHelp=Sur le portail client, les stagiares peuvent marquer sur leurs créneaux qu'ils sont absents
+AgfEACloseModalAfterUpdateSessionSlot=Automatically close the session slot edit pop-in upon saving.
 
 # AGENDA
 AGFSendEmailAlertToTrainees=Envoyer une alerte email au(x) stagiaire(s)

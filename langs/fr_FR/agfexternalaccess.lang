@@ -19,6 +19,7 @@ AgfEAUseUserEmailSmptConf=Lors de l'envoi d'email à partir du portail client, u
 AgfSessionCardTimeDefaultType=Configuration du type de créneau par défaut si il contient plusieurs participants
 AgfSessionCardTimeDefaultTypeOne=Configuration du type de créneau par défaut si il contient un participant
 AgfEANumberOfElementsInLists=Configuration du nombre d'éléments afficher sur les listes du portail
+AgfEACloseModalAfterUpdateSessionSlot=Fermer automatiquement l’encadré (pop-in) de modification de créneau horaire lors de la sauvegarde.
 
 AgfActivateAccessForTrainees=Activer l'accès externe pour les stagiaires (il est nécessaire d'attribuer des droits utilisateurs au contacts liées aux stagiaires)
 AgfEATraineeTitle=Configurations des stagiaires
