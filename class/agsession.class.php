@@ -5837,6 +5837,42 @@ class Agsession extends CommonObject
 
 					}
 				}
+
+                $timeRealizeTotal = $timeCanceledToLateTotal = 0;
+
+                $calendrier = new Agefodd_sesscalendar($db);
+                $calendrier->fetch_all($this->id);
+                if (!empty($calendrier->lines))
+                {
+                    foreach ($calendrier->lines as $agSessCalendar)
+                    {
+                        // Si "Réalisé"
+                        if ($agSessCalendar->status == Agefodd_sesscalendar::STATUS_FINISH)
+                        {
+                            $timeRealizeTotal+= $agSessCalendar->heuref - $agSessCalendar->heured;
+                        }
+                        // Si "Annulé trop tard"
+                        elseif ($agSessCalendar->status == Agefodd_sesscalendar::STATUS_MISSING)
+                        {
+                            $timeCanceledToLateTotal+= $agSessCalendar->heuref - $agSessCalendar->heured;
+                        }
+                    }
+                }
+
+                $hours = floor($timeRealizeTotal / 60 / 60);
+                $minutes = $timeRealizeTotal / 60 % 60;
+                $this->time_stagiaire_temps_realise_total = $timeRealizeTotal;
+                $this->stagiaire_temps_realise_total = $hours."H".sprintf("%02u",$minutes);
+
+                $hours = floor($timeCanceledToLateTotal / 60 / 60);
+                $minutes = $timeCanceledToLateTotal / 60 % 60;
+                $this->time_stagiaire_temps_att_total = $timeCanceledToLateTotal; // att = Annulé Trop Tard
+                $this->stagiaire_temps_att_total = $hours."H".sprintf("%02u",$minutes);
+
+                $hours = floor(($timeRealizeTotal + $timeCanceledToLateTotal) / 60 / 60);
+                $minutes = ($timeRealizeTotal + $timeCanceledToLateTotal) / 60 % 60;
+                $this->time_stagiaire_temps_realise_att_total = $timeRealizeTotal + $timeCanceledToLateTotal;
+                $this->stagiaire_temps_realise_att_total = $hours."H".sprintf("%02u",$minutes);
 			 	/******************************************************************************************************************/
 
 		    }
