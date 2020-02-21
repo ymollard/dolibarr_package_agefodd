@@ -438,6 +438,7 @@ if (GETPOST('link_formateur') && ($user->rights->agefodd->modifier || $user->rig
 			}
 			if (count($session_invoice->lines) > 0) {
 				$suplier_invoice = new FactureFournisseur($db);
+				$suplier_invoiceline = new SupplierInvoiceLine($db);
 				$total_ht = 0;
 				foreach ( $session_invoice->lines as $line ) {
 					if ($line->element_type == 'invoice_supplier_trainer') {
