@@ -456,7 +456,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				)) . '</tr>';
 
 				print '<tr><td>' . $langs->trans("Country") . '</td>';
-				print '<td>' . $form->select_country($agf->country, 'country_id') . '</td></tr>';
+				print '<td>' . $form->select_country($agf->fk_pays, 'country_id') . '</td></tr>';
 
 				print '<tr><td>' . $langs->trans("Phone") . '</td>';
 				print '<td><input name="phone" class="flat" size="50" value="' . $agf->tel . '"></td></tr>';
