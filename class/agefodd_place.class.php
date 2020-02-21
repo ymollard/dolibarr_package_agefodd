@@ -458,9 +458,9 @@ class Agefodd_place extends CommonObject {
 		$sql .= " adresse=" . (isset($this->adresse) ? "'" . $this->db->escape($this->adresse) . "'" : "null") . ",";
 		$sql .= " cp=" . (isset($this->cp) ? "'" . $this->db->escape($this->cp) . "'" : "null") . ",";
 		$sql .= " ville=" . (isset($this->ville) ? "'" . $this->db->escape($this->ville) . "'" : "null") . ",";
-		$sql .= " fk_pays=" . (isset($this->fk_pays) ? $this->fk_pays : "null") . ",";
+		$sql .= " fk_pays=" . (!empty($this->fk_pays) ? $this->fk_pays : "null") . ",";
 		$sql .= " tel=" . (isset($this->tel) ? "'" . $this->db->escape($this->tel) . "'" : "null") . ",";
-		$sql .= " fk_societe=" . (isset($this->fk_societe) ? $this->fk_societe : "null") . ",";
+		$sql .= " fk_societe=" . (!empty($this->fk_societe) ? $this->fk_societe : "null") . ",";
 		$sql .= " fk_socpeople=" . (!empty($this->fk_socpeople) ? $this->fk_socpeople : "null") . ",";
 		$sql .= " timeschedule=" . (!empty($this->timeschedule) ? "'".$this->db->escape($this->timeschedule). "'"  : "null") . ",";
 		$sql .= " notes=" . (isset($this->notes) ? "'" . $this->db->escape($this->notes) . "'" : "null") . ",";
