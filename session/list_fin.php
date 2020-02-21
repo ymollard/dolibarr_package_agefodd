@@ -249,7 +249,7 @@ if (! empty($search_orderid) || ! empty($search_orderref)) {
 	$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $order->ref_client, $order, 0, 'string', '', 0, 1);
 	$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $order->ref_client, $order, 0, 'string', '', null, null, '', 1);
 	// Thirdparty
-	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . $order->thirdparty->getNomUrl(1);
+	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' .  (!empty($order->thirdparty)?$order->thirdparty->getNomUrl(1):'');
 	$morehtmlref .= '</div>';
 	if (function_exists('dol_banner_tab')) {
 		dol_banner_tab($order, 'search_orderref', $linkback, 1, 'ref', 'ref', $morehtmlref);
@@ -268,7 +268,7 @@ if (! empty($search_invoiceid) || ! empty($search_invoiceref)) {
 	$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $invoice->ref_client, $invoice, 0, 'string', '', 0, 1);
 	$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $invoice->ref_client, $invoice, 0, 'string', '', null, null, '', 1);
 	// Thirdparty
-	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . $invoice->thirdparty->getNomUrl(1);
+	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' .  (!empty($invoice->thirdparty)?$invoice->thirdparty->getNomUrl(1):'');
 	$morehtmlref .= '</div>';
 	if (function_exists('dol_banner_tab')) {
 		dol_banner_tab($invoice, 'search_invoiceref', $linkback, 1, 'facnumber', 'ref', $morehtmlref, '', 0, '', '');
@@ -285,7 +285,7 @@ if (! empty($search_fourninvoiceid) || ! empty($search_fourninvoiceref)) {
 	$morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $fourninvoice->ref_client, $fourninvoice, 0, 'string', '', 0, 1);
 	$morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $fourninvoice->ref_client, $fourninvoice, 0, 'string', '', null, null, '', 1);
 	// Thirdparty
-	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . $fourninvoice->thirdparty->getNomUrl(1);
+	$morehtmlref .= '<br>' . $langs->trans('ThirdParty') . ' : ' . (!empty($fourninvoice->thirdparty)?$fourninvoice->thirdparty->getNomUrl(1):'');
 	$morehtmlref .= '</div>';
 	if (function_exists('dol_banner_tab')) {
 		dol_banner_tab($fourninvoice, 'search_fourninvoiceref', $linkback, 1, 'ref', 'ref', $morehtmlref);
@@ -438,6 +438,7 @@ if (GETPOST('link_formateur') && ($user->rights->agefodd->modifier || $user->rig
 			}
 			if (count($session_invoice->lines) > 0) {
 				$suplier_invoice = new FactureFournisseur($db);
+				$suplier_invoiceline = new SupplierInvoiceLine($db);
 				$total_ht = 0;
 				foreach ( $session_invoice->lines as $line ) {
 					if ($line->element_type == 'invoice_supplier_trainer') {
