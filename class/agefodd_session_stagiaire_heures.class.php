@@ -122,7 +122,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
         }
 
         if (! $error) {
-            $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier");
+            $this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . $this->table_element);
 
             if (! $notrigger) {
                 // Uncomment this and change MYOBJECT to your own tag if you
@@ -315,7 +315,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        return - 1;
 	    }
 	}
-	
+
 	public function fetchAllBy($field_value, $field)
 	{
 		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.$this->table_element.' WHERE '.$field.' = ';
@@ -329,7 +329,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 			{
 				$line = new Agefoddsessionstagiaireheures($this->db);
 				$line->fetch($obj->rowid);
-				
+
 				$this->lines[] = $line;
 			}
 		}
@@ -401,7 +401,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 *
 	 * @param int $id session
 	 * @param int $traineeinsession
-	 * 
+	 *
 	 */
 	public function fetch_all_by_session($id, $trainee)
 	{
@@ -450,7 +450,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        return - 1;
 	    }
 	}
-	
+
 	/**
 	 * @param int $traineeid
 	 * @return float total hours spent in all session by the trainee
@@ -459,7 +459,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $trainee = (int) $traineeid;
 	    $sql = 'SELECT fk_session_agefodd as sessid FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire';
 	    $sql.= ' WHERE fk_stagiaire = ' . $trainee;
-	    
+
 	    $resql = $this->db->query($sql);
 	    $result = 0;
 	    if ($resql) {
