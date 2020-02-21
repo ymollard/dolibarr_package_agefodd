@@ -1936,6 +1936,12 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			</div>
 		</div>
 	</div>
+	<div class="form-row">	            
+        <label for="note_private">Note</label>
+        <div class="input-group">
+                    <input '.($action == 'view' ? 'readonly' : '').' title="Note Private" type="text" class="form-control" id="note_private" name="note_private" value="'.$agf_calendrier_formateur->note_private.'" />
+        </div>
+    </div>
 
 			<script>
 			$( document ).ready(function() {

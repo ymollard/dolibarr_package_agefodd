@@ -411,6 +411,7 @@ class ActionsAgefodd
 							$heuref = GETPOST('heuref');
 							$status = GETPOST('status');
 							$code_c_session_calendrier_type = GETPOST('code_c_session_calendrier_type');
+                            $note_private = GETPOST('note_private');
 
 							if (!empty($date_session) && !empty($heured) && !empty($heuref)) {
 								$context->setControllerFound();
@@ -431,6 +432,7 @@ class ActionsAgefodd
 								$agf_calendrier_formateur->heured = strtotime($date_session . ' ' . $heured);
 								$agf_calendrier_formateur->heuref = strtotime($date_session . ' ' . $heuref);
 								$agf_calendrier_formateur->fk_agefodd_session_formateur = $trainer->agefodd_session_formateur->id;
+                                $agf_calendrier_formateur->note_private = $note_private;
 
 								if (in_array($status, array(
 									Agefoddsessionformateurcalendrier::STATUS_DRAFT,
