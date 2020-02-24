@@ -1830,6 +1830,19 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		else $action = 'add';
 	}
 
+    //Calcul du total d'heures restantes sur la session
+    $duree_timeDone = 0;
+    $duree_timeRest = 0;
+    $agefodd_sesscalendar = new Agefodd_sesscalendar ($db);
+    $agefodd_sesscalendar->fetch_all($agsession->id);
+    foreach ($agefodd_sesscalendar->lines as $agf_calendrier)
+    {
+        if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
+            $duree_timeDone += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
+        }
+    }
+    $duree_timeRest = $agsession->duree_session - $duree_timeDone;
+
 	$out = '<!-- getPageViewSessionCardCalendrierFormateurExternalAccess -->';
 
 	// CLOSE IFRAME
@@ -2018,7 +2031,8 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				var heuref = document.getElementById("heuref");
 
 				heured.addEventListener("change", function (event) {
-					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
+
+					if(agfTimeDiff(heured.value, heuref.value, false) < 0 || agfTimeDiff(heured.value, heuref.value, false) > '.($duree_timeRest * 3600000).'){
 						heured.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
 					}
 					else {
@@ -2028,7 +2042,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				});
 
 				heuref.addEventListener("change", function (event) {
-					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
+					if(agfTimeDiff(heured.value, heuref.value, false) < 0 || agfTimeDiff(heured.value, heuref.value, false) > '.($duree_timeRest * 3600000).'){
 						heuref.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
 					}
 					else {
