@@ -115,6 +115,18 @@ if ($action == 'setvarother') {
     if (! $res > 0)
         $error ++;
 
+    $confKey = 'AGF_SESSION_CARD_TIMESLOT_DEFAULT_TYPE';
+    $nbInList = GETPOST($confKey, 'alpha');
+    $res = dolibarr_set_const($db, $confKey, $nbInList, 'chaine', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
+
+    $confKey = 'AGF_SESSION_CARD_TIMESLOT_DEFAULT_TYPE_ONE';
+    $nbInList = GETPOST($confKey, 'alpha');
+    $res = dolibarr_set_const($db, $confKey, $nbInList, 'chaine', 0, '', $conf->entity);
+    if (! $res > 0)
+        $error ++;
+
     
     // Vue éclatée des heures participant sur la liste des sessions
     $heuresEclateeExclues = serialize(GETPOST('AGF_EA_ECLATE_HEURES_EXCLUES'));
@@ -337,6 +349,26 @@ if(!empty($conf->externalaccess->enabled))
 		'100' 	=> 100,
 	);
 	print $form->selectarray("AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS", $arrval, $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS);
+
+    print '</td>';
+    print '<td></td>';
+    print '</tr>';
+
+    // Option de configuration du type de créneau par défaut si il contient plusieurs participants
+    print '<tr  class="oddeven"><td>' . $langs->trans("AgfSessionCardTimeDefaultType") . '</td>';
+    print '<td align="left">';
+
+    print $formAgefodd->select_calendrier_type($conf->global->AGF_SESSION_CARD_TIMESLOT_DEFAULT_TYPE, 'AGF_SESSION_CARD_TIMESLOT_DEFAULT_TYPE', true, '', '');
+
+    print '</td>';
+    print '<td></td>';
+    print '</tr>';
+
+    // Option de configuration du type de créneau par défaut si il contient un participant
+    print '<tr  class="oddeven"><td>' . $langs->trans("AgfSessionCardTimeDefaultTypeOne") . '</td>';
+    print '<td align="left">';
+
+    print $formAgefodd->select_calendrier_type($conf->global->AGF_SESSION_CARD_TIMESLOT_DEFAULT_TYPE_ONE, 'AGF_SESSION_CARD_TIMESLOT_DEFAULT_TYPE_ONE', true, '', '');
 
     print '</td>';
     print '<td></td>';
