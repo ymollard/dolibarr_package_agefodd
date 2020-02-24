@@ -496,7 +496,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
 	$agf_calendrier_formateur->fetchAllBy(array('trainer.rowid'=>$trainer->id, 'sf.fk_session'=>$agsession->id), '');
 
-	//Calcule du total d'heures restantes sur la session
+	//Calcul du total d'heures restantes sur la session
 	$duree_timeDone = 0;
 	$duree_timeRest = 0;
     $agefodd_sesscalendar = new Agefodd_sesscalendar ($db);
@@ -1688,28 +1688,47 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
 		$countNbSessionAvailable = 0;
 		if (!empty($agsession->lines)) {
 			foreach ($agsession->lines as $line) {
-			    if( ($line->datef >= $endDate->getTimestamp() && $line->dated <= $startDate->getTimestamp())
-                    || !empty($conf->global->AGF_CAN_ADD_SESSION_CRENEAU_OUT_SESSION_DATE)
-                )
+			    //Calcul du total d'heures restantes sur la session
+                $duree_timeDone = 0;
+                $duree_timeRest = 0;
+                $agefodd_sesscalendar = new Agefodd_sesscalendar ($db);
+                $agefodd_sesscalendar->fetch_all($line->id);
+                foreach ($agefodd_sesscalendar->lines as $agf_calendrier)
                 {
-                    $countNbSessionAvailable++;
-                    $optionLabel = $line->sessionref . ' : ' . $line->intitule;
-                    if(!empty($conf->global->AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST)){
-						$optionLabel.= '';
-						$sessionStagiaire = new Agefodd_session_stagiaire($db);
-						$sessionStagiaire->fetch_stagiaire_per_session($line->rowid);
-						if(!empty($sessionStagiaire->lines)){
-							$i = 0;
-							$optionLabel.= ' (';
-							foreach ($sessionStagiaire->lines as $stagiare){
-								$optionLabel.= ($i>0?', ':'').$stagiare->getFullName($langs);
-								$i++;
-							}
-							$optionLabel.= ')';
-						}
+                    if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
+                        $duree_timeDone += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
+                    }
+                }
+                $duree_timeRest = $line->duree_session - $duree_timeDone;
 
-					}
-                    $optionSessions .= '<option value="' . $line->rowid . '">' . $optionLabel . '</option>';
+                if($duree_timeRest > 0)
+                {
+                    if (($line->datef >= $endDate->getTimestamp() && $line->dated <= $startDate->getTimestamp())
+                        || !empty($conf->global->AGF_CAN_ADD_SESSION_CRENEAU_OUT_SESSION_DATE)
+                    )
+                    {
+                        $countNbSessionAvailable++;
+                        $optionLabel = $line->sessionref.' : '.$line->intitule;
+                        if (!empty($conf->global->AGF_EA_ADD_TRAINEE_NAME_IN_SESSION_LIST))
+                        {
+                            $optionLabel .= '';
+                            $sessionStagiaire = new Agefodd_session_stagiaire($db);
+                            $sessionStagiaire->fetch_stagiaire_per_session($line->rowid);
+                            if (!empty($sessionStagiaire->lines))
+                            {
+                                $i = 0;
+                                $optionLabel .= ' (';
+                                foreach ($sessionStagiaire->lines as $stagiare)
+                                {
+                                    $optionLabel .= ($i > 0 ? ', ' : '').$stagiare->getFullName($langs);
+                                    $i++;
+                                }
+                                $optionLabel .= ')';
+                            }
+
+                        }
+                        $optionSessions .= '<option value="'.$line->rowid.'">'.$optionLabel.'</option>';
+                    }
                 }
 			}
 		}
