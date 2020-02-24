@@ -50,6 +50,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public $fk_user_mod;
 	public $tms = '';
 	public $status = 0;
+	public $note_private='';
 	public $lines = array ();
 
 	// Attention Const need to be same as Agefodd_sesscalendar, take care of getListStatus
@@ -135,7 +136,8 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod,";
-		$sql .= "status";
+		$sql .= "status,";
+        $sql .= "note_private";
 		$sql .= ") VALUES (";
 
 		$sql .= " '" . $conf->entity . "',";
@@ -149,8 +151,10 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " " . (! isset($this->fk_user_author) ? $user->id : "'" . $this->fk_user_author . "'") . ",";
 		$sql .= " '" . (! isset($this->datec) || dol_strlen($this->datec) == 0 ? $this->db->idate(dol_now()) : $this->db->idate($this->datec)) . "',";
 		$sql .= " " . (! isset($this->fk_user_mod) ? $user->id : "'" . $this->fk_user_mod . "'") . ",";
-		$sql .= " " . $this->status;
+		$sql .= " " . $this->status . ",";
+        $sql .= " '" . $this->note_private . "'";
 		$sql .= ")";
+
 		$this->db->begin();
 
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
@@ -214,6 +218,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " t.fk_user_mod,";
 		$sql .= " t.tms,";
 		$sql .= " t.status,";
+		$sql .= " t.note_private,";
 		$sql .= " f.fk_session";
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as t";
@@ -240,6 +245,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
 				$this->status = $obj->status;
+				$this->note_private = $obj->note_private;
 				$this->sessid = $obj->fk_session;
 			}
 			$this->db->free($resql);
@@ -262,7 +268,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session_formateur,s.trainer_cost,s.trainer_status, s.status";
+		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session_formateur,s.trainer_cost,s.trainer_status, s.status, s.note_private";
 		$sql .= " ,f.fk_session ";
 		$sql .= " ,f.trainer_status as trainer_status_in_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
@@ -283,6 +289,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$this->trainer_cost = $obj->trainer_cost;
 				$this->trainer_status = $obj->trainer_status;
 				$this->status = $obj->status;
+				$this->note_private = $obj->note_private;
 				$this->fk_actioncomm = $obj->fk_actioncomm;
 				$this->trainer_status_in_session = $obj->trainer_status_in_session;
 			}
@@ -329,6 +336,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= "s.fk_actioncomm,";
 		$sql .= "s.fk_user_author,";
 		$sql .= "s.status,";
+		$sql .= "s.note_private,";
 		$sql .= "sf.fk_session,";
 		$sql .= "sf.trainer_status as trainer_status_in_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as s";
@@ -362,6 +370,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 				$line->fk_actioncomm = $obj->fk_actioncomm;
 				$line->fk_user_author = $obj->fk_user_author;
 				$line->status = $obj->status;
+				$line->note_private = $obj->note_private;
 				$line->fk_session = $obj->fk_session;
 				$line->sessid = $obj->fk_session;
 				$line->trainer_status_in_session = $obj->trainer_status_in_session;
@@ -623,7 +632,8 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " datec=" . (dol_strlen($this->datec) != 0 ? "'" . $this->db->idate($this->datec) . "'" : 'null') . ",";
 		$sql .= " fk_user_mod=" . (isset($this->fk_user_mod) ? $this->fk_user_mod : "null") . ",";
 		$sql .= " tms=" . (dol_strlen($this->tms) != 0 ? "'" . $this->db->idate($this->tms) . "'" : 'null') . ",";
-		$sql .= " status=" . $this->status . "";
+		$sql .= " status=" . $this->status . ",";
+		$sql .= " note_private='" . $this->note_private . "'";
 
 		$sql .= " WHERE rowid=" . $this->id;
 
