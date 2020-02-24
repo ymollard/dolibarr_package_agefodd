@@ -496,11 +496,24 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
 	$agf_calendrier_formateur->fetchAllBy(array('trainer.rowid'=>$trainer->id, 'sf.fk_session'=>$agsession->id), '');
 
+	//Calcule du total d'heures restantes sur la session
+	$duree_timeDone = 0;
+	$duree_timeRest = 0;
+    $agefodd_sesscalendar = new Agefodd_sesscalendar ($db);
+    $agefodd_sesscalendar->fetch_all($agsession->id);
+    foreach ($agefodd_sesscalendar->lines as $agf_calendrier)
+    {
+        if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
+            $duree_timeDone += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
+        }
+    }
+    $duree_timeRest = $agsession->duree_session - $duree_timeDone;
+
 	$out = '<!-- getPageViewSessionCardExternalAccess -->';
 	$out.= '<section id="section-session-card" class="py-5"><div class="container">';
 
 	$url_add = '';
-	if (!empty($user->rights->agefodd->external_trainer_write)) $url_add = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0');
+	if (!empty($user->rights->agefodd->external_trainer_write) && !empty($duree_timeRest)) $url_add = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0');
 
 	$out.= getEaNavbar($context->getRootUrl('agefodd_session_list', '&save_lastsearch_values=1'), $url_add);
 
