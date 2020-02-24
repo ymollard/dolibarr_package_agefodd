@@ -633,7 +633,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 		$sql .= " fk_user_mod=" . (isset($this->fk_user_mod) ? $this->fk_user_mod : "null") . ",";
 		$sql .= " tms=" . (dol_strlen($this->tms) != 0 ? "'" . $this->db->idate($this->tms) . "'" : 'null') . ",";
 		$sql .= " status=" . $this->status . ",";
-		$sql .= " note_private='" . $this->note_private . "'";
+		$sql .= " note_private='" . $this->db->escape($this->note_private) . "'";
 
 		$sql .= " WHERE rowid=" . $this->id;
 
