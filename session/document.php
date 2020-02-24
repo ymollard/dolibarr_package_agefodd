@@ -615,6 +615,7 @@ if (! empty($id)) {
 			document_line($langs->trans("AgfFichePresence"), "fiche_presence");
 			document_line($langs->trans("AgfFichePresenceCompany"), "fiche_presence_societe");
 		}
+		document_line($langs->trans("AgfFichePresenceLandscapeByMonth"), "fiche_presence_landscape_bymonth");
 		document_line($langs->trans("AgfFichePresenceDirect"), "fiche_presence_direct");
 		document_line($langs->trans("AgfFichePresenceDirectCompany"), "fiche_presence_direct_societe");
 		if (!$user->rights->agefodd->session->trainer) {

@@ -252,6 +252,7 @@ AgfContactNewWarning3=Sinon, sélectionnez le contact dans la liste déroulante 
 AgfSuiviActions=Suivi des actions
 AgfFichePresence=Feuille d'émargement
 AgfFichePresenceCompany=Feuille d'émargement par société
+AgfFichePresenceLandscapeByMonth=Feuille d'émargement par mois (format paysage)
 AgfConvention=Convention de formation
 AgfConventionIntro1=Texte "l'organisme"
 AgfConventionIntro2=Texte "le client"
@@ -609,6 +610,7 @@ AgfErrorSessionIdMismatch=Erreur : l'ID de session fourni (%d) ne correspond pa
 AgfErrorUnableToFetchTraineeSoc=Erreur : société du stagiaire introuvable (id %d)
 AgfErrorUnableToFetchTrainer=Erreur : formateur introuvable
 AgfErrorUnableToFetchCalendar=Erreur : impossible de charger le calendrier de formation
+AgfErrorUnableToFetchTrainees=Erreur : impossible de charger les participants
 AgfFicheEval=Fiche d'évaluation de la formation
 AgfPDFFicheEval1=Session du
 AgfPDFFicheEval2=formateurs :
@@ -1703,3 +1705,6 @@ AgfMailToSendAttestationPresence=Module formation - Pour l'envoi de l'attestatio
 
 AgfDefaultRelationLinkSelectedOnThirdPartyTrainingSession=Type de relation par défaut dans l'onglet session de formation d'un tier
 EndHour = Heure de fin
+
+AgfFichePresByTraineeTrainerTitle=Formateurs
+AgfFichePresByTraineeTraineeTitleM=Stagiaire
