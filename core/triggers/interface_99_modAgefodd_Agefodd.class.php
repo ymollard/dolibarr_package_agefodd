@@ -1247,7 +1247,95 @@ class InterfaceAgefodd {
                     }
                 }
             }
-        }
+        } elseif($action == 'AGF_SESSION_CAL_CREATE'){
+
+		    //CREATION DU CREANEAU DU CALENDRIER DANS LE CALENDRIER FORMATEUR
+
+		    $error = 0;
+
+		    //session concernée
+		    $agfsession = new Agsession($this->db);
+		    $result = $agfsession->fetch($object->sessid);
+
+		    if($result < 0)
+            {
+                $error++;
+                $this->error = $error;
+            }
+
+		    if(!$error)
+            {
+                //action si il n'y a qu'un seul formateur
+                $nb_Trainers = $agfsession->fetchTrainers();
+                if ($nb_Trainers == 1)
+                {
+                    $agf_cal = new Agefoddsessionformateurcalendrier($this->db);
+                    $result = $agf_cal->fetchAllBy(array('sf.fk_session' => $agfsession->id));
+
+                    if ($result < 0)
+                    {
+                        $error++;
+                        $this->error = $error;
+                    }
+
+                    if(!$error)
+                    {
+                        $agf_cal->sessid = $object->sessid;
+                        $agf_cal->fk_agefodd_session_formateur = $agfsession->TTrainer[0]->agefodd_session_formateur->id;
+
+                        $agf_cal->date_session = $object->date_session;
+
+                        $agf_cal->heured = $object->heured;
+                        $agf_cal->heuref = $object->heuref;
+
+                        $agf_cal->status = $object->status;
+
+                        // Test if trainer is already book for another training
+                        $result = $agf_cal->fetch_all_by_trainer($agfsession->TTrainer[0]->agefodd_session_formateur->formid);
+                        if ($result < 0) {
+                            $error ++;
+                            $this->error = $agf_cal->error;
+                        } else
+                        {
+                            foreach ($agf_cal->lines as $line)
+                            {
+                                if (!empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6)
+                                {
+                                    if ((($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) && $line->fk_session != $id)
+                                    {
+                                        if (!empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY))
+                                        {
+                                            $error++;
+                                            $this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
+                                        }
+                                        else
+                                        {
+                                            $error++;
+                                            $this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if(!$error)
+                    {
+                        //création du créneau
+                        $result = $agf_cal->create($user);
+
+                        if ($result < 0)
+                        {
+                            $error++;
+                            $this->error = $error;
+                        }
+                    }
+                }
+            }
+
+            if($error) return -1;
+            else return 1;
+		}
 
 		return 0;
 	}
