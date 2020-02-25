@@ -700,6 +700,7 @@ Settings=Paramétrage du module Agefodd
 AgfFichePresenceEmpty=Feuille d'émargement vide
 AgfFichePresenceTrainee=Feuille d'émargement par participant
 AgfFichePresenceTraineeLandscape=Feuille d'émargement (format paysage)
+AgfFichePresenceTraineeLandscapeEmpty=Feuille d'émargement vide (format paysage)
 AgfFichePresenceTraineeLandscapeCompany=Feuille d'émargement par société (format paysage)
 AgfStagiaireList=Liste des participants
 AgfSendConseil=Conseils pratiques formation %s
