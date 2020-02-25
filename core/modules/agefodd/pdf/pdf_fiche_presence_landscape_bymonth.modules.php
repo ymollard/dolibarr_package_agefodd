@@ -237,34 +237,144 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			foreach ($TTSessionDate as $lines_array) {
 				// New page
 				$this->pdf->AddPage();
+				$this->prepareNewPage($pdf, true);
+				$posY = $this->heightForHeader;
 
-				if (empty($this->heightForHeader))
-				{
-					$this->pdf->startTransaction();
-					list($this->heightForHeader, $dummy) = $this->_pagehead($this->pdf, $this->outputlangs, $this->session, array(array()), 1);
-					$this->heightForFooter = $this->_pagefoot($this->pdf, $this->session, $this->outputlangs);
-					$this->pdf->rollbackTransaction(true);
-				}
+				$this->maxSlot = count($lines_array);
+				$this->trainer_widthtimeslot = ($this->espaceH_dispo - $this->trainer_widthcol1 -2) / $this->maxSlot;
+				$this->trainee_widthtimeslot = ($this->espaceH_dispo - $this->trainee_widthcol1 -2) / $this->maxSlot;
 
-				if (!empty($tplidx))
-					$this->pdf->useTemplate($tplidx);
-				list($posY, $posX) = $this->_pagehead($this->pdf, $outputlangs, $agf, $lines_array);
+//				if (empty($this->heightForHeader))
+//				{
+//					$this->pdf->startTransaction();
+//					list($this->heightForHeader, $dummy) = $this->_pagehead($this->pdf, $this->outputlangs, $this->session, array(array()), 1);
+//					$this->heightForFooter = $this->_pagefoot($this->pdf, $this->session, $this->outputlangs);
+//					$this->pdf->rollbackTransaction(true);
+//				}
+//
+//				if (!empty($tplidx))
+//					$this->pdf->useTemplate($tplidx);
+//				list($posY, $posX) = $this->_pagehead($this->pdf, $outputlangs, $agf, $lines_array);
 
-				$posY = $this->pdfPrintCallback($this->pdf, array($this,'showTraineeBloc'), true, array($posX, $posY + 1, $lines_array));
-				//$posY = $this->pdfPrintCallback($this->pdf, array($this,'showSignatureBloc'), true, array($posX, $posY + 1));
+				$posY = $this->pdfPrintCallback($this->pdf, array($this,'showTrainerBloc'), true, array($this->marge_gauche, $posY + 2, $lines_array));
+				$posY = $this->pdfPrintCallback($this->pdf, array($this,'showTraineeBloc'), true, array($this->marge_gauche, $this->pdf->GetY() + 1, $lines_array));
+				$posY = $this->pdfPrintCallback($this->pdf, array($this,'showSignatureBloc'), true, array($this->marge_gauche, $this->pdf->GetY() + 1));
 
 
 				// Pied de page
-				$this->_pagefoot($this->pdf, $agf, $outputlangs);
-				if (method_exists($this->pdf, 'AliasNbPages')) {
-					$this->pdf->AliasNbPages();
-				}
+//				$this->_pagefoot($this->pdf, $agf, $outputlangs);
+//				if (method_exists($this->pdf, 'AliasNbPages')) {
+//					$this->pdf->AliasNbPages();
+//				}
 			}
 		}
 
 	}
 
-	public function showTraineeBloc($pdf, $params = array())
+	public function showTrainerBloc(&$pdf, $params = array())
+	{
+		global $outputlangs;
+		/**
+		 * *** Bloc formateur ****
+		 */
+		list($posX, $posY, $lines_array) = $params;
+		$posX+= 2;
+		$posY+= 5;
+
+		$this->_resetColorsAndStyle();
+
+		if (empty($noTrainer)) {
+			$pdf->SetXY($posX - 2, $posY - 2);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'BI', 9);
+			$str = $outputlangs->transnoentities('AgfPDFFichePres12');
+			$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+			$posY += 2;
+
+			// Entête
+			// Cadre
+			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne + 8);
+			// Nom
+			$pdf->SetXY($posX, $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+			$str = $outputlangs->transnoentities('AgfPDFFichePres16');
+			$pdf->Cell($this->trainer_widthcol1, $this->h_ligne + 8, $outputlangs->convToOutputCharset($str), 'R', 2, "C", 0);
+			// Signature
+			$pdf->SetXY($posX + $this->trainer_widthcol1, $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+			$str = $outputlangs->transnoentities('AgfPDFFichePres18');
+			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+
+			$pdf->SetXY($posX + $this->trainer_widthcol1, $posY + 3);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
+			$str = $outputlangs->transnoentities('AgfPDFFichePres13');
+			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+			$posY += $this->h_ligne;
+
+			// Date
+
+			$last_day = '';
+			$same_day = 0;
+
+			for ($y = 0; $y < $this->maxSlot; $y++) {
+				// Jour
+				$pdf->SetXY($posX + $this->trainer_widthcol1 + (20 * $y), $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
+				if ($lines_array[$y]->date_session) {
+					$date = dol_print_date($lines_array[$y]->date_session, 'daytextshort');
+				} else {
+					$date = '';
+				}
+				$str = $date;
+				if ($last_day == $lines_array[$y]->date_session) {
+					$same_day += 1;
+					$pdf->SetFillColor(255, 255, 255);
+				} else {
+					$same_day = 0;
+				}
+				$pdf->SetXY($posX + $this->trainer_widthcol1 + ($this->trainer_widthtimeslot * $y) - ($this->trainer_widthtimeslot * ($same_day)), $posY);
+				$pdf->Cell($this->trainer_widthtimeslot * ($same_day + 1), 4, $outputlangs->convToOutputCharset($str), 1, 2, "C", $same_day);
+
+				// horaires
+				$pdf->SetXY($posX + $this->trainer_widthcol1 + ($this->trainer_widthtimeslot * $y), $posY + 4);
+				if ($lines_array[$y]->heured && $lines_array[$y]->heuref) {
+					$str = dol_print_date($lines_array[$y]->heured, 'hour') . ' - ' . dol_print_date($lines_array[$y]->heuref, 'hour');
+				} else {
+					$str = '';
+				}
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+				$pdf->Cell($this->trainer_widthtimeslot, 4, $outputlangs->convToOutputCharset($str), 1, 2, "C", 0);
+
+				$last_day = $lines_array[$y]->date_session;
+			}
+			$posY = $pdf->GetY();
+
+			$nbform = count($this->session->TTrainer);//$formateurs->fetch_formateur_per_session($agf->id);
+
+			if ($nbform > 0) {
+				foreach ($this->session->TTrainer as $trainerlines) {
+
+					// Cadre
+					//$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne);
+
+					// Nom
+					$pdf->SetXY($posX - 2, $posY);
+					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+					$str = strtoupper($trainerlines->name) . ' ' . ucfirst($trainerlines->firstname);
+					$pdf->MultiCell($this->trainer_widthcol1 + 2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
+
+					for ($i = 0; $i < $this->maxSlot; $i++) {
+						$pdf->Rect($posX + $this->trainer_widthcol1 + $this->trainer_widthtimeslot * $i, $posY, $this->trainer_widthtimeslot, $this->h_ligne);
+					}
+
+					$posY = $pdf->GetY();
+				}
+			}
+
+			$posY = $pdf->GetY() + 2;
+		}
+	}
+
+	public function showTraineeBloc(&$pdf, $params = array())
 	{
 		global $conf, $outputlangs;
 		/**
@@ -272,8 +382,8 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 		 */
 
 		list($posX, $posY, $lines_array) = $params;
-		$posX = $this->pdf->GetX() +2;
-		$posY = $this->pdf->GetY() +1;
+		$posX+= 2;
+		$posY = $this->pdf->GetY() + 5;
 
 		$this->_resetColorsAndStyle();
 
@@ -436,7 +546,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			}
 
 			$posY = $this->pdf->GetY();
-
+			$this->pdf->SetY($posY);
 		}
 	}
 
@@ -446,7 +556,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 
 		list($posX, $posY) = $params;
 		$posX = $this->pdf->GetX() +2;
-		$posY = $this->pdf->GetY() +1;
+		$posY = $this->pdf->GetY() +5;
 
 		$this->_resetColorsAndStyle();
 
@@ -685,105 +795,8 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
 		$pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table);
 
-		/**
-		 * *** Bloc formateur ****
-		 */
-		if (empty($noTrainer)) {
-			$pdf->SetXY($posX - 2, $posY - 2);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'BI', 9);
-			$str = $outputlangs->transnoentities('AgfPDFFichePres12');
-			$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-			$posY += 2;
-
-			// Entête
-			// Cadre
-			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne + 8);
-			// Nom
-			$pdf->SetXY($posX, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-			$str = $outputlangs->transnoentities('AgfPDFFichePres16');
-			$pdf->Cell($this->trainer_widthcol1, $this->h_ligne + 8, $outputlangs->convToOutputCharset($str), 'R', 2, "C", 0);
-			// Signature
-			$pdf->SetXY($posX + $this->trainer_widthcol1, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-			$str = $outputlangs->transnoentities('AgfPDFFichePres18');
-			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
-
-			$pdf->SetXY($posX + $this->trainer_widthcol1, $posY + 3);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
-			$str = $outputlangs->transnoentities('AgfPDFFichePres13');
-			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
-			$posY += $this->h_ligne;
-
-			// Date
-
-			$last_day = '';
-			$same_day = 0;
-
-			$this->maxSlot = count($lines_array);
-			$this->trainer_widthtimeslot = ($this->espaceH_dispo - $this->trainer_widthcol1 -2) / $this->maxSlot;
-			$this->trainee_widthtimeslot = ($this->espaceH_dispo - $this->trainee_widthcol1 -2) / $this->maxSlot;
-
-			for ($y = 0; $y < $this->maxSlot; $y++) {
-				// Jour
-				$pdf->SetXY($posX + $this->trainer_widthcol1 + (20 * $y), $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
-				if ($lines_array[$y]->date_session) {
-					$date = dol_print_date($lines_array[$y]->date_session, 'daytextshort');
-				} else {
-					$date = '';
-				}
-				$str = $date;
-				if ($last_day == $lines_array[$y]->date_session) {
-					$same_day += 1;
-					$pdf->SetFillColor(255, 255, 255);
-				} else {
-					$same_day = 0;
-				}
-				$pdf->SetXY($posX + $this->trainer_widthcol1 + ($this->trainer_widthtimeslot * $y) - ($this->trainer_widthtimeslot * ($same_day)), $posY);
-				$pdf->Cell($this->trainer_widthtimeslot * ($same_day + 1), 4, $outputlangs->convToOutputCharset($str), 1, 2, "C", $same_day);
-
-				// horaires
-				$pdf->SetXY($posX + $this->trainer_widthcol1 + ($this->trainer_widthtimeslot * $y), $posY + 4);
-				if ($lines_array[$y]->heured && $lines_array[$y]->heuref) {
-					$str = dol_print_date($lines_array[$y]->heured, 'hour') . ' - ' . dol_print_date($lines_array[$y]->heuref, 'hour');
-				} else {
-					$str = '';
-				}
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-				$pdf->Cell($this->trainer_widthtimeslot, 4, $outputlangs->convToOutputCharset($str), 1, 2, "C", 0);
-
-				$last_day = $lines_array[$y]->date_session;
-			}
-			$posY = $pdf->GetY();
-
-			$nbform = count($this->session->TTrainer);//$formateurs->fetch_formateur_per_session($agf->id);
-
-			if ($nbform > 0) {
-				foreach ($this->session->TTrainer as $trainerlines) {
-
-					// Cadre
-					//$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne);
-
-					// Nom
-					$pdf->SetXY($posX - 2, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-					$str = strtoupper($trainerlines->name) . ' ' . ucfirst($trainerlines->firstname);
-					$pdf->MultiCell($this->trainer_widthcol1 + 2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
-
-					for ($i = 0; $i < $this->maxSlot; $i++) {
-						$pdf->Rect($posX + $this->trainer_widthcol1 + $this->trainer_widthtimeslot * $i, $posY, $this->trainer_widthtimeslot, $this->h_ligne);
-					}
-
-					$posY = $pdf->GetY();
-				}
-			}
-
-			$posY = $pdf->GetY() + 2;
-		}
-
 		$posY = $pdf->GetY();
-
+		$this->heightForHeader = $posY;
 		return array($posY, $posX);
 	}
 
@@ -829,7 +842,6 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			if($autoPageBreak && ($pageposAfter > $pageposBefore || ($pageposAfter == $pageposBefore && $posYAfter > ($this->page_hauteur - $this->heightForFooter))) )
 			{
 				$pagenb = $pageposBefore;
-				var_dump(array($autoPageBreak, $pageposBefore, $pageposAfter, $callback[1]));
 				$pdf->rollbackTransaction(true);
 				$posY = $posYBefore;
 				// prepare pages to receive content
@@ -840,14 +852,15 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 				}
 
 				// BACK TO START
-				if ($pageposAfter == $pageposBefore && $posYAfter > ($this->page_hauteur - $this->heightForFooter)) {
-					$this->_pagefoot($pdf, $this->session, $outputlangs);
-					$pdf->AddPage();
-					$this->prepareNewPage($pdf);
-					$pageposAfter++;
-				}
+//				if ($pageposAfter == $pageposBefore && $posYAfter > ($this->page_hauteur - $this->heightForFooter)) {
+//					$this->_pagefoot($pdf, $this->session, $outputlangs);
+//					$pdf->AddPage();
+//					$this->prepareNewPage($pdf);
+//					$pageposAfter++;
+//				}
 				$pdf->setPage($pageposAfter);
-				$pdf->SetY($this->heightForHeader +5);
+				$pdf->SetY($this->heightForHeader);
+
 				// RESTART DISPLAY BLOCK - without auto page break
 				$posY = $this->pdfPrintCallback($pdf, $callback, false, $param);
 			}
@@ -883,6 +896,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 		$topY = $pdf->GetY() + 20;
 		$pdf->SetMargins($this->marge_gauche, $topY, $this->marge_droite); // Left, Top, Right
 
+		$pdf->setPageOrientation('', 0, 0);
 		$pdf->SetAutoPageBreak(0, 0); // to prevent footer creating page
 		$footerheight = $this->_pagefoot($pdf,$this->object, $outputlangs);
 		$pdf->SetAutoPageBreak(1, $footerheight);
@@ -903,7 +917,6 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 	 */
 	function _pagefoot(&$pdf, $object, $outputlangs)
 	{
-		var_dump('pagefoot');
 		$pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		return pdf_agfpagefoot($pdf, $outputlangs, '', $this->emetteur, $this->marge_basse +5, $this->marge_gauche, $this->page_hauteur, $object, 1, 0);
