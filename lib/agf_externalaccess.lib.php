@@ -513,7 +513,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 	$out.= '<section id="section-session-card" class="py-5"><div class="container">';
 
 	$url_add = '';
-	if (!empty($user->rights->agefodd->external_trainer_write) && !empty($duree_timeRest)) $url_add = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0');
+	if (!empty($user->rights->agefodd->external_trainer_write) && ($duree_timeRest > 0)) $url_add = $context->getRootUrl('agefodd_session_card_time_slot', '&sessid='.$agsession->id.'&slotid=0');
 
 	$out.= getEaNavbar($context->getRootUrl('agefodd_session_list', '&save_lastsearch_values=1'), $url_add);
 
@@ -1692,7 +1692,7 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
                 $duree_timeDone = 0;
                 $duree_timeRest = 0;
                 $agefodd_sesscalendar = new Agefodd_sesscalendar ($db);
-                $agefodd_sesscalendar->fetch_all($line->id);
+                $agefodd_sesscalendar->fetch_all($line->rowid);
                 foreach ($agefodd_sesscalendar->lines as $agf_calendrier)
                 {
                     if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
