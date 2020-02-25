@@ -175,11 +175,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			$this->datesByMonth[$monthYear][$nbChunks-1][] = $dateSlot;
 		}
 
-//		foreach ($this->datesByMonth as $monthYear => $TTSessionDate) {
-//			foreach ($TTSessionDate as $TSessionDate) {
-				$this->_pagebody($this->pdf, $this->session, $this->outputlangs);
-//			}
-//		}
+		$this->_pagebody($this->pdf, $this->session, $this->outputlangs);
 
 		$this->pdf->Close();
 		$this->pdf->Output($file, 'F');
@@ -221,8 +217,6 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 	{
 		global $conf, $mysoc;
 
-		$nbsta_index = 1;
-
 		// Set path to the background PDF File
 		if (empty($conf->global->MAIN_DISABLE_FPDI) && !empty($conf->global->AGF_ADD_PDF_BACKGROUND_P)) {
 			$pagecount = $this->pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_P);
@@ -243,131 +237,22 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			foreach ($TTSessionDate as $lines_array) {
 				// New page
 				$this->pdf->AddPage();
+
+				if (empty($this->heightForHeader))
+				{
+					$this->pdf->startTransaction();
+					list($this->heightForHeader, $dummy) = $this->_pagehead($this->pdf, $this->outputlangs, $this->session, array(array()), 1);
+					$this->heightForFooter = $this->_pagefoot($this->pdf, $this->session, $this->outputlangs);
+					$this->pdf->rollbackTransaction(true);
+				}
+
 				if (!empty($tplidx))
 					$this->pdf->useTemplate($tplidx);
 				list($posY, $posX) = $this->_pagehead($this->pdf, $outputlangs, $agf, $lines_array);
 
-				/**
-				 * *** Bloc stagiaire ****
-				 */
+				$posY = $this->pdfPrintCallback($this->pdf, array($this,'showTraineeBloc'), true, array($posX, $posY + 1, $lines_array));
+				//$posY = $this->pdfPrintCallback($this->pdf, array($this,'showSignatureBloc'), true, array($posX, $posY + 1));
 
-				// ligne
-				if (is_object($this->dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
-					$this->h_ligne = $this->h_ligne + 3;
-				}
-				if (!empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
-					$this->h_ligne = $this->h_ligne + 3;
-				}
-				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-
-				foreach ($this->sessionTrainee->lines as $line) {
-
-					if (!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
-						$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
-						$status_stagiaire = (int)$line->status_in_session;
-						if (in_array($status_stagiaire, $TStagiaireStatusToExclude))
-							continue;
-					}
-
-					if (!empty($conf->global->AGF_ADD_INDEX_TRAINEE)) {
-						$str = $nbsta_index . '. ';
-					} else {
-						$str = '';
-					}
-
-					$nbsta_index++;
-					// Cadre
-					$this->pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne);
-
-					// Nom
-					$this->pdf->SetXY($posX - 2, $posY);
-					$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-
-					if (!empty($line->civilite)) {
-						if ($line->civilite == 'MR') {
-							$str .= 'M. ';
-						} elseif ($line->civilite == 'MME' || $line->civilite == 'MLE') {
-							$str .= 'Mme. ';
-						} else {
-							$str .= $line->civilite . ' ';
-						}
-					}
-					$str .= $line->nom . ' ' . $line->prenom;
-					if (!empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
-						$str .= ' (' . $line->poste . ')';
-					}
-					if (!empty($line->date_birth) && !empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
-						$outputlangs->load("other");
-						$str .= "\n" . $outputlangs->trans('DateToBirth') . ' : ' . dol_print_date($line->date_birth, 'day');
-					}
-
-					if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
-						if (!empty($line->socname)) {
-							$str .= '-' . dol_trunc($line->socname, 27);
-						}
-					}
-
-					if (is_object($this->dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
-						$c = new Societe($this->db);
-						$c->fetch($line->socid);
-
-						if (count($this->dao->entities) > 0) {
-							foreach ($this->dao->entities as $e) {
-								if ($e->id == $c->entity) {
-									$str .= "\n" . $outputlangs->trans('Entity') . ' : ' . $e->label;
-									break;
-								}
-							}
-						}
-					}
-					$this->pdf->MultiCell($this->trainee_widthcol1 + 2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
-
-					// Société
-					if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
-						$this->pdf->SetXY($posX + $this->trainee_widthcol1, $posY);
-						$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-						$str = dol_trunc($line->socname, 27);
-						$this->pdf->MultiCell($this->trainee_widthcol2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "C", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
-					}
-
-					for ($i = 0; $i < $this->maxSlot; $i++) {
-						$this->pdf->Rect($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + $this->trainee_widthtimeslot * $i, $posY, $this->trainee_widthtimeslot, $this->h_ligne);
-					}
-
-					$posY = $this->pdf->GetY();
-					if ($posY > $this->page_hauteur - $height_for_footer) {
-						$this->_pagefoot($this->pdf, $agf, $outputlangs);
-						$this->pdf->AddPage();
-						if (!empty($tplidx))
-							$this->pdf->useTemplate($tplidx);
-						list($posY, $posX) = $this->_pagehead($this->pdf, $outputlangs, $agf, $lines_array);
-					}
-				}
-
-				// Cachet et signature
-				$posY += 2;
-				$posX -= 2;
-				$this->pdf->SetXY($posX, $posY);
-				$str = $outputlangs->transnoentities('AgfPDFFichePres20');
-				$this->pdf->Cell(50, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-				$this->pdf->SetXY($posX + 55, $posY);
-				$str = $outputlangs->transnoentities('AgfPDFFichePres21') . dol_print_date($agf->datef);
-				$this->pdf->Cell(20, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-				$this->pdf->SetXY($posX + 92, $posY);
-				$str = $outputlangs->transnoentities('AgfPDFFichePres22');
-				$this->pdf->Cell(50, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-				$posY = $this->pdf->GetY();
-
-				// Incrustation image tampon
-				if ($conf->global->AGF_INFO_TAMPON) {
-					$dir = $conf->agefodd->dir_output . '/images/';
-					$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-					if (file_exists($img_tampon))
-						$this->pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
-				}
 
 				// Pied de page
 				$this->_pagefoot($this->pdf, $agf, $outputlangs);
@@ -377,6 +262,218 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			}
 		}
 
+	}
+
+	public function showTraineeBloc($pdf, $params = array())
+	{
+		global $conf, $outputlangs;
+		/**
+		 * *** Bloc stagiaire ****
+		 */
+
+		list($posX, $posY, $lines_array) = $params;
+		$posX = $this->pdf->GetX() +2;
+		$posY = $this->pdf->GetY() +1;
+
+		$this->_resetColorsAndStyle();
+
+		$pdf->SetXY($posX - 2, $posY);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'BI', 9);
+		$str = $outputlangs->transnoentities('AgfPDFFichePres15');
+		$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+		$posY = $pdf->GetY();
+
+		// Entête
+		// Cadre
+		$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne + 8);
+		// Nom
+		$pdf->SetXY($posX, $posY);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+		$str = $outputlangs->transnoentities('AgfPDFFichePres16');
+		$pdf->Cell($this->trainee_widthcol1, $this->h_ligne + 8, $outputlangs->convToOutputCharset($str), 'R', 2, "C", 0);
+		// Société
+		if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
+			$pdf->SetXY($posX + $this->trainee_widthcol1, $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+			$str = $outputlangs->transnoentities('AgfPDFFichePres17');
+			$pdf->Cell($this->trainee_widthcol2, $this->h_ligne + 8, $outputlangs->convToOutputCharset($str), 0, 2, "C", 0);
+		} else {
+			$this->trainee_widthcol2 = 0;
+		}
+
+		// Signature
+		$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2, $posY);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+		$str = $outputlangs->transnoentities('AgfPDFFichePres18');
+		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+
+		$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2, $posY + 3);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
+		$str = $outputlangs->transnoentities('AgfPDFFichePres19');
+		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+		$posY += $this->h_ligne;
+
+		// Date
+
+		$last_day = '';
+		for ($y = 0; $y < $this->maxSlot; $y++) {
+			// Jour
+			$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + (20 * $y), $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
+			if ($lines_array[$y]->date_session) {
+				$date = dol_print_date($lines_array[$y]->date_session, 'daytextshort');
+			} else {
+				$date = '';
+			}
+			$str = $date;
+			if ($last_day == $lines_array[$y]->date_session) {
+				$same_day += 1;
+				$pdf->SetFillColor(255, 255, 255);
+			} else {
+				$same_day = 0;
+			}
+			$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + ($this->trainee_widthtimeslot * $y) - ($this->trainee_widthtimeslot * ($same_day)), $posY);
+			$pdf->Cell($this->trainee_widthtimeslot * ($same_day + 1), 4, $outputlangs->convToOutputCharset($str), 1, 2, "C", $same_day);
+
+			// horaires
+			$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + ($this->trainee_widthtimeslot * $y), $posY + 4);
+			if ($lines_array[$y]->heured && $lines_array[$y]->heuref) {
+				$str = dol_print_date($lines_array[$y]->heured, 'hour') . ' - ' . dol_print_date($lines_array[$y]->heuref, 'hour');
+			} else {
+				$str = '';
+			}
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+			$pdf->Cell($this->trainee_widthtimeslot, 4, $outputlangs->convToOutputCharset($str), 1, 2, "C", 0);
+
+			$last_day = $lines_array[$y]->date_session;
+		}
+
+		$posY = $pdf->GetY();
+
+		$nbsta_index = 1;
+
+		// ligne
+		if (is_object($this->dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+			$this->h_ligne = $this->h_ligne + 3;
+		}
+		if (!empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
+			$this->h_ligne = $this->h_ligne + 3;
+		}
+		$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+
+		foreach ($this->sessionTrainee->lines as $line) {
+
+			if (!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
+				$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+				$status_stagiaire = (int)$line->status_in_session;
+				if (in_array($status_stagiaire, $TStagiaireStatusToExclude))
+					continue;
+			}
+
+			if (!empty($conf->global->AGF_ADD_INDEX_TRAINEE)) {
+				$str = $nbsta_index . '. ';
+			} else {
+				$str = '';
+			}
+
+			$nbsta_index++;
+			// Cadre
+			$this->pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne);
+
+			// Nom
+			$this->pdf->SetXY($posX - 2, $posY);
+			$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+
+			if (!empty($line->civilite)) {
+				if ($line->civilite == 'MR') {
+					$str .= 'M. ';
+				} elseif ($line->civilite == 'MME' || $line->civilite == 'MLE') {
+					$str .= 'Mme. ';
+				} else {
+					$str .= $line->civilite . ' ';
+				}
+			}
+			$str .= $line->nom . ' ' . $line->prenom;
+			if (!empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
+				$str .= ' (' . $line->poste . ')';
+			}
+			if (!empty($line->date_birth) && !empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
+				$outputlangs->load("other");
+				$str .= "\n" . $outputlangs->trans('DateToBirth') . ' : ' . dol_print_date($line->date_birth, 'day');
+			}
+
+			if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
+				if (!empty($line->socname)) {
+					$str .= '-' . dol_trunc($line->socname, 27);
+				}
+			}
+
+			if (is_object($this->dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+				$c = new Societe($this->db);
+				$c->fetch($line->socid);
+
+				if (count($this->dao->entities) > 0) {
+					foreach ($this->dao->entities as $e) {
+						if ($e->id == $c->entity) {
+							$str .= "\n" . $outputlangs->trans('Entity') . ' : ' . $e->label;
+							break;
+						}
+					}
+				}
+			}
+			$this->pdf->MultiCell($this->trainee_widthcol1 + 2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
+
+			// Société
+			if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
+				$this->pdf->SetXY($posX + $this->trainee_widthcol1, $posY);
+				$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+				$str = dol_trunc($line->socname, 27);
+				$this->pdf->MultiCell($this->trainee_widthcol2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "C", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
+			}
+
+			for ($i = 0; $i < $this->maxSlot; $i++) {
+				$this->pdf->Rect($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + $this->trainee_widthtimeslot * $i, $posY, $this->trainee_widthtimeslot, $this->h_ligne);
+			}
+
+			$posY = $this->pdf->GetY();
+
+		}
+	}
+
+	public function showSignatureBloc(&$pdf, $params = array())
+	{
+		global $conf;
+
+		list($posX, $posY) = $params;
+		$posX = $this->pdf->GetX() +2;
+		$posY = $this->pdf->GetY() +1;
+
+		$this->_resetColorsAndStyle();
+
+		// Cachet et signature
+		$posY += 2;
+		$posX -= 2;
+		$this->pdf->SetXY($posX, $posY);
+		$str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
+		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+		$this->pdf->SetXY($posX + 55, $posY);
+		$str = $this->outputlangs->transnoentities('AgfPDFFichePres21') . dol_print_date($this->session->datef);
+		$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+		$this->pdf->SetXY($posX + 92, $posY);
+		$str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
+		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+		$posY = $this->pdf->GetY();
+
+		// Incrustation image tampon
+		if ($conf->global->AGF_INFO_TAMPON) {
+			$dir = $conf->agefodd->dir_output . '/images/';
+			$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+			if (file_exists($img_tampon))
+				$this->pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
+		}
 	}
 
 	/**
@@ -685,111 +782,9 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			$posY = $pdf->GetY() + 2;
 		}
 
-
-		$pdf->SetXY($posX - 2, $posY);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'BI', 9);
-		$str = $outputlangs->transnoentities('AgfPDFFichePres15');
-		$pdf->Cell(0, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-		$posY = $pdf->GetY();
-
-		// Entête
-		// Cadre
-		$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne + 8);
-		// Nom
-		$pdf->SetXY($posX, $posY);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-		$str = $outputlangs->transnoentities('AgfPDFFichePres16');
-		$pdf->Cell($this->trainee_widthcol1, $this->h_ligne + 8, $outputlangs->convToOutputCharset($str), 'R', 2, "C", 0);
-		// Société
-		if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
-			$pdf->SetXY($posX + $this->trainee_widthcol1, $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-			$str = $outputlangs->transnoentities('AgfPDFFichePres17');
-			$pdf->Cell($this->trainee_widthcol2, $this->h_ligne + 8, $outputlangs->convToOutputCharset($str), 0, 2, "C", 0);
-		} else {
-			$this->trainee_widthcol2 = 0;
-		}
-
-		// Signature
-		$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2, $posY);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
-		$str = $outputlangs->transnoentities('AgfPDFFichePres18');
-		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
-
-		$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2, $posY + 3);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
-		$str = $outputlangs->transnoentities('AgfPDFFichePres19');
-		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
-		$posY += $this->h_ligne;
-
-		// Date
-
-		$last_day = '';
-		for ($y = 0; $y < $this->maxSlot; $y++) {
-			// Jour
-			$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + (20 * $y), $posY);
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
-			if ($lines_array[$y]->date_session) {
-				$date = dol_print_date($lines_array[$y]->date_session, 'daytextshort');
-			} else {
-				$date = '';
-			}
-			$str = $date;
-			if ($last_day == $lines_array[$y]->date_session) {
-				$same_day += 1;
-				$pdf->SetFillColor(255, 255, 255);
-			} else {
-				$same_day = 0;
-			}
-			$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + ($this->trainee_widthtimeslot * $y) - ($this->trainee_widthtimeslot * ($same_day)), $posY);
-			$pdf->Cell($this->trainee_widthtimeslot * ($same_day + 1), 4, $outputlangs->convToOutputCharset($str), 1, 2, "C", $same_day);
-
-			// horaires
-			$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + ($this->trainee_widthtimeslot * $y), $posY + 4);
-			if ($lines_array[$y]->heured && $lines_array[$y]->heuref) {
-				$str = dol_print_date($lines_array[$y]->heured, 'hour') . ' - ' . dol_print_date($lines_array[$y]->heuref, 'hour');
-			} else {
-				$str = '';
-			}
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-			$pdf->Cell($this->trainee_widthtimeslot, 4, $outputlangs->convToOutputCharset($str), 1, 2, "C", 0);
-
-			$last_day = $lines_array[$y]->date_session;
-		}
 		$posY = $pdf->GetY();
 
 		return array($posY, $posX);
-	}
-
-	/**
-	 * Adds a logical "page" to the PDF (this page can be more than one PDF page, but not less).
-	 *
-	 * @param Agefodd_sesscalendar[] $TSessionDate  Array of session dates to be displayed on a page
-	 *                                              Typically all the dates in the same month, but
-	 *                                              it can be less if there are too many dates to fit
-	 *                                              on a page width.
-	 * @return void
-	 */
-	function _addPageForMonthDates($TSessionDate)
-	{
-		global $conf, $mysoc;
-		// Set path to the background PDF File
-		if (empty($conf->global->MAIN_DISABLE_FPDI) && !empty($conf->global->AGF_ADD_PDF_BACKGROUND_P)) {
-			$pagecount = $this->pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_P);
-			$tplidx = $this->pdf->importPage(1);
-		}
-
-		// New page
-		$this->pdf->AddPage();
-		$this->pdf->setPageOrientation($this->orientation, 1, $this->footerHeight);
-
-		if (!empty($tplidx))
-			$this->pdf->useTemplate($tplidx);
-
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
-
-//		$this->_tryToPrint('_showTrainerTableForPage', 1, array($TSessionDate));
-//		$this->_tryToPrint('_showTraineeTableForPage', 1, array($TSessionDate));
 	}
 
 	/**
@@ -803,5 +798,114 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 		$this->pdf->SetLineStyle(array(
 			'width' => 0.05,
 		));
+	}
+
+	/**
+	 * A convenient method for PDF pagebreak
+	 *
+	 * @param 	TCPDF 	$pdf TCPDF object, this is also passed as first parameter of $callback function
+	 * @param 	callable $callback a  callable callback function
+	 * @param 	bool 	$autoPageBreak enable page jump
+	 * @param 	array 	$param this is passed to seccond parametter of $callback function
+	 * @return 	float 	Y position
+	 */
+	public function pdfPrintCallback(&$pdf, callable $callback, $autoPageBreak = true, $param = array())
+	{
+		global $conf, $outputlangs;
+
+		$posY = $posYBefore = $pdf->GetY();
+
+		if (is_callable($callback))
+		{
+			$pdf->startTransaction();
+			$pageposBefore=$pdf->getPage();
+
+			// START FIRST TRY
+			$res = call_user_func_array($callback, array(&$pdf, $param));
+			$pageposAfter=$pdf->getPage();
+			$posY = $posYAfter = $pdf->GetY();
+			// END FIRST TRY
+
+			if($autoPageBreak && ($pageposAfter > $pageposBefore || ($pageposAfter == $pageposBefore && $posYAfter > ($this->page_hauteur - $this->heightForFooter))) )
+			{
+				$pagenb = $pageposBefore;
+				var_dump(array($autoPageBreak, $pageposBefore, $pageposAfter, $callback[1]));
+				$pdf->rollbackTransaction(true);
+				$posY = $posYBefore;
+				// prepare pages to receive content
+				while ($pagenb < $pageposAfter) {
+					$pdf->AddPage();
+					$pagenb++;
+					$this->prepareNewPage($pdf);
+				}
+
+				// BACK TO START
+				if ($pageposAfter == $pageposBefore && $posYAfter > ($this->page_hauteur - $this->heightForFooter)) {
+					$this->_pagefoot($pdf, $this->session, $outputlangs);
+					$pdf->AddPage();
+					$this->prepareNewPage($pdf);
+					$pageposAfter++;
+				}
+				$pdf->setPage($pageposAfter);
+				$pdf->SetY($this->heightForHeader +5);
+				// RESTART DISPLAY BLOCK - without auto page break
+				$posY = $this->pdfPrintCallback($pdf, $callback, false, $param);
+			}
+			else // No pagebreak
+			{
+				$pdf->commitTransaction();
+			}
+		}
+
+		return $posY;
+	}
+
+	/**
+	 * Prepare new page with header, footer, margin ...
+	 * @param TCPDF $pdf
+	 * @return float Y position
+	 */
+	public function prepareNewPage(&$pdf, $forceHead = false)
+	{
+		global $conf, $outputlangs, $lines_array;
+
+		// Set path to the background PDF File
+		if (! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
+		{
+			$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output.'/'.$conf->global->MAIN_ADD_PDF_BACKGROUND);
+			$tplidx = $pdf->importPage(1);
+		}
+
+		if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+		if ($forceHead || empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $outputlangs, $this->session, $lines_array, 1);
+
+		$topY = $pdf->GetY() + 20;
+		$pdf->SetMargins($this->marge_gauche, $topY, $this->marge_droite); // Left, Top, Right
+
+		$pdf->SetAutoPageBreak(0, 0); // to prevent footer creating page
+		$footerheight = $this->_pagefoot($pdf,$this->object, $outputlangs);
+		$pdf->SetAutoPageBreak(1, $footerheight);
+
+		// The only function to edit the bottom margin of current page to set it.
+		$pdf->setPageOrientation('', 1, $footerheight);
+
+		$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)?42:10);
+		$pdf->SetY($tab_top_newpage);
+		return empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)?42:10;
+	}
+
+	/**
+	 * @param TCPDF $pdf pdf
+	 * @param Object $object object
+	 * @param Translate $outputlangs outputlangs
+	 * @return int int
+	 */
+	function _pagefoot(&$pdf, $object, $outputlangs)
+	{
+		var_dump('pagefoot');
+		$pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
+		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
+		return pdf_agfpagefoot($pdf, $outputlangs, '', $this->emetteur, $this->marge_basse +5, $this->marge_gauche, $this->page_hauteur, $object, 1, 0);
 	}
 }
