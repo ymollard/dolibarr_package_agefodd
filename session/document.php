@@ -623,7 +623,8 @@ if (! empty($id)) {
 				document_line($langs->trans("AgfFichePresenceTrainee"), "fiche_presence_trainee");
 				document_line($langs->trans("AgfFichePresenceTraineeDirect"), "fiche_presence_trainee_direct");
 				document_line($langs->trans("AgfFichePresenceTraineeLandscape"), "fiche_presence_landscape");
-				document_line($langs->trans("AgfFichePresenceTraineeLandscapeCompany"), "fiche_presence_landscape_societe");
+                document_line($langs->trans("AgfFichePresenceTraineeLandscapeEmpty"), "fiche_presence_landscape_empty");
+                document_line($langs->trans("AgfFichePresenceTraineeLandscapeCompany"), "fiche_presence_landscape_societe");
 				document_line($langs->trans("AgfFicheEval"), "fiche_evaluation");
 				document_line($langs->trans("AgfRemiseEval"), "fiche_remise_eval");
 				document_line($langs->trans("AgfAttestationEndTrainingEmpty"), "attestationendtraining_empty");
@@ -639,7 +640,8 @@ if (! empty($id)) {
 				document_line($langs->trans("AgfFichePresenceTrainee"), "fiche_presence_trainee");
 				document_line($langs->trans("AgfFichePresenceTraineeDirect"), "fiche_presence_trainee_direct");
 				document_line($langs->trans("AgfFichePresenceTraineeLandscape"), "fiche_presence_landscape");
-				document_line($langs->trans("AgfFicheEval"), "fiche_evaluation");
+                document_line($langs->trans("AgfFichePresenceTraineeLandscapeEmpty"), "fiche_presence_landscape_empty");
+                document_line($langs->trans("AgfFicheEval"), "fiche_evaluation");
 				document_line($langs->trans("AgfRemiseEval"), "fiche_remise_eval");
 				document_line($langs->trans("AgfAttestationEndTrainingEmpty"), "attestationendtraining_empty");
 				document_line($langs->trans("AgfChevalet"), "chevalet");
