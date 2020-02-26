@@ -730,6 +730,17 @@ if (! empty($id)) {
                     else $formmail->param['fileinit'] = $file;
                 }
 			}
+			else
+			{
+				$newfilearray = $formmail->get_attached_files();
+				if (!empty($newfilearray['paths']))
+				{
+					foreach ($newfilearray['paths'] as $key => $path)
+					{
+						$formmail->add_attached_files($path, basename($path), dol_mimetype($path));
+					}
+				}
+			}
 
 			$formmail->fromtype = 'user';
 			$formmail->fromid = $user->id;
@@ -883,7 +894,7 @@ if (! empty($id)) {
 				print_fiche_titre($langs->trans('AgfSendDocuments'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
 			}
 
-
+			if (GETPOST('mode') != 'init') $formmail->param['fileinit'] = $formmail->get_attached_files()['paths'];
 			$formmail->show_form();
 
 			if (! empty($mesg)) {
