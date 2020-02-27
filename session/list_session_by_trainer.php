@@ -142,7 +142,7 @@ $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ON (sc.f
 $sql .= ' GROUP BY ';
 $sql .= ' s.rowid , s.ref,  s.duree_session';
 $sql .= ' ,sf.fk_agefodd_formateur, sf.rowid ';
-$sql .= ' ,fc.intitule';
+$sql .= ' ,fc.intitule, fc.rowid';
 
 
 
