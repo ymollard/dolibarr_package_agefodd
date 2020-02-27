@@ -8,4 +8,4 @@
  * Created: 10 juil. 2018
  */
 
-ALTER TABLE llx_agefodd_session ADD COLUMN ref varchar(40) NOT NULL;
+ALTER TABLE llx_agefodd_session ADD COLUMN ref varchar(40) NOT NULL DEFAULT '';
