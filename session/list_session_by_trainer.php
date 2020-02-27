@@ -125,19 +125,24 @@ $sql = "SELECT";
 $sql .= " s.ref refsession, s.status, s.rowid idsession, s.duree_session";
 $sql .= " , fc.intitule as intituleformation , fc.rowid idformation ";
 $sql .= " , sf.fk_agefodd_formateur , sf.rowid as fk_agefodd_session_formateur ";
-$sql .= " , SUM(HOUR(TIMEDIFF(sc.heuref, sc.heured))) as totalHour";
+if ($db->type == 'pgsql') {
+	$sql .= " , SUM(TIME_TO_HOUR(TIMEDIFF('second', sc.heuref, sc.heured))) as totalHour";
+} else {
+	$sql .= " , SUM(HOUR(TIMEDIFF(sc.heuref, sc.heured))) as totalHour";
+}
 $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session s";
 $sql .= " JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue fc ON (fc.rowid = s.fk_formation_catalogue ) ";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur sf ON (sf.fk_session = s.rowid  ) ";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ON (sc.fk_agefodd_session = s.rowid ) ";
 
-$sql .= " WHERE 1 = 1 ";
+
 
 
 
 $sql .= ' GROUP BY ';
 $sql .= ' s.rowid , s.ref,  s.duree_session';
 $sql .= ' ,sf.fk_agefodd_formateur, sf.rowid ';
+$sql .= ' ,fc.intitule, fc.rowid';
 
 
 
@@ -241,7 +246,11 @@ function _getTotalHourFormateurCalendrier($fk_agefodd_session_formateur, $status
 	$return = '';
 
 	$sql = "SELECT";
-	$sql .= " SUM(HOUR(TIMEDIFF(sfc.heuref, sfc.heured))) as totalHour";
+	if ($db->type == 'pgsql') {
+		$sql .= " SUM(TIME_TO_HOUR(TIMEDIFF('second', sfc.heuref, sfc.heured))) as totalHour";
+	} else {
+		$sql .= " SUM(HOUR(TIMEDIFF(sfc.heuref, sfc.heured))) as totalHour";
+	}
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier sfc ";
 	$sql .= " WHERE sfc.fk_agefodd_session_formateur = ".intval($fk_agefodd_session_formateur);
 
@@ -273,7 +282,11 @@ function _getTotalHourCalendrier($fk_agefodd_session, $status = false)
 	$return = '';
 
 	$sql = "SELECT";
-	$sql .= " SUM(HOUR(TIMEDIFF(sc.heuref, sc.heured))) as totalHour";
+	if ($db->type == 'pgsql') {
+		$sql .= " SUM(TIME_TO_HOUR(TIMEDIFF('second', sc.heuref, sc.heured))) as totalHour";
+	} else {
+		$sql .= " SUM(HOUR(TIMEDIFF(sc.heuref, sc.heured))) as totalHour";
+	}
 	$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier sc ";
 	$sql .= " WHERE sc.fk_agefodd_session = ".intval($fk_agefodd_session);
 
