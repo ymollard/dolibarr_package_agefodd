@@ -126,7 +126,7 @@ $sql .= " s.ref refsession, s.status, s.rowid idsession, s.duree_session";
 $sql .= " , fc.intitule as intituleformation , fc.rowid idformation ";
 $sql .= " , sf.fk_agefodd_formateur , sf.rowid as fk_agefodd_session_formateur ";
 if ($db->type == 'pgsql') {
-	$sql .= " , SUM(HOUR(TIMEDIFF('second', sc.heuref, sc.heured))) as totalHour";
+	$sql .= " , SUM(TIME_TO_HOUR(TIMEDIFF('second', sc.heuref, sc.heured))) as totalHour";
 } else {
 	$sql .= " , SUM(HOUR(TIMEDIFF(sc.heuref, sc.heured))) as totalHour";
 }
@@ -246,7 +246,7 @@ function _getTotalHourFormateurCalendrier($fk_agefodd_session_formateur, $status
 
 	$sql = "SELECT";
 	if ($db->type == 'pgsql') {
-		$sql .= " SUM(HOUR(TIMEDIFF('second', sfc.heuref, sfc.heured))) as totalHour";
+		$sql .= " SUM(TIME_TO_HOUR(TIMEDIFF('second', sfc.heuref, sfc.heured))) as totalHour";
 	} else {
 		$sql .= " SUM(HOUR(TIMEDIFF(sfc.heuref, sfc.heured))) as totalHour";
 	}
@@ -282,7 +282,7 @@ function _getTotalHourCalendrier($fk_agefodd_session, $status = false)
 
 	$sql = "SELECT";
 	if ($db->type == 'pgsql') {
-		$sql .= " SUM(HOUR(TIMEDIFF('second', sc.heuref, sc.heured))) as totalHour";
+		$sql .= " SUM(TIME_TO_HOUR(TIMEDIFF('second', sc.heuref, sc.heured))) as totalHour";
 	} else {
 		$sql .= " SUM(HOUR(TIMEDIFF(sc.heuref, sc.heured))) as totalHour";
 	}
