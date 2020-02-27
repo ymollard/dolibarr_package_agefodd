@@ -346,6 +346,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 
 		$requestername = false;
 		if (count($this->lines) > 0) {
+			$requestername = ''; // init var
 			foreach ($this->lines as $line) {
 
 				if ($requestername != $line->socrequestername) {
@@ -506,7 +507,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 										return $result;
 									}
 									$OPCA_array[$sessionOPCA->fk_soc_OPCA] = $stagiaire_conv->socid;
-									$OPCA_array_socid[$traine_line->socid] = $sessionOPCA->fk_soc_OPCA;
+									$OPCA_array_socid[$stagiaire_conv->socid] = $sessionOPCA->fk_soc_OPCA;
 
 									// If comapny is empty we are probably in inter-entre or false inter
 									// In this case we add into company column the trainee company
@@ -519,8 +520,8 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 							}
 						}
 						$line_to_output[10][$convline->id] = $traineelist;
-						$line_to_output[11][$convline->id] = count($traineelist);
-						$array_sub_total[11] += count($traineelist);
+						$line_to_output[11][$convline->id] = is_array($traineelist)?count($traineelist):0;
+						$array_sub_total[11] += is_array($traineelist)?count($traineelist):0;
 					}
 				} else {
 					if (is_array($conv->lines) && count($conv->lines) > 1 && empty($line->socid)) {
