@@ -448,7 +448,7 @@ if (! empty($id)) {
 		/*
 		 * Formulaire d'envoi des documents
 		 */
-		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_presence_empty' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc' || $action == 'presend_attestationendtraining' || $action == 'presend_attestationpresencetraining') {
+		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_presence_empty' || $action == 'presend_presence_landscape_bymonth' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc' || $action == 'presend_attestationendtraining' || $action == 'presend_attestationpresencetraining') {
 
 			$mode = GETPOST("mode");
 
@@ -458,6 +458,8 @@ if (! empty($id)) {
 				$filename = 'fiche_presence_direct_' . $agf->id . '.pdf';
 			} elseif ($action == 'presend_presence_empty') {
 				$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
+			} elseif ($action == 'presend_presence_landscape_bymonth') {
+				$filename = 'fiche_presence_landscape_bymonth_' . $agf->id . '.pdf';
 			} elseif ($action == 'presend_pedago') {
 
 				$agfTraining = new Formation($db);
@@ -1241,7 +1243,7 @@ if (! empty($id)) {
 				$num = $agftrainersess->fetch_formateur_per_session($id);
 
 				if ($num > 0) {
-					foreach ( $agftrainersess->lines as $formateur ) {
+					foreach ($agftrainersess->lines as $formateur) {
 						if ($formateur->email != '')
 							$withto[$formateur->socpeopleid] = $formateur->lastname . ' ' . $formateur->firstname . ' - ' . $formateur->email . ' (' . $langs->trans('AgfFormateur') . ')';
 						$withtoname[$formateur->socpeopleid] = $formateur->lastname . ' ' . $formateur->firstname;
@@ -1252,16 +1254,16 @@ if (! empty($id)) {
 				if ($agf->type_session && $socid) {
 					$agf_opca = new Agefodd_opca($db);
 					$result_opca = $agf_opca->getOpcaForTraineeInSession($socid, $id);
-					if (! $result_opca) {
+					if (!$result_opca) {
 						$mesg = $langs->trans('AgfSendWarningNoMailOpca');
 						$style_mesg = 'warnings';
 					} else {
 						$contactstatic = new Contact($db);
 						$contactstatic->fetch($agf_opca->fk_socpeople_OPCA);
-						if (! empty($contactstatic->email)) {
+						if (!empty($contactstatic->email)) {
 							$withto[$agf_opca->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
 							$withtoname[$agf_opca->fk_socpeople_OPCA] = $contactstatic->getFullName($langs);
-							if (! empty($contactstatic->socname)) {
+							if (!empty($contactstatic->socname)) {
 								$withtocompanyname[$contactstatic->socid] = $contactstatic->socname;
 							}
 						} else {
@@ -1272,10 +1274,10 @@ if (! empty($id)) {
 				} else {
 					$contactstatic = new Contact($db);
 					$contactstatic->fetch($agf->fk_socpeople_OPCA);
-					if (! empty($contactstatic->email)) {
+					if (!empty($contactstatic->email)) {
 						$withto[$agf->fk_socpeople_OPCA] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfMailTypeContactOPCA') . ')';
 						$withtoname[$agf->fk_socpeople_OPCA] = $contactstatic->getFullName($langs);
-						if (! empty($contactstatic->socname)) {
+						if (!empty($contactstatic->socname)) {
 							$withtocompanyname[$contactstatic->socid] = $contactstatic->socname;
 						}
 					} else {
@@ -1290,23 +1292,23 @@ if (! empty($id)) {
 					$contactstatic->fetch($agf->sourcecontactid);
 					$withto[$agf->sourcecontactid] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfSessionContact') . ')';
 					$withtoname[$agf->sourcecontactid] = $contactstatic->getFullName($langs);
-					if (! empty($contactstatic->socname)) {
+					if (!empty($contactstatic->socname)) {
 						$withtocompanyname[$contactstatic->socid] = $contactstatic->socname;
 					}
 				}
 
 				// All customer contact with client
-				if (! empty($agf->fk_soc)) {
+				if (!empty($agf->fk_soc)) {
 					$socstatic = new Societe($db);
 					$socstatic->id = $agf->fk_soc;
 					$soc_contact = $socstatic->contact_property_array('email');
-					foreach ( $soc_contact as $id => $mail ) {
+					foreach ($soc_contact as $id => $mail) {
 						$contactstatic = new Contact($db);
 						$contactstatic->fetch($id);
-						if (! empty($contactstatic->email)) {
+						if (!empty($contactstatic->email)) {
 							$withto[$id] = $contactstatic->lastname . ' ' . $contactstatic->firstname . ' - ' . $contactstatic->email . ' (' . $langs->trans('AgfSessionContact') . ')';
 							$withtoname[$id] = $contactstatic->getFullName($langs);
-							if (! empty($contactstatic->socname)) {
+							if (!empty($contactstatic->socname)) {
 								$withtocompanyname[$contactstatic->socid] = $contactstatic->socname;
 							}
 						}
@@ -1315,6 +1317,11 @@ if (! empty($id)) {
 
 				$formmail->withtofree = 1;
 				$formmail->withfile = 2;
+			} elseif ($action == 'presend_presence_landscape_bymonth') {
+				$formmail->withtopic = $langs->trans('AgfSendFeuillePresenceLandscapeByMonth', '__FORMINTITULE__');
+				$formmail->withbody = $langs->trans('AgfSendFeuillePresenceBodyLandscapeByMonth', '__FORMINTITULE__');
+				//$formmail->param['models'] = 'fiche_presence_landscape_bymonth';
+				$formmail->param['pre_action'] = 'presend_presence_landscape_bymonth';
 			} elseif ($action == 'presend_pedago') {
 
 				// Feuille de présence peut être aux formateurs
