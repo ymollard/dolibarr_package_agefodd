@@ -500,12 +500,9 @@ class ReportCommercial extends AgefoddExportExcel
 				AND COALESCE(parent.rowid, 0) = ' . $parentID. '
 				AND s.fk_typent != 103';
 
-		// On n'applique les filtres que sur la maison-mère
+		// On n'applique les filtres que sur la maison-mère, sauf client/prospect
 		if(empty($parentID))
 		{
-			$sql .= '
-				AND s.client IN (' . implode(', ', $filter['s.client']) . ')';
-
 			if (! empty($filter['soc.rowid']))
 			{
 				if (! is_array($filter['soc.rowid']))
@@ -535,6 +532,11 @@ class ReportCommercial extends AgefoddExportExcel
 				AND s.datec <= "' . $filter['startyear'] . '"
 				AND s.datec > "' . ($filter['startyear'] - $filter['nbyears']) . '"';
 			}
+		}
+		else
+		{
+			$sql .= '
+				AND s.client IN (' . implode(', ', $filter['s.client']) . ')';
 		}
 
 		$sql.= '
@@ -818,7 +820,7 @@ class ReportCommercial extends AgefoddExportExcel
 		if($type == 'opcainter' || $type == 'opcaintraextra')
 		{
 			$multiplier = '(
-				SELECT COUNT(CASE WHEN opca.fk_soc_trainee = ' . $companyID . ' THEN 1 ELSE NULL END) / COUNT(*)
+				SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE COUNT(CASE WHEN opca.fk_soc_trainee = ' . $companyID . ' THEN 1 ELSE NULL END) / COUNT(*) END
 				FROM ' . MAIN_DB_PREFIX . 'facture f2
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f2.rowid AND se.element_type = "invoice")
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = se.fk_session_agefodd)
@@ -833,7 +835,7 @@ class ReportCommercial extends AgefoddExportExcel
 		if($type == 'opcaintranoextra')
 		{
 			$multiplier = '(
-				SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE COUNT(CASE WHEN ' . $companyID . ' IN (ags.fk_soc,ass.fk_soc_link) THEN 1 ELSE NULL END) / COUNT(*) END
+				SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE COUNT(CASE WHEN COALESCE(ags.fk_soc, ass.fk_soc_link) = ' . $companyID . ' THEN 1 ELSE NULL END) / COUNT(*) END
 				FROM ' . MAIN_DB_PREFIX . 'facture f2
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f2.rowid AND se.element_type = "invoice")
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session s2 ON (s2.rowid = se.fk_session_agefodd)
@@ -846,23 +848,10 @@ class ReportCommercial extends AgefoddExportExcel
 			)';
 		}
 
-		if($type == 'noopcainter')
-		{
-			$multiplier = '(
-				SELECT COUNT(CASE WHEN ags.fk_soc = ' . $companyID . ' THEN 1 ELSE NULL END) / COUNT(*)
-				FROM ' . MAIN_DB_PREFIX . 'facture f2
-				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f2.rowid AND se.element_type = "invoice")
-				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass ON (ass.fk_session_agefodd = se.fk_session_agefodd)
-				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire ags ON (ags.rowid = ass.fk_stagiaire)
-				WHERE se.fk_session_agefodd = s.rowid
-				AND f.fk_soc = f2.fk_soc
-			)';
-		}
-
 		if($type == 'noopcaintra' || $type == 'noopcaintranoextra')
 		{
 			$multiplier = '(
-				SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE COUNT( CASE WHEN ' . $companyID . ' IN (ags.fk_soc, s2.fk_soc, s2.fk_soc_requester,ass.fk_soc_link) THEN 1 ELSE NULL END) / COUNT(*) END
+				SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE COUNT( CASE WHEN COALESCE(ags.fk_soc, s2.fk_soc, s2.fk_soc_requester, ass.fk_soc_link) = ' . $companyID . ' THEN 1 ELSE NULL END) / COUNT(*) END
 				FROM ' . MAIN_DB_PREFIX . 'facture f2
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element se ON (se.fk_element = f2.rowid AND se.element_type = "invoice")
 				INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session s2 ON (s2.rowid = se.fk_session_agefodd)
@@ -1048,10 +1037,13 @@ class ReportCommercial extends AgefoddExportExcel
 
 		$sql.= '
 				AND YEAR(' . $dateField . ') IN (' . implode(', ', $this->year_to_report_array) . ')';
+
 		$sql.= ' GROUP BY ';
+
 		if ($this->debug) {
 			$sql .= ' f.rowid, ';
 		}
+
 		$sql.= 'YEAR(' . $dateField . '), MONTH(' . $dateField . ')
 				ORDER BY YEAR(' . $dateField . ') DESC, MONTH(' . $dateField . ') DESC';
 

@@ -72,6 +72,12 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
     /** @var int $dateColMinWidth */
     var $dateColMinWidth = 25;
 
+    /** @var float $signatureRowHeightFactor  By how much a standard row height should be increased in proportion to 
+	 *                                        font size. Increase this factor if there is not enough space for
+	 *                                        trainees/trainers to put their signatures in the cells.
+     */
+    var $signatureRowHeightFactor = 2.4;
+
     // Definition des couleurs utilisées de façon globales dans le document (charte)
     protected $colorfooter;
     protected $colortext;
@@ -512,8 +518,10 @@ class pdf_fiche_presence_trainee_trainee extends ModelePDFAgefodd
     protected function _showBodyRow($leftColWidth, $dateColWidth, $leftHeaderCellText, $TSessionDate)
     {
 
-//        $rowHeight = $this->_getYSpacing(1 + substr_count($leftHeaderCellText, "\n")); // augmenter à 1.5 pour avoir des cases plus grandes pour signer
-        $rowHeight = max($this->_getYSpacing(1.5), $this->pdf->getStringHeight($this->trainer_widthcol1, $leftHeaderCellText));
+        $rowHeight = max(
+            $this->_getYSpacing($this->signatureRowHeightFactor),
+            $this->pdf->getStringHeight($this->trainer_widthcol1, $leftHeaderCellText)
+        );
         $pageStart = $this->pdf->getPage();
         $rowStartY = $this->pdf->GetY();
         $colStartX = $this->pdf->GetX();

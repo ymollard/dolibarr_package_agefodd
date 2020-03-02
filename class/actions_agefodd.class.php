@@ -2137,4 +2137,50 @@ class ActionsAgefodd
 			}
 		}
 	}
+
+	/**
+	 * @param $parameters
+	 * @param $object
+	 * @param $action
+	 * @param $hookmanager
+	 * @return int
+	 * @throws \Luracast\Restler\RestException
+	 */
+	public function attachMoreFiles($parameters, &$object, &$action, $hookmanager) {
+		global $conf,$langs;
+		if ($conf->attachments->enabled && !empty($conf->global->ATTACHMENTS_INCLUDE_OBJECT_LINKED)) {
+            $langs->load('agefodd@agefodd');
+			dol_include_once('/agefodd/class/agsession.class.php');
+			$agf = new Agsession($this->db);
+			$result = $agf->fetch_all_by_order_invoice_propal('', '', 0, 0,
+				get_class($object) == 'Commande' ? $object->id : 0,
+				get_class($object) == 'Facture' ? $object->id : 0,
+				get_class($object) == 'Propal' ? $object->id : 0,
+				get_class($object) == 'FactureFournisseur' ? $object->id : 0,
+				get_class($object) == 'CommandeFournisseur' ? $object->id : 0);
+
+
+			if ($result < 0) {
+				setEventMessage('From hook attachMoreFiles agefodd :' . $agf->error, 'errors');
+			} elseif (is_array($agf->lines) && count($agf->lines)>0) {
+				foreach($agf->lines as $session) {
+					$TLinkDocuments=$agf->documentsSessionList($session->rowid, $object->socid );
+					if (is_array($TLinkDocuments) && count($TLinkDocuments)>0) {
+						foreach($TLinkDocuments as $document) {
+							$fullname=$conf->agefodd->dir_output.'/'.$document;
+							$fullname_md5 = md5($fullname);
+							$name = pathinfo($fullname, PATHINFO_BASENAME);
+							$doclist[$session->refsession][$fullname_md5]= array(
+								'name' => $name
+								,'path' => $conf->agefodd->dir_output
+								,'fullname' => $fullname
+								,'fullname_md5' => $fullname_md5);
+						}
+					}
+				}
+			}
+			$this->results['AttachmentsTitleAgefodd'] = $doclist;
+		}
+		return 0;
+	}
 }
