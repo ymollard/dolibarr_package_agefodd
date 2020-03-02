@@ -985,6 +985,17 @@ function document_send_line($mdle, $socid = 0, $nom_courrier = '', $conv = '')
 		} else
 			return $langs->trans('AgfDocNotDefined');
 
+	} else if ($mdle == 'fiche_presence_landscape_empty') {
+
+        // Check if file exist
+        // $filename = 'fiche_presence_'.$id.'_'.$socid.'.pdf';
+        $filename = 'fiche_presence_landscape_empty_' . $id . '.pdf';
+        $file = $conf->agefodd->dir_output . '/' . $filename;
+        if (file_exists($file)) {
+            return '<a href="' . dol_buildpath('/agefodd/session/send_docs.php', 1) . '?id=' . $id . '&action=presend_presence_landscape_empty&mode=init">' . img_picto($langs->trans('AgfSendDoc'), 'stcomm0') . '</a>';
+        } else
+            return $langs->trans('AgfDocNotDefined');
+
 	} else if ($mdle == 'attestation') {
 		// Check if file exist
 		$filename = 'attestation_' . $id . '_' . $socid . '.pdf';
