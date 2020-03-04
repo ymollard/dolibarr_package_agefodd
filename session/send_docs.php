@@ -448,7 +448,7 @@ if (! empty($id)) {
 		/*
 		 * Formulaire d'envoi des documents
 		 */
-		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_presence_empty' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc' || $action == 'presend_attestationendtraining' || $action == 'presend_attestationpresencetraining' || $action =='presend_presence_landscape_empty') {
+		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_presence_empty' || $action == 'presend_presence_landscape_bymonth' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc' || $action == 'presend_attestationendtraining' || $action == 'presend_attestationpresencetraining' || $action =='presend_presence_landscape_empty') {
 
 			$mode = GETPOST("mode");
 
@@ -458,6 +458,8 @@ if (! empty($id)) {
 				$filename = 'fiche_presence_direct_' . $agf->id . '.pdf';
 			} elseif ($action == 'presend_presence_empty') {
 				$filename = 'fiche_presence_empty_' . $agf->id . '.pdf';
+			} elseif ($action == 'presend_presence_landscape_bymonth') {
+				$filename = 'fiche_presence_landscape_bymonth_' . $agf->id . '.pdf';
 			} elseif ($action == 'presend_pedago') {
 
 				$agfTraining = new Formation($db);
@@ -487,7 +489,7 @@ if (! empty($id)) {
 			    $filename = 'attestationpresencetraining_' . $agf->id . '_' . $socid . '.pdf';
 			} elseif ($action == 'presend_presence_landscape_empty'){
 			    $filename = 'fiche_presence_landscape_empty_'. $agf->id .'.pdf';
-            }
+			}
 
 			if ($filename) {
 				$file = $conf->agefodd->dir_output . '/' . $filename;
@@ -1317,6 +1319,11 @@ if (! empty($id)) {
 
 				$formmail->withtofree = 1;
 				$formmail->withfile = 2;
+			} elseif ($action == 'presend_presence_landscape_bymonth') {
+				$formmail->withtopic = $langs->trans('AgfSendFeuillePresenceLandscapeByMonth', '__FORMINTITULE__');
+				$formmail->withbody = $langs->trans('AgfSendFeuillePresenceBodyLandscapeByMonth', '__FORMINTITULE__');
+				//$formmail->param['models'] = 'fiche_presence_landscape_bymonth';
+				$formmail->param['pre_action'] = 'presend_presence_landscape_bymonth';
 			} elseif ($action == 'presend_pedago') {
 
 				// Feuille de présence peut être aux formateurs
@@ -2044,7 +2051,7 @@ if (! empty($id)) {
                 $formmail->withbody = $langs->trans('AgfSendFeuillePresenceBodyLandscapeEmpty', '__FORMINTITULE__');
                 //$formmail->param['models'] = 'fiche_presence_landscape_bymonth';
                 $formmail->param['pre_action'] = 'presend_presence_landscape_empty';
-            }
+			}
 
 			if (! empty($withto))
 			{

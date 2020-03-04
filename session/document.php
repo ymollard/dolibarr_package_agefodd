@@ -611,11 +611,11 @@ if (! empty($id)) {
 
 		print '<tr><td colspan=3 style="background-color:#d5baa8;">' . $langs->trans("AgfDuringTraining") . '</td></tr>' . "\n";
 
-		if (!empty($agf->type_session)) {
 			if (!$user->rights->agefodd->session->trainer) {
 				document_line($langs->trans("AgfFichePresence"), "fiche_presence");
 				document_line($langs->trans("AgfFichePresenceCompany"), "fiche_presence_societe");
 			}
+			document_line($langs->trans("AgfFichePresenceLandscapeByMonth"), "fiche_presence_landscape_bymonth");
 			document_line($langs->trans("AgfFichePresenceDirect"), "fiche_presence_direct");
 			document_line($langs->trans("AgfFichePresenceDirectCompany"), "fiche_presence_direct_societe");
 			if (!$user->rights->agefodd->session->trainer) {
@@ -624,29 +624,12 @@ if (! empty($id)) {
 				document_line($langs->trans("AgfFichePresenceTraineeDirect"), "fiche_presence_trainee_direct");
 				document_line($langs->trans("AgfFichePresenceTraineeLandscape"), "fiche_presence_landscape");
                 document_line($langs->trans("AgfFichePresenceTraineeLandscapeEmpty"), "fiche_presence_landscape_empty");
-                document_line($langs->trans("AgfFichePresenceTraineeLandscapeCompany"), "fiche_presence_landscape_societe");
+				document_line($langs->trans("AgfFichePresenceTraineeLandscapeCompany"), "fiche_presence_landscape_societe");
 				document_line($langs->trans("AgfFicheEval"), "fiche_evaluation");
 				document_line($langs->trans("AgfRemiseEval"), "fiche_remise_eval");
 				document_line($langs->trans("AgfAttestationEndTrainingEmpty"), "attestationendtraining_empty");
 				document_line($langs->trans("AgfChevalet"), "chevalet");
 			}
-		} else {
-			if (!$user->rights->agefodd->session->trainer) {
-				document_line($langs->trans("AgfFichePresence"), "fiche_presence");
-			}
-			document_line($langs->trans("AgfFichePresenceDirect"), "fiche_presence_direct");
-			if (!$user->rights->agefodd->session->trainer) {
-				document_line($langs->trans("AgfFichePresenceEmpty"), "fiche_presence_empty");
-				document_line($langs->trans("AgfFichePresenceTrainee"), "fiche_presence_trainee");
-				document_line($langs->trans("AgfFichePresenceTraineeDirect"), "fiche_presence_trainee_direct");
-				document_line($langs->trans("AgfFichePresenceTraineeLandscape"), "fiche_presence_landscape");
-                document_line($langs->trans("AgfFichePresenceTraineeLandscapeEmpty"), "fiche_presence_landscape_empty");
-                document_line($langs->trans("AgfFicheEval"), "fiche_evaluation");
-				document_line($langs->trans("AgfRemiseEval"), "fiche_remise_eval");
-				document_line($langs->trans("AgfAttestationEndTrainingEmpty"), "attestationendtraining_empty");
-				document_line($langs->trans("AgfChevalet"), "chevalet");
-			}
-		}
 
 		print '</table>' . "\n";
 
