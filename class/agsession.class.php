@@ -2678,7 +2678,7 @@ class Agsession extends CommonObject
 				}
 			}
 		}
-		$sql .= " GROUP BY s.rowid,soemployer.nom, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code,  s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+		$sql .= " GROUP BY s.rowid,soemployer.nom,dictstatusba.intitule,dictstatusba.code, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.status, dictstatus.intitule , dictstatus.code,  s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " p.ref_interne, c.intitule, c.ref,c.ref_interne, so.nom, f.rowid,socp.rowid,sa.archive,sorequester.nom,c.color,agefoddcontact.fk_socpeople, sale.fk_user_com";
 		foreach ( $array_options_keys as $key ) {
 			$sql.= ',ef.'.$key;
@@ -5928,7 +5928,7 @@ class Agsession extends CommonObject
 		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p ON (p.rowid = s.fk_element AND s.element_type = \'propal\')';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd ON (pd.fk_propal = p.rowid)';
-		$sql_tmp.= ' WHERE 1';
+		$sql_tmp.= ' WHERE 1=1 ';
 		if (!empty($sql_filterSession)) {
 			$sql_tmp.=$sql_filterSession;
 		}
@@ -5951,7 +5951,7 @@ class Agsession extends CommonObject
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propal p2 ON (p2.rowid = s.fk_element AND s.element_type = \'propal\')';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'propaldet pd2 ON (pd2.fk_propal = p2.rowid)';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = pd2.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
-			$sql_tmp.= ' WHERE 1';
+			$sql_tmp.= ' WHERE 1=1 ';
 			if (!empty($sql_filterSession)) {
 				$sql_tmp.=$sql_filterSession;
 			}
@@ -5974,7 +5974,7 @@ class Agsession extends CommonObject
 		$sql_tmp.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_element s';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facture f ON (f.rowid = s.fk_element AND s.element_type = \'invoice\')';
 		$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facturedet fd ON (fd.fk_facture = f.rowid)';
-		$sql_tmp.= ' WHERE 1';
+		$sql_tmp.= ' WHERE 1=1 ';
 		if (!empty($sql_filterSession)) {
 			$sql_tmp.=$sql_filterSession;
 		}
@@ -5997,7 +5997,7 @@ class Agsession extends CommonObject
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facture f ON (f.rowid = s.fk_element AND s.element_type = \'invoice\')';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'facturedet fd ON (fd.fk_facture = f.rowid)';
 			$sql_tmp.= ' INNER JOIN '.MAIN_DB_PREFIX.'categorie_product cp ON (cp.fk_product = fd.fk_product AND cp.fk_categorie IN ('.$conf->global->AGF_CAT_PRODUCT_CHARGES.'))';
-			$sql_tmp.= ' WHERE 1';
+			$sql_tmp.= ' WHERE 1=1 ';
 			if (!empty($sql_filterSession)) {
 				$sql_tmp.=$sql_filterSession;
 			}

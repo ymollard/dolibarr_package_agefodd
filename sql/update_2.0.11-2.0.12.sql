@@ -1,7 +1,7 @@
 ALTER TABLE llx_agefodd_reg_interieur ADD COLUMN reg_int text NULL AFTER file;
-ALTER TABLE llx_agefodd_reg_interieur ADD COLUMN fk_user_author integer NOT NULL AFTER notes;
-ALTER TABLE llx_agefodd_reg_interieur ADD COLUMN datec datetime NOT NULL AFTER fk_user_author;
-ALTER TABLE llx_agefodd_reg_interieur ADD COLUMN fk_user_mod integer NOT NULL AFTER datec;
+ALTER TABLE llx_agefodd_reg_interieur ADD COLUMN fk_user_author integer NOT NULL DEFAULT '0' AFTER notes;
+ALTER TABLE llx_agefodd_reg_interieur ADD COLUMN datec datetime NOT NULL DEFAULT NOW() AFTER fk_user_author;
+ALTER TABLE llx_agefodd_reg_interieur ADD COLUMN fk_user_mod integer NOT NULL DEFAULT '0' AFTER datec;
 ALTER TABLE llx_agefodd_reg_interieur ADD COLUMN tms timestamp NOT NULL default CURRENT_TIMESTAMP;
 ALTER TABLE llx_agefodd_reg_interieur DROP COLUMN file;
 
@@ -10,7 +10,7 @@ ALTER TABLE llx_agefodd_reg_interieur ADD CONSTRAINT llx_agefodd_reg_interieur_i
 
 ALTER TABLE llx_agefodd_session ADD COLUMN type_session integer NULL AFTER fk_session_place;
 
-ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN fk_actioncomm integer NOT NULL DEFAULT 0 AFTER heuref;
+ALTER TABLE llx_agefodd_session_calendrier ADD COLUMN fk_actioncomm integer NOT NULL DEFAULT '0' AFTER heuref;
 ALTER TABLE llx_agefodd_session_calendrier ADD CONSTRAINT llx_agefodd_session_calendrier_ibfk_2 FOREIGN KEY (fk_actioncomm) REFERENCES llx_actioncomm (id)  ON DELETE CASCADE;
 
 ALTER TABLE llx_agefodd_session ADD COLUMN fk_soc integer NULL AFTER rowid;

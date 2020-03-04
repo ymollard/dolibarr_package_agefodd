@@ -1217,7 +1217,7 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as s';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_certif as certif ON certif.fk_stagiaire = s.rowid';
-		$this->export_sql_end[$r] .= ' WHERE 1 ';
+		$this->export_sql_end[$r] .= ' WHERE 1=1 ';
 
 		// Session export
 		$r ++;
@@ -1422,7 +1422,7 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as sosta ON sosta.rowid = sta.fk_soc';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'socpeople as presta ON s.fk_socpeople_presta = presta.rowid';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'societe as socpresta ON socpresta.rowid = presta.fk_soc';
-		$this->export_sql_end[$r] .= ' WHERE 1 ';
+		$this->export_sql_end[$r] .= ' WHERE 1=1 ';
 
 		// training export
 		$r ++;
@@ -1511,7 +1511,7 @@ class modAgefodd extends DolibarrModules
 		$this->export_sql_start[$r] = 'SELECT DISTINCT ';
 		$this->export_sql_end[$r] = ' FROM ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue as s';
 		$this->export_sql_end[$r] .= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_formation_catalogue_extrafields as extra ON extra.fk_object = s.rowid';
-		$this->export_sql_end[$r] .= ' WHERE 1 ';
+		$this->export_sql_end[$r] .= ' WHERE 1=1 ';
 
 		// Array to add new pages in new tabs
 		// $this->tabs = array('entity:Title:@mymodule:/mymodule/mynewtab.php?id=__ID__');

@@ -8,7 +8,7 @@
  * Created: 10 juil. 2018
  */
 
-ALTER TABLE llx_agefodd_session ADD COLUMN fk_soc_employer integer DEFAULT NULL AFTER fk_socpeople_presta;
+ALTER TABLE llx_agefodd_session ADD COLUMN fk_soc_employer integer DEFAULT NULL;
 
 ALTER TABLE llx_agefodd_session DROP is_date_res_site;
 ALTER TABLE llx_agefodd_session DROP is_date_res_confirm_site;
