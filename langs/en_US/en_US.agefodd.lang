@@ -596,6 +596,7 @@ Settings=Settings Agefodd
 AgfFichePresenceEmpty=Empty timecard
 AgfFichePresenceTrainee=Timecard by trainee
 AgfFichePresenceTraineeLandscape=Timecard in landscape format
+AgfFichePresenceTraineeLandscapeEmpty=Timecard in landscape format empty
 AgfStagiaireList=Trainee list
 AgfSendConseil=Advise document for trainning %s
 AgfSendConseilBody=Hello,\n\nPlease find relative Advise to trainning « %s ».
