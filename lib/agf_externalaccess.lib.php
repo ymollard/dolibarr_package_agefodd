@@ -2032,20 +2032,22 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 				heured.addEventListener("change", function (event) {
 
-					if(agfTimeDiff(heured.value, heuref.value, false) < 0 || agfTimeDiff(heured.value, heuref.value, false) > '.($duree_timeRest * 3600000).'){
+					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
 						heured.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
-					}
-					else {
+					} else if (agfTimeDiff(heured.value, heuref.value, false) > '.($duree_timeRest * 3600000).'){
+					    heured.setCustomValidity("'.$langs->transnoentities('HourInvalidNoTime').'");
+					} else {
 						heured.setCustomValidity("");
 						heuref.setCustomValidity("");
 					}
 				});
 
 				heuref.addEventListener("change", function (event) {
-					if(agfTimeDiff(heured.value, heuref.value, false) < 0 || agfTimeDiff(heured.value, heuref.value, false) > '.($duree_timeRest * 3600000).'){
+					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
 						heuref.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
-					}
-					else {
+					} else if(agfTimeDiff(heured.value, heuref.value, false) > '.($duree_timeRest * 3600000).'){
+					    heuref.setCustomValidity("'.$langs->transnoentities('HourInvalidNoTime').'");
+					} else {
 						heuref.setCustomValidity("");
 						heured.setCustomValidity("");
 					}

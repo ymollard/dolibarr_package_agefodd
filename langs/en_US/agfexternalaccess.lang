@@ -97,3 +97,5 @@ AgfCrenaux=Créneaux
 AgfRecap=Récapitulatif
 AgfSessionSummaryTimeDone=Total des créneaux réalisés
 AgfLinksExternal=Other Links
+HourInvalid=Invalid time
+HourInvalidNoTime=The desired duration exceeds the maximum duration of the entry
