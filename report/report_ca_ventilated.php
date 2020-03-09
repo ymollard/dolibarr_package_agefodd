@@ -49,7 +49,7 @@ $date_end = dol_mktime(0, 0, 0, GETPOST('date_endmonth', 'int'), GETPOST('date_e
 $search_soc = GETPOST("search_soc"); // client de la session
 $search_soc_requester = GETPOST('search_soc_requester'); // demandeur
 $search_soc_buyer=GETPOST('search_soc_buyer'); // tiers payeur
-$search_sale = GETPOST('search_sale', 'int');
+$search_sale = GETPOST('search_sale', 'array');
 $search_parent = GETPOST('search_parent', 'int');
 if ($search_parent == - 1)
 	$search_parent = '';
@@ -88,15 +88,15 @@ $formfile = new FormFile($db);
 if (! empty($search_sale)) {
 	$filter['sale.fk_user'] = $search_sale;
 }
-//if ($search_type_session != '' && $search_type_session != - 1) {
-//	$filter['s.type_session'] = $search_type_session;
-//}
+
 if (! empty($search_parent)) {
 	$filter['so.parent|sorequester.parent'] = $search_parent;
 }
+
 if (! empty($search_soc)) {
 	$filter['so.nom'] = $search_soc;
 }
+
 if (! empty($search_soc_requester)) {
 	$filter['socrequester.nom'] = $search_soc_requester;
 }
