@@ -94,7 +94,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0, $timeslottrainer = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -132,83 +132,88 @@ class Agefodd_sesscalendar extends CommonObject{
 
 		$this->db->begin();
 
-        //CREATION DU CRENEAU DU CALENDRIER DANS LE CALENDRIER FORMATEUR
-
-        //session concernée
-        $agfsession = new Agsession($this->db);
-        $result = $agfsession->fetch($this->sessid);
-
-        if($result < 0)
+		if(! empty($timeslottrainer))
         {
-            $error ++;
-            $this->errors[] = "Error " . $this->db->lasterror();
-        }
+            //CREATION DU CRENEAU DU CALENDRIER DANS LE CALENDRIER FORMATEUR
 
-        if(!$error)
-        {
-            //action si il n'y a qu'un seul formateur
-            $nb_Trainers = $agfsession->fetchTrainers();
-            if ($nb_Trainers == 1)
+            //session concernée
+            $agfsession = new Agsession($this->db);
+            $result = $agfsession->fetch($this->sessid);
+
+            if ($result < 0)
             {
-                $agf_cal = new Agefoddsessionformateurcalendrier($this->db);
-                $result = $agf_cal->fetchAllBy(array('sf.fk_session' => $agfsession->id));
+                $error++;
+                $this->errors[] = "Error ".$this->db->lasterror();
+            }
 
-                if ($result < 0)
+            if (!$error)
+            {
+                //action si il n'y a qu'un seul formateur
+                $nb_Trainers = $agfsession->fetchTrainers();
+                if ($nb_Trainers == 1)
                 {
-                    $error ++;
-                    $this->errors[] = "Error " . $this->db->lasterror();
-                }
+                    $agf_cal = new Agefoddsessionformateurcalendrier($this->db);
+                    $result = $agf_cal->fetchAllBy(array('sf.fk_session' => $agfsession->id));
 
-                if(!$error)
-                {
-                    $agf_cal->sessid = $this->sessid;
-                    $agf_cal->fk_agefodd_session_formateur = $agfsession->TTrainer[0]->agefodd_session_formateur->id;
-
-                    $agf_cal->date_session = $this->date_session;
-
-                    $agf_cal->heured = $this->heured;
-                    $agf_cal->heuref = $this->heuref;
-
-                    $agf_cal->status = $this->status;
-
-                    // Test if trainer is already book for another training
-                    $result = $agf_cal->fetch_all_by_trainer($agfsession->TTrainer[0]->agefodd_session_formateur->formid);
-                    if ($result < 0) {
-                        $error ++;
-                        $this->errors[] = "Error " . $this->db->lasterror();
-                    } else
+                    if ($result < 0)
                     {
-                        foreach ($agf_cal->lines as $line)
+                        $error++;
+                        $this->errors[] = "Error ".$this->db->lasterror();
+                    }
+
+                    if (!$error)
+                    {
+                        $agf_cal->sessid = $this->sessid;
+                        $agf_cal->fk_agefodd_session_formateur = $agfsession->TTrainer[0]->agefodd_session_formateur->id;
+
+                        $agf_cal->date_session = $this->date_session;
+
+                        $agf_cal->heured = $this->heured;
+                        $agf_cal->heuref = $this->heuref;
+
+                        $agf_cal->status = $this->status;
+
+                        // Test if trainer is already book for another training
+                        $result = $agf_cal->fetch_all_by_trainer($agfsession->TTrainer[0]->agefodd_session_formateur->formid);
+                        if ($result < 0)
                         {
-                            if (!empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6)
+                            $error++;
+                            $this->errors[] = "Error ".$this->db->lasterror();
+                        }
+                        else
+                        {
+                            foreach ($agf_cal->lines as $line)
                             {
-                                if ((($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) && $line->fk_session != $this->sessid)
+                                if (!empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6)
                                 {
-                                    if (!empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY))
+                                    if ((($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) && $line->fk_session != $this->sessid)
                                     {
-                                        $error++;
-                                        $this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
-                                    }
-                                    else
-                                    {
-                                        $error++;
-                                        $this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
+                                        if (!empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY))
+                                        {
+                                            $error++;
+                                            $this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
+                                        }
+                                        else
+                                        {
+                                            $error++;
+                                            $this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                if(!$error)
-                {
-                    //création du créneau
-                    $result = $agf_cal->create($user);
-
-                    if ($result < 0)
+                    if (!$error)
                     {
-                        $error ++;
-                        $this->errors[] = "Error " . $this->db->lasterror();
+                        //création du créneau
+                        $result = $agf_cal->create($user);
+
+                        if ($result < 0)
+                        {
+                            $error++;
+                            $this->errors[] = "Error ".$this->db->lasterror();
+                        }
                     }
                 }
             }
