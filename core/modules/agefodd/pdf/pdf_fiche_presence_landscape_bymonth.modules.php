@@ -273,7 +273,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 
 	public function showTrainerBloc(&$pdf, $params = array())
 	{
-		global $outputlangs;
+		global $outputlangs, $conf;
 		/**
 		 * *** Bloc formateur ****
 		 */
@@ -306,7 +306,9 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 
 			$pdf->SetXY($posX + $this->trainer_widthcol1, $posY + 3);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
-			$str = $outputlangs->transnoentities('AgfPDFFichePres13');
+            $showAdditionalText = empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER);
+            if ($showAdditionalText) $str = $outputlangs->transnoentities('AgfPDFFichePres13');
+            else $str = '';
 			$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
 			$posY += $this->h_ligne;
 
@@ -419,7 +421,9 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 
 		$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2, $posY + 3);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'I', 7);
-		$str = $outputlangs->transnoentities('AgfPDFFichePres19');
+        $showAdditionalText = empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER);
+        if ($showAdditionalText) $str = $outputlangs->transnoentities('AgfPDFFichePres19');
+        else $str = '';
 		$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
 		$posY += $this->h_ligne;
 

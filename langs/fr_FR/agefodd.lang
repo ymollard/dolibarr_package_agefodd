@@ -1690,7 +1690,7 @@ setStatus_CANCELED=Appliquer l'état "Annulé"
 AgfNbTiersPart=Tiers des inscrits
 AgfNbSessEffective=Sessions effectives
 
-AgfHideLegalTextBelowSignatureFichePres=Masquer la mention légale sous le titre "Signature" dans les feuilles d'émargement par participant
+AgfHideLegalTextBelowSignatureFichePres=Masquer la mention légale sous le titre "Signature" dans les feuilles d'émargement
 AgfHideCompanyFichePres = Masquer la colonne société dans les feuilles d'émargements pour l'ajouter dans le nom du participants
 AgfEATrainerAndTraineeAccessSessionLink=Portail formateur et apprenant - Voir les liens (URL) associé à la session
 
