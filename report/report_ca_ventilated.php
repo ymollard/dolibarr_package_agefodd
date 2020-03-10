@@ -32,7 +32,7 @@ require_once ('../class/agsession.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once ('../class/html.formagefodd.class.php');
 require_once ('../class/agefodd_formateur.class.php');
-require_once ('../class/report_ca.class.php');
+require_once ('../class/report_ca_ventilated.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
@@ -45,12 +45,12 @@ $action = GETPOST('action', 'alpha');
 
 // Search filters
 $date_start = dol_mktime(0, 0, 0, GETPOST('date_startmonth', 'int'), GETPOST('date_startday', 'int'), GETPOST('date_startyear', 'int'));;
-$date_end = dol_mktime(0, 0, 0, GETPOST('date_endmonth', 'int'), GETPOST('date_endday', 'int'), GETPOST('date_endyear', 'int'));;
+$date_end = dol_mktime(23, 59, 59, GETPOST('date_endmonth', 'int'), GETPOST('date_endday', 'int'), GETPOST('date_endyear', 'int'));;
 $search_soc = GETPOST("search_soc"); // client de la session
 $search_soc_requester = GETPOST('search_soc_requester'); // demandeur
 $search_soc_buyer=GETPOST('search_soc_buyer'); // tiers payeur
 $search_sale = GETPOST('search_sale', 'array');
-$search_parent = GETPOST('search_parent', 'int');
+$search_parent = GETPOST('search_parent', 'array');
 if ($search_parent == - 1)
 	$search_parent = '';
 
@@ -76,6 +76,7 @@ $extracss = array (
 
 llxHeader('', $langs->trans('AgfMenuReportCAVentilated'), '', '', '', '', $extrajs, $extracss);
 $upload_dir = $conf->agefodd->dir_output . '/report/ca_ventilated/';
+if (!is_dir($upload_dir)) dol_mkdir($upload_dir);
 
 $agf = new Agsession($db);
 
@@ -84,21 +85,37 @@ $formAgefodd = new FormAgefodd($db);
 $formother = new FormOther($db);
 $formfile = new FormFile($db);
 
-
-if (! empty($search_sale)) {
-	$filter['sale.fk_user'] = $search_sale;
+$filter = array ();
+if (! empty($date_start)) {
+	$filter['f.datef']['start'] = $date_start;
 }
 
+if (! empty($date_end)) {
+	$filter['f.datef']['end'] = $date_end;
+}
+
+// client session
+if (! empty($search_soc)) {
+	$filter['sessclient.nom'] = $search_soc;
+}
+
+// demandeur
+if (! empty($search_soc_requester)) {
+	$filter['socrequester.nom'] = $search_soc_requester;
+}
+
+// payeur
+if (! empty($search_soc_buyer)) {
+	$filter['so.nom'] = $search_soc_buyer;
+}
+
+// maisons mere
 if (! empty($search_parent)) {
 	$filter['so.parent|sorequester.parent'] = $search_parent;
 }
 
-if (! empty($search_soc)) {
-	$filter['so.nom'] = $search_soc;
-}
-
-if (! empty($search_soc_requester)) {
-	$filter['socrequester.nom'] = $search_soc_requester;
+if (! empty($search_sale)) {
+	$filter['sale.fk_user'] = $search_sale;
 }
 
 
@@ -120,7 +137,7 @@ if ($action == 'builddoc') {
 
 		$outputlangs->load('agefodd@agefodd');
 
-		$report_ca = new ReportCA($db, $outputlangs);
+		$report_ca = new ReportCAVentilated($db, $outputlangs);
 
 		//$report_by_cust->file = $upload_dir . 'reportbycust-' . dol_print_date(dol_now(), 'dayhourlog') . '.xlsx';
 		$file_sub_title=$report_ca->getSubTitlFileName($filter);
@@ -153,7 +170,7 @@ if ($action == 'builddoc') {
 	$action = '';
 }
 
-$report = new ReportCA($db, $langs);
+$report = new ReportCAVentilated($db, $langs);
 
 $head = agf_revenue_ventilated_report_prepare_head();
 dol_fiche_head($head, 'card', $langs->trans("AgfMenuReportCAVentilated"), 0, 'bill');
@@ -197,7 +214,19 @@ if (is_array($extrafields->attributes['societe']) && array_key_exists('ts_maison
 } else {
 	$filter='';
 }
-print '<td>' . $form->select_company($search_parent, 'search_parent', $filter, 1) . '</td>';
+print '<td>';
+$TCompaniesTmp = $form->select_thirdparty_list("", "socid", $filter, "", 0, 0, array(), "", 1);
+
+$TCompaniesMere = array();
+if (!empty($TCompaniesTmp))
+{
+	foreach ($TCompaniesTmp as $mere)
+	{
+		$TCompaniesMere[$mere['key']] = $mere['label'];
+	}
+}
+print $form->multiselectarray("search_parent", $TCompaniesMere, $search_parent);
+print '</td>';
 print '</tr>';
 
 print '<tr>';
@@ -236,7 +265,7 @@ echo '<script type="text/javascript">
 								      this.href = this.href.replace(/export/,
 								         "agefodd");
 									  this.href =this.href.replace(/file=/,
-								         "file=/report/ca/")
+								         "file=/report/ca_ventilated/")
 								   });
                         });
                     });
