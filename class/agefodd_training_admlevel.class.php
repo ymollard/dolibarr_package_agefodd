@@ -383,61 +383,14 @@ class Agefodd_training_admlevel extends CommonObject {
 	}
 
 	/**
-	 * Delete object in database
+	 * Delete object in database including all its descendants
 	 *
 	 * @param User $user that deletes
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function delete($user, $notrigger = 0) {
-		global $conf, $langs;
-		$error = 0;
-
-		if (empty($this->id)) {
-			setEventMessages($langs->trans('TryingToDeleteUnfetchedObject'), array(), 'errors');
-			return -1;
-		}
-
-		$this->db->begin();
-
-		if (! $error) {
-			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action calls a trigger.
-
-				// // Call triggers
-				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_DELETE',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
-			}
-		}
-
-		if (! $error) {
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel";
-			$sql .= " WHERE rowid=" . $this->id;
-
-			dol_syslog(get_class($this) . "::delete");
-			$resql = $this->db->query($sql);
-			if (! $resql) {
-				$error ++;
-				$this->errors[] = "Error " . $this->db->lasterror();
-			}
-		}
-
-		// Commit or rollback
-		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
-				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
-			}
-			$this->db->rollback();
-			return - 1 * $error;
-		} else {
-			$this->db->commit();
-			return 1;
-		}
+		$this->delete_with_descendants();
 	}
 
 	/**

@@ -180,7 +180,7 @@ if ($action == 'sessionlevel_update') {
 		// Delete action
 		if (GETPOST('sesslevel_remove') && GETPOST('confirm') == 'yes') {
 
-			$result = $agf->delete_with_descendants();
+			$result = $agf->delete($user);
 			if ($result != 1) {
 				setEventMessage($agf_static->error, 'errors');
 			}
