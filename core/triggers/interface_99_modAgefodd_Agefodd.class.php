@@ -595,7 +595,7 @@ class InterfaceAgefodd {
 
 							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
 							return - 1;
-						} else  {
+						} elseif($result > 0) {
 							dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 							$admintask = new Agefodd_sessadm($this->db);
 

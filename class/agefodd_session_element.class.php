@@ -759,9 +759,13 @@ class Agefodd_session_element extends CommonObject {
 				$result = $this->create($user);
 				if ($result < 0) {
 					return - 1;
-				}
+				} else {
+				    return $result;
+                }
 			}
 			$this->db->free($resql);
+
+			return 0;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::add_invoice " . $this->error, LOG_ERR);
