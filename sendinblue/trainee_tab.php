@@ -105,7 +105,14 @@ if ($action=='unsubscribe') {
 }
 
 if ($action=='subscribe') {
-	$result = $sendinblue->addEmailToList($listid,array($object->mail.'&trainee&'.$object->id));
+
+    $array_email = array();
+
+    if(empty($object->fk_socpeople)) $array_email[] = $object->mail.'&trainee&'.$object->id;
+    else $array_email[] = $object->mail.'&contact&'.$object->fk_socpeople;
+
+    $result = $sendinblue->addEmailToList($listid,$array_email);
+
 	if ($result<0) {
 		setEventMessage($sendinblue->error,'errors');
 	}
