@@ -99,6 +99,7 @@ AgfRecap=Récapitulatif
 AgfSessionSummaryTimeDone=Total des créneaux au statut réalisés
 AgfLinksExternal=Autre(s) lien(s)
 HourInvalid=Heure invalide
+HourInvalidNoTime=La durée souhaitée dépasse la durée maximum de la saisie
 ArchivedSessions=Sessions archivées
 AgfEAAddTrainneNameInSessionSelectList=Afficher les noms des stagiaires sur la liste des sessions lors de la création du créneau horaire
 
