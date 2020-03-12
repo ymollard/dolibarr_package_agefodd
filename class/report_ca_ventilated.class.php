@@ -383,7 +383,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 //			return $result;
 //		}
 
-		$result = $this->write_line($line_total, 0);
+		$result = $this->write_line_total($line_total);
 		if ($result < 0) {
 			return $result;
 		}
