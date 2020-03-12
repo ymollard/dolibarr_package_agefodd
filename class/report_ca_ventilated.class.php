@@ -24,18 +24,14 @@
  */
 require_once ('agefodd_export_excel.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 
 /**
  * Class to build report ca ventilated
  */
 class ReportCAVentilated extends AgefoddExportExcel {
-	private $value_ca_total_ht = array ();
-	private $persent_ca_total_ht = array ();
-	private $value_ca_total_ttc = array ();
-	private $persent_ca_total_ttc = array ();
-	private $value_ca_total_hthf = array ();
-	private $persent_ca_total_hthf = array ();
-	private $year_to_report_array = array ();
+	public $productRefMap = array();
+	public $Tfacture = array();
 
 	public $status_array = array();
 
@@ -154,79 +150,47 @@ class ReportCAVentilated extends AgefoddExportExcel {
 		$str_sub_name = '';
 		if (count($filter) > 0) {
 			foreach ( $filter as $key => $value ) {
-				if ($key == 'startyear') {
-					$str_sub_name .= $this->outputlangs->transnoentities('Year');
-					$str_sub_name .= $value;
+				if ($key == 'f.datef') {
+					if (isset($value['start'])) $str_sub_name.=$this->outputlangs->transnoentities('AgfExportFrom').date('d-m-Y', $value['start']);
+					if (isset($value['end'])) $str_sub_name.=$this->outputlangs->transnoentities('AgfExportTo').date('d-m-Y', $value['end']);
 				}
 				if ($key == 'so.nom') {
 					$str_sub_name .= $this->outputlangs->transnoentities('Company') . $value;
 				} elseif ($key == 'so.parent|sorequester.parent') {
-					require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
-					$socparent = new Societe($this->db);
-					$result = $socparent->fetch($value);
-					if ($result < 0) {
-						$this->error = $socparent->error;
-						return $result;
+					require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
+					$str_sub_name .= $this->outputlangs->transnoentities('ParentCompany');
+					foreach ($value as $parentSocid)
+					{
+						$socparent = new Societe($this->db);
+						$result = $socparent->fetch($parentSocid);
+						if ($result < 0) {
+							$this->error = $socparent->error;
+							return $result;
+						}
+						$str_sub_name .= $socparent->name.'-';
 					}
-					$str_sub_name .= $this->outputlangs->transnoentities('ParentCompany') . $socparent->name;
 				} elseif ($key == 'socrequester.nom') {
 					$str_sub_name .= $this->outputlangs->transnoentities('AgfTypeRequester') . $value;
 				} elseif ($key == 'sale.fk_user') {
 					require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
-					$user_salesman = new User($this->db);
-					$result = $user_salesman->fetch($value);
-					if ($result < 0) {
-						$this->error = $user_salesman->error;
-						return $result;
-					}
-					$str_sub_name .= $this->outputlangs->transnoentities('SalesRepresentatives') . $user_salesman->getFullName($this->outputlangs);
-				} elseif ($key == 's.type_session') {
-
-					if ($value == 0) {
-						$type_session = $this->outputlangs->transnoentities('AgfFormTypeSessionIntra');
-					} elseif ($value == 1) {
-						$type_session = $this->outputlangs->transnoentities('AgfFormTypeSessionInter');
-					}
-					$str_sub_name .= $this->outputlangs->transnoentities('Type') . $type_session;
-				} elseif ($key == 's.status') {
-					$session_status = '';
-					if (is_array($value) && count($value) > 0) {
-						$sql = "SELECT t.rowid, t.code ,t.intitule ";
-						$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
-						$sql .= ' WHERE t.rowid IN (' . implode(',', $value) . ')';
-
-						dol_syslog(get_class($this) . "::getSubTitlFileName sql=" . $sql, LOG_DEBUG);
-						$result = $this->db->query($sql);
-						if ($result) {
-
-							$num = $this->db->num_rows($result);
-							if ($num) {
-								while ( $obj = $this->db->fetch_object($result) ) {
-									$session_status .= $obj->code;
-								}
-							}
-						} else {
-							$this->error = "Error " . $this->db->lasterror();
-							dol_syslog(get_class($this) . "::getSubTitlFileName " . $this->error, LOG_ERR);
-							return - 1;
+					$str_sub_name .= $this->outputlangs->transnoentities('SalesRepresentatives');
+					foreach ($value as $sale_id)
+					{
+						$user_salesman = new User($this->db);
+						$result = $user_salesman->fetch($sale_id);
+						if ($result < 0) {
+							$this->error = $user_salesman->error;
+							return $result;
 						}
+						$str_sub_name .= $user_salesman->getFullName($this->outputlangs)."-";
 					}
-					$str_sub_name .= $this->outputlangs->transnoentities('AgfStatusSession') . $session_status;
-				} elseif ($key == 'invstatus') {
-					if (is_array($value) && count($value)>0) {
-						foreach($value as $key=>$invstatus) {
-							$invoice_status[]=$this->status_array_noentities[$invstatus];
-						}
-					}
-					$str_sub_name .= $this->outputlangs->transnoentities('Status').implode('-', $invoice_status);
-				} elseif ($key == 'group_by_session') {
-					$str_sub_name .= 'BySession';
 				}
 			}
 		}
 		$str_sub_name = str_replace(' ', '', $str_sub_name);
 		$str_sub_name = str_replace('.', '', $str_sub_name);
 		$str_sub_name = dol_sanitizeFileName($str_sub_name);
+
 		return $str_sub_name;
 	}
 
@@ -238,6 +202,8 @@ class ReportCAVentilated extends AgefoddExportExcel {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function write_file($filter) {
+		global $user;
+
 		require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 		require_once 'agefodd_convention.class.php';
 		require_once 'agsession.class.php';
@@ -266,12 +232,6 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			return $result;
 		}*/
 
-		// General
-//		$result = $this->fetch_ca($filter);
-//		if ($result < 0) {
-//			return $result;
-//		}
-
 		// Contruct header (column name)
 		$array_column_header = array ();
 
@@ -286,7 +246,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 		);
 
 		$array_column_header[0][2] = array (
-			'type' => 'number',
+			'type' => 'text',
 			'title'=> 'ID Session'
 		);
 
@@ -315,11 +275,14 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			'title'=> $this->outputlangs->transnoentities('SalesRepresentatives')
 		);
 
-		// TODO récupérer les ref produits présentes dans le rapport pour ajouter des colonnes
-		// $this->fetch_columns($filter) // pour récupérer tous les produits à présenter en colonne + 1 colonne pour les lignes libres
-		$this->fetch_ca($filter);
+		// Récupérer les ref produits présentes dans le rapport pour ajouter des colonnes
+		$result = $this->fetch_columns($filter, $array_column_header); // pour récupérer tous les produits à présenter en colonne + 1 colonne pour les lignes libres
+		if ($result < 0) return $result;
 
-		if (true) {
+		$result = $this->fetch_ca($filter);
+		if ($result < 0) return $result;
+
+		if ($result > 0) {
 
 			$this->setArrayColumnHeader($array_column_header);
 
@@ -327,213 +290,91 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			if ($result < 0) {
 				return $result;
 			}
-//			$array_total_hthf = array ();
-//			$array_total_hthf_trim1 = array ();
-//			$array_total_hthf_trim2 = array ();
-//			$array_total_hthf_trim3 = array ();
-//			$array_total_hthf_trim4 = array ();
-//			$array_total_ht_trim1 = array ();
-//			$array_total_ht_trim2 = array ();
-//			$array_total_ht_trim3 = array ();
-//			$array_total_ht_trim4 = array ();
-//			$array_total_ht = array ();
-//			$array_total_ttc = array ();
-//			// Ouput Lines
-//			$line_to_output = array ();
-//
-//
-//			for($month_todo = 1; $month_todo <= 12; $month_todo ++) {
-//
-//				if (strlen($month_todo) == 1) {
-//					$line_to_output[0] = $this->outputlangs->transnoentities('Month0' . $month_todo);
-//				} else {
-//					$line_to_output[0] = $this->outputlangs->transnoentities('Month' . $month_todo);
-//				}
-//				$i = 1;
-//
-//				$sessions = array();
-//
-//				foreach ( $this->year_to_report_array as $year_todo ) {
-//
-//					$line_to_output[$i] = $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
-//					$line_to_output[$i + 1] = $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
-//					$line_to_output[$i + 2] = $this->persent_ca_total_ht[$year_todo][$month_todo];
-//					$i = $i + 3;
-//
-//					$array_total_hthf[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
-//					$array_total_ht[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
-//					$array_total_ttc[$year_todo] += $this->value_ca_total_ttc[$year_todo][$month_todo]['total'];
-//
-//					$sessions = array_merge($sessions, array_keys($this->value_ca_total_ht[$year_todo][$month_todo]['detail']));
-//
-//					if ($month_todo == 1 || $month_todo == 2 || $month_todo == 3) {
-//						$array_total_hthf_trim1[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
-//						$array_total_ht_trim1[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
-//					}
-//					if ($month_todo == 4 || $month_todo == 5 || $month_todo == 6) {
-//						$array_total_hthf_trim2[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
-//						$array_total_ht_trim2[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
-//					}
-//					if ($month_todo == 7 || $month_todo == 8 || $month_todo == 9) {
-//						$array_total_hthf_trim3[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
-//						$array_total_ht_trim3[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
-//					}
-//					if ($month_todo == 10 || $month_todo == 11 || $month_todo == 12) {
-//						$array_total_hthf_trim4[$year_todo] += $this->value_ca_total_hthf[$year_todo][$month_todo]['total'];
-//						$array_total_ht_trim4[$year_todo] += $this->value_ca_total_ht[$year_todo][$month_todo]['total'];
-//					}
-//				}
-//				$result = $this->write_line($line_to_output, 0);
-//				if ($result < 0) {
-//					return $result;
-//				}
-//
-//				sort($sessions);
-//
-//				foreach($sessions as $sessionId) {
-//
-//					$line_to_output = array();
-//					$line_to_output[0] = $sessionId;
-//
-//					$i = 1;
-//
-//					$toPrint = false;
-//
-//					foreach ( $this->year_to_report_array as $year_todo ) {
-//						$totalHTHF = $this->value_ca_total_hthf[$year_todo][$month_todo]['detail'][$sessionId];
-//						$totalHT = $this->value_ca_total_ht[$year_todo][$month_todo]['detail'][$sessionId];
-//						if(! $toPrint && $totalHT > 0) $toPrint = true;
-//
-//						$line_to_output[$i] = $totalHTHF;
-//						$line_to_output[$i+1] = $totalHT;
-//						$line_to_output[$i+2] = '';
-//
-//						$i += 3;
-//					}
-//
-//					if($toPrint) {
-//						$result = $this->write_line($line_to_output, 0);
-//						if ($result < 0) {
-//							return $result;
-//						}
-//					}
-//				}
-//			}
-//
-//			//Jump line
-//			$this->row[0]++;
-//
-//			// Write total HTHF
-//			$line_to_output[0] = $this->outputlangs->transnoentities('Total HT/HF');
-//
-//			$i = 1;
-//			foreach ( $this->year_to_report_array as $year_todo ) {
-//
-//				$line_to_output[$i] = $array_total_hthf[$year_todo];
-//				$line_to_output[$i+1] = 0;
-//				$line_to_output[$i+2] = 'N/A';
-//				/*if (array_key_exists($year_todo - 1, $array_total_hthf)) {
-//					if ($array_total_hthf[$year_todo] != 0) {
-//						$line_to_output[$i + 2] = ((($array_total_hthf[$year_todo] - $array_total_hthf[$year_todo - 1]) * 100) / $array_total_hthf[$year_todo]);
-//						$line_to_output[$i + 2] = $line_to_output[$i + 1] / 100;
-//					} else {
-//						$line_to_output[$i + 2] = 'N/A';
-//					}
-//				} else {
-//					$line_to_output[$i + 2] = 'N/A';
-//				}*/
-//
-//
-//
-//
-//				$i = $i + 3;
-//			}
-//			$result = $this->write_line($line_to_output, 0);
-//			if ($result < 0) {
-//				return $result;
-//			}
-//
-//			// Write total HT
-//			$line_to_output[0] = $this->outputlangs->transnoentities('Total HT');
-//
-//			$i = 1;
-//			foreach ( $this->year_to_report_array as $year_todo ) {
-//
-//				$line_to_output[$i] = 0;
-//				$line_to_output[$i+1] = $array_total_ht[$year_todo];
-//				if (array_key_exists($year_todo - 1, $array_total_ht)) {
-//					if ($array_total_ht[$year_todo - 1] != 0) {
-//						$line_to_output[$i + 2] = (($array_total_ht[$year_todo] - $array_total_ht[$year_todo - 1]) / $array_total_ht[$year_todo - 1]);
-//					} else {
-//						$line_to_output[$i + 2] = 'N/A';
-//					}
-//				} else {
-//					$line_to_output[$i + 2] = 'N/A';
-//				}
-//
-//				$i = $i + 3;
-//			}
-//			$result = $this->write_line($line_to_output, 0);
-//			if ($result < 0) {
-//				return $result;
-//			}
-//
-//			// Write total TTC
-//			$line_to_output[0] = $this->outputlangs->transnoentities('Total TTC');
-//
-//			$i = 1;
-//			foreach ( $this->year_to_report_array as $year_todo ) {
-//
-//				$line_to_output[$i] = 0;
-//				$line_to_output[$i+1] = $array_total_ttc[$year_todo];
-//				if (array_key_exists($year_todo - 1, $array_total_ttc)) {
-//					if ($array_total_ttc[$year_todo - 1] != 0) {
-//						$line_to_output[$i + 2] = (($array_total_ttc[$year_todo] - $array_total_ttc[$year_todo - 1]) / $array_total_ttc[$year_todo - 1]);
-//					} else {
-//						$line_to_output[$i + 2] = 'N/A';
-//					}
-//				} else {
-//					$line_to_output[$i + 2] = 'N/A';
-//				}
-//
-//				$i = $i + 3;
-//			}
-//			$result = $this->write_line($line_to_output, 0);
-//			if ($result < 0) {
-//				return $result;
-//			}
-//
-//			//Jump line
-//			$this->row[0]++;
-//
-//			// Write total by trimesters
-//			for($trim = 1; $trim <= 4; $trim ++) {
-//				$line_to_output[0] = $this->outputlangs->transnoentities('Trimestre ' . $trim);
-//
-//				$i = 1;
-//				foreach ( $this->year_to_report_array as $year_todo ) {
-//
-//					$line_to_output[$i] = ${'array_total_hthf_trim' . $trim}[$year_todo];
-//					$line_to_output[$i+1] = ${'array_total_ht_trim' . $trim}[$year_todo];
-//
-//					if (array_key_exists($year_todo - 1, ${'array_total_ht_trim' . $trim})) {
-//						if (${'array_total_ht_trim' . $trim}[$year_todo - 1] != 0) {
-//							$line_to_output[$i + 2] = ((${'array_total_ht_trim' . $trim}[$year_todo] - ${'array_total_ht_trim' . $trim}[$year_todo - 1]) / ${'array_total_ht_trim' . $trim}[$year_todo - 1]);
-//						} else {
-//							$line_to_output[$i + 2] = 'N/A';
-//						}
-//					} else {
-//						$line_to_output[$i + 2] = 'N/A';
-//					}
-//
-//					$i = $i + 3;
-//				}
-//
-//				$result = $this->write_line($line_to_output, 0);
-//				if ($result < 0) {
-//					return $result;
-//				}
-//			}
+
+			// Ouput Lines
+			$line_to_output = $line_total = array ();
+			$line_total[0] = "Total HT";
+			for ($i = 1; $i < 8; $i++) $line_total[$i] = "";
+			$headercol = count($array_column_header[0]);
+			for ($i = 8; $i < $headercol; $i++) $line_total[$i] = 0; // to avoid non-numeric warning
+
+			foreach ($this->Tfacture as $fac_id => $Tsession)
+			{
+				// reinit de la ligne à écrire
+				foreach ($array_column_header[0] as $k => $colsetup) $line_to_output[$k] = "";
+
+				$facture = new Facture($this->db);
+				$ret = $facture->fetch($fac_id);
+
+				if ($ret > 0)
+				{
+					$facture->fetch_thirdparty();
+
+					foreach ($Tsession as $sessid)
+					{
+						$session = new Agsession($this->db);
+						$session->fetch($sessid);
+
+						// ref facture
+						$line_to_output[0] = $facture->ref;
+
+						// date facture
+						$line_to_output[1] = date("d/m/Y",$facture->date);
+
+						// ID Session
+						$line_to_output[2] = $sessid;
+
+						// Client
+						$line_to_output[3] = ($facture->thirdparty->code_client ? $facture->thirdparty->code_client.' - ' : '') . $facture->thirdparty->name;
+
+						// Demandeur
+						$line_to_output[4] = "";
+						if (!empty($session->fk_soc_requester))
+						{
+							$socrequester = new Societe($this->db);
+							$socrequester->fetch($session->fk_soc_requester);
+							$line_to_output[4] = ($socrequester->code_client ? $socrequester->code_client.' - ' : '').$socrequester->name;
+						}
+
+						// Payeur
+						$line_to_output[5] = ($facture->thirdparty->code_client ? $facture->thirdparty->code_client.' - ' : '') . $facture->thirdparty->name;
+
+						// Maison mère
+						$line_to_output[6] = $this->getParentName($facture->thirdparty->parent);
+
+						// Commerciaux
+						$line_to_output[7] = "";
+						$commArray = $facture->thirdparty->getSalesRepresentatives($user);
+						if (!empty($commArray))
+						{
+							$tab = array();
+							foreach ($commArray as $commData) $tab[] = $commData['firstname'].' '.$commData['lastname'];
+
+							$line_to_output[7] .= implode(', ', $tab);
+						}
+
+						// remplissage des colonnes produits
+						foreach ($facture->lines as $line)
+						{
+							$productKey = $this->productRefMap[$line->fk_product];
+							$line_to_output[$productKey] = $line->total_ht;
+						}
+
+						foreach ($array_column_header[0] as $k => $dummy)
+						{
+							if ($k > 7) $line_total[$k] += floatval($line_to_output[$k]);
+						}
+
+						$result = $this->write_line($line_to_output, 0);
+						if ($result < 0) {
+							return $result;
+						}
+
+					}
+				}
+
+			}
+
 		}
 
 //		$this->row[0]++;
@@ -542,20 +383,54 @@ class ReportCAVentilated extends AgefoddExportExcel {
 //			return $result;
 //		}
 
+		$result = $this->write_line($line_total, 0);
+		if ($result < 0) {
+			return $result;
+		}
+
 		$this->close_file();
-//		return count($this->year_to_report_array);
 		return 1;
 	}
 
-	public function fetch_columns($filter = array())
+	public function fetch_columns($filter = array(), &$array_column_header)
 	{
-		$sql = "SELECT f.rowid";
-		$sql.= (float) DOL_VERSION < 10 ? ", f.facnumber" : ", f.ref as facnumber";
-		$sql.= " FROM ".MAIN_DB_PREFIX."facture AS f";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facturedet AS fd ON fd.fk_facture = f.rowid";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."agefodd_session_element AS ase ON ase.fk_element = f.rowid AND ase.element_type='invoice'";
+		$this->productRefMap = array();
 
+		$sql = "SELECT DISTINCT p.ref, p.rowid";
+		$sql.= $this->getSQL($filter, true);
+		$sql.= " ORDER BY p.ref ASC";
 
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$num = $this->db->num_rows($resql);
+			if ($num)
+			{
+				$index = count($array_column_header[0]);
+				while ($obj = $this->db->fetch_object($resql))
+				{
+					$this->productRefMap[$obj->rowid] = $index;
+					$array_column_header[0][$index] = array(
+						'type' 	=> 'number',
+						'title' => $obj->ref
+					);
+					$index++;
+				}
+				// pour les lignes libres
+				$this->productRefMap[null] = $index;
+				$array_column_header[0][$index] = array(
+					'type' 	=> 'number',
+					'title' => "Lignes libres"
+				);
+
+				return 1;
+			}
+		}
+		else
+		{
+			$this->error = "SQL error on fetch_comlumns";
+			return -1;
+		}
 	}
 
 	/**
@@ -571,13 +446,51 @@ class ReportCAVentilated extends AgefoddExportExcel {
 		$sql.= (float) DOL_VERSION < 10 ? " f.facnumber" : " f.ref as facnumber";
 		$sql.= ", f.rowid, f.datef";
 		$sql.= ", sess.rowid as sess_id";
-		$sql.= ", sess.fk_soc as client_id";
-		$sql.= ", sessclient.nom as client";
+		$sql.= ", sess.fk_soc as sess_client_id";
 		$sql.= ", sess.fk_soc_requester as requester";
 		$sql.= ", f.fk_soc as buyer";
 		$sql.= ", so.nom as buyerName";
-		$sql.= " FROM ".MAIN_DB_PREFIX."facture AS f";
-//		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facturedet AS fd ON fd.fk_facture = f.rowid";
+		$sql.= $this->getSQL($filter);
+		$sql.= " ORDER BY ".((float) DOL_VERSION < 10 ? " f.facnumber ASC" : " f.ref ASC").", sess.rowid ASC";
+
+		// Récupérer les data...
+		$resql = $this->db->query($sql);
+		if ($resql)
+		{
+			$num = $this->db->num_rows($resql);
+
+			if (empty($num))
+			{
+				$this->error = $this->outputlangs->transnoentities("NoDataToRetrieve");
+				return -1;
+			}
+
+			while ($obj = $this->db->fetch_object($resql))
+			{
+				if (!isset($this->Tfacture[$obj->rowid])) $this->Tfacture[$obj->rowid] = array();
+				if (!in_array($obj->sess_id, $this->Tfacture[$obj->rowid])) $this->Tfacture[$obj->rowid][] = $obj->sess_id;
+			}
+		}
+		else
+		{
+			$this->error = "SQL error : Get data";
+			return -1;
+		}
+
+		return 1;
+	}
+
+	function getSQL($filter = array(), $columns = false)
+	{
+		global $langs, $conf;
+
+
+		$sql = " FROM ".MAIN_DB_PREFIX."facture AS f";
+		if ($columns)
+		{
+			$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facturedet AS fd ON fd.fk_facture = f.rowid";
+			$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."product AS p ON p.rowid = fd.fk_product";
+		}
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session_element AS ase ON ase.fk_element = f.rowid AND ase.element_type='invoice'";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."agefodd_session AS sess ON sess.rowid = ase.fk_session_agefodd";
 		$sql.= " INNER JOIN ".MAIN_DB_PREFIX."societe as so ON so.rowid = f.fk_soc";
@@ -588,10 +501,11 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			||	array_key_exists('so.parent|sorequester.parent', $filter)
 		) {
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as socrequester ON socrequester.rowid = sess.fk_soc_requester";
-		}
-		if (array_key_exists('sale.fk_user', $filter)) {
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire ass ON ass.fk_session_agefodd = sess.rowid";
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire trainee ON trainee.rowid = ass.fk_stagiaire";
+			$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe as traineesocrequester ON traineesocrequester.rowid = ass.fk_soc_requester";
+		}
+		if (array_key_exists('sale.fk_user', $filter)) {
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sale ON sale.fk_soc = COALESCE(trainee.fk_soc, sess.fk_soc)";
 		}
 		$sql .= " WHERE f.fk_statut IN (1,2)";
@@ -609,53 +523,42 @@ class ReportCAVentilated extends AgefoddExportExcel {
 				} elseif ($key == 'so.parent|sorequester.parent') {
 					$ValArray = array();
 					foreach ($value as $v) $ValArray[] = $this->db->escape($v);
-					$sql .= ' AND (so.parent IN (\'' . implode("','",$ValArray) . '\') OR socrequester.parent IN (\'' . implode("','",$ValArray) . '\')';
-					$sql .= ' OR so.rowid IN (\'' . implode("','",$ValArray) . '\') OR socrequester.rowid IN (\'' . implode("','",$ValArray) . '\'))';
+					$sql .= ' AND (so.parent IN (\'' . implode("','", $ValArray) . '\') OR socrequester.parent IN (\'' . implode("','", $ValArray) . '\')';
+					$sql .= ' OR so.rowid IN (\'' . implode("','", $ValArray) . '\') OR socrequester.rowid IN (\'' . implode("','", $ValArray) . '\'))';
+				} elseif ($key == 'socrequester.nom') {
+					$sql .= ' AND (socrequester.nom LIKE "%'.$this->db->escape($value).'%" OR traineesocrequester.nom LIKE "%'.$this->db->escape($value).'%")';
 					// TODO manage search_sale
 				} elseif ($key == 'sale.fk_user') {
-					$sql .= ' AND (' . $value . ' IN (';
-					$sql .= '	SELECT sale.fk_user';
-					$sql .= '	FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire ass';
-					$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire trainee ON trainee.rowid = ass.fk_stagiaire';
-					$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'societe_commerciaux as sale ON sale.fk_soc = trainee.fk_soc';
-					$sql .= '	LEFT JOIN ' . MAIN_DB_PREFIX . 'agefodd_opca opca ON ass.fk_session_agefodd = opca.fk_session_agefodd AND opca.fk_session_trainee = ass.rowid';
-					$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_element ase ON ase.fk_session_agefodd = ass.fk_session_agefodd AND ase.element_type = "invoice"';
-					$sql .= '	INNER JOIN ' . MAIN_DB_PREFIX . 'facture f2 ON ase.fk_element = f2.rowid';
-					$sql .= '	WHERE ass.fk_session_agefodd = s.rowid';
-					$sql .= '	AND f2.rowid = f.rowid';
-					//$sql .= '	AND f2.fk_soc = COALESCE(IF(s.type_session = 1, IF(opca.fk_soc_OPCA <= 0, NULL, opca.fk_soc_OPCA), s.fk_soc_OPCA), trainee.fk_soc)';
-					$sql .= '	AND f2.fk_soc = COALESCE(CASE WHEN s.type_session = 1 THEN CASE WHEN opca.fk_soc_OPCA <= 0 THEN NULL ELSE opca.fk_soc_OPCA END ELSE s.fk_soc_OPCA END, trainee.fk_soc)'; // TODO : remove this comment if all is ok after few tests with CASE style
-					$sql .= '	AND sale.fk_soc = COALESCE(trainee.fk_soc, s.fk_soc)';
-					$sql .= ')';
-					$sql .= ' OR ';
-					$sql .= ' (' . $value . ' IN (SELECT salecom.fk_user FROM ' . MAIN_DB_PREFIX . 'societe_commerciaux as salecom ';
-					$sql .= ' WHERE salecom.fk_soc=s.fk_soc AND s.rowid NOT IN (SELECT asscom.fk_session_agefodd FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire asscom))';
-					$sql .= ' )';
-					$sql .= ')';
-				}  /*elseif ($key == 'invstatus') {
-					$invstatus=array_flip($value);
-					$sql_invstatus=array();
 
-					if (array_key_exists('2',$invstatus)) {
-						$sql_invstatus[]= " f.paye=1 ";
-					}
-					if (array_key_exists('3',$invstatus)) {
-						$sql_invstatus[]= " f.paye=0 ";
-					}
-					if (array_key_exists('1',$invstatus)) {
-						$sql_invstatus[]= " fk_statut=0 ";
-					}
-					$sql .= ' AND ('.implode(' OR ', $sql_invstatus).')';
-				}*/ else {
+					$ValArray = array();
+					foreach ($value as $v) $ValArray[] = $this->db->escape($v);
+					$sql .= ' AND sale.fk_user IN (\'' . implode("','", $ValArray) . '\')';
+
+				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
 
 			}
 		}
 
-		$sql.=" ORDER BY ".((float) DOL_VERSION < 10 ? " f.facnumber" : " f.ref");
+		return $sql;
+	}
 
-		print $sql; exit;
+	public function getParentName($socid = "")
+	{
+		$ret = "";
+
+		if (!empty($socid))
+		{
+			$soc = new Societe($this->db);
+			$res = $soc->fetch($socid);
+			if ($res > 0)
+			{
+				$ret = ($soc->code_client ? $soc->code_client.' - ' : '') . $soc->name;
+			}
+		}
+
+		return $ret;
 	}
 }
 

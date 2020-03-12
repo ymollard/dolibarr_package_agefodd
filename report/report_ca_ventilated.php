@@ -183,9 +183,9 @@ print '<tr>';
 print '<td>' . $langs->trans('DateInvoice').'</td>';
 print '<td>';
 print $langs->trans('From').' ';
-$form->select_date(null, "date_start", 0,0,1);
+$form->select_date($date_start, "date_start", 0,0,1);
 print $langs->trans('to').' ';
-$form->select_date(null, "date_end", 0,0,1);
+$form->select_date($date_end, "date_end", 0,0,1);
 print '</td>';
 print '</tr>';
 
