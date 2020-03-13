@@ -314,6 +314,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 					{
 						$session = new Agsession($this->db);
 						$session->fetch($sessid);
+						$session->fetch_thirdparty();
 
 						// ref facture
 						$line_to_output[0] = $facture->ref;
@@ -325,26 +326,79 @@ class ReportCAVentilated extends AgefoddExportExcel {
 						$line_to_output[2] = $sessid;
 
 						// Client
-						$line_to_output[3] = ($facture->thirdparty->code_client ? $facture->thirdparty->code_client.' - ' : '') . $facture->thirdparty->name;
+						$socclient = clone($facture->thirdparty);
+						$session->fetch_societe_per_session($sessid);
+						if (!empty($session->lines))
+						{
+							foreach ($session->lines as $s_line)
+							{
+								if ($s_line->socid == $facture->thirdparty->id)
+								{
+									// dans le cas d'un financement OPCA, ou financement de l'employeur, le client est le tiers du participant
+									if ($s_line->typeline == 'trainee_OPCA' || $s_line->typeline == 'trainee_soc')
+									{
+										$sta_sql = "SELECT soc.rowid, soc.code_client, soc.nom";
+										$sta_sql.= " FROM ".MAIN_DB_PREFIX."agefodd_stagiaire as sta";
+										$sta_sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON soc.rowid = sta.fk_soc";
+										$sta_sql.= " WHERE sta.rowid = ".$s_line->trainee_array[0]['id'];
+
+										$sta_resql = $this->db->query($sta_sql);
+										if ($sta_resql && $this->db->num_rows($sta_resql))
+										{
+											$obj = $this->db->fetch_object($sta_resql);
+											$socclient->fetch($obj->rowid);
+										}
+									}
+									else if ($s_line->typeline == 'OPCA') // financement de toute la session par l'OPCA
+									{
+										// client de la session
+										$socclient = clone($session->thirdparty);
+									}
+
+									break;
+								}
+							}
+						}
+						$line_to_output[3] = ($socclient->code_client ? $socclient->code_client.' - ' : '') . $socclient->name;
 
 						// Demandeur
 						$line_to_output[4] = "";
-						if (!empty($session->fk_soc_requester))
+						$socrequester = new Societe($this->db);
+						if ($s_line->typeline == 'trainee_OPCA')
 						{
-							$socrequester = new Societe($this->db);
-							$socrequester->fetch($session->fk_soc_requester);
-							$line_to_output[4] = ($socrequester->code_client ? $socrequester->code_client.' - ' : '').$socrequester->name;
+							// coalesce (participant, session)
+							$sta_sql = "SELECT sta.fk_soc_requester";
+							$sta_sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session stagiaire as sta";
+							$sta_sql.= " WHERE sta.fk_stagiaire = ".$s_line->trainee_array[0]['id'];
+
+							$sta_resql = $this->db->query($sta_sql);
+							if ($sta_resql && $this->db->num_rows($sta_resql))
+							{
+								$obj = $this->db->fetch_object($sta_resql);
+								$socrequester->fetch($obj->fk_soc_requester);
+							}
+							else
+							{
+								$socrequester->fetch($session->fk_soc_requester);
+							}
 						}
+						else if ($s_line->typeline == 'OPCA')
+						{
+							// celui de la session
+							$socrequester->fetch($session->fk_soc_requester);
+						}
+
+						if ($socrequester->id) $line_to_output[4] = ($socrequester->code_client ? $socrequester->code_client.' - ' : '').$socrequester->name;
 
 						// Payeur
 						$line_to_output[5] = ($facture->thirdparty->code_client ? $facture->thirdparty->code_client.' - ' : '') . $facture->thirdparty->name;
 
 						// Maison mère
-						$line_to_output[6] = $this->getParentName($facture->thirdparty->parent);
+						$line_to_output[6] = $this->getParentName($socclient->parent);
 
 						// Commerciaux
 						$line_to_output[7] = "";
-						$commArray = $facture->thirdparty->getSalesRepresentatives($user);
+						$commArray = $socclient->getSalesRepresentatives($user);
 						if (!empty($commArray))
 						{
 							$tab = array();
