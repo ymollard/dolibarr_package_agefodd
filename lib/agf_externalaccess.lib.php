@@ -1892,10 +1892,12 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 		$inputDisabled = '';
 		if( ($agf_calendrier_formateur->heuref > time() && $statusKey == Agefoddsessionformateurcalendrier::STATUS_FINISH)
-			|| ($agf_calendrier_formateur->heuref < $missingTimeToTest && $statusKey == Agefoddsessionformateurcalendrier::STATUS_MISSING)
+			|| (($agf_calendrier_formateur->heuref < $missingTimeToTest && $statusKey == Agefoddsessionformateurcalendrier::STATUS_MISSING)
+					&& empty($conf->global->AGF_NOT_LIMIT_STATUS_TRAINER_PORTAIL_TRAINER))
 		){
 			$inputDisabled = 'disabled';
 		}
+
 		$statusOptions.= '<option '.($agf_calendrier_formateur->status == $statusKey ? 'selected' : '').' value="'.$statusKey.'" '.$inputDisabled.'>'.$label.'</option>';
 	}
 
