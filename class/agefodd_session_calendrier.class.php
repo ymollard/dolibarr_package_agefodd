@@ -94,7 +94,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function create($user, $notrigger = 0, $timeslottrainer = 0) {
+	public function create($user, $notrigger = 0, $timeslottrainer = false) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -132,7 +132,7 @@ class Agefodd_sesscalendar extends CommonObject{
 
 		$this->db->begin();
 
-		if(! empty($timeslottrainer))
+		if($timeslottrainer == true)
         {
             //CREATION DU CRENEAU DU CALENDRIER DANS LE CALENDRIER FORMATEUR
 

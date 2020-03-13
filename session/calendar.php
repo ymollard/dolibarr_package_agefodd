@@ -409,7 +409,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 					$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
 				}
 
-				$result = $agf->create($user, '', 1);
+				$result = $agf->create($user, '', true);
 				if ($result < 0) {
 					$error ++;
 					$error_message .= $agf->error;
@@ -454,7 +454,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 				$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
 			}
 
-			if (!$error) $result = $agf->create($user, '', 1);
+			if (!$error) $result = $agf->create($user, '', true);
 			if ($result < 0) {
 				$error ++;
 				$error_message = $agf->error;
@@ -516,7 +516,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 						$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
 					}
 
-					$result = $agf->create($user, '', 1);
+					$result = $agf->create($user, '', true);
 					if ($result < 0) {
 						$error ++;
 						$error_message .= $agf->error;
@@ -542,7 +542,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 							$agf->status=$conf->global->AGF_DEFAULT_CALENDAR_STATUS;
 						}
 
-						$result = $agf->create($user, '', 1);
+						$result = $agf->create($user, '', true);
 						if ($result < 0) {
 							$error ++;
 							$error_message .= $agf->error;
