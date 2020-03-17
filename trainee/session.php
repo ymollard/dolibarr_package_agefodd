@@ -147,6 +147,7 @@ if ($id) {
 			print '<td></td>';
 			print '<td></td>';
 			print '<td></td>';
+			print '<td></td>';
 
 			$min = floor($dureetotal / 60);
 			$rmin = sprintf("%02d", $min % 60);
