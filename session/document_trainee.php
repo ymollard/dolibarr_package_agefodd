@@ -773,7 +773,7 @@ if (! empty($id)) {
 
 			}
 
-			$formmail->substit ['__SIGNATURE__'] = $user->signature;
+			$formmail->substit ['__SIGNATURE__'] = $formmail->substit['__USER_SIGNATURE__'] = $user->signature;
 			$formmail->substit ['__PERSONALIZED__'] = '';
 
 			// Tableau des parametres complementaires
