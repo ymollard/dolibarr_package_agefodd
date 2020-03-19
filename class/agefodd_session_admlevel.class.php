@@ -417,7 +417,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function delete($user, $notrigger = 0) {
-		$this->delete_with_descendants();
+		$this->delete_with_descendants($this->id, $notrigger);
 	}
 
 	/**
@@ -624,9 +624,10 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * This may be done more cleanly using ON DELETE CASCADE
 	 *
 	 * @param int $id ID of the admin task; default to current object's ID
+	 * @param bool $notrigger Whether to disable triggers 
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function delete_with_descendants($id = null)
+	public function delete_with_descendants($id = null, $notrigger = 0)
 	{
 		global $conf, $langs;
 
@@ -664,6 +665,16 @@ class Agefodd_session_admlevel extends CommonObject {
 			if (!$resql) {
 				$error ++;
 				$this->errors[] = "Error " . $this->db->lasterror();
+			} elseif (!$notrigger) {
+////				 Uncomment this and change MYOBJECT to your own tag if you
+////				 want this action call a trigger.
+//			
+//				 // Call triggers
+//				 include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+//				 $interface=new Interfaces($this->db);
+//				 $result=$interface->run_triggers('MYOBJECT_DELETE',$this,$user,$langs,$conf);
+//				 if ($result < 0) { $error++; $this->errors=$interface->errors; }
+//				 // End call triggers
 			}
 		}
 
