@@ -44,7 +44,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	public $fk_user_mod;
 	public $tms = '';
 	public $lines = array ();
-	public $trigger_name;
+	public $trigger_name = 'AGEFODD_SESSION_ADMLEVEL';
 
 	/**
 	 * Constructor
@@ -124,15 +124,12 @@ class Agefodd_session_admlevel extends CommonObject {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_session_admlevel");
 
 			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
+				// Call triggers
+				include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+				$interface=new Interfaces($this->db);
+				$result=$interface->run_triggers($this->trigger_name . '_CREATE',$this,$user,$langs,$conf);
+				if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				// End call triggers
 			}
 		}
 
@@ -383,15 +380,12 @@ class Agefodd_session_admlevel extends CommonObject {
 
 		if (! $error) {
 			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
+				// Call triggers
+				include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+				$interface=new Interfaces($this->db);
+				$result=$interface->run_triggers($this->trigger_name . '_MODIFY',$this,$user,$langs,$conf);
+				if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				// End call triggers
 			}
 		}
 
@@ -593,15 +587,12 @@ class Agefodd_session_admlevel extends CommonObject {
 
 		if (! $error) {
 			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
+				// Call triggers
+				include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+				$interface=new Interfaces($this->db);
+				$result=$interface->run_triggers($this->trigger_name . '_MODIFY',$this,$user,$langs,$conf);
+				if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				// End call triggers
 			}
 		}
 
@@ -666,15 +657,12 @@ class Agefodd_session_admlevel extends CommonObject {
 				$error ++;
 				$this->errors[] = "Error " . $this->db->lasterror();
 			} elseif (!$notrigger) {
-////				 Uncomment this and change MYOBJECT to your own tag if you
-////				 want this action call a trigger.
-//			
-//				 // Call triggers
-//				 include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-//				 $interface=new Interfaces($this->db);
-//				 $result=$interface->run_triggers('MYOBJECT_DELETE',$this,$user,$langs,$conf);
-//				 if ($result < 0) { $error++; $this->errors=$interface->errors; }
-//				 // End call triggers
+				// Call triggers
+				include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+				$interface=new Interfaces($this->db);
+				$result=$interface->run_triggers($this->trigger_name . '_DELETE',$this,$user,$langs,$conf);
+				if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				// End call triggers
 			}
 		}
 
