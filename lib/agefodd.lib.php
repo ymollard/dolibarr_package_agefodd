@@ -716,10 +716,10 @@ function agf_revenue_ventilated_report_prepare_head() {
 	$head[$h][2] = 'card';
 	$h++;
 
-	$head[$h][0] = dol_buildpath("/agefodd/report/report_ca_ventilated_help.php", 1);
-	$head[$h][1] = $langs->trans("Help");
-	$head[$h][2] = 'help';
-	$h++;
+//	$head[$h][0] = dol_buildpath("/agefodd/report/report_ca_ventilated_help.php", 1);
+//	$head[$h][1] = $langs->trans("Help");
+//	$head[$h][2] = 'help';
+//	$h++;
 
 	$object=new stdClass();
 
