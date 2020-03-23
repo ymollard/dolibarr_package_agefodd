@@ -240,7 +240,7 @@ print '</tr>';
 //print '<td>' . $formAgefodd->select_type_session('search_type_session', $search_type_session, 1) . '</td>';
 //print '</tr>';
 
-print '<tr>';
+//print '<tr>';
 //print '<td>' . $langs->trans('Status') . '</td>';
 //$langs->load('bills');
 //$report_ca_status = new ReportCA($db, $langs);

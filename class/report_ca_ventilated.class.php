@@ -351,8 +351,8 @@ class ReportCAVentilated extends AgefoddExportExcel {
 									}
 									else if ($s_line->typeline == 'OPCA') // financement de toute la session par l'OPCA
 									{
-										// client de la session
-										$socclient = clone($session->thirdparty);
+										// client de la session s'il existe
+										if (!empty($session->thirdparty->id)) $socclient = clone($session->thirdparty);
 									}
 
 									break;
@@ -562,7 +562,11 @@ class ReportCAVentilated extends AgefoddExportExcel {
 		if (array_key_exists('sale.fk_user', $filter)) {
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe_commerciaux as sale ON sale.fk_soc = COALESCE(trainee.fk_soc, sess.fk_soc)";
 		}
+
 		$sql .= " WHERE f.fk_statut IN (1,2)";
+
+		$sql .= " AND sess.rowid IS NOT NULL"; // On prend uniquement les factures liées à des sessions de formation
+
 		if (! empty($conf->global->FACTURE_DEPOSITS_ARE_JUST_PAYMENTS))
 			$sql .= " AND f.type IN (0,1,2)";
 		else
