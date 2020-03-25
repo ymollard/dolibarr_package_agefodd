@@ -146,7 +146,11 @@ if (! empty($conf->global->AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH)) {
 //Since 8.0 sall get parameters is sent with rapid search
 $search_by=GETPOST('search_by', 'alpha');
 if (!empty($search_by)) {
-	$sall=GETPOST('sall');
+    if ($search_by="search_id") {
+        $sall=GETPOST('sortorder', 'int');
+    }else{
+        $sall=GETPOST('sortorder', 'alpha');
+    }
 	if (!empty($sall)) {
 		${$search_by}=$sall;
 	}

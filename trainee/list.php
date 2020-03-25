@@ -60,7 +60,7 @@ $search_namefirstname = GETPOST("search_namefirstname");
 //Since 8.0 sall get parameters is sent with rapid search
 $search_by=GETPOST('search_by', 'alpha');
 if (!empty($search_by)) {
-	$sall=GETPOST('sall');
+	$sall=GETPOST('sall', 'alpha');
 	if (!empty($sall)) {
 		${$search_by}=$sall;
 	}
