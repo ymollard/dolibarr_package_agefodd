@@ -1062,7 +1062,7 @@ class Agefodd_session_element extends CommonObject {
 	 * @param string $element_type element type
 	 */
 	public function get_linked_sessions($id, $element_type = '%invoice_supplier%'){
-	    $sql = "SELECT rowid, fk_session_agefodd FROM " . MAIN_DB_PREFIX . "agefodd_session_element WHERE element_type LIKE '".$element_type."' AND fk_element =".$id;
+	    $sql = "SELECT rowid, fk_session_agefodd FROM " . MAIN_DB_PREFIX . "agefodd_session_element WHERE element_type LIKE '".$this->db->escape($element_type)."' AND fk_element =".$id;
 
 	    $res = $this->db->query($sql);
 	    if ($res){

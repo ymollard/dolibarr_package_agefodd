@@ -248,7 +248,7 @@ class Agefoddformationcataloguemodules extends CommonObject
 		
 		$sql .= ' FROM ' . MAIN_DB_PREFIX . $this->table_element . ' as t';
 		if (null !== $ref) {
-			$sql .= ' WHERE t.ref = ' . '\'' . $ref . '\'';
+			$sql .= ' WHERE t.ref = ' . '\'' . $this->db->escape($ref) . '\'';
 		} else {
 			$sql .= ' WHERE t.rowid = ' . $id;
 		}

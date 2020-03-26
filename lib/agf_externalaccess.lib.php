@@ -2155,10 +2155,6 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			$context->setError($langs->trans('Agf_EA_error_sql'));
 			$TCalendrier = array();
 		}
-		$agfssh = new Agefoddsessionstagiaireheures($db);
-		$result = 0;
-
-
 
 		$out.= '<h4>'.$langs->trans('AgfExternalAccessSessionCardDeclareHours').'</h4>';
 
@@ -2166,6 +2162,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 		foreach ($stagiaires->lines as &$stagiaire)
 		{
+			$agfssh = new Agefoddsessionstagiaireheures($db);
 			if ($stagiaire->id <= 0)	continue;
 
 			if(!filter_var($stagiaire->email, FILTER_VALIDATE_EMAIL)){
@@ -2180,12 +2177,16 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			if (!empty($TCalendrier))
 			{
 				$result = $agfssh->fetch_by_session($agsession->id, $stagiaire->id, $TCalendrier[0]->id);
-				$secondes = $agfssh->heures * 60 * 60;
+				if (!$result) {
+					$secondes = 0;
+				} else {
+					$secondes = $agfssh->heures * 60 * 60;
 
-				if(!empty($agfssh->planned_absence))
-                {
-                    $planned_absence = $agfssh->planned_absence;
-                }
+					if(!empty($agfssh->planned_absence))
+					{
+						$planned_absence = $agfssh->planned_absence;
+					}
+				}
 			}
 
 			$inputValue = (!empty($secondes) ? convertSecondToTime($secondes) : '00:00');

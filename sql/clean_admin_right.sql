@@ -1,1 +1,1 @@
-DELETE FROM llx_user_rights WHERE fk_user IN (SELECT rowid FROM llx_user WHERE admin=1) AND fk_id IN (SELECT rd.id FROM llx_rights_def as rd WHERE rd.libelle='trainermode');
+DELETE FROM llx_user_rights WHERE fk_user IN (SELECT rowid FROM llx_user WHERE admin=1) AND fk_id IN (SELECT rd.id FROM llx_rights_def as rd WHERE rd.module ='agefodd' and rd.perms='session' and rd.subperms='trainer');
