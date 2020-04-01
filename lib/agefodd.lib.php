@@ -723,6 +723,41 @@ function agf_revenue_report_prepare_head()
 	return $head;
 }
 
+
+/**
+ * Define head array for tabs of revenue ventilated report
+ *
+ * @return array Array of head
+ */
+function agf_revenue_ventilated_report_prepare_head() {
+	global $langs, $conf, $user;
+
+	$h = 0;
+	$head = array ();
+
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_ca_ventilated.php", 1);
+	$head[$h][1] = $langs->trans("AgfMenuReportCAVentilated");
+	$head[$h][2] = 'card';
+	$h++;
+
+//	$head[$h][0] = dol_buildpath("/agefodd/report/report_ca_ventilated_help.php", 1);
+//	$head[$h][1] = $langs->trans("Help");
+//	$head[$h][2] = 'help';
+//	$h++;
+
+	$object=new stdClass();
+
+	// Show more tabs from modules
+	// Entries must be declared in modules descriptor with line
+	// $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
+	// $this->tabs = array('entity:-tabname);   												to remove a tab
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_report_revenue_ventilated');
+
+	complete_head_from_modules($conf,$langs,$object,$head,$h,'agefodd_report_revenue_ventilated','remove');
+
+	return $head;
+}
+
 /**
  * Define head array for tabs of customer report
  *

@@ -82,6 +82,8 @@ class ActionsAgefodd
 		// hack for fileupload.php
 		global $conf;
 		$conf->agefodd_agsession = $conf->agefodd;
+
+		return 0;
 	}
 
 	public function completeTabsHead($parameters, &$object, &$action, $hookmanager)
@@ -937,6 +939,8 @@ class ActionsAgefodd
 			}
 
 		}
+
+		return 0;
 	}
 
 
@@ -1366,6 +1370,8 @@ class ActionsAgefodd
 		/*dol_include_once('/agefodd/core/modAgefodd.class.php');
 		 $obj = new modAgefodd($db);
 		 $obj->load_tables();*/
+
+		return 0;
 	}
 
 	public function pdf_getLinkedObjects($parameters, &$object, &$action, $hookmanager)
@@ -1509,6 +1515,8 @@ class ActionsAgefodd
 			$this->resprints = $sql;
 			return 1;
 		}
+
+		return 0;
 	}
 
 	function addMoreEventsExport($parameters, &$object, &$action, HookManager $hookmanager)
@@ -1630,6 +1638,8 @@ class ActionsAgefodd
 			$this->resprints = $sql;
 			return 1;
 		}
+
+		return 0;
 	}
 
 	/**
@@ -1651,6 +1661,8 @@ class ActionsAgefodd
 				return 0;
 			}
 		}
+
+		return 0;
 	}
 
 	function updateFullcalendarEvents($parameters, &$object, &$action, HookManager $hookmanager)
@@ -1723,6 +1735,8 @@ class ActionsAgefodd
 				}
 			}
 		}
+
+		return 0;
 	}
 
 	/**
@@ -1939,6 +1953,8 @@ class ActionsAgefodd
 		}
 
 		$this->resprints = $boxstat;
+
+		return 0;
 	}
 
 	function getStatBox($url = '#', $nb = 0, $text = '')
@@ -2136,6 +2152,8 @@ class ActionsAgefodd
 				}
 			}
 		}
+
+		return 0;
 	}
 
 	/**
