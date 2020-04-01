@@ -28,7 +28,7 @@
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 
 /**
- * Put here description of your class
+ * Administrative task related to a training object.
  */
 class Agefodd_training_admlevel extends CommonObject {
 	public $error; // !< To return error code (or message)
@@ -383,60 +383,18 @@ class Agefodd_training_admlevel extends CommonObject {
 	}
 
 	/**
-	 * Delete object in database
+	 * Delete object in database including all its descendants
 	 *
 	 * @param User $user that deletes
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function delete($user, $notrigger = 0) {
-		global $conf, $langs;
-		$error = 0;
-
-		$this->db->begin();
-
-		if (! $error) {
-			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action calls a trigger.
-
-				// // Call triggers
-				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_DELETE',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
-			}
-		}
-
-		if (! $error) {
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel";
-			$sql .= " WHERE rowid=" . $this->id;
-
-			dol_syslog(get_class($this) . "::delete");
-			$resql = $this->db->query($sql);
-			if (! $resql) {
-				$error ++;
-				$this->errors[] = "Error " . $this->db->lasterror();
-			}
-		}
-
-		// Commit or rollback
-		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
-				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
-			}
-			$this->db->rollback();
-			return - 1 * $error;
-		} else {
-			$this->db->commit();
-			return 1;
-		}
+		$this->delete_with_descendants();
 	}
 
 	/**
-	 * Delete object in database
+	 * Deletes all admin tasks with the same fk_training as the current object’s
 	 *
 	 * @param User $user that deletes
 	 * @param int $notrigger triggers after, 1=disable triggers
@@ -880,6 +838,67 @@ class Agefodd_training_admlevel extends CommonObject {
 			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
 			return - 1;
 		}
+	}
+
+	/**
+	 * Recursively deletes the specified admin task and all its descendants.
+	 * This may be done more cleanly using ON DELETE CASCADE
+	 *
+	 * @param int $id ID of the admin task; default to current object's ID
+	 * @return int <0 if KO, >0 if OK
+	 */
+	public function delete_with_descendants($id = null)
+	{
+		global $conf, $langs;
+
+		if ($id === null) $id = $this->id;
+		$id = intval($id);
+
+		$error = 0;
+
+		if (empty($id)) {
+			// setEventMessages($langs->trans('EmptyID'), array(), 'errors');
+			return -1;
+		}
+
+		$this->db->begin();
+
+		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $this->table_element . ' WHERE fk_parent_level = ' . $id;
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$error++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$num_rows = $this->db->num_rows($resql);
+			for ($i = 0; $i < $num_rows; $i++) {
+				$obj = $this->db->fetch_object($resql);
+				if (!$obj) break;
+				$this->delete_with_descendants($obj->rowid);
+			}
+		}
+
+		if (!$error) {
+			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . $this->table_element . ' WHERE rowid = ' . $id;
+
+			dol_syslog(get_class($this) . "::delete");
+			$resql = $this->db->query($sql);
+			if (!$resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			}
+		}
+
+		// Commit or rollback
+		if ($error) {
+			foreach ($this->errors as $errmsg) {
+				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			$this->db->rollback();
+			return -1 * $error;
+		}
+		$this->db->commit();
+		return 1;
 	}
 }
 
