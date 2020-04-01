@@ -44,7 +44,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	public $fk_user_mod;
 	public $tms = '';
 	public $lines = array ();
-	public $trigger_name;
+	public $trigger_name = 'AGEFODD_SESSION_ADMLEVEL';
 
 	/**
 	 * Constructor
@@ -124,15 +124,12 @@ class Agefodd_session_admlevel extends CommonObject {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_session_admlevel");
 
 			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
+				// Call triggers
+				include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+				$interface=new Interfaces($this->db);
+				$result=$interface->run_triggers($this->trigger_name . '_CREATE',$this,$user,$langs,$conf);
+				if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				// End call triggers
 			}
 		}
 
@@ -383,15 +380,12 @@ class Agefodd_session_admlevel extends CommonObject {
 
 		if (! $error) {
 			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
+				// Call triggers
+				include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+				$interface=new Interfaces($this->db);
+				$result=$interface->run_triggers($this->trigger_name . '_MODIFY',$this,$user,$langs,$conf);
+				if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				// End call triggers
 			}
 		}
 
@@ -410,66 +404,14 @@ class Agefodd_session_admlevel extends CommonObject {
 	}
 
 	/**
-	 * Delete object in database
+	 * Delete object in database including all its descendants
 	 *
 	 * @param User $user that delete
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function delete($user, $notrigger = 0) {
-		global $conf, $langs;
-		$error = 0;
-
-		$this->db->begin();
-
-		if (! $error) {
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel";
-			$sql .= " WHERE rowid=" . $this->id;
-
-			dol_syslog(get_class($this) . "::delete");
-			$resql = $this->db->query($sql);
-			if (! $resql) {
-				$error ++;
-				$this->errors[] = "Error " . $this->db->lasterror();
-			}
-
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_admlevel";
-			$sql .= " WHERE fk_parent_level=" . $this->id;
-
-			dol_syslog(get_class($this) . "::delete");
-			$resql = $this->db->query($sql);
-			if (! $resql) {
-				$error ++;
-				$this->errors[] = "Error " . $this->db->lasterror();
-			}
-		}
-
-		if (! $error) {
-			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_DELETE',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
-			}
-		}
-
-		// Commit or rollback
-		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
-				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
-			}
-			$this->db->rollback();
-			return - 1 * $error;
-		} else {
-			$this->db->commit();
-			return 1;
-		}
+		$this->delete_with_descendants($this->id, $notrigger);
 	}
 
 	/**
@@ -645,15 +587,12 @@ class Agefodd_session_admlevel extends CommonObject {
 
 		if (! $error) {
 			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action call a trigger.
-
-				// // Call triggers
-				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_MODIFY',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
+				// Call triggers
+				include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+				$interface=new Interfaces($this->db);
+				$result=$interface->run_triggers($this->trigger_name . '_MODIFY',$this,$user,$langs,$conf);
+				if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				// End call triggers
 			}
 		}
 
@@ -669,6 +608,75 @@ class Agefodd_session_admlevel extends CommonObject {
 			$this->db->commit();
 			return 1;
 		}
+	}
+
+	/**
+	 * Recursively deletes the specified admin task and all its descendants.
+	 * This may be done more cleanly using ON DELETE CASCADE
+	 *
+	 * @param int $id ID of the admin task; default to current object's ID
+	 * @param bool $notrigger Whether to disable triggers 
+	 * @return int <0 if KO, >0 if OK
+	 */
+	public function delete_with_descendants($id = null, $notrigger = 0)
+	{
+		global $conf, $langs;
+
+		if ($id === null) $id = $this->id;
+		$id = intval($id);
+
+		$error = 0;
+
+		if (empty($id)) {
+			// setEventMessages($langs->trans('EmptyID'), array(), 'errors');
+			return -1;
+		}
+
+		$this->db->begin();
+
+		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $this->table_element . ' WHERE fk_parent_level = ' . $id;
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$error++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$num_rows = $this->db->num_rows($resql);
+			for ($i = 0; $i < $num_rows; $i++) {
+				$obj = $this->db->fetch_object($resql);
+				if (!$obj) break;
+				$this->delete_with_descendants($obj->rowid);
+			}
+		}
+
+		if (!$error) {
+			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . $this->table_element . ' WHERE rowid = ' . $id;
+
+			dol_syslog(get_class($this) . "::delete");
+			$resql = $this->db->query($sql);
+			if (!$resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			} elseif (!$notrigger) {
+				// Call triggers
+				include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
+				$interface=new Interfaces($this->db);
+				$result=$interface->run_triggers($this->trigger_name . '_DELETE',$this,$user,$langs,$conf);
+				if ($result < 0) { $error++; $this->errors=$interface->errors; }
+				// End call triggers
+			}
+		}
+
+		// Commit or rollback
+		if ($error) {
+			foreach ($this->errors as $errmsg) {
+				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			$this->db->rollback();
+			return -1 * $error;
+		}
+		$this->db->commit();
+		return 1;
 	}
 }
 
