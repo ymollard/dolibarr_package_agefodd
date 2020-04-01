@@ -2014,6 +2014,7 @@ class Agsession extends CommonObject
 		}
 
 		if (! $error) {
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 			$session_elem = new Agefodd_session_element($this->db);
 			$session_elem->fk_session_agefodd = $this->id;
 			if ($session_elem->updateSellingPrice($user) <= 0) {
