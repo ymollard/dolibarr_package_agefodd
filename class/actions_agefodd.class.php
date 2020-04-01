@@ -1513,6 +1513,8 @@ class ActionsAgefodd
 			$this->resprints = $sql;
 			return 1;
 		}
+
+		return 0;
 	}
 
 	function addMoreEventsExport($parameters, &$object, &$action, HookManager $hookmanager)
@@ -1731,6 +1733,8 @@ class ActionsAgefodd
 				}
 			}
 		}
+
+		return 0;
 	}
 
 	/**
@@ -1947,6 +1951,8 @@ class ActionsAgefodd
 		}
 
 		$this->resprints = $boxstat;
+
+		return 0;
 	}
 
 	function getStatBox($url = '#', $nb = 0, $text = '')
