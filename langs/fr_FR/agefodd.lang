@@ -1659,6 +1659,13 @@ AgfQuestionnaireSendRight=Envoyer des questionnaires
 
 AgfCreateContactDefautNewTrainee = Sur le formulaire de création d'un participant : Creer un contact : Oui ou Non par defaut
 
+AgfMenuReportCAVentilated=Rapport CA ventilé par produit
+AgfSessionCustomer=Client session
+AgfSessionInvoicedThirdparty=Tiers payeur
+AgfExportFrom=depuisle
+AgfExportTo=jusquau
+NoDataToRetrieve=Aucune données à exporter
+
 # list session by trainer
 AgfSessionHours=Nombres d'heures sur la session
 AgfTotalCalendrierHour=Total heures sur calendrier

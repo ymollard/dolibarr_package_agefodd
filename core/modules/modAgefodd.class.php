@@ -2515,6 +2515,21 @@ class modAgefodd extends DolibarrModules
 		);
 
 		$r ++;
+		$this->menu [$r] = array (
+			'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+			'type' => 'left',
+			'titre' => 'AgfMenuReportCAVentilated',
+			'leftmenu' => 'AgfMenuReportCAVentilated',
+			'url' => '/agefodd/report/report_ca_ventilated.php',
+			'langs' => 'agefodd@agefodd',
+			'position' => 900 + $r,
+			'enabled' => '$user->rights->agefodd->report',
+			'perms' => '$user->rights->agefodd->report',
+			'target' => '',
+			'user' => 0
+		);
+
+		$r ++;
 		$this->menu[$r] = array(
 				'fk_menu' => 'fk_mainmenu=agefodd',
 				'type' => 'left',
