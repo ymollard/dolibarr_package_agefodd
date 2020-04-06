@@ -21,7 +21,7 @@ AgfEACloseModalAfterUpdateSessionSlot=Fermer automatiquement l’encadré (pop-i
 
 AgfActivateAccessForTrainees=Activer l'accès externe pour les stagiaires (il est nécessaire d'attribuer des droits utilisateurs au contacts liées aux stagiaires)
 AgfEATraineeTitle=Configurations des stagiaires
-AgfNumberOfHoursBeforeLockingAbsenceRequests=Nombres d'heures avant le blocage des requettes d'absences
+AgfNumberOfHoursBeforeLockingAbsenceRequests=Nombres d'heures avant le blocage des requêtes d'absences
 AgfNumberOfHoursBeforeLockingAbsenceRequestsHelp=Sur le portail client, les stagiares peuvent marquer sur leurs créneaux qu'ils sont absents
 
 # AGENDA
@@ -29,10 +29,10 @@ AGFSendEmailAlertToTrainees=Envoyer une alerte email au(x) stagiaire(s)
 AgfEmailInvalid=Email(s) invalide(s)
 AgfStatus=Statut
 AreYouSureToDelete=Êtes-vous sûre ?
-AgfYouAreUnderDeleteCalendarEvent=Vous êtes sur le point de supprimer un évènement agenda, cette action est irréverssible, souhaites-vous continuer ?
+AgfYouAreUnderDeleteCalendarEvent=Vous êtes sur le point de supprimer un évènement agenda, cette action est irréversible, souhaitez-vous continuer ?
 agfEventDeleted=Evènement supprimé
-agfDeleteEventError=Une erreur c'est produite lors de la suppression
-agfDeleteEventNotAuthorized=Vous n'êtes pas
+agfDeleteEventError=Une erreur s'est produite lors de la suppression
+agfDeleteEventNotAuthorized=Vous n'êtes pas autorisé à supprimer cet évènement
 AgfNoAvailableSessionInDateRange=Aucune session de formation disponible dans la plage selectionnée
 
 # Email
