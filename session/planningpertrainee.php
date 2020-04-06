@@ -84,5 +84,15 @@ if ($id)
     print $langs->trans('AgfNoSession');
 }
 
+//Tableau pour chaque participant de la session
+$test = new Agefodd_session_stagiaire($db);
+$res = $test->fetch_stagiaire_per_session($id);
+
+foreach($test->lines as $line)
+{
+    print load_fiche_titre($langs->trans('AgfTraineePlanification'), '', '');
+
+}
+
 llxFooter();
 $db->close();

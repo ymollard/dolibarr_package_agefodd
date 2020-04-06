@@ -172,13 +172,13 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         global $langs;
 
         $sql = "SELECT";
-        $sql .= " t.rowid,";
+        $sql .= " rowid,";
         $sql .= " fk_agefodd_session,";
         $sql .= " fk_agefodd_session_stagiaire,";
         $sql .= " fk_calendrier_type,";
         $sql .= " heurep";
         $sql .= " FROM " . MAIN_DB_PREFIX . $this->table_element;
-        $sql .= " WHERE t.rowid = " . $id;
+        $sql .= " WHERE rowid = " . $id;
 
         dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
         $resql = $this->db->query($sql);
@@ -206,6 +206,30 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         }
     }
 
+    public function fetchAllBy($field_value, $field)
+    {
+        $sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.$this->table_element.' WHERE '.$field.' = ';
+        if (is_numeric($field_value)) $sql.= $field_value;
+        else $sql.= "'".$this->db->escape($field_value)."'";
 
+        $resql = $this->db->query($sql);
+        if ($resql)
+        {
+            $this->lines = array();
+            while ($obj = $this->db->fetch_object($resql))
+            {
+                $line = new AgefoddSessionStagiairePlanification($this->db);
+                $line->fetch($obj->rowid);
+
+                $this->lines[] = $line;
+            }
+        }
+        else
+        {
+            $this->error = "Error " . $this->db->lasterror();
+            dol_syslog(get_class($this) . "::fetchAllBy " . $this->error, LOG_ERR);
+            return -1;
+        }
+    }
 
 }
