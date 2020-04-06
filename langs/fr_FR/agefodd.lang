@@ -68,6 +68,7 @@ Updated=Mis à jour
 AgfCatActif=Actif
 AgfCatArchive=Archivé
 AgfScheduler=Vue planning
+AgfPlanningPerTrainee=Planning par participant
 AgfMenuCatNew=Nouvelle formation
 AgfMenuSess=Sessions de formation
 AgfMenuSessAct=Sessions de formation en cours
