@@ -14,6 +14,7 @@ require_once ('../class/agefodd_session_calendrier.class.php');
 require_once ('../class/agefodd_calendrier.class.php');
 require_once ('../class/agefodd_session_formateur.class.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
+require_once ('../class/agefodd_session_stagiaire_planification.class.php');
 require_once ('../class/agefodd_session_element.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../lib/agefodd.lib.php');
