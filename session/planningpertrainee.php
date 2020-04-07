@@ -14,6 +14,7 @@ require_once ('../class/agefodd_session_calendrier.class.php');
 require_once ('../class/agefodd_calendrier.class.php');
 require_once ('../class/agefodd_session_formateur.class.php');
 require_once ('../class/agefodd_session_stagiaire.class.php');
+require_once ('../class/agefodd_session_stagiaire_heures.class.php');
 require_once ('../class/agefodd_session_stagiaire_planification.class.php');
 require_once ('../class/agefodd_session_element.class.php');
 require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
@@ -52,7 +53,7 @@ if ($reshook < 0)
 /*
  * View
  */
-
+//var_dump($_POST); exit;
 llxHeader('', $langs->trans("AgfSessionDetail"), '', '', '', '', array(
     '/agefodd/includes/lib.js'
 ), array());
@@ -95,54 +96,53 @@ if($res > 0)
     {
 
         //Tableau de toutes les heures plannifiées du participant
-        $TLinesTraineePlanification = array();
+        $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
+        $TLinesTraineePlanification = $agfSessTraineesP->fetchTotalBySessAndTrainee($id, $line->id);
 
-        $sql = "SELECT rowid, fk_calendrier_type, heurep ";
-        $sql.= "FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire_planification ";
-        $sql.= "WHERE fk_agefodd_session = '" . $id . "' AND fk_agefodd_session_stagiaire = '".$line->id."'";
-        $resql = $db->query($sql);
+        //heures réalisées par type de créneau
+        $trainee_hr = new Agefoddsessionstagiaireheures($db);
+        $THoursR = $trainee_hr->fetch_heures_stagiaire_per_type($id, $line->id);
 
-        if($resql)
-        {
-            while ($obj = $db->fetch_object($resql))
-            {
-                $TLinesTraineePlanification[] = $obj;
-            }
-        }
+        //heures totales réalisées par le stagiaire
+        $heureRTotal = array_sum($THoursR);
+
+        //heures totales restantes : durée de la session - heures réalisées totales
+        $heureRestTotal = $agf->duree_session - $heureRTotal;
 
         print '<div class="" id="formdateall">';
-        print '<form name="obj_update" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
+        print '<form name="obj_update" action="'.$_SERVER['PHP_SELF'].'?action=addHours&id='.$id.'"  method="POST">'."\n";
         print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-        print '<input type="hidden" name="action" value="edit">'."\n";
+        print '<input type="hidden" name="action" value="addHours">'."\n";
         print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
         print load_fiche_titre($langs->trans('AgfTraineePlanification'), '', '', 0, 0, '', $massactionbutton);
         print '<table class="noborder period" width="100%" id="period">';
 
+        //Titres
         print '<tr class="liste_titre">';
         print '<th width="15%" class="liste_titre">'.$langs->trans('').'</th>';
         print '<th width="35%" class="liste_titre">'.$langs->trans('AgfHoursP').'</th>';
         print '<th class="text-center" >'.$langs->trans('AgfHoursR').'</th>';
         print '<th class="liste_titre">'.$langs->trans('AgfHoursRest').'</th>';
+        print '<th class="linecoldelete center">&nbsp;</th>';
         print '</tr>';
 
-
+        //Totaux
         print '<tr>';
-        print '<td>Total</td>';
-        print '<td>'.$agf->duree_session.'</td>';
-        print '<td></td>';
-        print '<td></td>';
-
+        print '<td style="text-decoration:underline;">Total</td>';
+        print '<td style="text-decoration:underline;">'.$agf->duree_session.'</td>';
+        print '<td style="text-decoration:underline;">'.$heureRTotal.'</td>';
+        print '<td style="text-decoration:underline;">'.$heureRestTotal.'</td>';
+        print '<td class="linecoldelete center">&nbsp;</td>';
         print '</tr>';
 
-
-
+        //Lignes par type de modalité
         foreach($TLinesTraineePlanification as $lineP)
         {
             print '<tr>';
 
             //Modalité
             $sql = "SELECT";
-            $sql .= " label ";
+            $sql .= " label, code ";
             $sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
             $sql .= " WHERE rowid = '".$lineP->fk_calendrier_type . "'";
             $resql = $db->query($sql);
@@ -150,6 +150,7 @@ if($res > 0)
             if($resql)
             {
                 $obj = $db->fetch_object($resql);
+                $codeCalendrierType = $obj->code;
 
                 print '<td>'.$obj->label.'</td>';
             }
@@ -158,14 +159,34 @@ if($res > 0)
             print '<td>'.$lineP->heurep.'</td>';
 
             //Heure réalisées
-            print '<td>'.$lineP->heurep.'</td>';
+            print '<td>'.$THoursR[$codeCalendrierType].'</td>';
 
             //Heure restante
+            $heureRest = $lineP->heurep - $THoursR[$codeCalendrierType];
+            print '<td>'.$heureRest.'</td>';
 
+            print '<td class = "linecoldelete center"><a href='.$_SERVER['PHP_SELF'].'?action=deleteHours&id='.$id.'&hourremove='.$lineP->rowid.'>'. img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
 
             print '</tr>';
 
         }
+
+        print '<tr class="pair nodrag nodrop nohoverpair liste_titre_create" >';
+        print '<td></td>';
+        print '<td>Modalité : '.$formAgefodd->select_calendrier_type('', 'code_c_session_calendrier_type').'</td>';
+        print '<td>Heures réalisées : <input></input></td>';
+        print '<td>&nbsp;</td>';
+        print '<td class="linecoldelete center">&nbsp;</td>';
+        print '</tr>';
+        print '</table>';
+
+        print '<div class="tabsAction">';
+        print '<div class="inline-block divButAction">';
+        print '<input type="submit" class="butAction" name="addHours" value="'.$langs->trans('AgfNewHoursR').'">';
+        print '</div>';
+        print '</div>';
+
+        print '</form>';
 
     }
 

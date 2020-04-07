@@ -206,6 +206,35 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         }
     }
 
+    public function fetchTotalBySessAndTrainee($idsess, $idtrainee) {
+
+        global $langs;
+
+        $sql = "SELECT SUM(heurep) as heurep, fk_agefodd_session_stagiaire, fk_calendrier_type, fk_agefodd_session ";
+        $sql.= "FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire_planification ";
+        $sql.= "WHERE fk_agefodd_session = '" . $idsess . "' AND fk_agefodd_session_stagiaire = '".$idtrainee."' ";
+        $sql.= "GROUP BY fk_agefodd_session_stagiaire, fk_agefodd_session, fk_calendrier_type";
+
+        $resql = $this->db->query($sql);
+
+        if ($resql) {
+
+            $TRes = array();
+
+            while ($obj = $this->db->fetch_object($resql))
+            {
+                $TRes[] = $obj;
+            }
+
+            $this->db->free($resql);
+
+            return $TRes;
+
+        }
+
+        return 0;
+    }
+
     public function fetchAllBy($field_value, $field)
     {
         $sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.$this->table_element.' WHERE '.$field.' = ';
