@@ -1241,3 +1241,11 @@ AgfEATrainerAndTraineeAccessSessionLink=Portail formateur et apprenant - Voir le
 AgfCloneTrainingModules=Clone modules training programm ?
 AttachmentsTitleAgefodd=Training session
 EndHour = End Hour
+
+#PLANNING TRAINEES
+AgfHoursP=Scheduled hours
+AgfHoursR=Hours completed
+AgfHoursRest=Remaining hours
+AgfAddScheduledHours=Duration ("-" to remove hours)
+AgfNewHoursP=Add scheduled hours
+AgfTraineePlanification=Schedule of %s %s %s

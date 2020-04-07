@@ -274,13 +274,13 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         }
     }
 
-    public function TotalHoursPerCalendarType($idsess, $idtrainee) {
+    public function getSchedulesPerCalendarType($idsess, $idtrainee) {
 
         global $langs;
 
 
         $sql = "SELECT rowid, fk_calendrier_type, heurep ";
-        $sql.= "FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire_planification ";
+        $sql.= "FROM " . MAIN_DB_PREFIX . $this->table_element. " ";
         $sql.= "WHERE fk_agefodd_session = '" . $idsess . "' AND fk_agefodd_session_stagiaire = '".$idtrainee."'";
 
         $resql = $this->db->query($sql);
@@ -303,13 +303,13 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         return 0;
     }
 
-    public function getTotalHoursbySessAndTrainee($idsess, $idtrainee) {
+    public function getTotalSchedulesHoursbyTrainee($idsess, $idtrainee) {
 
         global $langs;
 
 
         $sql = "SELECT SUM(heurep) as totalheurep ";
-        $sql.= "FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire_planification ";
+        $sql.= "FROM " . MAIN_DB_PREFIX . $this->table_element . " ";
         $sql.= "WHERE fk_agefodd_session = '" . $idsess . "' AND fk_agefodd_session_stagiaire = '".$idtrainee."'";
 
         $resql = $this->db->query($sql);
@@ -328,8 +328,8 @@ class AgefoddSessionStagiairePlanification extends CommonObject
 
 
         $sql = "SELECT p.rowid ";
-        $sql.= "FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire_planification p ";
-        $sql.= "JOIN ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type c ON c.rowid = p.fk_calendrier_type ";
+        $sql.= "FROM " . MAIN_DB_PREFIX . $this->table_element. " p ";
+        $sql.= "JOIN " . MAIN_DB_PREFIX . "c_agefodd_session_calendrier_type c ON c.rowid = p.fk_calendrier_type ";
         $sql.= "WHERE p.fk_agefodd_session = '" . $idsess . "' AND p.fk_agefodd_session_stagiaire = '".$idtrainee."' AND c.code = '".$code_calendar . "'";
 
         $resql = $this->db->query($sql);

@@ -67,7 +67,7 @@ if($action == 'edit'){
 
     if(!empty($hours_add))
     {
-        $totalHoursTrainee = $agfSessTraineesP->getTotalHoursbySessAndTrainee($sessid, $traineeid);
+        $totalHoursTrainee = $agfSessTraineesP->getTotalSchedulesHoursbyTrainee($sessid, $traineeid);
 
         if(($totalHoursTrainee+$hourp) > $agf->duree_session) {
             $error ++;
@@ -194,15 +194,14 @@ $res = $session_trainee->fetch_stagiaire_per_session($id);
 if($res > 0)
 {
 
-    foreach ($session_trainee->lines as $line)
+    foreach ($session_trainee->lines as $trainee)
     {
-
-        $idTrainee_session = $line->stagerowid;
-        $idtrainee = $line->id;
+        $idTrainee_session = $trainee->stagerowid;
+        $idtrainee = $trainee->id;
 
         //Tableau de toutes les heures plannifiées du participant
         $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
-        $TLinesTraineePlanification = $agfSessTraineesP->TotalHoursPerCalendarType($id, $idTrainee_session);
+        $TLinesTraineePlanning = $agfSessTraineesP->getSchedulesPerCalendarType($id, $idTrainee_session);
 
         //heures réalisées par type de créneau
         $trainee_hr = new Agefoddsessionstagiaireheures($db);
@@ -220,7 +219,7 @@ if($res > 0)
         print '<input type="hidden" name="action" value="edit">'."\n";
         print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
         print '<input type="hidden" name="traineeid" value="'.$idTrainee_session.'">'."\n";
-        print load_fiche_titre($langs->trans('AgfTraineePlanification'), '', '', 0, 0, '', $massactionbutton);
+        print load_fiche_titre($langs->trans('AgfTraineePlanification', $trainee->civilite, $trainee->nom, $trainee->prenom), '', '', 0, 0, '', $massactionbutton);
         print '<table class="noborder period" width="100%" id="period">';
 
         //Titres
@@ -242,13 +241,13 @@ if($res > 0)
         print '</tr>';
 
         //Lignes par type de modalité
-        foreach($TLinesTraineePlanification as $lineP)
+        foreach($TLinesTraineePlanning as $line)
         {
             //Modalité
             $sql = "SELECT";
             $sql .= " label, code ";
             $sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
-            $sql .= " WHERE rowid = '".$lineP->fk_calendrier_type . "'";
+            $sql .= " WHERE rowid = '".$line->fk_calendrier_type . "'";
             $resql = $db->query($sql);
 
             if($resql)
@@ -259,20 +258,20 @@ if($res > 0)
             }
 
             //Calcul heures restantes
-            $heureRest = $lineP->heurep - $THoursR[$codeCalendrierType];
+            $heureRest = $line->heurep - $THoursR[$codeCalendrierType];
 
             print '<tr>';
 
             //Type créneau
             print '<td>'.$codeCalendrierLabel.'</td>';
             //Heure saisie prévue
-            print '<td>'.$lineP->heurep.'</td>';
+            print '<td>'.$line->heurep.'</td>';
             //Heure réalisées
             print '<td>'.$THoursR[$codeCalendrierType].'</td>';
             //Heures restantes
             print '<td>'.$heureRest.'</td>';
 
-            print '<td class = "linecoldelete center"><a href='.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'&hourremove='.$lineP->rowid.'>'. img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
+            print '<td class = "linecoldelete center"><a href='.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'&hourremove='.$line->rowid.'>'. img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
 
             print '</tr>';
 
@@ -281,7 +280,7 @@ if($res > 0)
         print '<tr class="pair nodrag nodrop nohoverpair liste_titre_create" >';
         print '<td></td>';
         print '<td>'.$langs->trans('AgfCalendarType').' '.$formAgefodd->select_calendrier_type('', 'code_c_session_calendrier_type').'</td>';
-        print '<td>'.$langs->trans('AgfAddPlannifiedHours').' <input  name="heurep">&nbsp;</input></td>';
+        print '<td>'.$langs->trans('AgfAddScheduledHours').' <input  name="heurep">&nbsp;</input></td>';
         print '<td>&nbsp;</td>';
         print '<td class="linecoldelete center">&nbsp;</td>';
         print '</tr>';
@@ -289,7 +288,7 @@ if($res > 0)
 
         print '<div class="tabsAction">';
         print '<div class="inline-block divButAction">';
-        print '<input type="submit" class="butAction" name="addHours" value="'.$langs->trans('AgfNewHoursR').'">';
+        print '<input type="submit" class="butAction" name="addHours" value="'.$langs->trans('AgfNewHoursP').'">';
         print '</div>';
         print '</div>';
 
