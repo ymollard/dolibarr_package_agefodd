@@ -85,6 +85,7 @@ if($action == 'edit'){
                 if ($res > 0)
                 {
                     $agfSessTraineesP->heurep += $hourp;
+                    if($agfSessTraineesP->heurep < 0) $agfSessTraineesP->heurep = 0;
 
                     $res = $agfSessTraineesP->update($user);
 
@@ -118,6 +119,7 @@ if($action == 'edit'){
                 }
 
                 $agfSessTraineesP->heurep = $hourp;
+                if($agfSessTraineesP->heurep < 0) $agfSessTraineesP->heurep = 0;
 
                 $res = $agfSessTraineesP->create($user);
 
@@ -195,13 +197,16 @@ if($res > 0)
     foreach ($session_trainee->lines as $line)
     {
 
+        $idTrainee_session = $line->stagerowid;
+        $idtrainee = $line->id;
+
         //Tableau de toutes les heures plannifiées du participant
         $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
-        $TLinesTraineePlanification = $agfSessTraineesP->TotalHoursPerCalendarType($id, $line->id);
+        $TLinesTraineePlanification = $agfSessTraineesP->TotalHoursPerCalendarType($id, $idTrainee_session);
 
         //heures réalisées par type de créneau
         $trainee_hr = new Agefoddsessionstagiaireheures($db);
-        $THoursR = $trainee_hr->fetch_heures_stagiaire_per_type($id, $line->id);
+        $THoursR = $trainee_hr->fetch_heures_stagiaire_per_type($id, $idtrainee);
 
         //heures totales réalisées par le stagiaire
         $heureRTotal = array_sum($THoursR);
@@ -214,33 +219,31 @@ if($res > 0)
         print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
         print '<input type="hidden" name="action" value="edit">'."\n";
         print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
-        print '<input type="hidden" name="traineeid" value="'.$line->id.'">'."\n";
+        print '<input type="hidden" name="traineeid" value="'.$idTrainee_session.'">'."\n";
         print load_fiche_titre($langs->trans('AgfTraineePlanification'), '', '', 0, 0, '', $massactionbutton);
         print '<table class="noborder period" width="100%" id="period">';
 
         //Titres
         print '<tr class="liste_titre">';
-        print '<th width="15%" class="liste_titre">'.$langs->trans('').'</th>';
-        print '<th width="35%" class="liste_titre">'.$langs->trans('AgfHoursP').'</th>';
-        print '<th class="text-center" >'.$langs->trans('AgfHoursR').'</th>';
-        print '<th class="liste_titre">'.$langs->trans('AgfHoursRest').'</th>';
+        print '<th width="15%" class="liste_titre">&nbsp;</th>';
+        print '<th width="35%" class="liste_titre_hoursp_'.$idTrainee_session.'">'.$langs->trans('AgfHoursP').'</th>';
+        print '<th class="liste_titre_hoursr_'.$idTrainee_session.'">'.$langs->trans('AgfHoursR').'</th>';
+        print '<th class="liste_titre_hoursrest_'.$idTrainee_session.'">'.$langs->trans('AgfHoursRest').'</th>';
         print '<th class="linecoldelete center">&nbsp;</th>';
         print '</tr>';
 
         //Totaux
         print '<tr>';
         print '<td style="text-decoration:underline;">Total</td>';
-        print '<td style="text-decoration:underline;">'.$agf->duree_session.'</td>';
-        print '<td style="text-decoration:underline;">'.$heureRTotal.'</td>';
-        print '<td style="text-decoration:underline;">'.$heureRestTotal.'</td>';
+        print '<td style="text-decoration:underline;" class="total_hoursp_'.$idTrainee_session.'">'.$agf->duree_session.'</td>';
+        print '<td style="text-decoration:underline;" class="total_hoursr_'.$idTrainee_session.'">'.$heureRTotal.'</td>';
+        print '<td style="text-decoration:underline;" class="total_hoursrest_'.$idTrainee_session.'">'.$heureRestTotal.'</td>';
         print '<td class="linecoldelete center">&nbsp;</td>';
         print '</tr>';
 
         //Lignes par type de modalité
         foreach($TLinesTraineePlanification as $lineP)
         {
-            print '<tr>';
-
             //Modalité
             $sql = "SELECT";
             $sql .= " label, code ";
@@ -252,18 +255,21 @@ if($res > 0)
             {
                 $obj = $db->fetch_object($resql);
                 $codeCalendrierType = $obj->code;
-
-                print '<td>'.$obj->label.'</td>';
+                $codeCalendrierLabel = $obj->label;
             }
 
+            //Calcul heures restantes
+            $heureRest = $lineP->heurep - $THoursR[$codeCalendrierType];
+
+            print '<tr>';
+
+            //Type créneau
+            print '<td>'.$codeCalendrierLabel.'</td>';
             //Heure saisie prévue
             print '<td>'.$lineP->heurep.'</td>';
-
             //Heure réalisées
             print '<td>'.$THoursR[$codeCalendrierType].'</td>';
-
-            //Heure restante
-            $heureRest = $lineP->heurep - $THoursR[$codeCalendrierType];
+            //Heures restantes
             print '<td>'.$heureRest.'</td>';
 
             print '<td class = "linecoldelete center"><a href='.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'&hourremove='.$lineP->rowid.'>'. img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
@@ -274,8 +280,8 @@ if($res > 0)
 
         print '<tr class="pair nodrag nodrop nohoverpair liste_titre_create" >';
         print '<td></td>';
-        print '<td>Modalité : '.$formAgefodd->select_calendrier_type('', 'code_c_session_calendrier_type').'</td>';
-        print '<td>Heures plannifiées ( "-" pour retirer des heures) : <input  name="heurep">&nbsp;</input></td>';
+        print '<td>'.$langs->trans('AgfCalendarType').' '.$formAgefodd->select_calendrier_type('', 'code_c_session_calendrier_type').'</td>';
+        print '<td>'.$langs->trans('AgfAddPlannifiedHours').' <input  name="heurep">&nbsp;</input></td>';
         print '<td>&nbsp;</td>';
         print '<td class="linecoldelete center">&nbsp;</td>';
         print '</tr>';
