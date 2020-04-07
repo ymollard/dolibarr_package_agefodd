@@ -274,7 +274,7 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         }
     }
 
-    public function fetchTotalBySessAndTrainee($idsess, $idtrainee) {
+    public function TotalHoursPerCalendarType($idsess, $idtrainee) {
 
         global $langs;
 
@@ -297,6 +297,27 @@ class AgefoddSessionStagiairePlanification extends CommonObject
             $this->db->free($resql);
 
             return $TRes;
+
+        }
+
+        return 0;
+    }
+
+    public function getTotalHoursbySessAndTrainee($idsess, $idtrainee) {
+
+        global $langs;
+
+
+        $sql = "SELECT SUM(heurep) as totalheurep ";
+        $sql.= "FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire_planification ";
+        $sql.= "WHERE fk_agefodd_session = '" . $idsess . "' AND fk_agefodd_session_stagiaire = '".$idtrainee."'";
+
+        $resql = $this->db->query($sql);
+
+        if ($resql) {
+
+            $obj = $this->db->fetch_object($resql);
+            return $obj->totalheurep;
 
         }
 

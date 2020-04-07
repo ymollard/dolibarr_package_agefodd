@@ -44,6 +44,7 @@ $hours_add = GETPOST('addHours', 'alpha');
 $idhourtoremove = GETPOST('hourremove', 'alpha');
 
 $agf = new Agsession($db);
+if(!empty($id)) $result = $agf->fetch($id);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
 
@@ -59,50 +60,84 @@ if ($reshook < 0)
 
 if($action == 'edit'){
 
+    $error_message = '';
+    $error = 0;
+
     $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
 
     if(!empty($hours_add))
     {
+        $totalHoursTrainee = $agfSessTraineesP->getTotalHoursbySessAndTrainee($sessid, $traineeid);
 
-        $res = $agfSessTraineesP->verifyAlreadyExist($sessid, $traineeid, $codeCalendar);
-
-        if ($res > 0)
-        {
-            $res = $agfSessTraineesP->fetch($res);
-
-            if ($res)
-            {
-                $agfSessTraineesP->heurep += $hourp;
-                $res = $agfSessTraineesP->update($user);
-            }
+        if($totalHoursTrainee+$hourp > $agf->duree_session) {
+            $error ++;
+            $error_message = $langs->trans('AgfErrorHoursPTraineeHoursSess');
         }
-        else
+
+        if(!$error)
         {
+            $res = $agfSessTraineesP->verifyAlreadyExist($sessid, $traineeid, $codeCalendar);
 
-            $agfSessTraineesP->fk_session_stagiaire = $traineeid;
-            $agfSessTraineesP->fk_session = $sessid;
-
-            $sql = "SELECT";
-            $sql .= " rowid ";
-            $sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
-            $sql .= " WHERE code = '".$codeCalendar."'";
-            $resql = $db->query($sql);
-
-            if ($resql)
+            if ($res > 0)
             {
-                $obj = $db->fetch_object($resql);
-                $agfSessTraineesP->fk_calendrier_type = $obj->rowid;
+                $res = $agfSessTraineesP->fetch($res);
+
+                if ($res)
+                {
+                    $agfSessTraineesP->heurep += $hourp;
+
+                    $res = $agfSessTraineesP->update($user);
+                }
             }
+            else
+            {
 
-            $agfSessTraineesP->heurep = $hourp;
+                $agfSessTraineesP->fk_session_stagiaire = $traineeid;
+                $agfSessTraineesP->fk_session = $sessid;
 
-            $res = $agfSessTraineesP->create($user);
+                $sql = "SELECT";
+                $sql .= " rowid ";
+                $sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
+                $sql .= " WHERE code = '".$codeCalendar."'";
+                $resql = $db->query($sql);
+
+                if ($resql)
+                {
+                    $obj = $db->fetch_object($resql);
+                    $agfSessTraineesP->fk_calendrier_type = $obj->rowid;
+                } else {
+                    $error ++;
+                    $error_message = $langs->trans('Error');
+                }
+
+                $agfSessTraineesP->heurep = $hourp;
+
+                $res = $agfSessTraineesP->create($user);
+
+                if($res <= 0){
+                    $error ++;
+                    $error_message = $langs->trans("AgfErrorCreateTraineePlannification");
+                }
+            }
         }
     }
     elseif (!empty($idhourtoremove))
     {
         $agfSessTraineesP->fetch($idhourtoremove);
+
         $res = $agfSessTraineesP->delete($user);
+
+        if($res <= 0){
+            $error ++;
+            $error_message = $langs->trans("AgfErrorDeleteTraineePlanification");
+        }
+    }
+
+    if (!$error) {
+        Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id . "");
+        //rien
+    } else {
+        setEventMessage($error_message, 'errors');
     }
 }
 
@@ -119,9 +154,6 @@ $formAgefodd = new FormAgefodd($db);
 
 if ($id)
 {
-    $agf = new Agsession($db);
-    $result = $agf->fetch($id);
-
     if ($result > 0)
     {
         if (!(empty($agf->id)))
@@ -153,7 +185,7 @@ if($res > 0)
 
         //Tableau de toutes les heures plannifiées du participant
         $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
-        $TLinesTraineePlanification = $agfSessTraineesP->fetchTotalBySessAndTrainee($id, $line->id);
+        $TLinesTraineePlanification = $agfSessTraineesP->TotalHoursPerCalendarType($id, $line->id);
 
         //heures réalisées par type de créneau
         $trainee_hr = new Agefoddsessionstagiaireheures($db);
