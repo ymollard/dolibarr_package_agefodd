@@ -210,10 +210,10 @@ class AgefoddSessionStagiairePlanification extends CommonObject
 
         global $langs;
 
-        $sql = "SELECT SUM(heurep) as heurep, fk_agefodd_session_stagiaire, fk_calendrier_type, fk_agefodd_session ";
+
+        $sql = "SELECT rowid, fk_calendrier_type, heurep ";
         $sql.= "FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire_planification ";
-        $sql.= "WHERE fk_agefodd_session = '" . $idsess . "' AND fk_agefodd_session_stagiaire = '".$idtrainee."' ";
-        $sql.= "GROUP BY fk_agefodd_session_stagiaire, fk_agefodd_session, fk_calendrier_type";
+        $sql.= "WHERE fk_agefodd_session = '" . $idsess . "' AND fk_agefodd_session_stagiaire = '".$idtrainee."'";
 
         $resql = $this->db->query($sql);
 

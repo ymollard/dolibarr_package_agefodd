@@ -50,6 +50,14 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $agf, $action); 
 if ($reshook < 0)
     setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
+
+if($action = "addHours"){
+
+} elseif($action = "deleteHour"){
+
+}
+
+
 /*
  * View
  */
@@ -109,7 +117,7 @@ if($res > 0)
         //heures totales restantes : durée de la session - heures réalisées totales
         $heureRestTotal = $agf->duree_session - $heureRTotal;
 
-        print '<div class="" id="formdateall">';
+        print '<div class="" id="formPlannifTrainee">';
         print '<form name="obj_update" action="'.$_SERVER['PHP_SELF'].'?action=addHours&id='.$id.'"  method="POST">'."\n";
         print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
         print '<input type="hidden" name="action" value="addHours">'."\n";
