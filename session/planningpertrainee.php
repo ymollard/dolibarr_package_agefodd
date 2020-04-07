@@ -36,6 +36,12 @@ $hookmanager->initHooks(array(
 
 $id = GETPOST('id', 'int');
 $action = GETPOST('action', 'alpha');
+$sessid = GETPOST('sessid', 'alpha');
+$codeCalendar = GETPOST('code_c_session_calendrier_type', 'alpha');
+$hourp = GETPOST('heurep', 'alpha');
+$traineeid = GETPOST('traineeid', 'alpha');
+$hours_add = GETPOST('addHours', 'alpha');
+$idhourtoremove = GETPOST('hourremove', 'alpha');
 
 $agf = new Agsession($db);
 $extrafields = new ExtraFields($db);
@@ -51,12 +57,54 @@ if ($reshook < 0)
     setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 
-if($action = "addHours"){
+if($action == 'edit'){
 
-} elseif($action = "deleteHour"){
+    $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
 
+    if(!empty($hours_add))
+    {
+
+        $res = $agfSessTraineesP->verifyAlreadyExist($sessid, $traineeid, $codeCalendar);
+
+        if ($res > 0)
+        {
+            $res = $agfSessTraineesP->fetch($res);
+
+            if ($res)
+            {
+                $agfSessTraineesP->heurep += $hourp;
+                $res = $agfSessTraineesP->update($user);
+            }
+        }
+        else
+        {
+
+            $agfSessTraineesP->fk_session_stagiaire = $traineeid;
+            $agfSessTraineesP->fk_session = $sessid;
+
+            $sql = "SELECT";
+            $sql .= " rowid ";
+            $sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
+            $sql .= " WHERE code = '".$codeCalendar."'";
+            $resql = $db->query($sql);
+
+            if ($resql)
+            {
+                $obj = $db->fetch_object($resql);
+                $agfSessTraineesP->fk_calendrier_type = $obj->rowid;
+            }
+
+            $agfSessTraineesP->heurep = $hourp;
+
+            $res = $agfSessTraineesP->create($user);
+        }
+    }
+    elseif (!empty($idhourtoremove))
+    {
+        $agfSessTraineesP->fetch($idhourtoremove);
+        $res = $agfSessTraineesP->delete($user);
+    }
 }
-
 
 /*
  * View
@@ -118,10 +166,11 @@ if($res > 0)
         $heureRestTotal = $agf->duree_session - $heureRTotal;
 
         print '<div class="" id="formPlannifTrainee">';
-        print '<form name="obj_update" action="'.$_SERVER['PHP_SELF'].'?action=addHours&id='.$id.'"  method="POST">'."\n";
+        print '<form name="obj_update" action="'.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'"  method="POST">'."\n";
         print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">'."\n";
-        print '<input type="hidden" name="action" value="addHours">'."\n";
+        print '<input type="hidden" name="action" value="edit">'."\n";
         print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
+        print '<input type="hidden" name="traineeid" value="'.$line->id.'">'."\n";
         print load_fiche_titre($langs->trans('AgfTraineePlanification'), '', '', 0, 0, '', $massactionbutton);
         print '<table class="noborder period" width="100%" id="period">';
 
@@ -173,7 +222,7 @@ if($res > 0)
             $heureRest = $lineP->heurep - $THoursR[$codeCalendrierType];
             print '<td>'.$heureRest.'</td>';
 
-            print '<td class = "linecoldelete center"><a href='.$_SERVER['PHP_SELF'].'?action=deleteHours&id='.$id.'&hourremove='.$lineP->rowid.'>'. img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
+            print '<td class = "linecoldelete center"><a href='.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'&hourremove='.$lineP->rowid.'>'. img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
 
             print '</tr>';
 
@@ -182,7 +231,7 @@ if($res > 0)
         print '<tr class="pair nodrag nodrop nohoverpair liste_titre_create" >';
         print '<td></td>';
         print '<td>Modalité : '.$formAgefodd->select_calendrier_type('', 'code_c_session_calendrier_type').'</td>';
-        print '<td>Heures réalisées : <input></input></td>';
+        print '<td>Heures plannifiées ( "-" pour retirer des heures) : <input  name="heurep">&nbsp;</input></td>';
         print '<td>&nbsp;</td>';
         print '<td class="linecoldelete center">&nbsp;</td>';
         print '</tr>';

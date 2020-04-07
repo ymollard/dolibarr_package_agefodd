@@ -162,6 +162,74 @@ class AgefoddSessionStagiairePlanification extends CommonObject
     }
 
     /**
+     * Update object into database
+     *
+     * @param User $user that modifies
+     * @param int $notrigger triggers after, 1=disable triggers
+     * @return int <0 if KO, >0 if OK
+     */
+    public function update($user = 0, $notrigger = 0) {
+        global $conf, $langs;
+        $error = 0;
+
+        // Clean parameters
+
+        if (isset($this->fk_session))
+            $this->fk_session = trim($this->fk_session);
+        if (isset($this->fk_session_stagiaire))
+            $this->fk_session_stagiaire = trim($this->fk_session_stagiaire);
+        if (isset($this->fk_calendrier_type))
+            $this->fk_calendrier_type = trim($this->fk_calendrier_type);
+        if (isset($this->heurep))
+            $this->heurep = (float)$this->heurep;
+
+        // Update request
+        $sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element ." SET";
+
+        $sql .= " fk_agefodd_session=" . (isset($this->fk_session) ? $this->fk_session : "null") . ",";
+        $sql .= " fk_agefodd_session_stagiaire=" . (isset($this->fk_session_stagiaire) ? $this->fk_session_stagiaire : "null") . ",";
+        $sql .= " fk_calendrier_type=" . (isset($this->fk_calendrier_type) ? $this->fk_calendrier_type : "null") . ",";
+        $sql .= " heurep=" . (isset($this->heurep) ? $this->heurep : "null");
+        $sql .= " WHERE rowid=" . $this->id;
+
+        $this->db->begin();
+
+        dol_syslog(get_class($this) . "::update", LOG_DEBUG);
+        $resql = $this->db->query($sql);
+        if (! $resql) {
+            $error ++;
+            $this->errors[] = "Error " . $this->db->lasterror();
+        }
+
+        if (! $error) {
+            if (! $notrigger) {
+                // Uncomment this and change MYOBJECT to your own tag if you
+                // want this action calls a trigger.
+
+                // // Call triggers
+                include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
+                $interface=new Interfaces($this->db);
+                $result=$interface->run_triggers('AGEFODDSESSIONSTAGIAIREHEURES_UPDATE',$this,$user,$langs,$conf);
+                if ($result < 0) { $error++; $this->errors=$interface->errors; }
+                // // End call triggers
+            }
+        }
+
+        // Commit or rollback
+        if ($error) {
+            foreach ( $this->errors as $errmsg ) {
+                dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
+                $this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+            }
+            $this->db->rollback();
+            return - 1 * $error;
+        } else {
+            $this->db->commit();
+            return 1;
+        }
+    }
+
+    /**
      * Load object in memory from the database
      *
      * @param int $id object
@@ -187,8 +255,8 @@ class AgefoddSessionStagiairePlanification extends CommonObject
                 $obj = $this->db->fetch_object($resql);
 
                 $this->id = $obj->rowid;
-                $this->fk_agefodd_session = $obj->fk_agefodd_session;
-                $this->fk_agefodd_session_stagiaire = $obj->fk_agefodd_session_stagiaire;
+                $this->fk_session = $obj->fk_agefodd_session;
+                $this->fk_session_stagiaire = $obj->fk_agefodd_session_stagiaire;
                 $this->fk_calendrier_type = $obj->fk_calendrier_type;
                 $this->heurep = $obj->heurep;
             }
@@ -235,30 +303,26 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         return 0;
     }
 
-    public function fetchAllBy($field_value, $field)
-    {
-        $sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.$this->table_element.' WHERE '.$field.' = ';
-        if (is_numeric($field_value)) $sql.= $field_value;
-        else $sql.= "'".$this->db->escape($field_value)."'";
+    public function verifyAlreadyExist($idsess, $idtrainee, $code_calendar) {
+
+
+        $sql = "SELECT p.rowid ";
+        $sql.= "FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire_planification p ";
+        $sql.= "JOIN ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type c ON c.rowid = p.fk_calendrier_type ";
+        $sql.= "WHERE p.fk_agefodd_session = '" . $idsess . "' AND p.fk_agefodd_session_stagiaire = '".$idtrainee."' AND c.code = '".$code_calendar . "'";
 
         $resql = $this->db->query($sql);
-        if ($resql)
-        {
-            $this->lines = array();
-            while ($obj = $this->db->fetch_object($resql))
-            {
-                $line = new AgefoddSessionStagiairePlanification($this->db);
-                $line->fetch($obj->rowid);
 
-                $this->lines[] = $line;
-            }
+        if ($this->db->num_rows($sql) > 0) {
+
+            $obj = $this->db->fetch_object($resql);
+
+            return $obj->rowid;
+
         }
-        else
-        {
-            $this->error = "Error " . $this->db->lasterror();
-            dol_syslog(get_class($this) . "::fetchAllBy " . $this->error, LOG_ERR);
-            return -1;
-        }
+
+        return 0;
     }
+
 
 }
