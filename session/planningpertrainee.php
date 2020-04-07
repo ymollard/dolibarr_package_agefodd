@@ -69,7 +69,7 @@ if($action == 'edit'){
     {
         $totalHoursTrainee = $agfSessTraineesP->getTotalHoursbySessAndTrainee($sessid, $traineeid);
 
-        if($totalHoursTrainee+$hourp > $agf->duree_session) {
+        if(($totalHoursTrainee+$hourp) > $agf->duree_session) {
             $error ++;
             $error_message = $langs->trans('AgfErrorHoursPTraineeHoursSess');
         }
@@ -82,16 +82,23 @@ if($action == 'edit'){
             {
                 $res = $agfSessTraineesP->fetch($res);
 
-                if ($res)
+                if ($res > 0)
                 {
                     $agfSessTraineesP->heurep += $hourp;
 
                     $res = $agfSessTraineesP->update($user);
+
+                    if($res <= 0){
+                        $error ++;
+                        $error_message= $langs->trans("AgfErrorUpdate");
+                    }
+                } else {
+                    $error ++;
+                    $error_message= $langs->trans("AgfErrorFetchPlanification");
                 }
             }
             else
             {
-
                 $agfSessTraineesP->fk_session_stagiaire = $traineeid;
                 $agfSessTraineesP->fk_session = $sessid;
 
@@ -123,19 +130,25 @@ if($action == 'edit'){
     }
     elseif (!empty($idhourtoremove))
     {
-        $agfSessTraineesP->fetch($idhourtoremove);
+        $res = $agfSessTraineesP->fetch($idhourtoremove);
 
-        $res = $agfSessTraineesP->delete($user);
+        if($res > 0)
+        {
+            $res = $agfSessTraineesP->delete($user);
 
-        if($res <= 0){
-            $error ++;
-            $error_message = $langs->trans("AgfErrorDeleteTraineePlanification");
+            if ($res <= 0)
+            {
+                $error++;
+                $error_message = $langs->trans("AgfErrorDeleteTraineePlanification");
+            }
+        } else {
+            $error++;
+            $error_message = $langs->trans("AgfErrorFetchPlanification");
         }
     }
 
     if (!$error) {
         Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id . "");
-        //rien
     } else {
         setEventMessage($error_message, 'errors');
     }
@@ -144,7 +157,6 @@ if($action == 'edit'){
 /*
  * View
  */
-//var_dump($_POST); exit;
 llxHeader('', $langs->trans("AgfSessionDetail"), '', '', '', '', array(
     '/agefodd/includes/lib.js'
 ), array());
