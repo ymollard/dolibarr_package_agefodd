@@ -193,7 +193,6 @@ $res = $session_trainee->fetch_stagiaire_per_session($id);
 
 if($res > 0)
 {
-
     foreach ($session_trainee->lines as $trainee)
     {
         $idTrainee_session = $trainee->stagerowid;
@@ -203,12 +202,17 @@ if($res > 0)
         $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
         $TLinesTraineePlanning = $agfSessTraineesP->getSchedulesPerCalendarType($id, $idTrainee_session);
 
+        //Nombre d'heures planifiées
+        $totalHoursTrainee = $agfSessTraineesP->getTotalSchedulesHoursbyTrainee($id, $idTrainee_session);
+        if(empty($totalHoursTrainee)) $totalHoursTrainee = 0;
+
         //heures réalisées par type de créneau
         $trainee_hr = new Agefoddsessionstagiaireheures($db);
         $THoursR = $trainee_hr->fetch_heures_stagiaire_per_type($id, $idtrainee);
 
         //heures totales réalisées par le stagiaire
         $heureRTotal = array_sum($THoursR);
+        if(empty($heureRTotal)) $heureRTotal = 0;
 
         //heures totales restantes : durée de la session - heures réalisées totales
         $heureRestTotal = $agf->duree_session - $heureRTotal;
@@ -219,26 +223,27 @@ if($res > 0)
         print '<input type="hidden" name="action" value="edit">'."\n";
         print '<input type="hidden" name="sessid" value="'.$agf->id.'">'."\n";
         print '<input type="hidden" name="traineeid" value="'.$idTrainee_session.'">'."\n";
-        print load_fiche_titre($langs->trans('AgfTraineePlanification', $trainee->civilite, $trainee->nom, $trainee->prenom), '', '', 0, 0, '', $massactionbutton);
-        print '<table class="noborder period" width="100%" id="period">';
+        print load_fiche_titre($langs->trans('AgfTraineePlanification', $trainee->civilite, $trainee->nom, $trainee->prenom, $agf->duree_session), '', '', 0, 0, '', $massactionbutton);
+
+        print '<table class="noborder period" width="100%" id="planningTrainee">';
 
         //Titres
         print '<tr class="liste_titre">';
-        print '<th width="15%" class="liste_titre">&nbsp;</th>';
-        print '<th width="35%" class="liste_titre_hoursp_'.$idTrainee_session.'">'.$langs->trans('AgfHoursP').'</th>';
-        print '<th class="liste_titre_hoursr_'.$idTrainee_session.'">'.$langs->trans('AgfHoursR').'</th>';
-        print '<th class="liste_titre_hoursrest_'.$idTrainee_session.'">'.$langs->trans('AgfHoursRest').'</th>';
+        print '<th width="15%" class="liste_titre" style="font-weight: bold;">'.$langs->trans('AgfCalendarType').'</th>';
+        print '<th width="35%" class="liste_titre_hoursp_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursP').' ('.$totalHoursTrainee.')</th>';
+        print '<th class="liste_titre_hoursr_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursR').' ('.$heureRTotal.')</th>';
+        print '<th class="liste_titre_hoursrest_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursRest').' ('.$heureRestTotal.')</th>';
         print '<th class="linecoldelete center">&nbsp;</th>';
         print '</tr>';
 
-        //Totaux
-        print '<tr>';
-        print '<td style="text-decoration:underline;">Total</td>';
-        print '<td style="text-decoration:underline;" class="total_hoursp_'.$idTrainee_session.'">'.$agf->duree_session.'</td>';
-        print '<td style="text-decoration:underline;" class="total_hoursr_'.$idTrainee_session.'">'.$heureRTotal.'</td>';
-        print '<td style="text-decoration:underline;" class="total_hoursrest_'.$idTrainee_session.'">'.$heureRestTotal.'</td>';
-        print '<td class="linecoldelete center">&nbsp;</td>';
-        print '</tr>';
+//        //Totaux
+//        print '<tr>';
+//        print '<td style="text-decoration:underline;">Total</td>';
+//        print '<td style="text-decoration:underline;" class="total_hoursp_'.$idTrainee_session.'">'.$agf->duree_session.'</td>';
+//        print '<td style="text-decoration:underline;" class="total_hoursr_'.$idTrainee_session.'">'.$heureRTotal.'</td>';
+//        print '<td style="text-decoration:underline;" class="total_hoursrest_'.$idTrainee_session.'">'.$heureRestTotal.'</td>';
+//        print '<td class="linecoldelete center">&nbsp;</td>';
+//        print '</tr>';
 
         //Lignes par type de modalité
         foreach($TLinesTraineePlanning as $line)

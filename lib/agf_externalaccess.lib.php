@@ -1429,9 +1429,14 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 		if (!empty($stagiaire->email)) {
 			$out .= ' - ' . $stagiaire->email;
 		}
+
+        $out.= "<br>";
+        $out.= getPlanningViewSessionTrainee($agsession, $agsession->id, $stagiaire);
 		$out.= '</span></li>';
+
 	}
 	$out.= '</ul>';
+
 
 	$out.= '
 				</div>
@@ -3442,4 +3447,85 @@ function getExternalAccessSendEmailFrom($default){
     }
 
     return $mail;
+}
+
+function getPlanningViewSessionTrainee($session, $idsess, $trainee){
+
+    global $db, $langs;
+
+    require_once (dol_buildpath('/custom/agefodd/class/agefodd_session_stagiaire_heures.class.php'));
+    require_once (dol_buildpath('/custom/agefodd/class/agefodd_session_stagiaire_planification.class.php'));
+
+    $idTrainee_session = $trainee->stagerowid;
+    $idtrainee = $trainee->id;
+
+    //Tableau de toutes les heures plannifiées du participant
+    $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
+    $TLinesTraineePlanning = $agfSessTraineesP->getSchedulesPerCalendarType($idsess, $idTrainee_session);
+
+    //Nombre d'heures planifiées
+    $totalHoursTrainee = $agfSessTraineesP->getTotalSchedulesHoursbyTrainee($idsess, $idTrainee_session);
+    if(empty($totalHoursTrainee)) $totalHoursTrainee = 0;
+
+    //heures réalisées par type de créneau
+    $trainee_hr = new Agefoddsessionstagiaireheures($db);
+    $THoursR = $trainee_hr->fetch_heures_stagiaire_per_type($idsess, $idtrainee);
+
+    //heures totales réalisées par le stagiaire
+    $heureRTotal = array_sum($THoursR);
+    if(empty($heureRTotal)) $heureRTotal = 0;
+
+    //heures totales restantes : durée de la session - heures réalisées totales
+    $heureRestTotal = $session->duree_session - $heureRTotal;
+
+    $out = '<br>';
+
+    $out .= '<table class="table table-striped w-100" id="planningTrainee">';
+
+    //Titres
+    $out .= '<tr class="text-center">';
+    $out .= '<th width="15%" class="text-center">'.$langs->trans('AgfCalendarType').'</th>';
+    $out .= '<th width="35%" class="text-center">'.$langs->trans('AgfHoursP').' ('.$totalHoursTrainee.')</th>';
+    $out .= '<th class="text-center">'.$langs->trans('AgfHoursR').' ('.$heureRTotal.')</th>';
+    $out .= '<th class="text-center">'.$langs->trans('AgfHoursRest').' ('.$heureRestTotal.')</th>';
+    $out .= '</tr>';
+
+    //Lignes par type de modalité
+    foreach($TLinesTraineePlanning as $line)
+    {
+        //Modalité
+        $sql = "SELECT";
+        $sql .= " label, code ";
+        $sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
+        $sql .= " WHERE rowid = '".$line->fk_calendrier_type . "'";
+        $resql = $db->query($sql);
+
+        if($resql)
+        {
+            $obj = $db->fetch_object($resql);
+            $codeCalendrierType = $obj->code;
+            $codeCalendrierLabel = $obj->label;
+        }
+
+        //Calcul heures restantes
+        $heureRest = $line->heurep - $THoursR[$codeCalendrierType];
+
+        $out .= '<tr>';
+
+        //Type créneau
+        $out .= '<td>'.$codeCalendrierLabel.'</td>';
+        //Heure saisie prévue
+        $out .= '<td class="text-center">'.$line->heurep.'</td>';
+        //Heure réalisées
+        $out .= '<td class="text-center">'.$THoursR[$codeCalendrierType].'</td>';
+        //Heures restantes
+        $out .= '<td class="text-center">'.$heureRest.'</td>';
+
+        $out .= '</tr>';
+
+    }
+
+    $out .= '</table>';
+
+    return $out;
 }

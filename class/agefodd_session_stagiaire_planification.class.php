@@ -326,7 +326,6 @@ class AgefoddSessionStagiairePlanification extends CommonObject
 
     public function verifyAlreadyExist($idsess, $idtrainee, $code_calendar) {
 
-
         $sql = "SELECT p.rowid ";
         $sql.= "FROM " . MAIN_DB_PREFIX . $this->table_element. " p ";
         $sql.= "JOIN " . MAIN_DB_PREFIX . "c_agefodd_session_calendrier_type c ON c.rowid = p.fk_calendrier_type ";
@@ -341,9 +340,6 @@ class AgefoddSessionStagiairePlanification extends CommonObject
             return $obj->rowid;
 
         }
-
         return 0;
     }
-
-
 }
