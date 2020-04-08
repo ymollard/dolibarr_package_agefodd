@@ -1730,3 +1730,4 @@ AgfHoursRest=Heures restantes
 AgfAddScheduledHours=Durée ("-" pour enlever des heures)
 AgfNewHoursP=Ajouter des heures plannifiées
 AgfTraineePlanification=Planning de %s %s %s (session de %s heures)
+AgfErrorHoursPTraineeHoursSess=Impossible de dépasser le nombre d'heures total de la session

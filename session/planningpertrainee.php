@@ -7,22 +7,11 @@ if (! $res)
     die("Include of main fails");
 
 require_once ('../class/agsession.class.php');
-require_once ('../class/agefodd_sessadm.class.php');
-require_once ('../class/agefodd_session_admlevel.class.php');
 require_once ('../class/html.formagefodd.class.php');
-require_once ('../class/agefodd_session_calendrier.class.php');
 require_once ('../class/agefodd_calendrier.class.php');
-require_once ('../class/agefodd_session_formateur.class.php');
-require_once ('../class/agefodd_session_stagiaire.class.php');
 require_once ('../class/agefodd_session_stagiaire_heures.class.php');
 require_once ('../class/agefodd_session_stagiaire_planification.class.php');
-require_once ('../class/agefodd_session_element.class.php');
-require_once (DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php');
 require_once ('../lib/agefodd.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php');
-require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
-require_once ('../class/agefodd_formation_catalogue.class.php');
-require_once ('../class/agefodd_opca.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire) {
@@ -38,15 +27,13 @@ $id = GETPOST('id', 'int');
 $action = GETPOST('action', 'alpha');
 $sessid = GETPOST('sessid', 'alpha');
 $codeCalendar = GETPOST('code_c_session_calendrier_type', 'alpha');
-$hourp = GETPOST('heurep', 'alpha');
+$hoursp = GETPOST('heurep', 'alpha');
 $traineeid = GETPOST('traineeid', 'alpha');
 $hours_add = GETPOST('addHours', 'alpha');
-$idhourtoremove = GETPOST('hourremove', 'alpha');
+$idPlanningHourstoremove = GETPOST('idPlanningHoursToRemove', 'alpha');
 
 $agf = new Agsession($db);
 if(!empty($id)) $result = $agf->fetch($id);
-$extrafields = new ExtraFields($db);
-$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
 
 /*
  * Action
@@ -63,31 +50,31 @@ if($action == 'edit'){
     $error_message = '';
     $error = 0;
 
-    $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
+    $planningTrainee = new AgefoddSessionStagiairePlanification($db);
 
     if(!empty($hours_add))
     {
-        $totalHoursTrainee = $agfSessTraineesP->getTotalSchedulesHoursbyTrainee($sessid, $traineeid);
+        $totalScheduledHoursTrainee = $planningTrainee->getTotalScheduledHoursbyTrainee($sessid, $traineeid);
 
-        if(($totalHoursTrainee+$hourp) > $agf->duree_session) {
+        if(($totalScheduledHoursTrainee+$hoursp) > $agf->duree_session) {
             $error ++;
             $error_message = $langs->trans('AgfErrorHoursPTraineeHoursSess');
         }
 
         if(!$error)
         {
-            $res = $agfSessTraineesP->verifyAlreadyExist($sessid, $traineeid, $codeCalendar);
+            $res = $planningTrainee->verifyAlreadyExist($sessid, $traineeid, $codeCalendar);
 
-            if ($res > 0)
+            if ($res > 0)       //mise à jour de la ligne
             {
-                $res = $agfSessTraineesP->fetch($res);
+                $res = $planningTrainee->fetch($res);
 
                 if ($res > 0)
                 {
-                    $agfSessTraineesP->heurep += $hourp;
-                    if($agfSessTraineesP->heurep < 0) $agfSessTraineesP->heurep = 0;
+                    $planningTrainee->heurep += $hoursp;
+                    if($planningTrainee->heurep < 0) $planningTrainee->heurep = 0;
 
-                    $res = $agfSessTraineesP->update($user);
+                    $res = $planningTrainee->update($user);
 
                     if($res <= 0){
                         $error ++;
@@ -98,10 +85,10 @@ if($action == 'edit'){
                     $error_message= $langs->trans("AgfErrorFetchPlanification");
                 }
             }
-            else
+            else        //créaton de la ligne
             {
-                $agfSessTraineesP->fk_session_stagiaire = $traineeid;
-                $agfSessTraineesP->fk_session = $sessid;
+                $planningTrainee->fk_session_stagiaire = $traineeid;
+                $planningTrainee->fk_session = $sessid;
 
                 $sql = "SELECT";
                 $sql .= " rowid ";
@@ -112,16 +99,16 @@ if($action == 'edit'){
                 if ($resql)
                 {
                     $obj = $db->fetch_object($resql);
-                    $agfSessTraineesP->fk_calendrier_type = $obj->rowid;
+                    $planningTrainee->fk_calendrier_type = $obj->rowid;
                 } else {
                     $error ++;
                     $error_message = $langs->trans('Error');
                 }
 
-                $agfSessTraineesP->heurep = $hourp;
-                if($agfSessTraineesP->heurep < 0) $agfSessTraineesP->heurep = 0;
+                $planningTrainee->heurep = $hoursp;
+                if($planningTrainee->heurep < 0) $planningTrainee->heurep = 0;
 
-                $res = $agfSessTraineesP->create($user);
+                $res = $planningTrainee->create($user);
 
                 if($res <= 0){
                     $error ++;
@@ -130,13 +117,13 @@ if($action == 'edit'){
             }
         }
     }
-    elseif (!empty($idhourtoremove))
+    elseif (!empty($idPlanningHourstoremove))
     {
-        $res = $agfSessTraineesP->fetch($idhourtoremove);
+        $res = $planningTrainee->fetch($idPlanningHourstoremove);
 
         if($res > 0)
         {
-            $res = $agfSessTraineesP->delete($user);
+            $res = $planningTrainee->delete($user);
 
             if ($res <= 0)
             {
@@ -159,6 +146,7 @@ if($action == 'edit'){
 /*
  * View
  */
+
 llxHeader('', $langs->trans("AgfSessionDetail"), '', '', '', '', array(
     '/agefodd/includes/lib.js'
 ), array());
@@ -199,12 +187,12 @@ if($res > 0)
         $idtrainee = $trainee->id;
 
         //Tableau de toutes les heures plannifiées du participant
-        $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
-        $TLinesTraineePlanning = $agfSessTraineesP->getSchedulesPerCalendarType($id, $idTrainee_session);
+        $planningTrainee = new AgefoddSessionStagiairePlanification($db);
+        $TLinesTraineePlanning = $planningTrainee->getSchedulesPerCalendarType($id, $idTrainee_session);
 
         //Nombre d'heures planifiées
-        $totalHoursTrainee = $agfSessTraineesP->getTotalSchedulesHoursbyTrainee($id, $idTrainee_session);
-        if(empty($totalHoursTrainee)) $totalHoursTrainee = 0;
+        $totalScheduledHoursTrainee = $planningTrainee->getTotalScheduledHoursbyTrainee($id, $idTrainee_session);
+        if(empty($totalScheduledHoursTrainee)) $totalScheduledHoursTrainee = 0;
 
         //heures réalisées par type de créneau
         $trainee_hr = new Agefoddsessionstagiaireheures($db);
@@ -230,20 +218,11 @@ if($res > 0)
         //Titres
         print '<tr class="liste_titre">';
         print '<th width="15%" class="liste_titre" style="font-weight: bold;">'.$langs->trans('AgfCalendarType').'</th>';
-        print '<th width="35%" class="liste_titre_hoursp_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursP').' ('.$totalHoursTrainee.')</th>';
+        print '<th width="35%" class="liste_titre_hoursp_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursP').' ('.$totalScheduledHoursTrainee.')</th>';
         print '<th class="liste_titre_hoursr_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursR').' ('.$heureRTotal.')</th>';
         print '<th class="liste_titre_hoursrest_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursRest').' ('.$heureRestTotal.')</th>';
         print '<th class="linecoldelete center">&nbsp;</th>';
         print '</tr>';
-
-//        //Totaux
-//        print '<tr>';
-//        print '<td style="text-decoration:underline;">Total</td>';
-//        print '<td style="text-decoration:underline;" class="total_hoursp_'.$idTrainee_session.'">'.$agf->duree_session.'</td>';
-//        print '<td style="text-decoration:underline;" class="total_hoursr_'.$idTrainee_session.'">'.$heureRTotal.'</td>';
-//        print '<td style="text-decoration:underline;" class="total_hoursrest_'.$idTrainee_session.'">'.$heureRestTotal.'</td>';
-//        print '<td class="linecoldelete center">&nbsp;</td>';
-//        print '</tr>';
 
         //Lignes par type de modalité
         foreach($TLinesTraineePlanning as $line)
@@ -276,7 +255,7 @@ if($res > 0)
             //Heures restantes
             print '<td>'.$heureRest.'</td>';
 
-            print '<td class = "linecoldelete center"><a href='.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'&hourremove='.$line->rowid.'>'. img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
+            print '<td class = "linecoldelete center"><a href='.$_SERVER['PHP_SELF'].'?action=edit&id='.$id.'&idPlanningHoursToRemove='.$line->rowid.'>'. img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
 
             print '</tr>';
 
@@ -300,7 +279,6 @@ if($res > 0)
         print '</form>';
 
     }
-
 }
 
 llxFooter();

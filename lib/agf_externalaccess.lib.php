@@ -1430,8 +1430,10 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 			$out .= ' - ' . $stagiaire->email;
 		}
 
-        $out.= "<br>";
+		//planning par participant
+        $out .= '<br><br>';
         $out.= getPlanningViewSessionTrainee($agsession, $agsession->id, $stagiaire);
+
 		$out.= '</span></li>';
 
 	}
@@ -3449,6 +3451,13 @@ function getExternalAccessSendEmailFrom($default){
     return $mail;
 }
 
+/**
+ * Get table of a planning's trainee
+ * @param $session User
+ * @param $idsession Agsession
+ * @param $trainee Agefodd_stagiaire
+ * @return string
+ */
 function getPlanningViewSessionTrainee($session, $idsess, $trainee){
 
     global $db, $langs;
@@ -3460,12 +3469,12 @@ function getPlanningViewSessionTrainee($session, $idsess, $trainee){
     $idtrainee = $trainee->id;
 
     //Tableau de toutes les heures plannifiées du participant
-    $agfSessTraineesP = new AgefoddSessionStagiairePlanification($db);
-    $TLinesTraineePlanning = $agfSessTraineesP->getSchedulesPerCalendarType($idsess, $idTrainee_session);
+    $planningTrainee = new AgefoddSessionStagiairePlanification($db);
+    $TLinesTraineePlanning = $planningTrainee->getSchedulesPerCalendarType($idsess, $idTrainee_session);
 
     //Nombre d'heures planifiées
-    $totalHoursTrainee = $agfSessTraineesP->getTotalSchedulesHoursbyTrainee($idsess, $idTrainee_session);
-    if(empty($totalHoursTrainee)) $totalHoursTrainee = 0;
+    $totalScheduledHoursTrainee = $planningTrainee->getTotalScheduledHoursbyTrainee($idsess, $idTrainee_session);
+    if(empty($totalScheduledHoursTrainee)) $totalScheduledHoursTrainee = 0;
 
     //heures réalisées par type de créneau
     $trainee_hr = new Agefoddsessionstagiaireheures($db);
@@ -3478,14 +3487,12 @@ function getPlanningViewSessionTrainee($session, $idsess, $trainee){
     //heures totales restantes : durée de la session - heures réalisées totales
     $heureRestTotal = $session->duree_session - $heureRTotal;
 
-    $out = '<br>';
-
-    $out .= '<table class="table table-striped w-100" id="planningTrainee">';
+    $out = '<table class="table table-striped w-100" id="planningTrainee">';
 
     //Titres
     $out .= '<tr class="text-center">';
     $out .= '<th width="15%" class="text-center">'.$langs->trans('AgfCalendarType').'</th>';
-    $out .= '<th width="35%" class="text-center">'.$langs->trans('AgfHoursP').' ('.$totalHoursTrainee.')</th>';
+    $out .= '<th width="35%" class="text-center">'.$langs->trans('AgfHoursP').' ('.$totalScheduledHoursTrainee.')</th>';
     $out .= '<th class="text-center">'.$langs->trans('AgfHoursR').' ('.$heureRTotal.')</th>';
     $out .= '<th class="text-center">'.$langs->trans('AgfHoursRest').' ('.$heureRestTotal.')</th>';
     $out .= '</tr>';

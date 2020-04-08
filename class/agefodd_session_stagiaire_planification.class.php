@@ -31,6 +31,14 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         $this->db = $db;
     }
 
+    /**
+     * Create object into database
+     *
+     * @param User $user that create
+     * @param int $notrigger triggers after, 1=disable triggers
+     * @return int <0 if KO, Id of created object if OK
+     * @throws Exception
+     */
     public function create($user, $notrigger = 0) {
         global $conf, $langs;
         $error = 0;
@@ -274,10 +282,14 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         }
     }
 
+    /**
+     * Return schedules of a trainee in a session per calendar type
+     *
+     * @param int $idsess , int $idtrainee
+     * @return int <0 if KO, >0 if OK
+     */
+
     public function getSchedulesPerCalendarType($idsess, $idtrainee) {
-
-        global $langs;
-
 
         $sql = "SELECT rowid, fk_calendrier_type, heurep ";
         $sql.= "FROM " . MAIN_DB_PREFIX . $this->table_element. " ";
@@ -294,19 +306,23 @@ class AgefoddSessionStagiairePlanification extends CommonObject
                 $TRes[] = $obj;
             }
 
-            $this->db->free($resql);
-
             return $TRes;
 
+        } else {
+            return -1;
         }
 
         return 0;
     }
 
-    public function getTotalSchedulesHoursbyTrainee($idsess, $idtrainee) {
+    /**
+     * Return Total of scheduled hours for a trainee in a session
+     *
+     * @param int $idsess , int $idtrainee
+     * @return int <0 if KO, >0 if OK
+     */
 
-        global $langs;
-
+    public function getTotalScheduledHoursbyTrainee($idsess, $idtrainee) {
 
         $sql = "SELECT SUM(heurep) as totalheurep ";
         $sql.= "FROM " . MAIN_DB_PREFIX . $this->table_element . " ";
@@ -319,10 +335,19 @@ class AgefoddSessionStagiairePlanification extends CommonObject
             $obj = $this->db->fetch_object($resql);
             return $obj->totalheurep;
 
+        } else {
+            return -1;
         }
 
         return 0;
     }
+
+    /**
+     * Verify if object already exist
+     *
+     * @param int $idsess , int $idtrainee, string $code_calendar
+     * @return int <0 if KO, >0 if OK
+     */
 
     public function verifyAlreadyExist($idsess, $idtrainee, $code_calendar) {
 
@@ -333,12 +358,18 @@ class AgefoddSessionStagiairePlanification extends CommonObject
 
         $resql = $this->db->query($sql);
 
-        if ($this->db->num_rows($sql) > 0) {
+        if($resql)
+        {
+            if ($this->db->num_rows($resql) > 0)
+            {
 
-            $obj = $this->db->fetch_object($resql);
+                $obj = $this->db->fetch_object($resql);
 
-            return $obj->rowid;
+                return $obj->rowid;
 
+            }
+        } else {
+            return -1;
         }
         return 0;
     }
