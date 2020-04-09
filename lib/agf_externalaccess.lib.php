@@ -1831,8 +1831,9 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	}
 
     //Calcul du total d'heures restantes sur la session
-    $duree_timeDone = 0;
-    $duree_timeRest = 0;
+    $duree_timeDone = 0;    // temps réalisé sur la session
+
+    $duree_timePlanned = 0; // (tk11191) temps planifié sur la session: il ne doit pas dépasser la durée de la session
     $agefodd_sesscalendar = new Agefodd_sesscalendar ($db);
     $agefodd_sesscalendar->fetch_all($agsession->id);
     foreach ($agefodd_sesscalendar->lines as $agf_calendrier)
@@ -1840,6 +1841,9 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
         if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
             $duree_timeDone += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
         }
+        if ($agf_calendrier->status != Agefodd_sesscalendar::STATUS_CANCELED) {
+        	$duree_timePlanned += ($agf_calendrier->heuref - $agf_calendrier->heured) / 3600;
+		}
     }
     $duree_timeRest = $agsession->duree_session - $duree_timeDone;
 
@@ -2032,27 +2036,28 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				var heured = document.getElementById("heured");
 				var heuref = document.getElementById("heuref");
 
-				heured.addEventListener("change", function (event) {
-
-					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
-						heured.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
-					} else if (agfTimeDiff(heured.value, heuref.value, false) > '.($duree_timeRest * 3600000).'){
-					    heured.setCustomValidity("'.$langs->transnoentities('HourInvalidNoTime').'");
+				var checkPlannedTimeValidation = function(inputHeure) {
+					var dureePlanif = ' . $duree_timePlanned . ';
+					var dureeSession = ' . ($agsession->duree_session) . ';
+					// dureeCreneau en heures plutôt qu’en millisecondes
+					var dureeCreneau = agfTimeDiff(heured.value, heuref.value, false) / 3600000;
+					console.log(dureePlanif, dureeCreneau, dureePlanif + dureeCreneau, dureeSession, );
+					if (dureeCreneau < 0) {
+						inputHeure.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
+					} else if (dureePlanif + dureeCreneau > dureeSession) {
+					    inputHeure.setCustomValidity("'.$langs->transnoentities('HourInvalidNoTime').'");
 					} else {
 						heured.setCustomValidity("");
 						heuref.setCustomValidity("");
 					}
+				};
+
+				heured.addEventListener("change", function (event) {
+					checkPlannedTimeValidation(heured);
 				});
 
 				heuref.addEventListener("change", function (event) {
-					if(agfTimeDiff(heured.value, heuref.value, false) < 0){
-						heuref.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
-					} else if(agfTimeDiff(heured.value, heuref.value, false) > '.($duree_timeRest * 3600000).'){
-					    heuref.setCustomValidity("'.$langs->transnoentities('HourInvalidNoTime').'");
-					} else {
-						heuref.setCustomValidity("");
-						heured.setCustomValidity("");
-					}
+					checkPlannedTimeValidation(heuref);
 				});
 
 				$("#status").focus(function() {
