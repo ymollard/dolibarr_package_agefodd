@@ -1997,12 +1997,15 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	<div class="form-row">	            
         <label for="note_private">Note</label>
         <div class="input-group">
-                    <input '.($action == 'view' ? 'readonly' : '').' title="Note Private" type="text" class="form-control" id="note_private" name="note_private" value="'.$agf_calendrier_formateur->note_private.'" />
+                    <!-- <input '.($action == 'view' ? 'readonly' : '').' title="Note Private" type="text" class="form-control" id="note_private" name="note_private" value="'.$agf_calendrier_formateur->note_private.'" /> -->
+			<textarea '.($action == 'view' ? 'readonly' : '').' title="Note Private" type="text" class="form-control" id="note_private" name="note_private">'.$agf_calendrier_formateur->note_private.'</textarea>
+			<script src="'.$context->getRootUrl().'vendor/ckeditor/ckeditor.js"></script>
         </div>
     </div>
 
 			<script>
 			$( document ).ready(function() {
+				CKEDITOR.replace("note_private", {width: \'100%\',});
 				if($("#status").val() == "'.Agefoddsessionformateurcalendrier::STATUS_CONFIRMED.'")
 				{
 					$("#code_c_session_calendrier_type").prop(\'required\',true);
