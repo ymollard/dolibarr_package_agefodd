@@ -2041,7 +2041,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 					var dureeSession = ' . ($agsession->duree_session) . ';
 					// dureeCreneau en heures plutôt qu’en millisecondes
 					var dureeCreneau = agfTimeDiff(heured.value, heuref.value, false) / 3600000;
-					console.log(dureePlanif, dureeCreneau, dureePlanif + dureeCreneau, dureeSession, );
+//					console.log(dureePlanif, dureeCreneau, (dureePlanif + dureeCreneau), dureeSession);
 					if (dureeCreneau < 0) {
 						inputHeure.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
 					} else if (dureePlanif + dureeCreneau > dureeSession) {
