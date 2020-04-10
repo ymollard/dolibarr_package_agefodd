@@ -430,10 +430,13 @@ if (! empty($filter_contact)) {
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_formateur as trainer_session ON agf.rowid = trainer_session.fk_session ';
 $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as trainer ON trainer_session.fk_agefodd_formateur = trainer.rowid ";
 if (! empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
-	if (! empty($filter_trainer) && !empty($onlysession)) {
+	if (!empty($onlysession)) {
 		$sql .= " AND ca.code='AC_AGF_SESST' ";
 	}
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur_calendrier as trainercal ON trainercal.fk_agefodd_session_formateur = trainer_session.rowid ";
+	if (!empty($onlysession)) {
+		$sql .=' AND trainercal.fk_actioncomm=a.id ';
+	}
 }
 if (! empty($filter_trainee)) {
 	$sql .= " INNER JOIN " . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as trainee_session ON agf.rowid = trainee_session.fk_session_agefodd ';
@@ -495,11 +498,9 @@ if (! empty($filter_trainer)) {
 	} else {
 		$sql .= " AND trainer_session.fk_agefodd_formateur=" . $filter_trainer;
 	}
-}else {
-	$sql .= " AND ca.code<>'AC_AGF_SESST'";
 }
 
-if (! empty($onlysession) && empty($filter_trainer)) {
+if (! empty($onlysession) && empty($conf->global->AGF_DOL_TRAINER_AGENDA)) {
 	$sql .= " AND ca.code='AC_AGF_SESS'";
 }
 if ($filter_type_session != '') {
@@ -519,7 +520,6 @@ if (! empty($filter_trainee)) {
 }
 // Sort on date
 $sql .= ' ORDER BY datep';
-// print $sql;
 
 dol_syslog("agefodd/agenda/pertrainer.php", LOG_DEBUG);
 $resql = $db->query($sql);

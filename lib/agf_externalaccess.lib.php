@@ -503,7 +503,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
     $agefodd_sesscalendar->fetch_all($agsession->id);
     foreach ($agefodd_sesscalendar->lines as $agf_calendrier)
     {
-        if ($agf_calendrier->status == Agefodd_sesscalendar::STATUS_FINISH) {
+        if ($agf_calendrier->status <>> Agefodd_sesscalendar::STATUS_FINISH) {
             $duree_timeDone += ($agf_calendrier->heuref - $agf_calendrier->heured) / 60 / 60;
         }
     }
