@@ -31,6 +31,7 @@ class Agefodd_contact extends CommonObject {
 	public $element = 'agefodd';
 	public $table_element = 'agefodd_contact';
 	public $id;
+	public $entity;
 	public $spid;
 	public $lines = array ();
 	
@@ -39,8 +40,8 @@ class Agefodd_contact extends CommonObject {
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function __construct($DB) {
-		$this->db = $DB;
+	public function __construct($db) {
+		$this->db = $db;
 		return 1;
 	}
 	
@@ -111,14 +112,13 @@ class Agefodd_contact extends CommonObject {
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $id object
+	 * @param int $id object id
+	 * @param string $type type of object
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id, $type = 'socid') {
-		global $langs;
-		
 		$sql = "SELECT";
-		$sql .= " c.rowid,";
+		$sql .= " c.rowid, c.entity,";
 		$sql .= " s.rowid as spid , s.lastname, s.firstname, s.civility as civilite, s.address, s.zip, s.town, c.archive";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_contact as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as s ON c.fk_socpeople = s.rowid";
@@ -136,6 +136,7 @@ class Agefodd_contact extends CommonObject {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
 				$this->ref = $obj->rowid; // Use for next prev ref
+				$this->entity = $obj->entity;
 				$this->spid = $obj->spid;
 				$this->lastname = $obj->lastname;
 				$this->firstname = $obj->firstname;
@@ -164,11 +165,9 @@ class Agefodd_contact extends CommonObject {
 	 * @param int $arch archive
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($sortorder, $sortfield, $limit = '', $offset, $arch = 0) {
-		global $langs;
-		
+	public function fetch_all($sortorder, $sortfield, $limit = 0, $offset = 0, $arch = 0) {
 		$sql = "SELECT";
-		$sql .= " c.rowid, c.fk_socpeople,";
+		$sql .= " c.rowid, c.entity, c.fk_socpeople,";
 		$sql .= " s.rowid as spid , s.lastname, s.firstname, s.civility, s.phone, s.email, s.phone_mobile,";
 		$sql .= " soc.nom as socname, soc.rowid as socid, c.archive";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_contact as c";
@@ -197,6 +196,7 @@ class Agefodd_contact extends CommonObject {
 					
 					$line->id = $obj->rowid;
 					$line->ref = $obj->rowid; // Use for next prev ref
+					$this->entity = $obj->entity;
 					$line->spid = $obj->spid;
 					$line->socid = $obj->socid;
 					$line->socname = $obj->socname;
@@ -230,10 +230,8 @@ class Agefodd_contact extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function info($id) {
-		global $langs;
-		
 		$sql = "SELECT";
-		$sql .= " c.rowid, c.datec, c.tms, c.fk_user_mod, c.fk_user_author";
+		$sql .= " c.rowid, c.entity, c.datec, c.tms, c.fk_user_mod, c.fk_user_author";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_contact as c";
 		$sql .= " WHERE c.rowid = " . $id;
 		
@@ -243,6 +241,7 @@ class Agefodd_contact extends CommonObject {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->entity = $obj->entity;
 				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->user_modification = $obj->fk_user_mod;

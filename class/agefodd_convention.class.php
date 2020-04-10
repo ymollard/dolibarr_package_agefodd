@@ -218,12 +218,12 @@ class Agefodd_convention {
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $id object
+	 * @param int $sessid id of agefodd_session
+	 * @param int $socid id of societe
+	 * @param int $id id of agefodd_convention
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($sessid, $socid, $id = 0) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_agefodd_session, c.fk_societe, c.intro1, c.intro2,";
 		$sql .= " c.art1, c.art2, c.art3, c.art4, c.art5, c.art6, c.art7, c.art8, c.art9, c.sig, notes, s.nom as socname";
@@ -312,9 +312,6 @@ class Agefodd_convention {
 	 * @throws Exception
 	 */
 	public function fetch_all($sessid, $socid = 0, $filterTraineeStatus=array()) {
-
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_agefodd_session, c.fk_societe, c.intro1, c.intro2,";
 		$sql .= " c.art1, c.art2, c.art3, c.art4, c.art5, c.art6, c.art7, c.art8, c.art9, c.sig, notes, s.nom as socname";
@@ -410,8 +407,6 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_last_conv_per_socity($socid) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " c.rowid, MAX(c.fk_agefodd_session) as sessid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
@@ -458,8 +453,6 @@ class Agefodd_convention {
 	public function fetch_order_lines($comid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
@@ -473,7 +466,7 @@ class Agefodd_convention {
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -526,8 +519,6 @@ class Agefodd_convention {
 	public function fetch_invoice_lines($factid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
@@ -541,7 +532,7 @@ class Agefodd_convention {
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -594,8 +585,6 @@ class Agefodd_convention {
 	public function fetch_propal_lines($propalid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_product, c.description,c.label, c.tva_tx, c.remise_percent,";
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
@@ -609,7 +598,7 @@ class Agefodd_convention {
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -666,12 +655,10 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function info($id) {
-		global $langs;
-
 		$sql = "SELECT";
-		$sql .= " f.rowid, f.datec, f.tms, f.fk_user_author, f.fk_user_mod";
+		$sql .= " c.rowid, c.datec, c.tms, c.fk_user_author, c.fk_user_mod";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
-		$sql .= " WHERE f.rowid = " . $id;
+		$sql .= " WHERE c.rowid = " . $id;
 
 		dol_syslog(get_class($this) . "::info ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -846,12 +833,13 @@ class Agefodd_convention {
 	/**
 	 * Delete object in database
 	 *
-	 * @param User $user that delete
-	 * @param int $notrigger triggers after, 1=disable triggers
+	 * @param int $id id of agefodd_convention to remove
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function remove($id) {
 		global $conf, $langs;
+		
+		$error = 0;
 
 		$this->fetch(0, 0, $id);
 		$file = '';
@@ -910,13 +898,12 @@ class Agefodd_convention {
 	/**
 	 * Load contact info from object in memory from database
 	 *
-	 * @param int $propalid id
+	 * @param int $contactsource id of contact to fetch
+	 * @param string $contacttype type of contact to fetch
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_contact($contactsource, $contacttype) {
 		require_once (DOL_DOCUMENT_ROOT . "/contact/class/contact.class.php");
-
-		global $langs;
 
 		$sql = "SELECT";
 		$sql .= " socp.rowid as contactid";
@@ -948,6 +935,8 @@ class Agefodd_convention {
 
 				return $num;
 			}
+			
+			return 0;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_contact " . $this->error, LOG_ERR);

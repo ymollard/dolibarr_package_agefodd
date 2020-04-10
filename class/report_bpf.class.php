@@ -1545,6 +1545,8 @@ function fetch_financial_c($filter = array()) {
 	}
 
 	dol_syslog(get_class($this) . "::" . __METHOD__ . ' DEBUG ALL C1 to 13 '."\n".implode(' UNION ',$sqldebugall), LOG_DEBUG);
+	
+	$invoiceField = floatval(DOL_VERSION) > 9 ? 'factdddd.ref as facnumber' : 'factdddd.facnumber';
 
 	$sqldebugall_findinvoice="SELECT factdddd.facnumber,factdddd.total FROM " . MAIN_DB_PREFIX . "facture as factdddd WHERE
  					(factdddd.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')

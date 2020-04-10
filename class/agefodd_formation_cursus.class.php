@@ -144,7 +144,6 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 
@@ -193,7 +192,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function update($user = 0, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -320,7 +319,7 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @return int id of clone
 	 */
 	public function createFromClone($fromid) {
-		global $user, $langs;
+		global $user;
 
 		$error = 0;
 
@@ -386,8 +385,6 @@ class Agefodd_formation_cursus extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_formation_per_cursus($sortorder = "ASC", $sortfield = "f.ref", $limit = 0, $offset = 0) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 		$sql .= " t.fk_formation_catalogue,";
@@ -409,7 +406,7 @@ class Agefodd_formation_cursus extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_formation_per_cursus ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 
 			while ( $obj = $this->db->fetch_object($resql) ) {
@@ -435,6 +432,7 @@ class Agefodd_formation_cursus extends CommonObject {
 }
 class AgfCursusTrainingLine {
 	public $id;
+	public $fk_formation_catalogue;
 	public $ref_interne;
 	public $ref;
 	public $entity;
