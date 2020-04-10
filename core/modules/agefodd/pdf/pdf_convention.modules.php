@@ -865,9 +865,16 @@ class pdf_convention extends ModelePDFAgefodd
 					$agfTraining = new Formation($db);
 					$agfTraining->fetch($agf->fk_formation_catalogue);
 					$agfTraining->generatePDAByLink();
+                    $addFile = '';
 					$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
-					if (is_file($infile)) {
-						$count = $pdf->setSourceFile($infile);
+                    $infileModules = $conf->agefodd->dir_output . '/fiche_pedago_modules_' . $agf->fk_formation_catalogue . '.pdf';
+                    if (is_file($infile)) {
+                        $addFile = $infile;
+                    } elseif (is_file($infileModules)) {
+                        $addFile = $infileModules;
+                    }
+                    if (!empty($addFile)) {
+						$count = $pdf->setSourceFile($addFile);
 						// import all page
 						for($i = 1; $i <= $count; $i ++) {
 							// New page
