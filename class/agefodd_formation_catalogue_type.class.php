@@ -38,6 +38,11 @@
 class Agefoddformationcataloguetype //extends CommonObject
 {
 	/**
+	 * @var DoliDB $db Database handler
+	 */
+	public $db;
+
+	/**
 	 * @var string Id to identify managed objects
 	 */
 	public $element = 'agefoddformationcataloguetype';
@@ -54,11 +59,14 @@ class Agefoddformationcataloguetype //extends CommonObject
 	/**
 	 */
 
+	public $id;
 	public $code;
 	public $intitule;
 	public $sort;
 	public $active;
 	public $tms = '';
+	public $error;
+	public $errors = array();
 
 	/**
 	 */
@@ -172,6 +180,8 @@ class Agefoddformationcataloguetype //extends CommonObject
 	 */
 	public function fetch($id, $code = null)
 	{
+		global $conf;
+
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
 		$sql = 'SELECT';
@@ -241,6 +251,8 @@ class Agefoddformationcataloguetype //extends CommonObject
 	 */
 	public function fetchAll($sortorder='', $sortfield='', $limit=0, $offset=0, array $filter = array(), $filtermode='AND')
 	{
+		global $conf;
+
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
 		$sql = 'SELECT';

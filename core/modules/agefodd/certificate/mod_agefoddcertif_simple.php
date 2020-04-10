@@ -92,7 +92,7 @@ class mod_agefoddcertif_simple extends ModeleNumRefAgefodd {
 	/**
 	 * Return next value
 	 *
-	 * @param Societe $objtraining
+	 * @param Formation $objtraining
 	 * @param object $agf
 	 * @return string if OK, 0 if KO
 	 */

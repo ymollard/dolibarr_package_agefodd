@@ -44,8 +44,8 @@ class Agefodd_session_formateur
 	public $trainer_type;
 	public $trainer_type_label;
 	public $lines = array ();
-	public $labelstatut;
-	public $labelstatut_short;
+	public $labelstatut = array();
+	public $labelstatut_short = array();
 	public $socpeopleid;
 
 	/**
@@ -159,8 +159,6 @@ class Agefodd_session_formateur
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql .= " f.fk_socpeople,";
@@ -221,8 +219,6 @@ class Agefodd_session_formateur
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_formateur_per_session($id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql .= " f.rowid as formid, f.fk_socpeople, f.fk_user,";
@@ -365,6 +361,8 @@ class Agefodd_session_formateur
 	public function remove($id) {
 		global $conf;
 
+		$error = 0;
+
 		$this->db->begin();
 
 		if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
@@ -390,11 +388,19 @@ class Agefodd_session_formateur
 			}
 		}
 
-		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur";
-		$sql .= " WHERE rowid = " . $id;
+		if (! $error) {
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur";
+			$sql .= " WHERE rowid = " . $id;
 
-		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
-		$resql = $this->db->query($sql);
+			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
+			$resql = $this->db->query($sql);
+
+			if (! $resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			}
+		}
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -509,6 +515,8 @@ class Agefodd_session_formateur
 			if ($statut == 6)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
 		}
+		
+		return '';
 	}
 }
 
@@ -528,6 +536,8 @@ class AgfSessionTrainer {
 	public $trainer_type;
 	public $trainer_type_label;
 	public $phone;
+	public $labelstatut = array();
+	public $labelstatut_short = array();
 
 	/**
 	 * Return label of status of trainer in session (on going, subcribe, confirm, present, patially present,not present,canceled)
@@ -629,6 +639,8 @@ class AgfSessionTrainer {
 			if ($statut == 6)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
 		}
+
+		return '';
 	}
 
 

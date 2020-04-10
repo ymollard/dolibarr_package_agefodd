@@ -480,7 +480,7 @@ function getPageViewSessionListExternalAccess()
  * route => agefodd_session_card
  *
  * @param Agsession $agsession
- * @param Teacher $trainer
+ * @param Agefodd_teacher $trainer
  * @return string
  */
 function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
@@ -2296,7 +2296,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			$buttonsValue = $langs->trans('Update');
 		}
 
-		$buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$buttonsValue.'" />';
+		$buttons.= '<input type="submit" onclick="this.disabled=true; this.form.submit();" class="btn btn-primary pull-right" value="'.$buttonsValue.'" />';
 
 	}
 
@@ -3239,7 +3239,7 @@ function downloadAgefoddTrainneeDoc(){
  * @param $agsession Agsession
  * @param $trainee Agefodd_stagiaire
  * @param $sessionStagiaire Agefodd_session_stagiaire
- * @param $calendrier Agefoddcalendrier
+ * @param $calendrier Agefodd_sesscalendar
  * @param $sessionstagiaireheures Agefoddsessionstagiaireheures
  */
 function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionStagiaire, $calendrier, $sessionstagiaireheures, &$errorsMsg = array())
