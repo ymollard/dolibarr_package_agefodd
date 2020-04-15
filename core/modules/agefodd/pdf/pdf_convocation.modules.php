@@ -381,13 +381,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 
 					$pdf->SetXY($posX + 10, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-					$this->str = $agf_place->cp;
-					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-					$posY = $pdf->GetY() + 2;
-
-					$pdf->SetXY($posX + 10, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-					$this->str = $agf_place->ville;
+					$this->str = $agf_place->cp . ' ' . $agf_place->ville;
 					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $pdf->GetY() + 10;
 
