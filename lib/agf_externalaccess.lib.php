@@ -3247,7 +3247,7 @@ function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionSta
 
 
         $thisSubstitutionarray['__agfcreneau_heured__'] = date('H:i', $calendrier->heured);
-        $thisSubstitutionarray['__agfcreneau_heuref__'] = date('H:i', $calendrier->heured);
+        $thisSubstitutionarray['__agfcreneau_heuref__'] = date('H:i', $calendrier->heuref);
         $thisSubstitutionarray['__agfcreneau_datesession__'] = dol_print_date($calendrier->date_session);
         $thisSubstitutionarray['__agfcreneau_status__'] = $calendrier->getLibStatut();
 
