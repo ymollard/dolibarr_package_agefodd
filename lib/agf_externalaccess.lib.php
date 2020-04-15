@@ -2301,7 +2301,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			$buttonsValue = $langs->trans('Update');
 		}
 
-		$buttons.= '<input type="submit" class="btn btn-primary pull-right" value="'.$buttonsValue.'" />';
+		$buttons.= '<input type="submit" onclick="this.disabled=true; this.form.submit();" class="btn btn-primary pull-right" value="'.$buttonsValue.'" />';
 
 	}
 
