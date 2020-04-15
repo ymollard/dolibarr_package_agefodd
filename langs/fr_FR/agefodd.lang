@@ -68,6 +68,7 @@ Updated=Mis à jour
 AgfCatActif=Actif
 AgfCatArchive=Archivé
 AgfScheduler=Vue planning
+AgfPlanningPerTrainee=Planning par participant
 AgfMenuCatNew=Nouvelle formation
 AgfMenuSess=Sessions de formation
 AgfMenuSessAct=Sessions de formation en cours
@@ -1721,3 +1722,12 @@ EndHour = Heure de fin
 
 AgfFichePresByTraineeTrainerTitle=Formateurs
 AgfFichePresByTraineeTraineeTitleM=Stagiaire
+
+#PLANNING TRAINEES
+AgfHoursP=Heures plannifiées
+AgfHoursR=Heures réalisées
+AgfHoursRest=Heures restantes
+AgfAddScheduledHours=Durée ("-" pour enlever des heures)
+AgfNewHoursP=Ajouter des heures plannifiées
+AgfTraineePlanification=Planning de %s %s %s (session de %s heures)
+AgfErrorHoursPTraineeHoursSess=Impossible de dépasser le nombre d'heures total de la session
