@@ -2153,6 +2153,10 @@ function calcul_margin_percent($cashed_cost, $spend_cost)
 	}
 }
 
+/**
+ * @param $agf_calendrier Agefodd_sesscalendar
+ * @return Agefoddsessionformateurcalendrier[]
+ */
 function _getCalendrierFormateurFromCalendrier(&$agf_calendrier)
 {
 	global $db, $response;
@@ -2162,8 +2166,8 @@ function _getCalendrierFormateurFromCalendrier(&$agf_calendrier)
 	$sql = 'SELECT agsfc.rowid, agsf.fk_agefodd_formateur FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur agsf';
 	$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
 	$sql .= ' WHERE agsf.fk_session = ' . $agf_calendrier->sessid;
-	$sql .= ' AND agsfc.heured < \'' . date('Y-m-d H:i:s', $agf_calendrier->heuref) . '\'';
-	$sql .= ' AND agsfc.heuref > \'' . date('Y-m-d H:i:s', $agf_calendrier->heured) . '\'';
+	$sql .= ' AND agsfc.heured <= \'' . date('Y-m-d H:i:s', $agf_calendrier->heuref) . '\'';
+	$sql .= ' AND agsfc.heuref >= \'' . date('Y-m-d H:i:s', $agf_calendrier->heured) . '\'';
 
 	$resql = $db->query($sql);
 	if ($resql) {

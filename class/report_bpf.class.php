@@ -1546,7 +1546,13 @@ function fetch_financial_c($filter = array()) {
 
 	dol_syslog(get_class($this) . "::" . __METHOD__ . ' DEBUG ALL C1 to 13 '."\n".implode(' UNION ',$sqldebugall), LOG_DEBUG);
 
-	$sqldebugall_findinvoice="SELECT factdddd.facnumber,factdddd.total FROM " . MAIN_DB_PREFIX . "facture as factdddd WHERE
+	if(floatval(DOL_VERSION) > 9) {
+		$filedref = " factdddd.ref as facnumber";
+	}
+	else{
+		$filedref = " factdddd.facnumber";
+	}
+	$sqldebugall_findinvoice="SELECT ".$filedref.",factdddd.total FROM " . MAIN_DB_PREFIX . "facture as factdddd WHERE
  					(factdddd.datef BETWEEN '" . $this->db->idate($filter['search_date_start']) . "' AND '" . $this->db->idate($filter['search_date_end'])."')
 						AND factdddd.rowid NOT IN ( SELECT factinsssss.rowid FROM (".implode(' UNION ',$sqldebugall).") as factinsssss)";
 

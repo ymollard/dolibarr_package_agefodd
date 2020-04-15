@@ -329,6 +329,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 
 		$agf = new Agefodd_sesscalendar($db);
 		$result = $agf->fetch($modperiod);
+		$clone_agf = clone $agf; // _getCalendrierFormateurFromCalendrier se base sur les dates il faut donc un objet non modifie pour la recherche
 
 		if (! empty($modperiod))
 			$agf->id = $modperiod;
@@ -345,10 +346,14 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 
 		if ($result > 0) {
 			//Update also trainer time for status only
-			$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($agf);
+			$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($clone_agf); // se base sur les dates il faut donc un objet non modifie pour la recherche
+
 			if (is_array($TTrainerCalendar) && count($TTrainerCalendar)>0) {
 				foreach($TTrainerCalendar as $tainercal) {
 					$tainercal->status=GETPOST('calendar_status');
+					$tainercal->heured = $agf->heured;
+					$tainercal->heuref = $agf->heuref;
+					$tainercal->date_session = $agf->date_session;
 					$result = $tainercal->update($user);
 					if ($result < 0) {
 						$error++;
