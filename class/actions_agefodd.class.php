@@ -38,11 +38,13 @@ dol_include_once( '/agefodd/core/modules/agefodd/modules_agefodd.php');
 
 class ActionsAgefodd
 {
+	/** @var DoliDB $db */
 	protected $db;
 	public $dao;
 	public $error;
 	public $errors = array();
 	public $resprints = '';
+	public $results = array();
 
 	/**
 	 * Constructor
@@ -60,10 +62,10 @@ class ActionsAgefodd
 	 * printSearchForm Method Hook Call
 	 *
 	 * @param array $parameters parameters
-	 * @param Object &$object Object to use hooks on
-	 * @param string &$action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
-	 * @param object $hookmanager class instance
-	 * @return void
+	 * @param Object $object Object to use hooks on
+	 * @param string $action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
+	 * @param HookManager $hookmanager class instance
+	 * @return int
 	 */
 	/*public function printSearchForm($parameters, &$object, &$action, $hookmanager) {
 	 global $conf, $langs;
@@ -77,6 +79,15 @@ class ActionsAgefodd
 	 $this->resprints = $out;
 	 }*/
 
+	/**
+	 * printSearchForm Method Hook Call
+	 *
+	 * @param array $parameters parameters
+	 * @param Object $object Object to use hooks on
+	 * @param string $action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
+	 * @param HookManager $hookmanager class instance
+	 * @return int
+	 */
 	public function updateSession($parameters, &$object, &$action, $hookmanager)
 	{
 		// hack for fileupload.php
@@ -88,8 +99,7 @@ class ActionsAgefodd
 
 	public function completeTabsHead($parameters, &$object, &$action, $hookmanager)
 	{
-
-		global $conf, $langs, $bc, $var;
+		global $langs;
 
 		$contextarray = array('ordersuppliercard', 'propalcard', 'ordercard', 'invoicecard', 'invoicesuppliercard');
 		$contextcurrent = explode(':', $parameters['context']);
@@ -156,10 +166,10 @@ class ActionsAgefodd
 	 * addSearchEntry Method Hook Call
 	 *
 	 * @param array $parameters parameters
-	 * @param Object &$object Object to use hooks on
-	 * @param string &$action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
-	 * @param object $hookmanager class instance
-	 * @return void
+	 * @param Object $object Object to use hooks on
+	 * @param string $action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
+	 * @param HookManager $hookmanager class instance
+	 * @return int
 	 */
 	public function addSearchEntry($parameters, &$object, &$action, $hookmanager)
 	{
@@ -210,37 +220,20 @@ class ActionsAgefodd
 	}
 
 	/**
-	 * formObjectOptions Method Hook Call
-	 *
-	 * @param array $parameters parameters
-	 * @param Object &$object Object to use hooks on
-	 * @param string &$action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
-	 * @param object $hookmanager class instance
-	 * @return void
-	 */
-	public function formObjectOptions($parameters, &$object, &$action, $hookmanager)
-	{
-		global $langs, $conf, $user;
-
-		// dol_syslog(get_class($this).':: formObjectOptions',LOG_DEBUG);
-
-		return 0;
-	}
-
-	/**
 	 * DoAction Method Hook Call
 	 *
 	 * @param array $parameters parameters
-	 * @param Object &$object Object to use hooks on
-	 * @param string &$action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
-	 * @param object $hookmanager class instance
-	 * @return void
+	 * @param Object $object Object to use hooks on
+	 * @param string $action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
+	 * @param HookManager $hookmanager class instance
+	 * @return int
 	 */
 	public function doActions($parameters, &$object, &$action, $hookmanager)
 	{
 		global $langs, $conf, $user, $mc;
 
 		if (is_object($mc)) {
+			/** @var ActionsMulticompany $mc */
 			if (!in_array('agefodd', $mc->sharingelements)) {
 				$mc->sharingelements[] = 'agefodd';
 			}
@@ -352,11 +345,15 @@ class ActionsAgefodd
 							if (is_array($_FILES['userfile']['tmp_name'])) $userfiles = $_FILES['userfile']['tmp_name'];
 							else $userfiles = array($_FILES['userfile']['tmp_name']);
 
+							$error = 0;
+
 							foreach ($userfiles as $key => $userfile) {
 								if (empty($_FILES['userfile']['tmp_name'][$key])) {
 									if ($_FILES['userfile']['error'][$key] == 1 || $_FILES['userfile']['error'][$key] == 2) {
+										$error++;
 										$context->setError($langs->trans('ErrorFileSizeTooLarge'));
 									} else {
+										$error++;
 										$context->setError($langs->trans("ErrorFieldRequired", $langs->transnoentitiesnoconv("File")));
 									}
 								}
@@ -365,13 +362,17 @@ class ActionsAgefodd
 							if (!$error) {
 								if (!empty($upload_dirold) && !empty($conf->global->PRODUCT_USE_OLD_PATH_FOR_PHOTO)) {
 									$result = dol_add_file_process($upload_dirold, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
-								} elseif (!empty($upload_dir)) {
+								} else {
 									$result = dol_add_file_process($upload_dir, 0, 1, 'userfile', GETPOST('savingdocmask', 'alpha'));
+								}
+
+								if ($result < 0) {
+									$error++;
 								}
 							}
 
 							$createShareLink=GETPOST("createsharelink_hid", 'int');
-							if($createShareLink) {
+							if(! $error && $createShareLink) {
 								require_once DOL_DOCUMENT_ROOT . '/ecm/class/ecmfiles.class.php';
 								$ecmfile = new ECMFiles($this->db);
 								$result=$ecmfile->fetch(0, '', dol_osencode("agefodd/" .GETPOST('sessid') . "/" .$_FILES['userfile']['name'][0]));
@@ -392,6 +393,8 @@ class ActionsAgefodd
 									$context->setError($langs->trans("FailedToAddFileIntoDatabaseIndex"));
 								}
 							}
+
+							// FIXME Gestion d'erreur si tout ça se passe mal. Comme je connais pas trop portail, je laisse à quelqu'un d'autre - MdLL 10/04/2020
 						}
 					}
 				}
@@ -565,7 +568,7 @@ class ActionsAgefodd
 											$context->setEventMessages($langs->trans('AgfNoEmailSended'), 'warnings');
 										}
 
-										if (!empty($errorsMsg) and is_array($errorsMsg)) {
+										if (! empty($errorsMsg)) {
 											$error++;
 											$context->setEventMessages($errorsMsg, 'errors');
 										}
@@ -713,7 +716,7 @@ class ActionsAgefodd
 					if(empty($heuref) && !empty($heurefDate) && !empty($heurefTime)){
 						$heuref = $heurefDate.'T'.$heurefTime;
 					}
-					$endDate = new DateTime();
+
 					$endDate = parseFullCalendarDateTime($heuref);
 					if (!empty($endDate)) {
 						$event->datef = $endDate->getTimestamp();
@@ -724,7 +727,7 @@ class ActionsAgefodd
 
 
 					// get date
-					if ($event->datef <= $event->dated) {
+					if ($event->datef <= $event->datep) {
 						$context->setEventMessages($langs->transnoentities('agfSaveEventEndDateInvalid'), 'errors');
 						$errors++;
 					}
@@ -734,8 +737,6 @@ class ActionsAgefodd
 						$context->action = 'edit';
 					} else {
 						// Save
-
-						$saveRes = 0; // reset error status
 
 						if ($event->id > 0) {
 							$saveRes = $event->update($user);
@@ -877,16 +878,15 @@ class ActionsAgefodd
 	/**
 	 * Overloading the interface function : replacing the parent's function with the one below
 	 * For external Access module
-	 * @param array()         $parameters     Hook metadatas (context, etc...)
-	 * @param CommonObject    &$object The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
-	 * @param string          &$action Current action (if set). Generally create or edit or null
+	 * @param array         $parameters     Hook metadatas (context, etc...)
+	 * @param CommonObject    $object The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+	 * @param string          $action Current action (if set). Generally create or edit or null
 	 * @param HookManager $hookmanager Hook manager propagated to allow calling another hook
 	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
 	 */
 	public function doActionInterface($parameters, &$object, &$action, $hookmanager)
 	{
-		$error = 0; // Error counter
-		global $langs, $db, $conf, $user;
+		global $conf, $user;
 
 		if (in_array('externalaccessinterface', explode(':', $parameters['context']))) {
 			dol_include_once('/agefodd/lib/agf_externalaccess.lib.php');
@@ -895,13 +895,13 @@ class ActionsAgefodd
 			if ($action == "downloadSessionFile") {
 				$file = GETPOST('file');
 				$filename = $conf->agefodd->dir_output . '/' . $file;
-// 	            var_dump($file, $filename); exit;
+
 				$this->_downloadSessionFile($filename);
 			}
 
 			if ($action == "downloadSessionAttachement") {
 				require_once DOL_DOCUMENT_ROOT . '/ecm/class/ecmfiles.class.php';
-				$ecmfile = new ECMFiles($db);
+				$ecmfile = new ECMFiles($this->db);
 				$result=$ecmfile->fetch(0, '', '', '', GETPOST('hashp','alpha'));
 				if ($result > 0) {
 					if (!empty($ecmfile->share)) {
@@ -921,7 +921,7 @@ class ActionsAgefodd
 				$range_start = parseFullCalendarDateTime(GETPOST('start'), $timeZone);
 				$range_end = parseFullCalendarDateTime(GETPOST('end'), $timeZone);
 
-				$teacher = new Agefodd_teacher($db);
+				$teacher = new Agefodd_teacher($this->db);
 				$teacher->fetchByUser($user);
 
 				if ($agendaType == 'session' && $teacher->id > 0) {
@@ -947,10 +947,10 @@ class ActionsAgefodd
 	/**
 	 * Mes nouvelles pages pour l'accés au portail externe
 	 * For external Access module
-	 * @param type $parameters
-	 * @param type $object
-	 * @param type $action
-	 * @param type $hookmanager
+	 * @param array $parameters
+	 * @param object $context
+	 * @param string $action
+	 * @param HookManager $hookmanager
 	 * @return int
 	 */
 	public function PrintPageView($parameters, &$context, &$action, $hookmanager)
@@ -1038,7 +1038,7 @@ class ActionsAgefodd
 					}
 				}
 			} elseif ($context->controller == 'agefodd_session_card_time_slot' && empty($sessid)) {
-				print getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess($sessid, $action);
+				print getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAccess($action);
 				$context->setControllerFound();
 			} elseif ($context->controller == 'agefodd_trainer_agenda') {
 				print getPageViewAgendaFormateurExternalAccess();
@@ -1053,10 +1053,11 @@ class ActionsAgefodd
 
 	/**
 	 * For external Access module
-	 * @param unknown $parameters
-	 * @param unknown $object
-	 * @param unknown $action
-	 * @param unknown $hookmanager
+	 * @param array $parameters
+	 * @param object $object
+	 * @param string $action
+	 * @param HookManager $hookmanager
+	 * @return int
 	 */
 	public function PrintTopMenu($parameters, &$object, &$action, $hookmanager)
 	{
@@ -1129,7 +1130,7 @@ class ActionsAgefodd
 	// For external Access module
 	public function PrintServices($parameters, &$object, &$action, $hookmanager)
 	{
-		global $langs, $conf, $user;
+		global $langs, $conf;
 
 		$TContext = explode(':', $parameters['context']);
 
@@ -1151,14 +1152,14 @@ class ActionsAgefodd
 	 * elementList Method Hook Call
 	 *
 	 * @param array $parameters parameters
-	 * @param Object &$object Object to use hooks on
-	 * @param string &$action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
-	 * @param object $hookmanager class instance
-	 * @return void
+	 * @param Object $object Object to use hooks on
+	 * @param string $action Action code on calling page ('create', 'edit', 'view', 'add', 'update', 'delete'...)
+	 * @param HookManager $hookmanager class instance
+	 * @return int
 	 */
 	public function emailElementlist($parameters, &$object, &$action, $hookmanager)
 	{
-		global $langs, $conf, $user;
+		global $langs;
 		$langs->load('agefodd@agefodd');
 
 		$this->results['fiche_pedago'] = $langs->trans('AgfMailToSendFichePedago');
@@ -1186,11 +1187,10 @@ class ActionsAgefodd
 	}
 
 	/**
-	 *
-	 * @param string $parameters
+	 * @param array $parameters
 	 * @param Object $object
 	 * @param string $action
-	 * @param Hookmanager $hookmanager
+	 * @param HookManager $hookmanager
 	 * @return number
 	 */
 	function formBuilddocOptions($parameters, &$object, $action, $hookmanager)
@@ -1203,6 +1203,9 @@ class ActionsAgefodd
 			dol_include_once('/agefodd/class/agsession.class.php');
 			$agfsess = new Agefodd_session_element($object->db);
 			$result = $agfsess->fetch_element_by_id($object->id, 'propal');
+
+			$out = '';
+
 			if ($result > 0) {
 				if (is_array($agfsess->lines) && count($agfsess->lines) > 0) {
 					$langs->load('agefodd@agefodd');
@@ -1213,7 +1216,7 @@ class ActionsAgefodd
 
 						if (is_file($conf->agefodd->dir_output . '/' . 'fiche_pedago_' . $sessiondetail->formid . '.pdf')) {
 							$out .= '<tr ' . $bc[$var] . '>
-			     			<td colspan="4" align="right">
+			     			<td colspan="4" style="text-align: right">
 			     				<label for="hideInnerLines">' . $langs->trans('AgfAddTrainingProgram', $session->fk_session_agefodd) . '</label>
 			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsession[]" value="' . $sessiondetail->formid . '" />
 			     			</td>
@@ -1222,7 +1225,7 @@ class ActionsAgefodd
 							$var = -$var;
 						} else {
 							$out .= '<tr ' . $bc[$var] . '>
-			     			<td colspan="4" align="right">
+			     			<td colspan="4" style="text-align: right">
 			     				<label for="hideInnerLines">' . $langs->trans('AgfAddTrainingProgramNotExists', $session->fk_session_agefodd) . '</label>
 			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsession[]" value="' . $sessiondetail->formid . '" disabled="disabled" />
 			     			</td>
@@ -1233,7 +1236,7 @@ class ActionsAgefodd
 						if (is_file($conf->agefodd->dir_output . '/' . 'fiche_pedago_modules_' . $sessiondetail->formid . '.pdf')) {
 
 							$out .= '<tr ' . $bc[$var] . '>
-			     			<td colspan="4" align="right">
+			     			<td colspan="4" style="text-align: right">
 			     				<label for="hideInnerLines">' . $langs->trans('AgfAddTrainingProgramMod', $session->fk_session_agefodd) . '</label>
 			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsessionmod[]" value="' . $sessiondetail->formid . '" />
 			     			</td>
@@ -1242,7 +1245,7 @@ class ActionsAgefodd
 							$var = -$var;
 						} else {
 							$out .= '<tr ' . $bc[$var] . '>
-			     			<td colspan="4" align="right">
+			     			<td colspan="4" style="text-align: right">
 			     				<label for="hideInnerLines">' . $langs->trans('AgfAddTrainingProgramModNotExists', $session->fk_session_agefodd) . '</label>
 			     				<input type="checkbox" id="progsession_' . $session->fk_session_agefodd . '" name="progsession[]" value="' . $sessiondetail->formid . '" disabled="disabled" />
 			     			</td>
@@ -1265,21 +1268,19 @@ class ActionsAgefodd
 	 * Execute action
 	 *
 	 * @param array $parameters Array of parameters
-	 * @param Object &$pdfhandler PDF builder handler
+	 * @param Object $pdfhandler PDF builder handler
 	 * @param string $action 'add', 'update', 'view'
+	 * @param HookManager $hookmanager
 	 * @return int <0 if KO,
 	 *         =0 if OK but we want to process standard actions too,
 	 *         >0 if OK and we want to replace standard actions.
 	 */
-	function afterPDFCreation($parameters, &$pdfhandler, &$action)
+	function afterPDFCreation($parameters, &$pdfhandler, &$action, $hookmanager)
 	{
-		global $langs, $conf, $db;
-		global $hookmanager;
+		global $conf;
 
 		$outputlangs = $parameters['outputlangs'];
-
-		$ret = 0;
-		$pagecount = 0;
+		
 		$files = array();
 		dol_syslog(get_class($this) . '::executeHooks action=' . $action);
 
@@ -1302,7 +1303,7 @@ class ActionsAgefodd
 
 			if (is_array($mergeprogram) && count($mergeprogram) > 0) {
 				dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-				$agf = new Formation($db);
+				$agf = new Formation($this->db);
 
 				foreach ($mergeprogram as $training_id) {
 					$agf->fetch($training_id);
@@ -1328,7 +1329,7 @@ class ActionsAgefodd
 				if ($pagecount) {
 					$pdf->Output($parameters['file'], 'F');
 					if (!empty($conf->global->MAIN_UMASK)) {
-						@chmod($file, octdec($conf->global->MAIN_UMASK));
+						@chmod($parameters['file'], octdec($conf->global->MAIN_UMASK));
 					}
 				}
 			}
@@ -1338,13 +1339,16 @@ class ActionsAgefodd
 
 	/**
 	 *
-	 * @param object $pdf
+	 * @param TCPDF $pdf
 	 * @param array $files
+	 * @return int
 	 */
 	function concat(&$pdf, $files)
 	{
+		$pagecount = 0;
+
 		foreach ($files as $file) {
-			$pagecount = $pdf->setSourceFile($file);
+			$pagecount += $pdf->setSourceFile($file);
 			for ($i = 1; $i <= $pagecount; $i++) {
 				$tplidx = $pdf->ImportPage($i);
 				$s = $pdf->getTemplatesize($tplidx);
@@ -1358,11 +1362,11 @@ class ActionsAgefodd
 
 	/**
 	 *
-	 * @param string $parameters
+	 * @param array $parameters
 	 * @param Object $object
 	 * @param string $action
-	 * @param Hookmanager $hookmanager
-	 * @return number
+	 * @param HookManager $hookmanager
+	 * @return int
 	 */
 	public function doUpgrade2($parameters, &$object, &$action, $hookmanager)
 	{
@@ -1489,10 +1493,11 @@ class ActionsAgefodd
 	}
 
 	/**
-	 * @param $parameters
-	 * @param $object
-	 * @param $action
+	 * @param array $parameters
+	 * @param object $object
+	 * @param string $action
 	 * @param HookManager $hookmanager
+	 * @return int
 	 */
 	function printFieldListFrom($parameters, &$object, &$action, HookManager $hookmanager)
 	{
@@ -1559,6 +1564,8 @@ class ActionsAgefodd
 					$diff = 0;
 					while ($obj=$this->db->fetch_object($resql))
 					{
+						global $dolibarr_main_url_root;
+
 						$qualified=true;
 
 						// 'eid','startdate','duration','enddate','title','summary','category','email','url','desc','author'
@@ -1606,10 +1613,11 @@ class ActionsAgefodd
 	}
 
 	/**
-	 * @param $parameters
-	 * @param $object
-	 * @param $action
+	 * @param array $parameters
+	 * @param object $object
+	 * @param string $action
 	 * @param HookManager $hookmanager
+	 * @return int
 	 */
 	function printFieldListWhere($parameters, &$object, &$action, HookManager $hookmanager)
 	{
@@ -1643,10 +1651,10 @@ class ActionsAgefodd
 	}
 
 	/**
-	 * @param $parameters
-	 * @param $object
-	 * @param $action
-	 * @param $hookmanager
+	 * @param array $parameters
+	 * @param object $object
+	 * @param string $action
+	 * @param HookManager $hookmanager
 	 * @return int
 	 */
 	public function overrideUploadOptions($parameters, &$object, &$action, $hookmanager)
@@ -1740,10 +1748,10 @@ class ActionsAgefodd
 	}
 
 	/**
-	 * @param $agsession
-	 * @param $agf_calendrier Agefodd_sesscalendar
-	 * @param $stagiaires
-	 * @param $old_status
+	 * @param Agsession $agsession
+	 * @param Agefodd_sesscalendar $agf_calendrier
+	 * @param Agefodd_session_stagiaire $stagiaires
+	 * @param string $old_status
 	 * @param array $errorsMsg
 	 * @return int
 	 */
@@ -1975,6 +1983,7 @@ class ActionsAgefodd
 
 		global $user, $conf, $langs;
 
+		// FIXME Gestion d'erreurs, aucun retour de crud ou de agf_pdf_create() n'est testé, aucun message d'erreur n'est envoyé si $resql* vaut false
 
 		//SOCIETE CHARGEE DE LA SESSION
 		$sql = "SELECT * FROM " . MAIN_DB_PREFIX . "agefodd_session WHERE fk_soc=" . $parameters['soc_origin'] . ";";

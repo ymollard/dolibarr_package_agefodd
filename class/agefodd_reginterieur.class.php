@@ -42,6 +42,7 @@ class Agefodd_reg_interieur extends CommonObject {
 	public $fk_user_mod;
 	public $placeid;
 	public $placecode;
+	public $tms;
 	
 	/**
 	 * Constructor
@@ -70,10 +71,6 @@ class Agefodd_reg_interieur extends CommonObject {
 			$this->reg_int = trim($this->reg_int);
 		if (isset($this->notes))
 			$this->notes = trim($this->notes);
-		if (isset($this->fk_user_author))
-			$this->fk_user_author = trim($this->fk_user_author);
-		if (isset($this->fk_user_mod))
-			$this->fk_user_mod = trim($this->fk_user_mod);
 			
 			// Check parameters
 			// Put here code to add control on parameters values
@@ -139,7 +136,6 @@ class Agefodd_reg_interieur extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 		$sql .= " t.reg_int,";
@@ -187,10 +183,6 @@ class Agefodd_reg_interieur extends CommonObject {
 			$this->reg_int = trim($this->reg_int);
 		if (isset($this->notes))
 			$this->notes = trim($this->notes);
-		if (isset($this->fk_user_author))
-			$this->fk_user_author = trim($this->fk_user_author);
-		if (isset($this->fk_user_mod))
-			$this->fk_user_mod = trim($this->fk_user_mod);
 			
 			// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_reg_interieur SET";
@@ -306,4 +298,3 @@ class Agefodd_reg_interieur extends CommonObject {
 		$this->tms = '';
 	}
 }
-?>

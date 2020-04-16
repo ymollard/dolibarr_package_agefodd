@@ -324,6 +324,8 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 					$object->actionmsg2 = $actionmsg2;
 					$object->fk_element = $object->id;
 					$object->elementtype = $object->element;
+					$object->from = $form;
+					$object->send_email = $send_email;
 
 					/* Appel des triggers */
 					include_once (DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");

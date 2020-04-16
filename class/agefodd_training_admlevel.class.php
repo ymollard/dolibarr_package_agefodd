@@ -88,10 +88,6 @@ class Agefodd_training_admlevel extends CommonObject {
 			$this->delais_alerte = trim($this->delais_alerte);
 		if (isset($this->delais_alerte_end))
 			$this->delais_alerte_end = trim($this->delais_alerte_end);
-		if (isset($this->fk_user_author))
-			$this->fk_user_author = trim($this->fk_user_author);
-		if (isset($this->fk_user_mod))
-			$this->fk_user_mod = trim($this->fk_user_mod);
 		if (isset($this->trigger_name))
 			$this->trigger_name = trim($this->trigger_name);
 
@@ -176,7 +172,6 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 
@@ -233,11 +228,9 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * Load object in memory from database
 	 *
 	 * @param int $training_id object
-	 * @return array array of object
+	 * @return int int <0 if KO, >0 if OK
 	 */
 	public function fetch_all($training_id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 		$sql .= " t.fk_training,";
@@ -261,7 +254,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -301,7 +294,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function update($user = 0, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -321,8 +314,6 @@ class Agefodd_training_admlevel extends CommonObject {
 			$this->delais_alerte = trim($this->delais_alerte);
 		if (isset($this->delais_alerte_end))
 			$this->delais_alerte_end = trim($this->delais_alerte_end);
-		if (isset($this->fk_user_mod))
-			$this->fk_user_mod = trim($this->fk_user_mod);
 		if (isset($this->trigger_name))
 			$this->trigger_name = trim($this->trigger_name);
 
@@ -390,7 +381,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function delete($user, $notrigger = 0) {
-		$this->delete_with_descendants();
+		return $this->delete_with_descendants();
 	}
 
 	/**
@@ -453,7 +444,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @return int id of clone
 	 */
 	public function createFromClone($fromid) {
-		global $user, $langs;
+		global $user;
 
 		$error = 0;
 
@@ -718,25 +709,25 @@ class Agefodd_training_admlevel extends CommonObject {
 	/**
 	 * After a creation set the good parent id for action session
 	 *
-	 * @param $user int id that modify
+	 * @param $user User id that modify
 	 * @param $training_id int to update
-	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function setParentActionId($user, $training_id) {
-		global $conf, $langs;
 		$error = 0;
 
 		// Update request
 		if ($this->db->type == 'pgsql') {
 			$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_training_admlevel as upd';
-			$sql .= ' SET fk_parent_level=ori.rowid ';
+			$sql .= ' SET fk_parent_level=ori.rowid,';
+			$sql .= ' fk_user_mod=' . $user->id;
 			$sql .= ' FROM  ' . MAIN_DB_PREFIX . 'agefodd_training_admlevel as ori';
 			$sql .= ' WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training';
 			$sql .= ' AND upd.fk_training=' . $training_id;
 		} else {
 			$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_training_admlevel as ori, ' . MAIN_DB_PREFIX . 'agefodd_training_admlevel as upd ';
-			$sql .= ' SET upd.fk_parent_level=ori.rowid ';
+			$sql .= ' SET upd.fk_parent_level=ori.rowid,';
+			$sql .= ' upd.fk_user_mod=' . $user->id;
 			$sql .= ' WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training';
 			$sql .= ' AND upd.fk_training=' . $training_id;
 		}
@@ -773,7 +764,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 *
 	 * @param int $training_id object
 	 * @param int $fk_parent_level id of parent
-	 * @return array array of object
+	 * @return array|int array of object, or <0 if KO
 	 */
 	public function fetch_all_children_nested($training_id, $fk_parent_level = 0) {
 
@@ -804,7 +795,6 @@ class Agefodd_training_admlevel extends CommonObject {
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -849,8 +839,6 @@ class Agefodd_training_admlevel extends CommonObject {
 	 */
 	public function delete_with_descendants($id = null)
 	{
-		global $conf, $langs;
-
 		if ($id === null) $id = $this->id;
 		$id = intval($id);
 
@@ -913,6 +901,7 @@ class AgfTrainingAdmlvlLine {
 	public $indice;
 	public $intitule;
 	public $alerte;
+	public $alerte_end;
 	public $fk_agefodd_training_admlevel;
 	public $trigger_name;
 	public function __construct() {

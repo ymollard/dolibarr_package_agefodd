@@ -154,7 +154,6 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 		$sql .= " t.level_rank,";
@@ -204,11 +203,9 @@ class Agefodd_session_admlevel extends CommonObject {
 	/**
 	 * Load object in memory from database
 	 *
-	 * @return array array of object
+	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all() {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 		$sql .= " t.level_rank,";
@@ -229,7 +226,6 @@ class Agefodd_session_admlevel extends CommonObject {
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -263,7 +259,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * Load object in memory from database
 	 *
 	 * @param int $fk_parent_level id of parent
-	 * @return array array of object
+	 * @return array|int array of object, <0 if error
 	 */
 	public function fetch_all_children_nested($fk_parent_level = 0) {
 
@@ -291,7 +287,6 @@ class Agefodd_session_admlevel extends CommonObject {
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -418,7 +413,7 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * shift indice object into database
 	 *
 	 * @param User $user that modify
-	 * @param string $type for -1 more for +1
+	 * @param string $type 'less' for -1, 'more' for +1
 	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
@@ -615,12 +610,12 @@ class Agefodd_session_admlevel extends CommonObject {
 	 * This may be done more cleanly using ON DELETE CASCADE
 	 *
 	 * @param int $id ID of the admin task; default to current object's ID
-	 * @param bool $notrigger Whether to disable triggers 
+	 * @param int $notrigger Whether to disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function delete_with_descendants($id = null, $notrigger = 0)
 	{
-		global $conf, $langs;
+		global $conf, $langs, $user;
 
 		if ($id === null) $id = $this->id;
 		$id = intval($id);
@@ -690,6 +685,7 @@ class AgfSessionAdmlvlLine {
 	public $indice;
 	public $intitule;
 	public $alerte;
+	public $alerte_end;
 	public $trigger_name;
 	public function __construct() {
 		return 1;

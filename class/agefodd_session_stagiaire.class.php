@@ -66,17 +66,16 @@ class Agefodd_session_stagiaire extends CommonObject {
 	const STATUS_IN_SESSION_CANCELED = 6;
 	const STATUS_IN_SESSION_EXCUSED = 7;
 
-	public $labelstatut;
-	public $labelstatut_short;
+	public $labelstatut = array();
+	public $labelstatut_short = array();
 	public $fk_user_author = '';
 	public $fk_user_mod = '';
 	public $datec = '';
 	public $tms = '';
 	/**
-	 * @var $lines Agefodd_session_stagiaire[]
+	 * @var $lines AgfTraineeSessionLine[]
 	 */
 	public $lines = array ();
-	public $lines_state = array ();
 	public $hour_foad;
 
 	/**
@@ -209,11 +208,11 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @param int $id of session
 	 * @param int $socid by thridparty
 	 * @param int $searchAsLink search as soc link
+	 * @param string $sortfield Sort Field
+	 * @param string $sortorder Sort Order
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_stagiaire_per_session($id, $socid = null, $searchAsLink = 0, $sortfield='sa.nom', $sortorder='') {
-		global $langs;
-
 		$linesadded = array ();
 
 		$sql = "SELECT";
@@ -467,10 +466,6 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_stagiaire_per_session_per_OPCA($id, $socid = 0, $trainee_seesion_id = 0) {
-		global $langs;
-
-		$linesadded = array ();
-
 		$sql = "SELECT";
 		$sql .= " s.rowid as sessid,";
 		$sql .= " ss.rowid, ss.fk_stagiaire, ss.fk_agefodd_stagiaire_type,ss.status_in_session,";
@@ -581,11 +576,10 @@ class Agefodd_session_stagiaire extends CommonObject {
 	/**
 	 * Retour la liste des financements possible pour un stagiaire
 	 *
-	 * @return array
+	 * @param string $filter SQL filter
+	 * @return array|int
 	 */
 	public function fetch_type_fin($filter = '') {
-	    global $conf, $langs;
-
 	    $sql = "SELECT t.rowid, t.intitule";
 	    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as t";
 	    if (! empty($filter)) {
@@ -628,7 +622,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	public function create($user, $notrigger = 0) {
-		global $conf, $langs;
+		global $conf;
 		$error = 0;
 
 		// Clean parameters
@@ -824,12 +818,14 @@ class Agefodd_session_stagiaire extends CommonObject {
 	/**
 	 * Delete object (trainne in session) in database
 	 *
-	 * @param int $id to delete
+	 * @param User $user User who deletes
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function delete($user, $notrigger = 0) {
 		$this->db->begin();
+		
+		$error = 0;
 
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire";
 		$sql .= " WHERE fk_agefodd_session_stagiaire = " . $this->id;
@@ -972,6 +968,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_stagiaire SET";
 		$sql .= " status_in_session=" . $status;
+		$sql .= " ,fk_user_mod=" . $user->id;
 		$sql .= " WHERE fk_session_agefodd = " . $this->fk_session_agefodd;
 		if (! empty($socid)) {
 			// For the same thirdparty as the trainee
@@ -1117,6 +1114,8 @@ class Agefodd_session_stagiaire extends CommonObject {
 			if ($statut == 6)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
 		}
+
+		return '';
 	}
 }
 

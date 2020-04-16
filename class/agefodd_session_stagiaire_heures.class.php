@@ -42,6 +42,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
     public $element = 'agefodd_session_stagiaire_heures';
     public $table_element = 'agefodd_session_stagiaire_heures';
     public $id;
+    public $entity;
     public $fk_stagiaire;
     public $nom_stagiaire;
     public $datec = '';
@@ -211,8 +212,6 @@ class Agefoddsessionstagiaireheures extends CommonObject
             $this->fk_session = trim($this->fk_session);
         if (isset($this->heures))
             $this->heures = (float)$this->heures;
-        if (isset($this->fk_user_author))
-            $this->fk_user_author = trim($this->fk_user_author);
 
         // Update request
         $sql = "UPDATE " . MAIN_DB_PREFIX . $this->table_element ." SET";
@@ -221,7 +220,6 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= " fk_session=" . (isset($this->fk_session) ? $this->fk_session : "null") . ",";
         $sql .= " fk_calendrier=" . (isset($this->fk_calendrier) ? $this->fk_calendrier : "null") . ",";
         $sql .= " heures=" . (isset($this->heures) ? "'" . $this->heures . "'" : 'null') . ",";
-        $sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null") . ",";
         $sql .= " mail_sended=" . intval($this->mail_sended) . ",";
         $sql .= " planned_absence=" . (isset($this->planned_absence) ? $this->planned_absence : "null");
 
@@ -272,9 +270,9 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-	    global $langs;
 	    $sql = "SELECT";
 	    $sql .= " t.rowid,";
+	    $sql .= " t.entity,";
 	    $sql .= " t.fk_stagiaire,";
 	    $sql .= " t.fk_session,";
 	    $sql .= " t.fk_calendrier,";
@@ -296,6 +294,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	            $obj = $this->db->fetch_object($resql);
 
 	            $this->id = $obj->rowid;
+	            $this->entity = $obj->entity;
 	            $this->fk_stagiaire = $obj->fk_stagiaire;
 	            $this->nom_stagiaire = $obj->nom_stagiaire;
 	            $this->fk_session = $obj->fk_session;
@@ -332,6 +331,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
 
 				$this->lines[] = $line;
 			}
+
+			return 1;
 		}
 		else
 		{
@@ -347,10 +348,12 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 * @param int $id session
 	 * @param int $trainee
 	 * @param int $calendar
+	 * @return int int <0 if KO, >0 if OK
 	 */
 	public function fetch_by_session($id, $trainee, $calendar)
 	{
 	    $sql = "SELECT t.rowid,";
+	    $sql .= " t.entity,";
 	    $sql .= " t.fk_stagiaire,";
 	    $sql .= " t.fk_session,";
 	    $sql .= " t.fk_calendrier,";
@@ -374,6 +377,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	            $obj = $this->db->fetch_object($resql);
 
 	            $this->id = $obj->rowid;
+	            $this->entity = $obj->entity;
 	            $this->fk_stagiaire = $obj->fk_stagiaire;
 	            $this->nom_stagiaire = $obj->nom_stagiaire;
 	            $this->fk_session = $obj->fk_session;
@@ -400,12 +404,13 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 * Retourne tous les créneaux horaire de la session indiquée d'un stagiaire
 	 *
 	 * @param int $id session
-	 * @param int $traineeinsession
-	 *
+	 * @param int $trainee trainee in session
+	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all_by_session($id, $trainee)
 	{
 	    $sql = "SELECT t.rowid,";
+	    $sql .= " t.entity,";
 	    $sql .= " t.fk_stagiaire,";
 	    $sql .= " t.fk_session,";
 	    $sql .= " t.fk_calendrier,";
@@ -425,8 +430,9 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    if ($resql) {
 	        if ($this->db->num_rows($resql)) {
 	            while($obj = $this->db->fetch_object($resql)){
-	                $line = new Agefoddsessionstagiaireheuresline();
+	                $line = new Agefoddsessionstagiaireheuresline($this->db);
 	                $line->id = $obj->rowid;
+	                $line->entity = $obj->entity;
 	                $line->fk_stagiaire = $obj->fk_stagiaire;
 	                $line->nom_stagiaire = $obj->nom_stagiaire;
 	                $line->fk_session = $obj->fk_session;
@@ -554,9 +560,12 @@ class Agefoddsessionstagiaireheures extends CommonObject
  */
 class Agefoddsessionstagiaireheuresline
 {
+	/**@var DoliDB $db */
+	public $db;
     public $error; // !< To return error code (or message)
     public $errors = array (); // !< To return several error codes (or messages)
     public $id;
+    public $entity;
     public $fk_stagiaire;
     public $nom_stagiaire;
     public $datec = '';
@@ -565,16 +574,24 @@ class Agefoddsessionstagiaireheuresline
     public $fk_calendrier;
     public $fk_session;
     public $heures;
-
-    /**
+    
+    
+    public function __construct($db)
+	{
+		$this->db = $db;
+	}
+	
+	/**
      * Delete object (trainne in session) in database
      *
-     * @param int $id to delete
+     * @param User $user User who deletes
      * @param int $notrigger triggers after, 1=disable triggers
      * @return int <0 if KO, >0 if OK
      */
     public function delete($user, $notrigger = 0) {
         global $db;
+
+        $error = 0;
 
         $db->begin();
 
