@@ -28,8 +28,17 @@
 /**
  * Class of triggers Agefodd
  */
+// TODO Les triggers peuvent étendre la classe abstraite DolibarrTriggers disponible depuis la 3.7, à voir quand faire la bascule
 class InterfaceAgefodd {
-	var $db;
+	/** @var DoliDB $db */
+	public $db;
+	public $name;
+	public $family;
+	public $description;
+	public $version;
+	public $picto;
+	public $error;
+	public $errors = array();
 
 	/**
 	 * Constructor
@@ -98,8 +107,7 @@ class InterfaceAgefodd {
 	 */
 	function runTrigger($action, $object, $user, $langs, $conf) {
 		//For 8.0 remove warning
-		$result=$this->run_trigger($action, $object, $user, $langs, $conf);
-		return $result;
+		return $this->run_trigger($action, $object, $user, $langs, $conf);
 	}
 
 	/**
@@ -127,7 +135,7 @@ class InterfaceAgefodd {
 		// multicompagny tweak
 		if (is_object($mc))
 		{
-
+			/** @var ActionsMulticompany $mc */
 			if(is_array($mc->sharingelements) && !in_array('agefodd', $mc->sharingelements)){
 		        $mc->sharingelements[] = 'agefodd';
 		    }
@@ -198,7 +206,6 @@ class InterfaceAgefodd {
 							$agf_cal->date_session = dol_mktime(0, 0, 0, $dt_array['mon'], $dt_array['mday'], $dt_array['year']);
 							$agf_cal->heured = $action->datep;
 							$agf_cal->heuref = $action->datef;
-							$agf_cal->trainer_cost = $agf_cal->trainer_cost;
 
 							$result = $agf_cal->update($user, 1);
 
@@ -300,6 +307,7 @@ class InterfaceAgefodd {
 					dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 					$admintask = new Agefodd_sessadm($this->db);
 					$result = $admintask->updateByTriggerName($user, $object->id, 'AGF_CONV_SEND');
+					// TODO Gestion d'erreurs
 				}
 			}
 		} 		// Envoi attestation par mail
@@ -443,7 +451,7 @@ class InterfaceAgefodd {
 		            $object->actionmsg2 = $langs->trans('ActionATTESTATION_SENTBYMAIL');
 		        }
 		        if (empty($object->actionmsg)) {
-		            $object->actionmsg = $langs->trans('MailSentBy') . ' ' . $from . ' ' . $langs->trans('To') . ' ' . $send_email . ".\n";
+		            $object->actionmsg = $langs->trans('MailSentBy') . ' ' . $object->from . ' ' . $langs->trans('To') . ' ' . $object->send_email . ".\n";
 
 		        }
 
@@ -478,7 +486,8 @@ class InterfaceAgefodd {
 			$actioncomm->fk_element = $object->id;
 			$actioncomm->elementtype = $object->element;
 			$actioncomm->userownerid=$user->id;
-			$ret = $actioncomm->add($user); // User qui saisit l'action
+			
+			$ret = method_exists($actioncomm, 'create') ? $actioncomm->create($user) : $actioncomm->add($user); // User qui saisit l'action
 			if ($ret > 0) {
 				return 1;
 			} else {
@@ -496,7 +505,7 @@ class InterfaceAgefodd {
 			require_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
 
 			$actioncomm = new ActionComm($this->db);
-			$actioncomm->getActions(0, $object->id, 'agefodd_agsession');
+			$actioncomm->getActions($this->db, $object->id, 'agefodd_agsession');
 
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
@@ -613,7 +622,8 @@ class InterfaceAgefodd {
 						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $origin_invoice->error, LOG_ERR);
 						return - 1;
 					}
-					if ($origin_invoice->fk_soc==$object->fk_soc) {
+					// if ($origin_invoice->fk_soc==$object->fk_soc) {
+					if ($origin_invoice->socid == $object->socid) { // C'était déjà socid et pas fk_soc en 2.8...
 						$agf_fin = new Agefodd_session_element($this->db);
 						$result = $agf_fin->add_invoice($user, $object->fk_facture_source, $object->element, $object->id);
 
@@ -787,9 +797,9 @@ class InterfaceAgefodd {
 				$agf_fin->fetch_element_by_id($line->id, 'invoice_supplierline');
 
 				if (count($agf_fin->lines) > 0) {
-					foreach($agf_fin->lines as $line){
-						$agf_fin->id = $line->id;
-						$agf_fin->fk_session_agefodd = $line->fk_session_agefodd;
+					foreach($agf_fin->lines as $lineAgf){
+						$agf_fin->id = $lineAgf->id;
+						$agf_fin->fk_session_agefodd = $lineAgf->fk_session_agefodd;
 						$agf_fin->delete($user);
 					}
 				}
@@ -866,7 +876,6 @@ class InterfaceAgefodd {
 					$agfsession->fetch($agf_fin->lines[0]->fk_session_agefodd);
 
 					if ($object->fk_product == $agfsession->fk_product && (!empty($agfsession->id)) && !empty($agfsession->fk_product)) {
-						$desc = '';
 						if (!empty($agfsession->intitule_custo)) {
 							$desc = $agfsession->intitule_custo . "\n";
 						} else {
@@ -890,9 +899,9 @@ class InterfaceAgefodd {
 						//Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
 						// For Intra entreprise you take all trainne
 						$sessionOPCA = new Agefodd_opca($this->db);
+						$find_trainee_by_OPCA = false;
 						if (empty($conf->global->AGF_MANAGE_OPCA) || $agfsession->type_session == 0) {
 							// For Intra entreprise you take all trainne
-							$find_trainee_by_OPCA = false;
 							$sessionOPCA->num_OPCA_file = $agfsession->num_OPCA_file;
 
 						} elseif ($agfsession->type_session == 1) {
@@ -925,21 +934,24 @@ class InterfaceAgefodd {
 						if ($find_trainee_by_OPCA) {
 							$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $invoice->socid);
 						} else {
-							$session_trainee->fetch_stagiaire_per_session($agfsession->id, $invoice->socid, 1);
+							$session_trainee->fetch_stagiaire_per_session($agfsession->id, 0, 1);
 						}
 
-						if (count($session_trainee->lines) > 0) {
+						$nbtrainee = count($session_trainee->lines);
+
+						if ($nbtrainee > 0) {
+							$desc_OPCA = '';
+							$desc_trainee = '';
 
 							if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
-								$desc_trainee = "\n";
-								$nbtrainee = 0;
+								$desc_trainee .= "\n";
 								$num_OPCA_file_array = array();
 								foreach ($session_trainee->lines as $line) {
 
 									// Do not output not present or cancelled trainee
 									if ($line->status_in_session != 5 && $line->status_in_session != 6) {
 										if ($find_trainee_by_OPCA) {
-											$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id, $line->stagerowid);
+											$sessionOPCA->getOpcaForTraineeInSession($line->socid, $agfsession->id, $line->stagerowid);
 										}
 										if (!empty($sessionOPCA->num_OPCA_file)) {
 											if (!array_key_exists($sessionOPCA->num_OPCA_file, $num_OPCA_file_array)) {
@@ -948,7 +960,6 @@ class InterfaceAgefodd {
 											}
 										}
 										$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
-										$nbtrainee++;
 									}
 								}
 							}
@@ -967,10 +978,9 @@ class InterfaceAgefodd {
 						// Add average price on all line concern by session training product
 						if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
 							$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
-							if ($result < 0) {
-								$error++;
+							if ($result > 0) {
+								$desc .= $agfsession->avgpricedesc;
 							}
-							$desc .= $agfsession->avgpricedesc;
 						}
 
 
@@ -1134,11 +1144,10 @@ class InterfaceAgefodd {
 
 					if ($object->oldline->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
 						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
-						if ($result < 0) {
-							$error ++;
+						if ($result > 0) {
+							$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
+							$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 						}
-						$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
-						$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 					}
 
 					$result = $object->update($user, 1);
@@ -1166,11 +1175,10 @@ class InterfaceAgefodd {
 
 					if ($object->oldline->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
 						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
-						if ($result < 0) {
-							$error ++;
+						if ($result > 0) {
+							$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
+							$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 						}
-						$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
-						$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 					}
 
 					$result = $object->update($user, 1);
@@ -1200,11 +1208,10 @@ class InterfaceAgefodd {
 
 					if ($object->oldline->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
 						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
-						if ($result < 0) {
-							$error ++;
+						if ($result > 0) {
+							$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
+							$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 						}
-						$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
-						$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 					}
 
 					$result = $object->update($user, 1);

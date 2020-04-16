@@ -141,7 +141,6 @@ class Agefoddcalendrier extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 
@@ -162,6 +161,7 @@ class Agefoddcalendrier extends CommonObject {
 
 				$this->id = $obj->rowid;
 
+				$this->entity = $obj->entity;
 				$this->day_session = $obj->day_session;
 				$this->heured = $obj->heured;
 				$this->heuref = $obj->heuref;
@@ -185,9 +185,9 @@ class Agefoddcalendrier extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all() {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
+		$sql .= " t.entity,";
 		$sql .= " t.day_session,";
 		$sql .= " t.heured,";
 		$sql .= " t.heuref";
@@ -205,6 +205,7 @@ class Agefoddcalendrier extends CommonObject {
 				$this->lines[$i] = new AgefoddcalendrierLines();
 				$this->lines[$i]->id = $obj->rowid;
 
+				$this->lines[$i]->entity = $obj->entity;
 				$this->lines[$i]->day_session = $obj->day_session;
 				$this->lines[$i]->heured = $obj->heured;
 				$this->lines[$i]->heuref = $obj->heuref;

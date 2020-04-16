@@ -35,6 +35,7 @@ class Agefodd_index_line
 	public $idforma;
 	public $id;
 	public $ref;
+	public $ref_interne;
 	public $num;
 	public $duree;
 }
@@ -51,6 +52,7 @@ class Agefodd_CertifExpireSoc_line
  */
 class Agefodd_index
 {
+	/** @var DoliDB $db */
 	protected $db;
 	public $error;
 	public $errors = array();
@@ -64,7 +66,7 @@ class Agefodd_index
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function Agefodd_index($db) {
+	public function __construct($db) {
 		$this->db = $db;
 		return 1;
 	}
@@ -75,8 +77,6 @@ class Agefodd_index
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_student_nb() {
-		global $langs;
-
 		$sql = "SELECT ";
 		$sql .= " sum(se.nb_stagiaire) as nb_sta ";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session as se";
@@ -112,8 +112,6 @@ class Agefodd_index
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_session_nb() {
-		global $langs;
-
 		$sql = "SELECT count(*) as num";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session";
 		$sql .= " WHERE status = 5";
@@ -143,8 +141,6 @@ class Agefodd_index
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_formation_nb() {
-		global $langs;
-
 		$sql = "SELECT count(*) as num";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
 		$sql .= " WHERE archive = 0";
@@ -174,8 +170,6 @@ class Agefodd_index
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_heures_sessions_nb() {
-		global $langs;
-
 		$sql = "SELECT  sum(f.duree) AS total";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue AS f";
@@ -209,8 +203,6 @@ class Agefodd_index
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_heures_stagiaires_nb() {
-		global $langs;
-
 		$error = 0;
 
 		$this->fetch_heures_sessions_nb();
@@ -256,8 +248,6 @@ class Agefodd_index
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_last_formations($number = 5) {
-		global $langs;
-
 		$this->lines = array();
 
 		$sql = "SELECT c.intitule, s.dated, s.datef, s.fk_formation_catalogue, s.rowid as id, s.ref as ref";
@@ -272,7 +262,7 @@ class Agefodd_index
 		dol_syslog(get_class($this) . "::fetch_last_formations", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 			while ( $i < $num ) {
@@ -307,8 +297,6 @@ class Agefodd_index
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_top_formations($number = 5) {
-		global $langs;
-
 		$this->lines = array();
 
 		$sql = "SELECT c.intitule, count(s.rowid) as num, c.duree, c.ref, c.ref_interne, ";
@@ -324,7 +312,7 @@ class Agefodd_index
 		dol_syslog(get_class($this) . "::fetch_top_formations", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 			while ( $i < $num ) {
@@ -358,8 +346,6 @@ class Agefodd_index
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_session($fk_status = 0) {
-		global $langs;
-
 		$sql = "SELECT count(*) as total";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session";
 		$sql .= " WHERE";
@@ -390,12 +376,9 @@ class Agefodd_index
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $jour Nb day to display
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_tache_late() {
-		global $langs;
-
 		$this->lines = array();
 
 		$sql = "SELECT DISTINCT rowid,fk_agefodd_session";
@@ -407,7 +390,7 @@ class Agefodd_index
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array();
+			$this->lines = array();
 			if ($this->db->num_rows($resql)) {
 				$num = $this->db->num_rows($resql);
 				$i = 0;
@@ -437,16 +420,12 @@ class Agefodd_index
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $jour Nb day to display
+	 * @param int $nbjourst Nb days before now
+	 * @param int $nbjourend Nb days after now
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_tache_in_between($nbjourst = 0, $nbjourend = 0) {
-		global $langs;
-
 		$this->lines = array();
-
-		$intervaldayst = '';
-		$intervaldayend = '';
 
 		$intervaldayst = $nbjourst . ' DAY';
 		if ($this->db->type == 'pgsql') {
@@ -473,7 +452,7 @@ class Agefodd_index
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array();
+			$this->lines = array();
 			if ($this->db->num_rows($resql)) {
 				$num = $this->db->num_rows($resql);
 				$i = 0;
@@ -507,8 +486,6 @@ class Agefodd_index
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_tache_en_cours() {
-		global $langs;
-
 		$sql = "SELECT count(*) as total";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as asa";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session as ags ON asa.fk_agefodd_session = ags.rowid";
@@ -543,8 +520,6 @@ class Agefodd_index
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_session_per_dateLimit($sortorder, $sortfield, $limit, $offset, $delais_sup, $delais_inf = 0) {
-		global $langs;
-
 		$intervalday_sup = $delais_sup . ' DAY';
 		$intervalday_inf = $delais_inf . ' DAY';
 
@@ -586,7 +561,7 @@ class Agefodd_index
 		dol_syslog(get_class($this) . "::fetch_session_per_dateLimit", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -598,7 +573,7 @@ class Agefodd_index
 				$line->rowid = $obj->rowid;
 				$line->sessid = $obj->fk_agefodd_session;
 
-				$this->line[$i] = $line;
+				$this->lines[$i] = $line;
 
 				$i ++;
 			}
@@ -617,8 +592,6 @@ class Agefodd_index
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_session_to_archive() {
-		global $langs;
-
 		// Il faut que toutes les tâches administratives soit crées (top_level);
 		$sql = "SELECT MAX(sa.datea), sa.fk_agefodd_session";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as sa";
@@ -652,11 +625,10 @@ class Agefodd_index
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $time_expiration before expiration
+	 * @param int $month_expiration Months before expiration
 	 * @return int if KO, $num of student if OK
 	 */
 	public function fetch_certif_expire($month_expiration) {
-		global $langs;
 
 		$sql = "SELECT ";
 		$sql .= " DISTINCT ";

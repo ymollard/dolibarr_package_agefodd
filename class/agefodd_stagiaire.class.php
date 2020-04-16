@@ -36,6 +36,7 @@ class Agefodd_stagiaire extends CommonObject {
 	public $element = 'agefodd';
 	public $table_element = 'agefodd_stagiaire';
 	public $id;
+	public $entity;
 	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $nom;
 	public $prenom;
@@ -234,12 +235,10 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilite_code,";
-		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
+		$sql .= " s.rowid, s.entity, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
 		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth, s.disable_auto_mail";
 		$sql .= " ,so.address as socaddr, so.zip as soczip, so.town as soctown";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
@@ -261,6 +260,7 @@ class Agefodd_stagiaire extends CommonObject {
 					$contact = new Contact($this->db);
 					$result = $contact->fetch($obj->fk_socpeople);
 					$this->id = $obj->rowid;
+					$this->entity = $obj->entity;
 					if ($result > 0) {
 						$this->ref = $obj->rowid; // use for next prev refs
 						$this->nom = $contact->lastname;
@@ -279,6 +279,7 @@ class Agefodd_stagiaire extends CommonObject {
 					}
 				} else {
 					$this->id = $obj->rowid;
+					$this->entity = $obj->entity;
 					$this->ref = $obj->rowid; // use for next prev refs
 					$this->nom = $obj->nom;
 					$this->prenom = $obj->prenom;
@@ -331,7 +332,7 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($sortorder, $sortfield, $limit = '', $offset, $filter = '') {
+	public function fetch_all($sortorder, $sortfield, $limit = 0, $offset = 0, $filter = array()) {
 		global $langs;
 
 		require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
@@ -346,7 +347,7 @@ class Agefodd_stagiaire extends CommonObject {
 		$sql = "SELECT";
 		$sql .= " so.rowid as socid, so.nom as socname,";
 		$sql .= " civ.code as civilitecode,";
-		$sql .= " s.rowid, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
+		$sql .= " s.rowid, s.entity, s.nom, s.prenom, s.civilite, s.fk_soc, s.fonction,";
 		$sql .= " s.tel1, s.tel2, s.mail, s.note, s.fk_socpeople, s.date_birth, s.place_birth, s.disable_auto_mail";
 		foreach ($array_options_keys as $key)
 		{
@@ -399,6 +400,15 @@ class Agefodd_stagiaire extends CommonObject {
 					$line = new AgfTraineeLine();
 
 					// Manage filter for telephone to remove all space from result to filter correctly
+					/* FIXME Les filtres sur cette requête ont été rajoutés le 05/07/2012 par le commit
+					 * 1b75896564965575c8e414b823df9704e42cb140. Depuis ce beau jour d'été, plus de 7 ans en arrière :
+					 *     - les trois embranchements qui suivent sont identiques à l'ordre des lignes près (J'ai fait
+					 *       un Meld sur le code de l'époque ET sur le code actuel pour m'en assurer) :S
+					 *     - la variable $pos est non déclarée (heureusement, le test null !== false est strict donc
+					 *       il vaut true et les assignations se font comme attendu)
+					 *
+					 * C'est trop beau, je laisse ça tel quel, mais en vrai, ça devrait dégager :D - MdLL, 09/04/2020
+					 */
 					if (! empty($filter)) {
 						if (array_key_exists('s.tel1', $filter)) {
 							$value = $filter['s.tel1'];
@@ -409,6 +419,7 @@ class Agefodd_stagiaire extends CommonObject {
 									$line->civilitecode = $obj->civilitecode;
 									$line->rowid = $obj->rowid;
 									$line->id = $obj->rowid;
+									$line->entity = $obj->entity;
 									$line->nom = $obj->nom;
 									$line->prenom = $obj->prenom;
 									$line->civilite = $obj->civilite;
@@ -429,6 +440,7 @@ class Agefodd_stagiaire extends CommonObject {
 							$line->civilitecode = $obj->civilitecode;
 							$line->rowid = $obj->rowid;
 							$line->id = $obj->rowid;
+							$line->entity = $obj->entity;
 							$line->nom = $obj->nom;
 							$line->prenom = $obj->prenom;
 							$line->civilite = $obj->civilite;
@@ -448,6 +460,7 @@ class Agefodd_stagiaire extends CommonObject {
 						$line->civilitecode = $obj->civilitecode;
 						$line->rowid = $obj->rowid;
 						$line->id = $obj->rowid;
+						$line->entity = $obj->entity;
 						$line->nom = $obj->nom;
 						$line->prenom = $obj->prenom;
 						$line->civilite = $obj->civilite;
@@ -526,10 +539,8 @@ class Agefodd_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function info($id) {
-		global $langs;
-
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
+		$sql .= " s.rowid, s.entity, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as s";
 		$sql .= " WHERE s.rowid = " . $id;
 
@@ -539,6 +550,7 @@ class Agefodd_stagiaire extends CommonObject {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->entity = $obj->entity;
 				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->user_modification = $obj->fk_user_mod;
@@ -649,13 +661,14 @@ class Agefodd_stagiaire extends CommonObject {
 	/**
 	 * Delete object in database
 	 *
-	 * @param User $user that delete
-	 * @param int $notrigger triggers after, 1=disable triggers
+	 * @param int $id Id of agefodd_stagiaire to delete
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function remove($id) {
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire";
 		$sql .= " WHERE rowid = " . $id;
+
+		$error = 0;
 
 		$this->db->begin();
 
@@ -742,6 +755,8 @@ class Agefodd_stagiaire extends CommonObject {
 	}
 }
 class AgfTraineeLine {
+	public $id;
+	public $entity;
 	public $socid;
 	public $socname;
 	public $civilitecode;
@@ -758,12 +773,15 @@ class AgfTraineeLine {
 	public $fk_socpeople;
 	public $date_birth;
 	public $place_birth;
+	public $disable_auto_mail;
+	public $array_options = array();
 	public function __construct() {
 		return 1;
 	}
 	/**
 	 *
 	 * @param string $label
+	 * @param string $type
 	 * @return string
 	 */
 	public function getNomUrl($label = 'name', $type='card') {

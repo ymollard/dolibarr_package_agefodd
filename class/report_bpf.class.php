@@ -1545,6 +1545,8 @@ function fetch_financial_c($filter = array()) {
 	}
 
 	dol_syslog(get_class($this) . "::" . __METHOD__ . ' DEBUG ALL C1 to 13 '."\n".implode(' UNION ',$sqldebugall), LOG_DEBUG);
+	
+	$invoiceField = floatval(DOL_VERSION) > 9 ? 'factdddd.ref as facnumber' : 'factdddd.facnumber';
 
 	if(floatval(DOL_VERSION) > 9) {
 		$filedref = " factdddd.ref as facnumber";

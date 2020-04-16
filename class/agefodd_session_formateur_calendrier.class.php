@@ -50,6 +50,7 @@ class Agefoddsessionformateurcalendrier extends CommonObject {
 	public $fk_user_mod;
 	public $tms = '';
 	public $status = 0;
+	public $sessid;
 	public $lines = array ();
 
 	// Attention Const need to be same as Agefodd_sesscalendar, take care of getListStatus

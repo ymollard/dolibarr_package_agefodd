@@ -147,7 +147,6 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 
@@ -195,7 +194,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function update($user = 0, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -205,10 +204,6 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 			$this->fk_stagiaire = trim($this->fk_stagiaire);
 		if (isset($this->fk_cursus))
 			$this->fk_cursus = trim($this->fk_cursus);
-		if (isset($this->fk_user_author))
-			$this->fk_user_author = trim($this->fk_user_author);
-		if (isset($this->fk_user_mod))
-			$this->fk_user_mod = trim($this->fk_user_mod);
 
 			// Check parameters
 			// Put here code to add a control on parameters values
@@ -320,7 +315,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @return int id of clone
 	 */
 	public function createFromClone($fromid) {
-		global $user, $langs;
+		global $user;
 
 		$error = 0;
 
@@ -387,8 +382,6 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_stagiaire_per_cursus($sortorder, $sortfield, $limit, $offset, $filter = array()) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 
@@ -406,6 +399,8 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 
 		// Manage filter
 		if (! empty($filter)) {
+			$sqlwhere = '';
+
 			$addcriteria = false;
 			foreach ( $filter as $key => $value ) {
 				if ($key == 'civ.code') {
@@ -436,7 +431,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_stagiaire_per_cursus", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 
 			while ( $obj = $this->db->fetch_object($resql) ) {
@@ -517,8 +512,6 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_session_cursus_per_trainee($sortorder, $sortfield, $limit, $offset) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.rowid as sessid,";
 		$sql .= " so.rowid as socid,";
@@ -562,7 +555,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_session_cursus_per_trainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 
 			$i = 0;
@@ -611,8 +604,6 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_cursus_per_trainee($sortorder = 'ASC', $sortfield = 'c.rowid', $limit = 0, $offset = 0) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " c.rowid,";
 		$sql .= " c.ref_interne,";
@@ -626,7 +617,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_cursus_per_trainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 
 			while ( $obj = $this->db->fetch_object($resql) ) {
@@ -653,16 +644,9 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param string $sortorder Sort Order
-	 * @param string $sortfield Sort field
-	 * @param int $limit offset limit
-	 * @param int $offset offset limit
-	 * @param int $arch archive
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_training_session_to_plan() {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " c.rowid,";
 		$sql .= " c.ref_interne,";
@@ -680,7 +664,7 @@ class Agefodd_stagiaire_cursus extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_cursus_per_trainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 
 			while ( $obj = $this->db->fetch_object($resql) ) {
@@ -715,7 +699,7 @@ class AgfCursusTraineeLine {
 	public $civilite;
 	public $starowid;
 	public $nbsessdone;
-	public $nbsessdoto;
+	public $nbsesstodo;
 	public function __construct() {
 		return 1;
 	}
@@ -747,9 +731,7 @@ class AgfSessionCursusLine {
 	public $rowid;
 	public $socid;
 	public $socname;
-	public $trainerrowid;
 	public $type_session;
-	public $date_res_trainer;
 	public $fk_session_place;
 	public $dated;
 	public $datef;
@@ -758,16 +740,10 @@ class AgfSessionCursusLine {
 	public $ref_interne;
 	public $color;
 	public $nb_stagiaire;
-	public $force_nb_stagiaire;
 	public $notes;
 	public $nb_subscribe_min;
-	public $nb_prospect;
-	public $nb_confirm;
-	public $nb_cancelled;
-	public $statuslib;
 	public $statuscode;
 	public $status_in_session;
-	public $realdurationsession;
 	public $category_lib;
 	public $placecode;
 	public function __construct() {

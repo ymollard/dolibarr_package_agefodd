@@ -198,6 +198,8 @@ $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf_session->table_element, true);
 $search_array_options = $extrafields->getOptionalsFromPost('agefodd_session', '', 'search_');
 
+if (empty($search_array_options)) $search_array_options = array();
+
 $arrayfields = array(
 		's.rowid' => array(
 				'label' => "Id",
