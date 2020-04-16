@@ -5219,17 +5219,34 @@ class Agsession extends CommonObject
 	 * @return string
 	 */
 	public function libSessionDate($dateformat=''){
-		global $langs;
+		global $conf, $langs;
 
 		$langs->load('agefodd@agefodd');
 
 		$date_conv='';
 
-		if ($this->dated == $this->datef) {
-			$date_conv = $langs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($this->datef, $dateformat);
-		} else {
-			$date_conv = $langs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($this->dated, $dateformat) . ' ' . $langs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($this->datef, $dateformat);
-		}
+        $agf_session_dated = '';
+        $agf_session_datef = '';
+        if (!empty($conf->global->AGF_USE_REAL_DATES)) {
+            dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+            $agf_calendar = new Agefodd_sesscalendar($this->db);
+            $agf_calendar->fetch_all($this->id);
+
+            $agf_calendar_nb_lines = count($agf_calendar->lines);
+            if ($agf_calendar_nb_lines > 0) {
+                $agf_session_dated = $agf_calendar->lines[0]->date_session;
+                $agf_session_datef = $agf_calendar->lines[$agf_calendar_nb_lines-1]->date_session;
+            }
+        } else {
+            $agf_session_dated = $this->dated;
+            $agf_session_datef = $this->datef;
+        }
+
+        if ($agf_session_dated == $agf_session_datef) {
+            $date_conv = $langs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($agf_session_dated, $dateformat);
+        } else {
+            $date_conv = $langs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($agf_session_dated, $dateformat) . ' ' . $langs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($agf_session_datef, $dateformat);
+        }
 
 		return $date_conv;
 	}
