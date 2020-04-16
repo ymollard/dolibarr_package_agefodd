@@ -37,6 +37,10 @@
 class Agefoddformationcataloguetypebpf
 {
 	/**
+	 * @var DoliDB $db Database handler
+	 */
+	public $db;
+	/**
 	 * @var string Id to identify managed objects
 	 */
 	public $element = 'agefoddformationcataloguetypebpf';
@@ -53,11 +57,14 @@ class Agefoddformationcataloguetypebpf
 	/**
 	 */
 
+	public $id;
 	public $code;
 	public $intitule;
 	public $sort;
 	public $active;
 	public $tms = '';
+	public $error;
+	public $errors = array();
 
 	/**
 	 */
@@ -171,6 +178,8 @@ class Agefoddformationcataloguetypebpf
 	 */
 	public function fetch($id, $code = null)
 	{
+		global $conf;
+
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
 		$sql = 'SELECT';
@@ -240,6 +249,8 @@ class Agefoddformationcataloguetypebpf
 	 */
 	public function fetchAll($sortorder='', $sortfield='', $limit=0, $offset=0, array $filter = array(), $filtermode='AND')
 	{
+		global $conf;
+
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
 		$sql = 'SELECT';
@@ -497,7 +508,7 @@ class Agefoddformationcataloguetypebpf
 	 */
 	function getNomUrl($withpicto=0, $option='', $notooltip=0, $maxlen=24, $morecss='')
 	{
-		global $db, $conf, $langs;
+		global $conf, $langs;
         global $dolibarr_main_authentication, $dolibarr_main_demo;
         global $menumanager;
 

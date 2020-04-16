@@ -38,6 +38,7 @@ class Agsession extends CommonObject
 	public $table_element = 'agefodd_session';
 	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $id;
+	public $entity;
 	public $fk_soc;
 	public $client;
 	public $socid;
@@ -80,6 +81,7 @@ class Agsession extends CommonObject
 	public $fk_user_mod;
 	public $tms = '';
 	public $lines = array ();
+	public $lines_place = array();
 	public $commercialid;
 	public $commercialname;
 	public $commercialname_invert;
@@ -115,7 +117,20 @@ class Agsession extends CommonObject
 	public $formrefint;
 	public $ref;
 	public $trainer_ext_information;
-
+	public $TTrainer = array();
+	public $TStagiairesSession = array();
+	public $TStagiairesSessionConvention = array();
+	public $TStagiairesSessionPresent = array();
+	public $TStagiairesSessionSoc = array();
+	public $TStagiairesSessionSocConfirm = array();
+	public $TStagiairesSessionSocPresent = array();
+	public $TConventionFinancialLine = array();
+	public $TTotalBySession = array();
+	public $signataire_inter_array = array();
+	public $signataire_inter_array_poste = array();
+	public $signataire_inter_array_mail = array();
+	public $signataire_inter_array_phone = array();
+	
 	/**
 	 * Constructor
 	 *
@@ -528,10 +543,10 @@ class Agsession extends CommonObject
 	 * Load an object from its id and create a new one in database
 	 *
 	 * @param int $fromid of object to clone
-	 * @return int id of clone
+	 * @return int id of clone, or <0 if KO
 	 */
 	public function createFromClone($fromid) {
-		global $user, $conf;
+		global $user;
 
 		$error = 0;
 
@@ -548,6 +563,11 @@ class Agsession extends CommonObject
 
 		// Create clone
 		$result = $object->create($user);
+		
+		if ($result < 0) {
+			$this->db->rollback();
+			return -1;
+		}
 
 		$result = $object->createAdmLevelForSession($user);
 
@@ -569,6 +589,9 @@ class Agsession extends CommonObject
 
 	/**
 	 * Create admin level for a session
+	 *
+	 * @param User $user User who creates
+	 * @return int <0 if KO, >0 if OK
 	 */
 	public function createAdmLevelForSession($user) {
 		$error = 0;
@@ -634,6 +657,7 @@ class Agsession extends CommonObject
 
 		if (empty($error)) {
 			$this->db->commit();
+			return 1;
 		} else {
 			$this->db->rollback();
 			return $error * - 1;
@@ -651,6 +675,7 @@ class Agsession extends CommonObject
 
 		$sql = "SELECT DISTINCT";
 		$sql .= " t.rowid,";
+		$sql .= " t.entity,";
 		$sql .= " t.ref,";
 		$sql .= " t.fk_soc,";
 		$sql .= " t.fk_soc_requester,";
@@ -753,6 +778,7 @@ class Agsession extends CommonObject
 				$obj = $this->db->fetch_object($resql);
 
 				$this->id = $obj->rowid;
+				$this->entity = $obj->entity;
 				$this->ref = $obj->ref; // Use for next prev ref
 				$this->fk_soc = $obj->fk_soc; // don't work with fetch_thirdparty()
 				$this->socid = $obj->fk_soc; // work with fetch_thirdparty()
@@ -856,10 +882,9 @@ class Agsession extends CommonObject
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_session_per_trainee($id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.rowid as sessid,";
+		$sql .= " s.entity,";
 		$sql .= " so.rowid as socid,";
 		$sql .= " so.nom as socname,";
 		$sql .= " s.type_session,";
@@ -894,7 +919,7 @@ class Agsession extends CommonObject
 		dol_syslog(get_class($this) . "::fetch_session_per_trainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 
 			$i = 0;
@@ -904,6 +929,7 @@ class Agsession extends CommonObject
 				$line = new AgfSessionLine();
 
 				$line->rowid = $obj->sessid;
+				$line->entity = $obj->entity;
 				$line->socid = $obj->socid;
                 $line->sessionref = $obj->sessionref;
 				$line->status = $obj->status;
@@ -945,10 +971,9 @@ class Agsession extends CommonObject
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_session_per_trainer($id, $sortorder = '', $sortfield = '', $limit = 0, $offset = 0, $filter = array()) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.rowid as sessid,";
+		$sql .= " s.entity,";
 		$sql .= " s.ref as sessionref,";
 		$sql .= " so.rowid as socid,";
 		$sql .= " so.nom as socname,";
@@ -1007,7 +1032,6 @@ class Agsession extends CommonObject
 
 		if (! empty($sortfield)) {
 			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
-		} else {
 		}
 
 		if (! empty($limit)) {
@@ -1027,6 +1051,7 @@ class Agsession extends CommonObject
 				$line = new AgfSessionLine();
 
 				$line->rowid = $obj->sessid;
+				$line->entity = $obj->entity;
 				$line->sessionref = $obj->sessionref;
 				$line->socid = $obj->socid;
 				$line->status = $obj->status;
@@ -1092,7 +1117,6 @@ class Agsession extends CommonObject
 	 */
 	public function fetch_societe_per_session($id) {
 		$error = 0;
-		global $langs;
 
 		$array_soc = array ();
 
@@ -1111,10 +1135,11 @@ class Agsession extends CommonObject
 		$sql .= " AND so.rowid IS NOT NULL";
 		$sql .= " ORDER BY socname";
 
+		$this->lines = array();
+
 		dol_syslog(get_class($this) . "::fetch_societe_per_session SocTrainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 
 			if ($num) {
@@ -1189,7 +1214,6 @@ class Agsession extends CommonObject
 		dol_syslog(get_class($this) . "::fetch_societe_per_session OPCA", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$add_soc = 0;
 			$num_other = $this->db->num_rows($resql);
 
 			if ($num_other) {
@@ -1279,7 +1303,6 @@ class Agsession extends CommonObject
 		dol_syslog(get_class($this) . "::fetch_societe_per_session OPCAtrainee", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$add_soc = 0;
 			$num_other = $this->db->num_rows($resql);
 
 			if ($num_other) {
@@ -1366,7 +1389,6 @@ class Agsession extends CommonObject
 		dol_syslog(get_class($this) . "::fetch_societe_per_session Customer", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$add_soc = 0;
 			$num_other = $this->db->num_rows($resql);
 
 			if ($num_other) {
@@ -1453,7 +1475,6 @@ class Agsession extends CommonObject
 		dol_syslog(get_class($this) . "::fetch_societe_per_session SocTraineeForDoc", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 
 			if ($num) {
@@ -1541,7 +1562,6 @@ class Agsession extends CommonObject
 		dol_syslog(get_class($this) . "::fetch_societe_per_session SessionRequester", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 
 			if ($num) {
@@ -1631,7 +1651,6 @@ class Agsession extends CommonObject
 		dol_syslog(get_class($this) . "::fetch_societe_per_session Sessionpresta", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
 			$num = $this->db->num_rows($resql);
 
 			if ($num) {
@@ -1764,7 +1783,7 @@ class Agsession extends CommonObject
 		global $langs;
 
 		$sql = "SELECT";
-		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
+		$sql .= " s.rowid, s.entity, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sql .= " WHERE s.rowid = " . $id;
 
@@ -1774,6 +1793,7 @@ class Agsession extends CommonObject
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->entity = $obj->entity;
 				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->user_creation = $obj->fk_user_author;
@@ -1797,7 +1817,6 @@ class Agsession extends CommonObject
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function updateArchive($user, $notrigger = 0) {
-		global $conf, $langs;
 		$error = 0;
 
 		// Update request
@@ -1833,7 +1852,7 @@ class Agsession extends CommonObject
 	public function update($user, $notrigger = 0) {
 		require_once ('agefodd_session_stagiaire.class.php');
 
-		global $conf, $langs;
+		global $conf;
 		$error = 0;
 
 		// enregistrer le statut avant archivage
@@ -2106,7 +2125,6 @@ class Agsession extends CommonObject
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function setCommercialSession($userid, $user) {
-		global $conf, $langs;
 		$error = 0;
 		$to_create = false;
 		$to_update = false;
@@ -2223,7 +2241,7 @@ class Agsession extends CommonObject
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function setContactSession($contactid, $user) {
-		global $conf, $langs;
+		global $conf;
 		$error = 0;
 		$to_create = false;
 		$to_update = false;
@@ -2464,7 +2482,7 @@ class Agsession extends CommonObject
 		$langs->load("admin");
 
 		$s = '';
-		if (type == 'training') {
+		if ($type == 'training') {
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
 			$agf_training = new Formation($this->db);
@@ -2483,10 +2501,11 @@ class Agsession extends CommonObject
 	 * @param int $offset
 	 * @param array $filter output
 	 * @param user $user current user
+	 * @param array $array_options_keys
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = 0, $array_options_keys=array()) {
-		global $langs, $conf;
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = null, $array_options_keys=array()) {
+		global $langs;
 		if (empty($array_options_keys)) {
 			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
 			$extrafields = new ExtraFields($this->db);
@@ -2494,7 +2513,7 @@ class Agsession extends CommonObject
 			if(!empty($extrafields->attributes[$this->table_element]['label'])) $array_options_keys = array_keys($extrafields->attributes[$this->table_element]['label']);
 		}
 
-		$sql = "SELECT s.rowid, s.ref as sessionref, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
+		$sql = "SELECT s.rowid, s.entity, s.ref as sessionref, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.status_before_archive, dictstatusba.intitule as archivestatuslib, dictstatusba.code as archivestatuscode,";
 		$sql .= " s.date_res_trainer, s.color, ";
 		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
@@ -2706,9 +2725,9 @@ class Agsession extends CommonObject
 
 			$num = $this->db->num_rows($resql);
 			$i = 0;
+			$nbsess = 0;
 
 			if ($num) {
-			    $nbsess = 0;
 			    $Tsessid = array();
 
 				while ( $i < $num ) {
@@ -2718,6 +2737,7 @@ class Agsession extends CommonObject
 
 					$line->rowid = $obj->rowid;
 					$line->id = $obj->rowid;
+					$line->entity = $obj->entity;
 					$line->sessionref = $obj->sessionref;
 					$line->socid = $obj->fk_soc;
 					$line->socname = $obj->socname;
@@ -2821,12 +2841,11 @@ class Agsession extends CommonObject
 	 * @param string $sortfield field
 	 * @param int $limit page
 	 * @param int $offset
-	 * @param int $arch archive or not
 	 * @param array $filter output
 	 * @param user $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter = '', $user = 0) {
+	public function fetch_all_with_task_state($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = null) {
 		global $langs;
 
 		$interval0day = '0 DAY';
@@ -2836,12 +2855,10 @@ class Agsession extends CommonObject
 		if ($this->db->type == 'pgsql') {
 			$interval0day = "'0 DAYS'";
 			$interval3day = "'3 DAYS'";
-			;
 			$interval8day = "'8 DAYS'";
-			;
 		}
 
-		$sql = "SELECT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
+		$sql = "SELECT s.rowid, s.entity, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.date_res_trainer, s.color, ";
 		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
@@ -2954,6 +2971,7 @@ class Agsession extends CommonObject
 					$line = new AgfSessionLineTask();
 
 					$line->rowid = $obj->rowid;
+					$line->entity = $obj->entity;
 					$line->socid = $obj->fk_soc;
 					$line->socname = $obj->socname;
 					$line->trainerrowid = $obj->trainerrowid;
@@ -3011,13 +3029,13 @@ class Agsession extends CommonObject
 	 * @param int $limit page
 	 * @param int $offset
 	 * @param array $filter output
-	 * @param user $user current user
+	 * @param User $user current user
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all_inter($sortorder, $sortfield, $limit, $offset, $filter = '', $user = 0) {
+	public function fetch_all_inter($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = null) {
 		global $langs;
 
-		$sql = "SELECT s.rowid, s.fk_session_place, s.dated, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, s.date_res_site, s.date_res_confirm_site, ";
+		$sql = "SELECT s.rowid, s.entity, s.fk_session_place, s.dated, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, s.date_res_site, s.date_res_confirm_site, ";
 		$sql .= " s.color, ";
 		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
@@ -3105,6 +3123,7 @@ class Agsession extends CommonObject
 					$line = new AgfSessionLineInter();
 
 					$line->id = $obj->rowid;
+					$line->entity = $obj->entity;
 					$line->fk_session_place = $obj->fk_session_place;
 					$line->dated = $this->db->jdate($obj->dated);
 					$line->color = $obj->color;
@@ -3168,10 +3187,10 @@ class Agsession extends CommonObject
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all_by_soc($socid, $sortorder, $sortfield, $limit, $offset, $filter = '') {
+	public function fetch_all_by_soc($socid, $sortorder, $sortfield, $limit, $offset, $filter = array()) {
 		global $conf, $langs, $user;
 
-		$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
+		$sql = "SELECT DISTINCT s.rowid, s.entity, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef, s.status, dictstatus.intitule as statuslib, dictstatus.code as statuscode, ";
 		$sql .= " s.date_res_trainer, s.color, ";
 		$sql .= " s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.rowid as forma_id, c.intitule, c.ref,c.ref_interne as trainingrefinterne,s.nb_subscribe_min,";
@@ -3202,6 +3221,7 @@ class Agsession extends CommonObject
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as ucom";
 		$sql .= " ON ucom.rowid = sale.fk_user_com";
 
+		$type_affect = '';
 		if ($filter['type_affect'] == 'thirdparty') {
 			$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss";
 			$sql .= " ON s.rowid = ss.fk_session_agefodd";
@@ -3332,6 +3352,7 @@ class Agsession extends CommonObject
 					$line = new AgfSessionLineSoc();
 
 					$line->rowid = $obj->rowid;
+					$line->entity = $obj->entity;
 					$line->socid = $obj->fk_soc;
 					$line->socname = $obj->socname;
 					$line->trainerrowid = $obj->trainerrowid;
@@ -3383,18 +3404,15 @@ class Agsession extends CommonObject
 	 * @param string $sortfield field
 	 * @param int $limit page
 	 * @param int $offset
-	 * @param string $ordernum num linked
-	 * @param string $invoicenum num linked
+	 * @param string $orderid num linked
+	 * @param string $invoiceid num linked
 	 * @param string $propalid num linked
 	 * @param string $fourninvoiceid num linked
+	 * @param string $fournorderid num linked
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all_by_order_invoice_propal($sortorder='', $sortfield='s.rowid', $limit=0, $offset=0, $orderid = '', $invoiceid = '', $propalid = '', $fourninvoiceid = '', $fournorderid = '') {
-		global $langs;
-
-		$totalline=0;
-
-		$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+		$sql = "SELECT DISTINCT s.rowid, s.entity, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 		$sql .= " c.intitule, c.ref";
 		$sql .= " ,s.intitule_custo";
 		$sql .= " ,ord_inv.element_type";
@@ -3515,6 +3533,7 @@ class Agsession extends CommonObject
 					$line = new AgfInvoiceOrder();
 
 					$line->rowid = $obj->rowid;
+					$line->entity = $obj->entity;
 					$line->refsession = $obj->refsession;
 					$line->socid = $obj->fk_soc;
 					$line->type_session = $obj->type_session;
@@ -3559,7 +3578,7 @@ class Agsession extends CommonObject
 
 			if (! empty($fourninvoiceid)) {
 				//Add session link with supplier invoicie lines
-				$sql = "SELECT DISTINCT s.rowid, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
+				$sql = "SELECT DISTINCT s.rowid, s.entity, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 				$sql .= " c.intitule, c.ref";
 				$sql .= " ,s.intitule_custo";
 				$sql .= " ,s.duree_session,";
@@ -3603,6 +3622,7 @@ class Agsession extends CommonObject
 							$line = new AgfInvoiceOrder();
 
 							$line->rowid = $obj->rowid;
+							$line->entity = $obj->entity;
 							$line->socid = $obj->fk_soc;
 							$line->type_session = $obj->type_session;
 							$line->date_res_trainer = $this->db->jdate($obj->date_res_trainer);
@@ -3643,6 +3663,8 @@ class Agsession extends CommonObject
 
 	/**
 	 * Print table of session information
+	 *
+	 * @param bool $width_table
 	 */
 	public function printSessionInfo($width_table=true) {
 		global $form, $langs, $conf, $user;
@@ -3673,13 +3695,11 @@ class Agsession extends CommonObject
 		$socstatic = new Societe($this->db);
 		$contactstatic = new Contact($this->db);
 
-		$extrafields = new ExtraFields($this->db);
-		$extralabels = $extrafields->fetch_name_optionals_label($this->table_element);
 
-		print '<table id="session_card" class="border tableforfield" width="100%">';
+		print '<table id="session_card" class="border tableforfield" style="width: 100%">';
 /*
-        print '<div class="fichecenter"><table id="session_card" class="border tableforfield" width="100%">';
-		print '<tr class="order_ref"><td width="20%">' . $langs->trans("Ref") . '</td>';
+        print '<div class="fichecenter"><table id="session_card" class="border tableforfield" style="width: 100%">';
+		print '<tr class="order_ref"><td style="width: 20%">' . $langs->trans("Ref") . '</td>';
 		print '<td colspan="'.$colspan.'">' . $form->showrefnav($this, 'id', '', 1, 'rowid', 'id') . '</td></tr>';
 
 		print '<tr class="order_intitule"><td>' . $langs->trans("AgfFormIntitule") . '</td>';
@@ -3728,7 +3748,7 @@ class Agsession extends CommonObject
 
 		print "</td></tr>";
 
-		print '<tr class="order_customer"><td width="20%">' . $langs->trans("Customer") . '</td>';
+		print '<tr class="order_customer"><td style="width: 20%">' . $langs->trans("Customer") . '</td>';
 		print '	<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_soc)) && ($this->fk_soc > 0)) {
 
@@ -3753,7 +3773,7 @@ class Agsession extends CommonObject
 			print '</tr>';
 		}
 		if (! $user->rights->agefodd->session->trainer && empty($conf->global->AGF_DOT_NOT_MANAGE_REQUESTER)) {
-		print '<tr class="order_typeRequester"><td width="20%">' . $langs->trans("AgfTypeRequester") . '</td>';
+		print '<tr class="order_typeRequester"><td style="width: 20%">' . $langs->trans("AgfTypeRequester") . '</td>';
 		print '	<td colspan="'.$colspan.'">';
 		if ((! empty($this->fk_soc_requester)) && ($this->fk_soc_requester > 0)) {
 			$result = $socstatic->fetch($this->fk_soc_requester);
@@ -3808,7 +3828,7 @@ class Agsession extends CommonObject
 		print '<td colspan="'.$colspan.'"><a href="' . dol_buildpath('/agefodd/site/card.php', 1) . '?id=' . $this->placeid . '">' . $this->placecode . '</a></td></tr>';
 		}
 
-		print '<tr class="order_note"><td valign="top">' . $langs->trans("AgfNote") . '</td>';
+		print '<tr class="order_note"><td style="vertical-align: top">' . $langs->trans("AgfNote") . '</td>';
 		if (! empty($this->notes))
 			$notes = nl2br($this->notes);
 		else
@@ -3845,7 +3865,7 @@ class Agsession extends CommonObject
 		}
 
 		if (! $user->rights->agefodd->session->trainer){
-			print '<tr class="order_nbplaceavailable"><td width="20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
+			print '<tr class="order_nbplaceavailable"><td style="width: 20%">' . $langs->trans("AgfNumberPlaceAvailable") . '</td>';
 			print '<td colspan="'.$colspan.'">' . ((($this->nb_place - $this->nb_stagiaire) > 0) ? ($this->nb_place - $this->nb_stagiaire) : 0) . '/' . $this->nb_place . '</td></tr>';
 		}
 
@@ -3886,6 +3906,9 @@ class Agsession extends CommonObject
 		/*print '<tr class="order_status"><td>' . $langs->trans("AgfStatusSession") . '</td><td>';
 		print $this->statuslib . '</td></tr>';*/
 
+		$extrafields = new ExtraFields($this->db);
+		$extralabels = $extrafields->fetch_name_optionals_label($this->table_element);
+
 		if (! empty($extrafields->attribute_label)) {
 			print $this->showOptionals($extrafields);
 		}
@@ -3895,7 +3918,7 @@ class Agsession extends CommonObject
 
 
 		if ($width_table) {
-			print '<table class="border" width="100%">';
+			print '<table class="border" style="width: 100%">';
 		}
 
 		print '<tr class="order_calendrier">';
@@ -3909,10 +3932,10 @@ class Agsession extends CommonObject
 		$blocNumber = count($calendrier->lines);
 		$alertday = false;
 		if ($blocNumber < 1) {
-			print '<td  width="20%" valign="top" >' . $langs->trans("AgfCalendrier") . '</td>';
+			print '<td style="width: 20%; vertical-align: top">' . $langs->trans("AgfCalendrier") . '</td>';
 			print '<td colspan="' . $colspan . '" style="color:#313335;">' . $langs->trans("AgfNoCalendar") . '</td></tr>';
 		} else {
-			print '<td  width="20%" valign="top" style="border-bottom:0px;">' . $langs->trans("AgfCalendrier") . '</td>';
+			print '<td style="width: 20%; vertical-align: top; border-bottom: 0">' . $langs->trans("AgfCalendrier") . '</td>';
 			$old_date = 0;
 			$duree = 0;
 			$i=0;
@@ -3926,9 +3949,9 @@ class Agsession extends CommonObject
 				}
 				if ($line_cal->date_session != $old_date) {
 					if ($i > 0) {
-						print '</tr><tr ' . $styledisplay . '><td width="150px" style="border:0px;">&nbsp;</td>';
+						print '</tr><tr ' . $styledisplay . '><td style="width: 150px; border: 0">&nbsp;</td>';
 					}
-					print '<td width="150px">';
+					print '<td style="width: 150px">';
 					print dol_print_date($line_cal->date_session, 'daytext') . '</td><td>';
 				} else {
 					print ', ';
@@ -3953,9 +3976,10 @@ class Agsession extends CommonObject
 			}
 			if ((($this->duree_session * 3600) != $duree) && (empty($conf->glogal->AGF_NOT_DISPLAY_WARNING_TIME_SESSION))) {
 				print '<tr><td colspan=3>';
+				$textdurationwarning = '';
 				if (($this->duree_session * 3600) < $duree)
 					$textdurationwarning = $langs->trans("AgfCalendarSup");
-					if (($this->duree_session * 3600) > $duree)
+				if (($this->duree_session * 3600) > $duree)
 					$textdurationwarning = $langs->trans("AgfCalendarInf");
 				$min = floor($duree / 60);
 				$rmin = sprintf("%02d", $min % 60);
@@ -3996,9 +4020,9 @@ class Agsession extends CommonObject
 	/**
 	 * Return clicable link of object (with eventually picto)
 	 *
-	 * @param number $withpicto
+	 * @param int $withpicto
 	 * @param string $option
-	 * @param number $maxlength
+	 * @param int $maxlength
 	 * @param string $label
 	 * @param integer $save_lastsearch_value
 	 * @param string $morehtml
@@ -4462,11 +4486,12 @@ class Agsession extends CommonObject
 			}
 			$session_trainee = new Agefodd_session_stagiaire($this->db);
 			$session_trainee->fetch_stagiaire_per_session($this->id, $socid, 1);
-			if (count($session_trainee->lines) > 0) {
+			$nbtrainee = count($session_trainee->lines);
+			if ($nbtrainee > 0) {
+				$desc_trainee_head='';
 				$desc_trainee='';
 				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 					$desc_trainee .= "\n";
-					$nbtrainee = 0;
 					foreach ( $session_trainee->lines as $line ) {
 
 						if ($line->status_in_session != 5 && $line->status_in_session != 6) {
@@ -4482,7 +4507,6 @@ class Agsession extends CommonObject
 							} else {
 								$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
 							}
-							$nbtrainee ++;
 						}
 					}
 
@@ -4636,11 +4660,11 @@ class Agsession extends CommonObject
 	/**
 	 * getAvgPrice
 	 *
-	 * @param number $priceht
-	 * @param number $pricettc
-	 * @return number
+	 * @param float $priceht
+	 * @param float $pricettc
+	 * @return int
 	 */
-	public function getAvgPrice($priceht = 0, $pricettc = 0) {
+	public function getAvgPrice($priceht = 0.0, $pricettc = 0.0) {
 		global $conf, $langs;
 		// Calc nb hour of a session
 		require_once 'agefodd_session_calendrier.class.php';
@@ -4676,12 +4700,12 @@ class Agsession extends CommonObject
 	 * @param User $user that modify
 	 * @param int $socid id
 	 * @param int $from_financial_id id of financial element
-	 * @param number $amount to affect to session product
+	 * @param float $amount to affect to session product
 	 * @param string $from_financial_elementtype type of financial element
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function createInvoice($user, $socid, $from_financial_id = 0, $amount = 0, $from_financial_elementtype = 'propal') {
+	public function createInvoice($user, $socid, $from_financial_id = 0, $amount = 0.0, $from_financial_elementtype = 'propal') {
 		require_once (DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php');
 		require_once (DOL_DOCUMENT_ROOT . '/product/class/product.class.php');
@@ -4769,12 +4793,12 @@ class Agsession extends CommonObject
 
 			// Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
 			// For Intra entreprise you take all trainne
+			$find_trainee_by_OPCA = false;
 			$sessionOPCA = new Agefodd_opca($this->db);
+			$invoice_soc_id = null;
 			if (empty($conf->global->AGF_MANAGE_OPCA) || $this->type_session == 0) {
-				// For Intra entreprise you take all trainne
-				$find_trainee_by_OPCA = false;
+				// For Intra entreprise you take all trainee
 				$sessionOPCA->num_OPCA_file = $this->num_OPCA_file;
-				$invoice_soc_id = null;
 			} elseif ($this->type_session == 1) {
 
 				$result = $sessionOPCA->getOpcaSession($this->id);
@@ -4801,11 +4825,10 @@ class Agsession extends CommonObject
 				$session_trainee->fetch_stagiaire_per_session($this->id, $invoice_soc_id, 1);
 			}
 
-			if (count($session_trainee->lines) > 0) {
-
+			$nbtrainee = count($session_trainee->lines);
+			if ($nbtrainee > 0) {
 				if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 					$desc_trainee .= "\n";
-					$nbtrainee = 0;
 					$num_OPCA_file_array=array();
 					foreach ( $session_trainee->lines as $line ) {
 
@@ -4832,7 +4855,6 @@ class Agsession extends CommonObject
 								}
 							}
 							$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
-							$nbtrainee ++;
 						}
 					}
 				}
@@ -4863,7 +4885,7 @@ class Agsession extends CommonObject
 				$vat_src_code = $reg[1];
 				$tva_tx = preg_replace('/\s*\(.*\)/', '', $tva_tx);    // Remove code into vatrate.
 			}
-
+			
 			if (! empty($from_financial_id) && ! empty($from_financial_elementtype)) {
 				if ($from_financial_elementtype == 'propal') {
 					require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
@@ -5128,22 +5150,22 @@ class Agsession extends CommonObject
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "actioncomm as act ON act.fk_element=elem.fk_element ";
 		$sql .= " AND elem.element_type='propal' AND act.elementtype='propal'";
 		$sql .= " AND act.code='AC_PROPAL_SENTBYMAIL'";
-		$sql .= " AND elem.fk_session_agefodd=" . $this->rowid;
+		$sql .= " AND elem.fk_session_agefodd=" . $this->id;
 
 		dol_syslog(get_class($this) . "::findDateSendPropal", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
-				$returndate = $this->db->jdate($obj->maxdate);
+				return $this->db->jdate($obj->maxdate);
 			}
+			
+			return -1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::findDateSendPropal " . $this->error, LOG_ERR);
 			return - 1;
 		}
-
-		return $returndate;
 	}
 
 	/**
@@ -5156,26 +5178,26 @@ class Agsession extends CommonObject
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_element as elem";
 		$sql .= " INNER JOIN  " . MAIN_DB_PREFIX . "propal as propal ON propal.rowid=elem.fk_element ";
 		$sql .= " AND propal.fk_statut=2 AND elem.element_type='propal'";
-		$sql .= " AND elem.fk_session_agefodd=" . $this->rowid;
+		$sql .= " AND elem.fk_session_agefodd=" . $this->id;
 
 		dol_syslog(get_class($this) . "::findDateSignPropal", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
-				$returndate = $this->db->jdate($obj->maxdate);
+				return $this->db->jdate($obj->maxdate);
 			}
+
+			return -1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::findDateSignPropal " . $this->error, LOG_ERR);
 			return - 1;
 		}
-
-		return $returndate;
 	}
 
 	/**
-	 *
+	 * @param string $dateformat Format compatible with strftime() function
 	 * @return string
 	 */
 	public function libSessionDate($dateformat=''){
@@ -5346,7 +5368,7 @@ class Agsession extends CommonObject
 	/**
 	 *
 	 * @param int $status
-	 * @param number $mode
+	 * @param int $mode
 	 * @return string
 	 */
 	public static function getStaticLibStatut($status, $mode = 0) {
@@ -5391,6 +5413,8 @@ class Agsession extends CommonObject
 	        		case 6 :
 	        			$img_picto=img_picto('', 'statut3');
 	        			break;
+					default:
+						$img_picto='';
 	        	}
 
 				return $langs->trans('AgfStatusSession_' . $TAgSessionStatut[$status]) . "&nbsp;" . $img_picto;
@@ -5404,14 +5428,15 @@ class Agsession extends CommonObject
 	}
 
 	/**
+	 * NE PAS SUPPRIMER : utilisée par DocEdit
 	 *
 	 * @param Object $object_refletter
 	 * @param string $socid
-	 * @param string $obj_agefodd_convention
+	 * @param Agefodd_convention $obj_agefodd_convention
 	 * @param boolean $print_r
-	 * @param string $outputlangs
+	 * @param Translate $outputlangs
 	 */
-	function load_all_data_agefodd_session(&$object_refletter, $socid='', $obj_agefodd_convention='', $print_r=false, $outputlangs='') {
+	function load_all_data_agefodd_session(&$object_refletter, $socid='', $obj_agefodd_convention=null, $print_r=false, $outputlangs=null) {
 
 		global $db, $conf;
 
@@ -5436,7 +5461,7 @@ class Agsession extends CommonObject
 		if(empty($this->TStagiairesSessionPresent)) {
 			$this->TStagiairesSessionPresent = array();
 			if (is_array($this->TStagiairesSession) && count($this->TStagiairesSession)>0) {
-				foreach($stagiaires->lines as $linesta) {
+				foreach($this->TStagiairesSession as $linesta) {
 					if (($linesta->status_in_session == 3 || $linesta->status_in_session == 4)) {
 						$this->TStagiairesSessionPresent[]=$linesta;
 					}
@@ -5453,13 +5478,12 @@ class Agsession extends CommonObject
 			$this->convention_notes=dol_nl2br($obj_agefodd_convention->notes);
 			dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
 			if (is_array($obj_agefodd_convention->line_trainee) && count($obj_agefodd_convention->line_trainee) > 0) {
-				$nbstag = count($obj_agefodd_convention->line_trainee);
 				$stagiaires_session_conv = new Agefodd_session_stagiaire($this->db);
 
 				foreach ($obj_agefodd_convention->line_trainee as $trainee_session_id) {
 					$result = $stagiaires_session_conv->fetch($trainee_session_id);
 					if ($result < 0) {
-						setEventMessage($stagiaires->error, 'errors');
+						setEventMessage($stagiaires_session_conv->error, 'errors');
 					}
 					$stagiaire_conv = new Agefodd_stagiaire($this->db);
 					$result = $stagiaire_conv->fetch($stagiaires_session_conv->fk_stagiaire);
@@ -5490,8 +5514,6 @@ class Agsession extends CommonObject
 				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
-					$num = $this->db->num_rows($resql);
-
 					if ($obj = $this->db->fetch_object($resql)) {
 						$this->ref_findoc=$obj->ref;
 					}
@@ -5506,8 +5528,6 @@ class Agsession extends CommonObject
 				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
-					$num = $this->db->num_rows($resql);
-
 					if ($obj = $this->db->fetch_object($resql)) {
 						$this->ref_findoc=$obj->ref;
 					}
@@ -5522,8 +5542,6 @@ class Agsession extends CommonObject
 				dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
-					$num = $this->db->num_rows($resql);
-
 					if ($obj = $this->db->fetch_object($resql)) {
 						$this->ref_findoc=$obj->ref;
 					}
@@ -5667,7 +5685,6 @@ class Agsession extends CommonObject
 		}
 
 		// Chargement des horaires de la session
-		$TdatesText=array();
 		if(empty($this->THorairesSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 			$calendrier = new Agefodd_sesscalendar($this->db);
@@ -5676,6 +5693,7 @@ class Agsession extends CommonObject
 			if (is_array($calendrier->lines) && count($calendrier->lines)>0) {
 				$old_date='';
 				$this->dthour_text='';
+				$dates = array();
 				foreach ($calendrier->lines as $line) {
 					$dates[$line->date_session]=$line->date_session;
 
@@ -5700,12 +5718,13 @@ class Agsession extends CommonObject
 
 		$this->trainer_text='';
 		$trainerarray=array();
+		$trainerarray_invert=array();
 		if(empty($this->TFormateursSession)) {
 			dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 			$formateurs = new Agefodd_session_formateur($this->db);
 			$nbform = $formateurs->fetch_formateur_per_session($this->id);
 			$this->TFormateursSession = $formateurs->lines;
-			if (is_array($formateurs->lines) && count($formateurs->lines)>0) {
+			if (is_array($formateurs->lines) && $nbform > 0) {
 				foreach($formateurs->lines as $linetrainer) {
 					 $trainerarray[]= $linetrainer->lastname. ' '.$linetrainer->firstname;
 					 $trainerarray_invert[]= $linetrainer->firstname. ' '.$linetrainer->lastname;
@@ -5732,6 +5751,7 @@ class Agsession extends CommonObject
 		    if(empty($this->TFormationObjPeda) && count($formation->lines)>0) {
 
 		    	$this->TFormationObjPeda=$formation->lines;
+				$objpeda = array();
 
 		    	foreach($formation->lines as $lineobj) {
 		    		$objpeda[]=$lineobj->priorite.'-'.$lineobj->intitule;
@@ -5743,8 +5763,6 @@ class Agsession extends CommonObject
 		if(!empty($id_trainer)) {
 			$this->trainer_datehourtextline='';
 			$this->trainer_datetextline='';
-			$this->TFormateursSessionCal=array();
-			$trainercalarray=array();
 			dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
 			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 		    dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
@@ -5761,9 +5779,10 @@ class Agsession extends CommonObject
 			}
 			if (is_array($formateurs_cal->lines) && count($formateurs_cal->lines)>0) {
 				$old_date='';
+				$TFormateursSessionCal = array();
 				foreach($formateurs_cal->lines as $trainercalline) {
 					if ($trainercalline->date_session != $old_date) {
-						$this->TFormateursSessionCal[$trainercalline->date_session]=dol_print_date($trainercalline->date_session,'daytext');
+						$TFormateursSessionCal[$trainercalline->date_session]=dol_print_date($trainercalline->date_session,'daytext');
 						$this->trainer_datehourtextline .= "<br>";
 						$this->trainer_datehourtextline .= dol_print_date($trainercalline->date_session, 'daytext','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($trainercalline->heured, 'hour','tzuser',$langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($trainercalline->heuref, 'hour','tzuser',$langs);
 					} else {
@@ -5773,7 +5792,7 @@ class Agsession extends CommonObject
 					$old_date = $trainercalline->date_session;
 
 				}
-				$this->trainer_datetextline=implode(', ',$this->TFormateursSessionCal);
+				$this->trainer_datetextline=implode(', ', $TFormateursSessionCal);
 			} else {
 				$this->trainer_datehourtextline='';
 				$this->trainer_datetextline='';
@@ -5781,7 +5800,7 @@ class Agsession extends CommonObject
 
 			$this->formateur_session = $agf_session_trainer;
 			$formateur->fetch($agf_session_trainer->formid);
-			$this->formateur_session_societe = $formateurs->thirdparty;
+			$this->formateur_session_societe = $formateur->thirdparty;
 		}
 
 		if(!empty($id_session_trainee)) {
@@ -5790,9 +5809,6 @@ class Agsession extends CommonObject
 		    $trainee_session = new Agefodd_session_stagiaire($db);
 		    $trainee_session->fetch($id_session_trainee);
 		    if (!empty($trainee_session->fk_stagiaire)) {
-			    $trainee = new Agefodd_stagiaire($db);
-			    $trainee->fetch($trainee_session->fk_stagiaire);
-			    $this->stagiaire = $trainee;
 
 			    /***************Gestion des heures du participant sur la session (Pour les documents par participant)**************/
 
@@ -5802,7 +5818,7 @@ class Agsession extends CommonObject
 		    	if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar')) {
 
 					$agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
-					$agefoddsessionstagiaireheures->fetch_all_by_session($this->id, $trainee->id);
+					$agefoddsessionstagiaireheures->fetch_all_by_session($this->id, $trainee_session->fk_stagiaire);
 
 					if(!empty($agefoddsessionstagiaireheures->lines)) {
 						$hPresenceTotal = 0;
@@ -5916,9 +5932,10 @@ class Agsession extends CommonObject
 
 		$this->TTotalBySession = array();
 
+		$sql_filterSession='';
+
 		if ($use_lines) {
 			$TSessionIds=array();
-			$sql_filterSession='';
 			foreach($this->lines as $line) {
 				$TSessionIds[]=$line->id;
 			}
@@ -6165,6 +6182,7 @@ class AgfSocLine
 class AgfInvoiceOrder
 {
 	public $rowid;
+	public $entity;
 	public $socid;
 	public $type_session;
 	public $date_res_trainer;
@@ -6178,13 +6196,18 @@ class AgfInvoiceOrder
 	public $nb_stagiaire;
 	public $force_nb_stagiaire;
 	public $notes;
+	public $element_type;
+	public $id_element;
 	public $invoiceref;
 	public $orderref;
 	public $propalref;
 	public $duree_session;
 	public $intitule_custo;
 	public $fourninvoiceref;
+	public $fournorderref;
+	public $fk_user_com;
 	public $refsession;
+	public $agelemetnid;
 	public function __construct() {
 		return 1;
 	}
@@ -6196,9 +6219,12 @@ class AgfInvoiceOrder
 class AgfSessionLine
 {
 	public $rowid;
+	public $id;
+	public $entity;
 	public $sessionref;
 	public $socid;
 	public $socname;
+	public $fk_socpeople_client;
 	public $trainerrowid;
 	public $type_session;
 
@@ -6210,6 +6236,7 @@ class AgfSessionLine
 	public $intitule_custo;
 	public $trainer_ext_information;
 	public $ref;
+	public $training_ref_interne;
 	public $ref_interne;
 	public $color;
 	public $nb_stagiaire;
@@ -6222,7 +6249,6 @@ class AgfSessionLine
 	public $statuslib;
 	public $statuscode;
 	public $status_in_session;
-	public $realdurationsession;
 	public $duree_session;
 	public $status;
 	public $trainer_status;
@@ -6238,6 +6264,7 @@ class AgfSessionLine
 	public $socrequesterid;
 	public $socrequestername;
 	public $fk_socpeople_requester;
+	public $fk_socpeople_presta;
 	public $admin_task_close_session;
 	public $trainingcolor;
 	public $fk_soc_employer;
@@ -6247,6 +6274,11 @@ class AgfSessionLine
 	public $sell_price_planned;
 	public $cost_other_planned;
 	public $status_before_archive;
+	public $fk_product;
+	public $nb_place;
+	public $fk_user_com;
+	public $archivestatuslib;
+	public $array_options = array();
 	public function __construct() {
 		return 1;
 	}
@@ -6254,9 +6286,9 @@ class AgfSessionLine
 	/**
 	 * Return clicable link of object (with eventually picto)
 	 *
-	 * @param number $withpicto
+	 * @param int $withpicto
 	 * @param string $option
-	 * @param number $maxlength
+	 * @param int $maxlength
 	 * @param string $label
 	 * @param integer $save_lastsearch_value
 	 * @param string $morehtml
@@ -6278,6 +6310,7 @@ class AgfSessionLine
 class AgfSessionLineTask
 {
 	public $rowid;
+	public $entity;
 	public $socid;
 	public $socname;
 	public $trainerrowid;
@@ -6290,6 +6323,8 @@ class AgfSessionLineTask
 	public $intitule;
 	public $intitule_custo;
 	public $ref;
+	public $sessionref;
+	public $training_ref_interne;
 	public $ref_interne;
 	public $color;
 	public $nb_stagiaire;
@@ -6303,7 +6338,6 @@ class AgfSessionLineTask
 	public $statuslib;
 	public $statuscode;
 	public $status_in_session;
-	public $realdurationsession;
 	public $duree_session;
 	public $socrequesterid;
 	public $socrequestername;
@@ -6319,6 +6353,7 @@ class AgfSessionLineTask
 class AgfSessionLineSoc
 {
 	public $rowid;
+	public $entity;
 	public $socid;
 	public $socname;
 	public $trainerrowid;
@@ -6329,6 +6364,8 @@ class AgfSessionLineSoc
 	public $dated;
 	public $datef;
 	public $intitule;
+	public $training_id;
+	public $training_ref_interne;
 	public $ref;
 	public $ref_interne;
 	public $color;
@@ -6344,6 +6381,7 @@ class AgfSessionLineSoc
 	public $duree_session;
 	public $intitule_custo;
 	public $sessionref;
+	public $fk_user_com;
 	public function __construct() {
 		return 1;
 	}
@@ -6355,6 +6393,7 @@ class AgfSessionLineSoc
 class AgfSessionLineInter
 {
 	public $id;
+	public $entity;
 	public $fk_session_place;
 	public $dated;
 	public $status;
@@ -6384,7 +6423,8 @@ class AgfSessionLineInter
 	public $ffeenv;
 	public $invtrainer;
 	public $invroom;
-
+	public $date_res_site;
+	public $date_res_confirm_site;
 	public $sell_price;
 	public $fk_soc_employer;
 	public function __construct() {

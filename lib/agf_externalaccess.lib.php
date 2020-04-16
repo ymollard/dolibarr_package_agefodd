@@ -480,7 +480,7 @@ function getPageViewSessionListExternalAccess()
  * route => agefodd_session_card
  *
  * @param Agsession $agsession
- * @param Teacher $trainer
+ * @param Agefodd_teacher $trainer
  * @return string
  */
 function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
@@ -3244,7 +3244,7 @@ function downloadAgefoddTrainneeDoc(){
  * @param $agsession Agsession
  * @param $trainee Agefodd_stagiaire
  * @param $sessionStagiaire Agefodd_session_stagiaire
- * @param $calendrier Agefoddcalendrier
+ * @param $calendrier Agefodd_sesscalendar
  * @param $sessionstagiaireheures Agefoddsessionstagiaireheures
  */
 function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionStagiaire, $calendrier, $sessionstagiaireheures, &$errorsMsg = array())

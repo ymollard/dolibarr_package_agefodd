@@ -35,15 +35,23 @@ class Agefodd_sessadm extends CommonObject {
 	public $element = 'agefodd';
 	public $table_element = 'agefodd_session_adminsitu';
 	public $id;
+	public $fk_agefodd_session_admlevel;
+	public $fk_agefodd_session;
 	public $level_rank;
 	public $fk_parent_level;
 	public $indice;
 	public $intitule;
 	public $delais_alerte;
+	public $delais_alerte_end;
+	public $dated;
+	public $datef;
+	public $datea;
+	public $notes;
 	public $fk_user_author;
 	public $datec = '';
 	public $fk_user_mod;
 	public $tms = '';
+	public $archive;
 	public $lines = array ();
 	public $trigger_name;
 
@@ -225,8 +233,6 @@ class Agefodd_sessadm extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
@@ -273,8 +279,6 @@ class Agefodd_sessadm extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all($sess_id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.fk_agefodd_session_admlevel, s.fk_agefodd_session, s.intitule, s.delais_alerte_end,";
 		$sql .= " s.level_rank, s.fk_parent_level, s.indice, s.dated, s.datea, s.datef, s.notes, s.delais_alerte, s.archive";
@@ -287,7 +291,7 @@ class Agefodd_sessadm extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -333,8 +337,6 @@ class Agefodd_sessadm extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function info($id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -406,12 +408,10 @@ class Agefodd_sessadm extends CommonObject {
 	/**
 	 * Load Date of session in memory
 	 *
-	 * @param int $id delete
+	 * @param int $sessid agefodd_session id
 	 * @return int if KO, >0 if OK
 	 */
 	public function get_session_dated($sessid) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.dated, s.datef";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -442,8 +442,6 @@ class Agefodd_sessadm extends CommonObject {
 	 * @return int if KO, >0 if OK
 	 */
 	public function has_child($id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.rowid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as s";
@@ -471,13 +469,11 @@ class Agefodd_sessadm extends CommonObject {
 	/**
 	 * After a creation set the good parent id for action session
 	 *
-	 * @param $user int id that modify
+	 * @param $user User id that modify
 	 * @param $session_id int session to update
-	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function setParentActionId($user, $session_id) {
-		global $conf, $langs;
 		$error = 0;
 
 		// Update request
@@ -522,14 +518,13 @@ class Agefodd_sessadm extends CommonObject {
 	/**
 	 * Update by trigger name
 	 *
-	 * @param $user int id that modify
+	 * @param $user User id that modify
 	 * @param $session_id int session to update
 	 * @param $trigger_name string name of the trigger to update
 	 * @param $status int status to set
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function updateByTriggerName($user, $session_id, $trigger_name, $status = 1) {
-		global $conf, $langs;
 		$error = 0;
 
 		// Update request
@@ -566,13 +561,12 @@ class Agefodd_sessadm extends CommonObject {
 	/**
 	 * setAllStasus
 	 *
-	 * @param $user int id that modify
+	 * @param $user User id that modify
 	 * @param $session_id int session to update
 	 * @param  $status int status to set
 	 * @return number
 	 */
 	public function setAllStatus($user, $session_id, $status) {
-		global $conf, $langs;
 		$error = 0;
 
 		// Update request

@@ -41,9 +41,11 @@ class Agefodd_sesscalendar extends CommonObject{
 	public $sessid;
 	public $fk_actioncomm;
 	public $calendrier_type;
+	public $calendrier_type_label;
 	public $status = 0;
 	public $billed = 0;
 	public $lines = array ();
+	public $lines_place = array();
 
     // Attention Const need to be same as Agefoddsessionformateurcalendrier, take care of getListStatus
 	const STATUS_DRAFT = 0;
@@ -64,7 +66,6 @@ class Agefodd_sesscalendar extends CommonObject{
 
 	static function getListStatus()
 	{
-		global $langs;
 		return array (
 			self::STATUS_DRAFT 		=> self::getStaticLibStatut(self::STATUS_DRAFT),
 			self::STATUS_CONFIRMED 	=> self::getStaticLibStatut(self::STATUS_CONFIRMED),
@@ -95,7 +96,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	public function create($user, $notrigger = 0, $timeslottrainer = false) {
-		global $conf, $langs;
+		global $conf;
 		$error = 0;
 
 		// Clean parameters
@@ -389,12 +390,10 @@ class Agefodd_sesscalendar extends CommonObject{
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $actionid object
+	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as calendrier_type_label, s.billed ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
@@ -435,8 +434,6 @@ class Agefodd_sesscalendar extends CommonObject{
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_by_action($actionid) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.date_session, s.heured, s.heuref, s.fk_actioncomm, s.fk_agefodd_session, s.calendrier_type, s.status, d.label as 'calendrier_type_label', s.billed ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
@@ -515,8 +512,6 @@ class Agefodd_sesscalendar extends CommonObject{
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function info($id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.datec, s.tms, s.fk_user_author, s.fk_user_mod, s.calendrier_type, s.status, d.label as 'calendrier_type_label', s.billed ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_calendrier as s";
@@ -677,7 +672,7 @@ class Agefodd_sesscalendar extends CommonObject{
 			{
 				foreach ($agfssh->lines as &$line)
 				{
-					$line->delete($user);
+					$r = $line->delete($user);
 					if ($r < 0) $error++;
 				}
 			}
@@ -719,14 +714,20 @@ class Agefodd_sesscalendar extends CommonObject{
 
 		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$result = $this->fetch($id);
+		
+		if ($result < 0) {
+			$this->error = 'Error deleting id ' . $id . ' : ' . $this->error;
+			return -1;
+		}
+
 		return $this->delete($user);
 	}
 
 	/**
 	 * Create Action in Dolibarr Agenda
 	 *
-	 * @param int			fk_session_place Location of session
 	 * @param User $user that modify
+	 * @return int <0 if KO, >0 if OK
 	 */
 	public function createAction($user) {
 		global $conf, $langs;
@@ -775,7 +776,6 @@ class Agefodd_sesscalendar extends CommonObject{
 			$result = $action->create($user);
 
 			if ($result < 0) {
-				$error ++;
 				dol_syslog(get_class($this) . "::createAction " . $action->error, LOG_ERR);
 				return - 1;
 			} else {
@@ -791,6 +791,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	 * update Action in Dolibarr Agenda
 	 *
 	 * @param User $user that modify
+	 * @return int <0 if KO, >0 if OK
 	 */
 	public function updateAction($user) {
 		global $conf, $langs;
@@ -847,8 +848,6 @@ class Agefodd_sesscalendar extends CommonObject{
 			}
 
 			if ($result < 0) {
-				$error ++;
-
 				dol_syslog(get_class($this) . "::updateAction " . $action->error, LOG_ERR);
 				return - 1;
 			} else {
@@ -909,7 +908,7 @@ class Agefodd_sesscalendar extends CommonObject{
 
 	/**
 	 * @param int $sessid Id de la session
-	 * Retourne le nombre de créneaux du calendrier marqués "facturé"
+	 * @return int Retourne le nombre de créneaux du calendrier marqués "facturé"
 	 */
 	public static function countBilledshedule($sessid)
 	{
@@ -930,7 +929,7 @@ class Agefodd_sesscalendar extends CommonObject{
 
 	/**
 	 * @param int $sessid Id de la session
-	 * Retourne le nombre de créneaux du calendrier de session
+	 * @return int Retourne le nombre de créneaux du calendrier de session
 	 */
 	public static function countTotalshedule($sessid)
 	{
