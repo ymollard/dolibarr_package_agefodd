@@ -76,7 +76,7 @@ class box_agefodd_lastsession extends ModeleBoxes {
 		if ($result < 0) {
 			setEventMessage($agf->error, 'errors');
 		} else {
-			$num = count($agf->line);
+			$num = count($agf->lines);
 			foreach($agf->lines as $key=>$line) {
 
 				$this->info_box_contents[$key][0] = array(
