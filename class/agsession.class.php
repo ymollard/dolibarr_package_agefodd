@@ -2033,6 +2033,13 @@ class Agsession extends CommonObject
 		}
 
 		if (! $error) {
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$session_elem = new Agefodd_session_element($this->db);
+			$session_elem->fk_session_agefodd = $this->id;
+			if ($session_elem->updateSellingPrice($user) <= 0) {
+				$error++;
+				$this->errors[] = 'Error while updating the sell_price on session ' . $this->id;
+			}
 			if (! empty($conf->global->AGF_AUTO_ACT_ADMIN_UPD)) {
 				if ((dol_strlen($this->date_res_site) != 0) ) {
 					dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
