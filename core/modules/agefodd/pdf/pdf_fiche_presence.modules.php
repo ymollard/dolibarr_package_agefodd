@@ -113,6 +113,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->trainee_widthtimeslot = 24.7;
 		}
 
+		$this->height_for_footer = 40;
+
 		$this->nbtimeslots = 6;
 
 		$this->h_ligne = 10;
@@ -223,9 +225,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$tplidx = $pdf->importPage(1);
 		}
 
-		$height_for_footer = 40;
 		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER))
-			$height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
+			$this->height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
 
 		if (!empty($conf->multicompany->enabled)) {
 			dol_include_once('/multicompany/class/dao_multicompany.class.php');
@@ -349,7 +350,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				}
 
 				$posY = $pdf->GetY();
-				if ($posY > $this->page_hauteur - $height_for_footer) {
+				if ($posY > $this->page_hauteur - $this->height_for_footer) {
 					$this->_pagefoot($pdf, $agf, $outputlangs);
 					$pdf->AddPage();
 					if (!empty($tplidx))
@@ -359,19 +360,22 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			}
 
 			// Cachet et signature
-			$posY += 2;
-			$posX -= 2;
-			$pdf->SetXY($posX, $posY);
-			$str = $outputlangs->transnoentities('AgfPDFFichePres20');
-			$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+			if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES))
+			{
+				$posY += 2;
+				$posX -= 2;
+				$pdf->SetXY($posX, $posY);
+				$str = $outputlangs->transnoentities('AgfPDFFichePres20');
+				$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
-			$pdf->SetXY($posX + 55, $posY);
-			$str = $outputlangs->transnoentities('AgfPDFFichePres21') . dol_print_date($agf->datef);
-			$pdf->Cell(20, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+				$pdf->SetXY($posX + 55, $posY);
+				$str = $outputlangs->transnoentities('AgfPDFFichePres21') . dol_print_date($agf->datef);
+				$pdf->Cell(20, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
-			$pdf->SetXY($posX + 92, $posY);
-			$str = $outputlangs->transnoentities('AgfPDFFichePres22');
-			$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+				$pdf->SetXY($posX + 92, $posY);
+				$str = $outputlangs->transnoentities('AgfPDFFichePres22');
+				$pdf->Cell(50, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+			}
 
 			$posY = $pdf->GetY();
 
@@ -550,12 +554,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		// Intitulé
 		$pdf->SetXY($posX, $posY);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9);
 		$str = $outputlangs->transnoentities('AgfPDFFichePres6');
 		$pdf->Cell($this->formation_widthcol1, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
 		$pdf->SetXY($posX + $this->formation_widthcol1, $posY);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 
 		if (empty($agf->intitule_custo)) {
 			$str = '« ' . $agf->formintitule . ' »';
@@ -568,7 +572,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		// Période
 		$pdf->SetXY($posX, $posY);
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9);
 		$str = $outputlangs->transnoentities('AgfPDFFichePres7');
 		$pdf->Cell($this->formation_widthcol1, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
@@ -577,6 +581,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$str .= ' (' . $agf->duree_session . ' h)';
 
 		$pdf->SetXY($posX + $this->formation_widthcol1, $posY);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		$pdf->MultiCell($this->formation_widthcol2, 4, $outputlangs->convToOutputCharset($str), 0, 'L');
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
 		$haut_col2 += $hauteur + 2;
@@ -584,13 +589,15 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		// Lieu
 		$pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posYintitule);
 		$str = $outputlangs->transnoentities('AgfPDFFichePres11');
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9);
 		$pdf->Cell($this->formation_widthcol3, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
 		$agf_place = new Agefodd_place($this->db);
 		$resql = $agf_place->fetch($agf->placeid);
 
-		$pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2 + $this->formation_widthcol3, $posYintitule);
+		$pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2 + $this->formation_widthcol3 +2 , $posYintitule);
 		$str = $agf_place->ref_interne . "\n" . $agf_place->adresse . "\n" . $agf_place->cp . " " . $agf_place->ville;
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		$pdf->MultiCell($this->formation_widthcol4, 4, $outputlangs->convToOutputCharset($str), 0, 'L');
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
 		$posY += $hauteur + 3;
