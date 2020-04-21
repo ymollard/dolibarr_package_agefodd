@@ -217,8 +217,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	{
 		global $conf, $mysoc;
 
-		$nbsta_index = 1;
-
 		// Set path to the background PDF File
 		if (empty($conf->global->MAIN_DISABLE_FPDI) && !empty($conf->global->AGF_ADD_PDF_BACKGROUND_P)) {
 			$pagecount = $pdf->setSourceFile($conf->agefodd->dir_output . '/background/' . $conf->global->AGF_ADD_PDF_BACKGROUND_P);
@@ -263,105 +261,27 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			/**
 			 * *** Bloc stagiaire ****
 			 */
-			list($posY, $posX) = $this->printTraineeBlockHeader($pdf, $posX, $posY, $outputlangs, $dates_array);
+			$this->stagiaires = new Agefodd_session_stagiaire($this->db);
+			$resql = $this->stagiaires->fetch_stagiaire_per_session($agf->id);
 
-
-			$agfsta = new Agefodd_session_stagiaire($this->db);
-			$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
-
-			// ligne
+			// nom de l'entité
 			if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
 				$this->h_ligne = $this->h_ligne + 3;
 			}
+
+			// date d'aniversaire du stagiaire
 			if (!empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
 				$this->h_ligne = $this->h_ligne + 3;
 			}
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 
-			foreach ($agfsta->lines as $staline_key => $line) {
-
-				if (!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
-					$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
-					$status_stagiaire = (int)$line->status_in_session;
-					if (in_array($status_stagiaire, $TStagiaireStatusToExclude))
-						continue;
-				}
-
-				if (!empty($conf->global->AGF_ADD_INDEX_TRAINEE)) {
-					$str = $nbsta_index . '. ';
-				} else {
-					$str = '';
-				}
-
-				$nbsta_index++;
-				// Cadre
-				$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne);
-
-				// Nom
-				$pdf->SetXY($posX - 2, $posY);
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-
-				if (!empty($line->civilite)) {
-					if ($line->civilite == 'MR') {
-						$str .= 'M. ';
-					} elseif ($line->civilite == 'MME' || $line->civilite == 'MLE') {
-						$str .= 'Mme. ';
-					} else {
-						$str .= $line->civilite . ' ';
-					}
-				}
-				$str .= $line->nom . ' ' . $line->prenom;
-				if (!empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
-					$str .= ' (' . $line->poste . ')';
-				}
-				if (!empty($line->date_birth) && !empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
-					$outputlangs->load("other");
-					$str .= "\n" . $outputlangs->trans('DateToBirth') . ' : ' . dol_print_date($line->date_birth, 'day');
-				}
-
-				if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
-					if (!empty($line->socname)) {
-						$str .= '-' . dol_trunc($line->socname, 27);
-					}
-				}
-
-				if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
-					$c = new Societe($this->db);
-					$c->fetch($line->socid);
-
-					if (count($dao->entities) > 0) {
-						foreach ($dao->entities as $e) {
-							if ($e->id == $c->entity) {
-								$str .= "\n" . $outputlangs->trans('Entity') . ' : ' . $e->label;
-								break;
-							}
-						}
-					}
-				}
-				$pdf->MultiCell($this->trainee_widthcol1 + 2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
-
-				// Société
-				if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
-					$pdf->SetXY($posX + $this->trainee_widthcol1, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
-					$str = dol_trunc($line->socname, 27);
-					$pdf->MultiCell($this->trainee_widthcol2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "C", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
-				}
-
-				for ($i = 0; $i < $this->nbtimeslots - 1; $i++) {
-					$pdf->Rect($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + $this->trainee_widthtimeslot * $i, $posY, $this->trainee_widthtimeslot, $this->h_ligne);
-				}
-
-				$posY = $pdf->GetY();
-				if ($posY > $this->page_hauteur - $this->height_for_footer) {
-					$this->_pagefoot($pdf, $agf, $outputlangs);
-					$pdf->AddPage();
-					if (!empty($tplidx))
-						$pdf->useTemplate($tplidx);
-					list($posY, $posX) = $this->_pagehead($pdf, $outputlangs, $agf, $dates_array);
-					if ($staline_key < count($agfsta->lines) -1) list($posY, $posX) = $this->printTraineeBlockHeader($pdf, $posX, $posY, $outputlangs, $dates_array);
-				}
+			if (!empty($this->stagiaires->lines))
+			{
+				list($posY, $posX) = $this->printTraineeBlockHeader($pdf, $posX, $posY, $outputlangs, $dates_array);
+				list($posY, $posX) = $this->printTraineeBlockLines($pdf, $posX, $posY, $outputlangs, $dates_array, $agf);
 			}
+
+
 
 			// Cachet et signature
 			if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES))
@@ -492,6 +412,108 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$last_day = $dates_array[$y]->date_session;
 		}
 		$posY = $pdf->GetY();
+
+		return array($posY, $posX);
+	}
+
+	/**
+	 * @param TCPDF $pdf pdf
+	 * @param $posX
+	 * @param $posY
+	 * @param Translate $outputlangs outputlangs
+	 * @param $dates_array
+	 * @return array
+	 */
+	function printTraineeBlockLines(&$pdf, $posX, $posY, $outputlangs, $dates_array, $agf)
+	{
+		global $conf, $dao;
+
+		$nbsta_index = 1;
+
+		foreach ($this->stagiaires->lines as $staline_key => $line) {
+
+			if (!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
+				$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+				$status_stagiaire = (int)$line->status_in_session;
+				if (in_array($status_stagiaire, $TStagiaireStatusToExclude))
+					continue;
+			}
+
+			if (!empty($conf->global->AGF_ADD_INDEX_TRAINEE)) {
+				$str = $nbsta_index . '. ';
+			} else {
+				$str = '';
+			}
+
+			$nbsta_index++;
+			// Cadre
+			$pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne);
+
+			// Nom
+			$pdf->SetXY($posX - 2, $posY);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+
+			if (!empty($line->civilite)) {
+				if ($line->civilite == 'MR') {
+					$str .= 'M. ';
+				} elseif ($line->civilite == 'MME' || $line->civilite == 'MLE') {
+					$str .= 'Mme. ';
+				} else {
+					$str .= $line->civilite . ' ';
+				}
+			}
+			$str .= $line->nom . ' ' . $line->prenom;
+			if (!empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
+				$str .= ' (' . $line->poste . ')';
+			}
+			if (!empty($line->date_birth) && !empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
+				$outputlangs->load("other");
+				$str .= "\n" . $outputlangs->trans('DateToBirth') . ' : ' . dol_print_date($line->date_birth, 'day');
+			}
+
+			if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
+				if (!empty($line->socname)) {
+					$str .= '-' . dol_trunc($line->socname, 27);
+				}
+			}
+
+			if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+				$c = new Societe($this->db);
+				$c->fetch($line->socid);
+
+				if (count($dao->entities) > 0) {
+					foreach ($dao->entities as $e) {
+						if ($e->id == $c->entity) {
+							$str .= "\n" . $outputlangs->trans('Entity') . ' : ' . $e->label;
+							break;
+						}
+					}
+				}
+			}
+			$pdf->MultiCell($this->trainee_widthcol1 + 2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
+
+			// Société
+			if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
+				$pdf->SetXY($posX + $this->trainee_widthcol1, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+				$str = dol_trunc($line->socname, 27);
+				$pdf->MultiCell($this->trainee_widthcol2, $this->h_ligne, $outputlangs->convToOutputCharset($str), 1, "C", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
+			}
+
+			for ($i = 0; $i < $this->nbtimeslots - 1; $i++) {
+				$pdf->Rect($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + $this->trainee_widthtimeslot * $i, $posY, $this->trainee_widthtimeslot, $this->h_ligne);
+			}
+
+			$posY = $pdf->GetY();
+			if ($posY > $this->page_hauteur - $this->height_for_footer) {
+				$this->_pagefoot($pdf, $agf, $outputlangs);
+				$pdf->AddPage();
+				if (!empty($tplidx))
+					$pdf->useTemplate($tplidx);
+				list($posY, $posX) = $this->_pagehead($pdf, $outputlangs, $agf, $dates_array);
+				if ($staline_key < count($this->stagiaires->lines) -1) list($posY, $posX) = $this->printTraineeBlockHeader($pdf, $posX, $posY, $outputlangs, $dates_array);
+			}
+		}
 
 		return array($posY, $posX);
 	}
