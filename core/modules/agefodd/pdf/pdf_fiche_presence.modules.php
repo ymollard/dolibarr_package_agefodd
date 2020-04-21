@@ -253,17 +253,19 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$session_hours[] = $this->agf_date->lines;
 		}
 
-		foreach ($session_hours as $key => $lines_array) {
+		foreach ($session_hours as $key => $dates_array) {
 			// New page
 			$pdf->AddPage();
 			if (!empty($tplidx))
 				$pdf->useTemplate($tplidx);
-			list($posY, $posX) = $this->_pagehead($pdf, $outputlangs, $agf, $lines_array);
-			list($posY, $posX) = $this->printTraineeBlockHeader($pdf, $posX, $posY, $outputlangs, $lines_array);
+			list($posY, $posX) = $this->_pagehead($pdf, $outputlangs, $agf, $dates_array);
 
 			/**
 			 * *** Bloc stagiaire ****
 			 */
+			list($posY, $posX) = $this->printTraineeBlockHeader($pdf, $posX, $posY, $outputlangs, $dates_array);
+
+
 			$agfsta = new Agefodd_session_stagiaire($this->db);
 			$resql = $agfsta->fetch_stagiaire_per_session($agf->id);
 
@@ -356,8 +358,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 					$pdf->AddPage();
 					if (!empty($tplidx))
 						$pdf->useTemplate($tplidx);
-					list($posY, $posX) = $this->_pagehead($pdf, $outputlangs, $agf, $lines_array);
-					if ($staline_key < count($agfsta->lines) -1) list($posY, $posX) = $this->printTraineeBlockHeader($pdf, $posX, $posY, $outputlangs, $lines_array);
+					list($posY, $posX) = $this->_pagehead($pdf, $outputlangs, $agf, $dates_array);
+					if ($staline_key < count($agfsta->lines) -1) list($posY, $posX) = $this->printTraineeBlockHeader($pdf, $posX, $posY, $outputlangs, $dates_array);
 				}
 			}
 
@@ -402,10 +404,10 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 * @param $posX
 	 * @param $posY
 	 * @param Translate $outputlangs outputlangs
-	 * @param $lines_array
+	 * @param $dates_array
 	 * @return array
 	 */
-	function printTraineeBlockHeader(&$pdf, $posX, $posY, $outputlangs, $lines_array)
+	function printTraineeBlockHeader(&$pdf, $posX, $posY, $outputlangs, $dates_array)
 	{
 		global $conf;
 		/**
@@ -454,21 +456,21 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$same_day = 0;
 		$nbTimeSlots = $this->nbtimeslots;
 		$timeSlotWidth = $this->trainee_widthtimeslot;
-		if (!empty($lines_array) && count($lines_array) < $this->nbtimeslots ) {
-			$nbTimeSlots = count($lines_array);
+		if (!empty($dates_array) && count($dates_array) < $this->nbtimeslots ) {
+			$nbTimeSlots = count($dates_array);
 			$timeSlotWidth = ($this->espaceH_dispo - 2 - $this->trainee_widthcol1 - (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES) ? $this->trainee_widthcol2 : 0)) / $nbTimeSlots;
 		}
 		for ($y = 0; $y < $nbTimeSlots; $y++) {
 			// Jour
 			$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + ($timeSlotWidth * $y), $posY);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
-			if ($lines_array[$y]->date_session) {
-				$date = dol_print_date($lines_array[$y]->date_session, 'daytextshort');
+			if ($dates_array[$y]->date_session) {
+				$date = dol_print_date($dates_array[$y]->date_session, 'daytextshort');
 			} else {
 				$date = '';
 			}
 			$str = $date;
-			if ($last_day == $lines_array[$y]->date_session) {
+			if ($last_day == $dates_array[$y]->date_session) {
 				$same_day += 1;
 				$pdf->SetFillColor(255, 255, 255);
 			} else {
@@ -479,15 +481,15 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 			// horaires
 			$pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2 + ($timeSlotWidth * $y), $posY + 4);
-			if ($lines_array[$y]->heured && $lines_array[$y]->heuref) {
-				$str = dol_print_date($lines_array[$y]->heured, 'hour') . ' - ' . dol_print_date($lines_array[$y]->heuref, 'hour');
+			if ($dates_array[$y]->heured && $dates_array[$y]->heuref) {
+				$str = dol_print_date($dates_array[$y]->heured, 'hour') . ' - ' . dol_print_date($dates_array[$y]->heuref, 'hour');
 			} else {
 				$str = '';
 			}
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
 			$pdf->Cell($timeSlotWidth, 4, $outputlangs->convToOutputCharset($str), 1, 2, "C", 0);
 
-			$last_day = $lines_array[$y]->date_session;
+			$last_day = $dates_array[$y]->date_session;
 		}
 		$posY = $pdf->GetY();
 
@@ -499,7 +501,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 * @param Translate $outputlangs outputlangs
 	 * @return void
 	 */
-	function _pagehead(&$pdf, $outputlangs, $agf, $lines_array, $noTrainer = 0)
+	function _pagehead(&$pdf, $outputlangs, $agf, $dates_array, $noTrainer = 0)
 	{
 		global $conf, $mysoc;
 
@@ -742,21 +744,21 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$same_day = 0;
 			$nbTimeSlots = $this->nbtimeslots;
 			$timeSlotWidth = $this->trainer_widthtimeslot;
-			if (!empty($lines_array) && count($lines_array) < $this->nbtimeslots) {
-				$nbTimeSlots = count($lines_array);
+			if (!empty($dates_array) && count($dates_array) < $this->nbtimeslots) {
+				$nbTimeSlots = count($dates_array);
 				$timeSlotWidth = ($this->espaceH_dispo - 2 - $this->trainer_widthcol1) / $nbTimeSlots;
 			}
 			for ($y = 0; $y < $nbTimeSlots; $y++) {
 				// Jour
 				$pdf->SetXY($posX + $this->trainer_widthcol1 + ($timeSlotWidth * $y), $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 8);
-				if ($lines_array[$y]->date_session) {
-					$date = dol_print_date($lines_array[$y]->date_session, 'daytextshort');
+				if ($dates_array[$y]->date_session) {
+					$date = dol_print_date($dates_array[$y]->date_session, 'daytextshort');
 				} else {
 					$date = '';
 				}
 				$str = $date;
-				if ($last_day == $lines_array[$y]->date_session) {
+				if ($last_day == $dates_array[$y]->date_session) {
 					$same_day += 1;
 					$pdf->SetFillColor(255, 255, 255);
 				} else {
@@ -767,15 +769,15 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 				// horaires
 				$pdf->SetXY($posX + $this->trainer_widthcol1 + ($timeSlotWidth * $y), $posY + 4);
-				if ($lines_array[$y]->heured && $lines_array[$y]->heuref) {
-					$str = dol_print_date($lines_array[$y]->heured, 'hour') . ' - ' . dol_print_date($lines_array[$y]->heuref, 'hour');
+				if ($dates_array[$y]->heured && $dates_array[$y]->heuref) {
+					$str = dol_print_date($dates_array[$y]->heured, 'hour') . ' - ' . dol_print_date($dates_array[$y]->heuref, 'hour');
 				} else {
 					$str = '';
 				}
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
 				$pdf->Cell($timeSlotWidth, 4, $outputlangs->convToOutputCharset($str), 1, 2, "C", 0);
 
-				$last_day = $lines_array[$y]->date_session;
+				$last_day = $dates_array[$y]->date_session;
 			}
 			$posY = $pdf->GetY();
 
