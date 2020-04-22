@@ -536,7 +536,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 				// If session creation are ok
 				// We create admnistrative task associated
 				$result = $agf->createAdmLevelForSession($user);
-				if ($result > 0) {
+				if ($result < 0) {
 					setEventMessage($agf->error, 'errors');
 					$error ++;
 				}
