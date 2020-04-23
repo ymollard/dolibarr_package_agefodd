@@ -134,11 +134,12 @@ if (!empty($massaction))
 						}
 
 						if (! $error) {
+
 							//Update also trainer time for status only
 							$TTrainerCalendar = _getCalendrierFormateurFromCalendrier($calrem);
 							if (is_array($TTrainerCalendar) && count($TTrainerCalendar)>0) {
 								foreach($TTrainerCalendar as $tainercal) {
-									$tainercal->status=GETPOST('calendar_status');
+									$tainercal->status=$statusToSet;
 									$result = $tainercal->update($user);
 									if ($result < 0) {
 										$error++;
