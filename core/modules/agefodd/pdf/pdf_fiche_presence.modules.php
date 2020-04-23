@@ -772,7 +772,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
 		$posY += $hauteur;
-		$haut_col4 += $hauteur + 7;
+		$haut_col4 += $hauteur + 4;
 
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
