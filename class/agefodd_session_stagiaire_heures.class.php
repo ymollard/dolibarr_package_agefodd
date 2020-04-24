@@ -472,6 +472,10 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        while($obj = $this->db->fetch_object($resql)) {
 	            $result += $this->heures_stagiaire($obj->sessid, $trainee);
 	        }
+	    } else {
+		    $this->error = "Error " . $this->db->lasterror();
+		    dol_syslog(get_class($this) . ":: ".__METHOD__ . $this->error, LOG_ERR);
+		    return - 1;
 	    }
 
 	    return $result;
@@ -537,6 +541,10 @@ class Agefoddsessionstagiaireheures extends CommonObject
 
             return $TRes;
 
+        } else {
+        	$this->error = "Error " . $this->db->lasterror();
+		    dol_syslog(get_class($this) . ":: ".__METHOD__ . $this->error, LOG_ERR);
+		    return - 1;
         }
 
         return 0;
@@ -574,13 +582,13 @@ class Agefoddsessionstagiaireheuresline
     public $fk_calendrier;
     public $fk_session;
     public $heures;
-    
-    
+
+
     public function __construct($db)
 	{
 		$this->db = $db;
 	}
-	
+
 	/**
      * Delete object (trainne in session) in database
      *
