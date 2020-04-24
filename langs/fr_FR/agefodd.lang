@@ -1710,3 +1710,4 @@ AgfMailToSendAttestationPresence=Module formation - Pour l'envoi de l'attestatio
 
 AgfDefaultRelationLinkSelectedOnThirdPartyTrainingSession=Type de relation par défaut dans l'onglet session de formation d'un tier
 EndHour = Heure de fin
+AgfCloneLinkedFiles=Cloner les fichiers joints ?

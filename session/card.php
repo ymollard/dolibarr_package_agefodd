@@ -657,6 +657,24 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 					}
 				}
 			}
+
+			if (GETPOST('clone_linkedFiles'))
+			{
+				$upload_dir = $conf->agefodd->dir_output . "/" . $agf->id;
+				$dest_dir = $conf->agefodd->dir_output . "/" . $result;
+				dol_mkdir($dest_dir);
+
+				$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', "name", SORT_ASC, 1);
+				if (!empty($filearray))
+				{
+					foreach ($filearray as $file_orig)
+					{
+						$res_copy = dol_copy($file_orig['fullname'], $dest_dir.'/'.$file_orig['name']);
+						if ($res_copy <= 0) { var_dump($res_copy, $file_orig['fullname'], $dest_dir.'/'.$file_orig['name']); exit;}
+					}
+				}
+
+			}
 			header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . $result);
 			exit();
 		} else {
@@ -1314,6 +1332,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 										'name' => 'clone_trainer',
 										'label' => $langs->trans("AgfCloneSessionTrainer"),
 										'value' => 1
+								),
+								array(
+										'type' => 'checkbox',
+										'name' => 'clone_linkedFiles',
+										'label' => $langs->trans("AgfCloneLinkedFiles"),
+										'value' => 0
 								)
 						);
 						print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("CloneSession"), $langs->trans("ConfirmCloneSession"), "confirm_clone", $formquestion, '', 1);
