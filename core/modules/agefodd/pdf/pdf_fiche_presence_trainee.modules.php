@@ -667,9 +667,11 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 
 		$posY_trainer = $this->pdf->GetY();
 		$posX_trainer = $posX + $this->larg_col1 + $this->larg_col2 + $this->larg_col3;
-		$first_trainer_posx = $posX_trainer;
 		if ($this->nbFormateurs > 0)
 		{
+			$nbForm = $this->nbFormateurs;
+			if ($nbForm > 4) $nbForm = 4;
+			$i = 1;
 			foreach ( $this->formateurs->lines as $trainer_line ) {
 				$this->pdf->SetXY($posX_trainer, $posY_trainer);
 				$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 7);
@@ -678,7 +680,10 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				// $w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y=''
 
 				$posY = $this->pdf->GetY();
-				$posX_trainer += 30;
+				$posX_trainer += $this->larg_col4/$nbForm;
+				$i++;
+
+				if ($i > $nbForm) break;
 			}
 		}
 
@@ -766,15 +771,24 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		// Cadre pour signature
 		$this->pdf->Rect($posX + $this->larg_col1 + $this->larg_col2, $posY, $this->larg_col3, $this->h_ligne);
 
-		$posX_trainer = 0;
+		$this->pdf->MultiCell(0, $this->h_ligne, " ", 1, "C", false, 1, $this->marge_gauche, $posY);
+
+		$posX_trainer = $posX + $this->larg_col1 + $this->larg_col2 + $this->larg_col3;
 		if ($this->nbFormateurs > 0)
 		{
+			$nbForm = $this->nbFormateurs;
+			if ($nbForm > 4) $nbForm = 4;
+			$i = 1;
+
 			foreach ( $this->formateurs->lines as $trainer_line ) {
-				$this->pdf->SetXY($this->marge_gauche, $posY);
-				$this->pdf->MultiCell(0, $this->h_ligne, " ", 1, "C", false, 1, $this->marge_gauche, $posY);
+				$this->pdf->SetXY($posX_trainer, $posY);
+				$this->pdf->MultiCell(0, $this->h_ligne, " ", 1, "C", false, 1, $posX_trainer, $posY);
 
 				// $this->pdf->Rect($first_trainer_posx, $posY, $posX_trainer, $this->h_ligne);
-				$posX_trainer += 30;
+				$posX_trainer += $this->larg_col4/$nbForm;
+				$i++;
+
+				if ($i > $nbForm) break;
 			}
 		}
 		$posY = $this->pdf->GetY();
