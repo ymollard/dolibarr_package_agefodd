@@ -173,6 +173,11 @@ function session_prepare_head($object, $showconv = 0)
 		$h++;
 	}
 
+    $head [$h] [0] = dol_buildpath('/agefodd/session/planningpertrainee.php', 1) . '?id=' . $id;
+    $head [$h] [1] = $langs->trans("AgfPlanningPerTrainee");
+    $head [$h] [2] = 'planningpertrainee';
+    $h++;
+
 	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");
 

@@ -50,6 +50,7 @@ AgefoddSetupParamChoice=Settings selection:
 AgefoddMenuAction=Training sessions
 AgfMenuCat=Catalog of trainings
 AgfTraining=Trainings
+AgfPlanningPerTrainee=Planning per trainee
 AgfMenuCatListActivees=Active trainings
 AgfMenuCatListArchivees=archived trainings
 AgfMenuCatNew=New training
@@ -1240,3 +1241,12 @@ AgfEATrainerAndTraineeAccessSessionLink=Portail formateur et apprenant - Voir le
 AgfCloneTrainingModules=Clone modules training programm ?
 AttachmentsTitleAgefodd=Training session
 EndHour = End Hour
+
+#PLANNING TRAINEES
+AgfHoursP=Scheduled hours
+AgfHoursR=Hours completed
+AgfHoursRest=Remaining hours
+AgfAddScheduledHours=Duration ("-" to remove hours)
+AgfNewHoursP=Add scheduled hours
+AgfTraineePlanification=Schedule of %s %s %s
+AgfErrorHoursPTraineeHoursSess=Cannot exceed total session hours

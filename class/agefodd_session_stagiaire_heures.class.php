@@ -472,6 +472,10 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        while($obj = $this->db->fetch_object($resql)) {
 	            $result += $this->heures_stagiaire($obj->sessid, $trainee);
 	        }
+	    } else {
+		    $this->error = "Error " . $this->db->lasterror();
+		    dol_syslog(get_class($this) . ":: ".__METHOD__ . $this->error, LOG_ERR);
+		    return - 1;
 	    }
 
 	    return $result;
@@ -515,6 +519,37 @@ class Agefoddsessionstagiaireheures extends CommonObject
 
 	}
 
+    public function fetch_heures_stagiaire_per_type($sessid, $traineeid)
+    {
+
+        $sql = 'SELECT h.heures, h.fk_calendrier, c.calendrier_type FROM '.MAIN_DB_PREFIX.$this->table_element.' h';
+        $sql .= ' JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier c ON h.fk_calendrier = c.rowid';
+        $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
+        $sql .= ' AND fk_session = ' . $sessid;
+        $sql .= ' GROUP BY c.calendrier_type';
+
+        $resql = $this->db->query($sql);
+
+        if ($resql) {
+
+            $TRes = array();
+
+            while($obj = $this->db->fetch_object($resql))
+            {
+                    $TRes[$obj->calendrier_type] = $obj->heures;
+            }
+
+            return $TRes;
+
+        } else {
+        	$this->error = "Error " . $this->db->lasterror();
+		    dol_syslog(get_class($this) . ":: ".__METHOD__ . $this->error, LOG_ERR);
+		    return - 1;
+        }
+
+        return 0;
+    }
+
 	/**
 	 * Initialise object with example values
 	 * Id must be 0 if object instance is a specimen
@@ -547,13 +582,13 @@ class Agefoddsessionstagiaireheuresline
     public $fk_calendrier;
     public $fk_session;
     public $heures;
-    
-    
+
+
     public function __construct($db)
 	{
 		$this->db = $db;
 	}
-	
+
 	/**
      * Delete object (trainne in session) in database
      *
