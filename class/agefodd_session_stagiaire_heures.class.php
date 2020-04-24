@@ -519,14 +519,20 @@ class Agefoddsessionstagiaireheures extends CommonObject
 
 	}
 
+	/**
+	 * @param $sessid
+	 * @param $traineeid
+	 * @return array|int
+	 * @throws Exception
+	 */
     public function fetch_heures_stagiaire_per_type($sessid, $traineeid)
     {
 
-        $sql = 'SELECT h.heures, h.fk_calendrier, c.calendrier_type FROM '.MAIN_DB_PREFIX.$this->table_element.' h';
-        $sql .= ' JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier c ON h.fk_calendrier = c.rowid';
+        $sql = 'SELECT SUM(h.heures) as heures, c.calendrier_type FROM '.MAIN_DB_PREFIX.$this->table_element.' h';
+        $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier c ON h.fk_calendrier = c.rowid';
         $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
         $sql .= ' AND fk_session = ' . $sessid;
-        $sql .= ' GROUP BY c.calendrier_type';
+	    $sql .= ' GROUP BY c.calendrier_type';
 
         $resql = $this->db->query($sql);
 

@@ -483,7 +483,7 @@ class Agefodd_sesscalendar extends CommonObject{
 		$sql .= " GROUP BY s.rowid, s.date_session, s.heured";
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 
-		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -496,7 +496,7 @@ class Agefodd_sesscalendar extends CommonObject{
 			}
 
 			$this->db->free($resql);
-			return 1;
+			return count($this->lines);
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			$this->errors[] = "Error " . $this->db->lasterror();
@@ -714,7 +714,7 @@ class Agefodd_sesscalendar extends CommonObject{
 
 		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$result = $this->fetch($id);
-		
+
 		if ($result < 0) {
 			$this->error = 'Error deleting id ' . $id . ' : ' . $this->error;
 			return -1;

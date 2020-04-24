@@ -357,7 +357,7 @@ function getPageViewSessionListExternalAccess()
 						$Tsearch_sta[]=$search_sta;
 						$Tpopcontent_sta[]=' '.$stagiaire->civilite. ' '.$search_sta;
 					}
-					$plus_sta = ' <span data-toggle="popover" title="Détail des stagiaires" data-content="'.implode(' <br /> ',$Tpopcontent_sta).'"><i class="fa fa-plus hours-detail"></i></span>';
+					$plus_sta = ' <span data-toggle="popover" title="'.$langs->trans('AgfParticipants').'" data-content="'.implode(' <br /> ',$Tpopcontent_sta).'"><i class="fa fa-plus hours-detail"></i></span>';
 				}
 
 			}
@@ -394,18 +394,14 @@ function getPageViewSessionListExternalAccess()
 
 			    if (count($duree_exploded))
 			    {
-			        $plus = ' <i class="fa fa-plus hours-detail"></i>';
 
 
 			        $popcontent = '';
 			        foreach ($duree_exploded as $label => $hours)
 			        {
-			            $popcontent.= dol_escape_htmltag('<br>'.$label.' : '.$hours, 1);
+			            $popcontent.= dol_escape_htmltag($label.' : '.$hours.'<br>', 1);
 			        }
-			        $plus = ' <span data-toggle="popover" title="Détail des heures" data-content="'.$popcontent.'"><i class="fa fa-plus hours-detail"></i></span>';
-			        $plus.= '<span style="display:none;">';
-
-			        $plus.='</span>';
+			        $plus = ' <span data-toggle="popover" title="'.$langs->trans('AgfDetailHeure').'" data-content="'.$popcontent.'"><i class="fa fa-plus hours-detail"></i></span>';
 			    }
 			}
 			else
@@ -509,7 +505,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
     }
     $duree_timeRest = $agsession->duree_session - $duree_timeDone;
 
-	$out = '<!-- getPageViewSessionCardExternalAccess -->';
+	$out = '<!-- getPageViewSessionCardExternalAccessTrainer -->';
 	$out.= '<section id="section-session-card" class="py-5"><div class="container">';
 
 	$url_add = '';
@@ -637,7 +633,7 @@ function getPageViewTraineeSessionCardExternalAccess()
 
             $tab = GETPOST('tab');
 
-            $out = '<!-- getPageViewSessionCardExternalAccess -->';
+            $out = '<!-- getPageViewSessionCardExternalAccessTrainee -->';
             $out.= '<section id="section-session-card" class="py-5"><div class="container">';
 
             $out.= getEaNavbar($context->getRootUrl('agefodd_trainee_session_list', '&save_lastsearch_values=1'));
@@ -1444,6 +1440,12 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 		</div>
 
 	';
+
+	$out.= '<script type="text/javascript" >
+				$(document).ready(function(){
+					$(\'[data-toggle="popover"]\').popover({html:true});
+				})
+			</script>';
 
 	return $out;
 }
@@ -3251,6 +3253,7 @@ function downloadAgefoddTrainneeDoc(){
  * @param $sessionStagiaire Agefodd_session_stagiaire
  * @param $calendrier Agefodd_sesscalendar
  * @param $sessionstagiaireheures Agefoddsessionstagiaireheures
+ * @param $errorsMsg string
  */
 function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionStagiaire, $calendrier, $sessionstagiaireheures, &$errorsMsg = array())
 {
@@ -3468,6 +3471,22 @@ function getPlanningViewSessionTrainee($session, $idsess, $trainee){
 
     global $db, $langs;
 
+	$context = Context::getInstance();
+
+	//Modalité
+	$sql = "SELECT";
+	$sql .= " rowid, label, code ";
+	$sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
+	$resql = $db->query($sql);
+	if (!$resql) {
+		$context->setEventMessages($db->lasterror,'errors');
+	} else {
+		while($obj = $db->fetch_object($resql)) {
+			$TTypeTimeById[$obj->rowid]=array('code'=>$obj->code,'label'=>$obj->label);
+			$TTypeTimeByCode[$obj->code]=array('rowid'=>$obj->rowid,'label'=>$obj->label);
+		}
+	}
+
     require_once (dol_buildpath('/custom/agefodd/class/agefodd_session_stagiaire_heures.class.php'));
     require_once (dol_buildpath('/custom/agefodd/class/agefodd_session_stagiaire_planification.class.php'));
 
@@ -3486,15 +3505,21 @@ function getPlanningViewSessionTrainee($session, $idsess, $trainee){
     $trainee_hr = new Agefoddsessionstagiaireheures($db);
     $THoursR = $trainee_hr->fetch_heures_stagiaire_per_type($idsess, $idtrainee);
     if (!is_array($THoursR) && $THoursR<0) {
-	    $errorsMsg[] = $trainee_hr->error;
+	    $context->setEventMessages($trainee_hr->error,'errors');
     } elseif (is_array($THoursR) && count($THoursR)>0) {
 	    //heures totales réalisées par le stagiaire
+	    $detailHours='';
+	    foreach($THoursR as $typ=>$hrs) {
+		    $detailHours.=dol_escape_htmltag($TTypeTimeByCode[$typ]['label'].':'.$hrs.'<br>', 1);
+	    }
 	    $heureRTotal = array_sum($THoursR);
     } else {
 	    $heureRTotal=0;
     }
 
-    if(empty($heureRTotal)) $heureRTotal = 0;
+	if (!empty($detailHours)) {
+		$detailHours = ' <span data-toggle="popover" title="' . $langs->trans('AgfDetailHeure') . '" data-content="' . $detailHours . '"><i class="fa fa-plus hours-detail"></i></span>';
+	}
 
     //heures totales restantes : durée de la session - heures réalisées totales
     $heureRestTotal = $session->duree_session - $heureRTotal;
@@ -3505,38 +3530,25 @@ function getPlanningViewSessionTrainee($session, $idsess, $trainee){
     $out .= '<tr class="text-center">';
     $out .= '<th width="15%" class="text-center">'.$langs->trans('AgfCalendarType').'</th>';
     $out .= '<th width="35%" class="text-center">'.$langs->trans('AgfHoursP').' ('.$totalScheduledHoursTrainee.')</th>';
-    $out .= '<th class="text-center">'.$langs->trans('AgfHoursR').' ('.$heureRTotal.')</th>';
+    $out .= '<th class="text-center">'.$langs->trans('AgfHoursR').' ('.$heureRTotal.$detailHours.')</th>';
     $out .= '<th class="text-center">'.$langs->trans('AgfHoursRest').' ('.$heureRestTotal.')</th>';
     $out .= '</tr>';
 
     //Lignes par type de modalité
     foreach($TLinesTraineePlanning as $line)
     {
-        //Modalité
-        $sql = "SELECT";
-        $sql .= " label, code ";
-        $sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
-        $sql .= " WHERE rowid = '".$line->fk_calendrier_type . "'";
-        $resql = $db->query($sql);
 
-        if($resql)
-        {
-            $obj = $db->fetch_object($resql);
-            $codeCalendrierType = $obj->code;
-            $codeCalendrierLabel = $obj->label;
-        }
+	    //Calcul heures restantes
+	    $heureRest = $line->heurep - $THoursR[$TTypeTimeById[$line->fk_calendrier_type]['code']];
 
-        //Calcul heures restantes
-        $heureRest = $line->heurep - $THoursR[$codeCalendrierType];
-
-        $out .= '<tr>';
+	    $out .= '<tr>';
 
         //Type créneau
-        $out .= '<td>'.$codeCalendrierLabel.'</td>';
+        $out .= '<td>'.$TTypeTimeById[$line->fk_calendrier_type]['label'].'</td>';
         //Heure saisie prévue
         $out .= '<td class="text-center">'.$line->heurep.'</td>';
         //Heure réalisées
-        $out .= '<td class="text-center">'.$THoursR[$codeCalendrierType].'</td>';
+        $out .= '<td class="text-center">'.$THoursR[$TTypeTimeById[$line->fk_calendrier_type]['code']].'</td>';
         //Heures restantes
         $out .= '<td class="text-center">'.$heureRest.'</td>';
 

@@ -181,6 +181,20 @@ $res = $session_trainee->fetch_stagiaire_per_session($id);
 
 if($res > 0)
 {
+	//Modalité
+	$sql = "SELECT";
+	$sql .= " rowid, label, code ";
+	$sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
+	$resql = $db->query($sql);
+	if (!$resql) {
+		setEventMessage($db->lasterror,'errors');
+	} else {
+		while($obj = $db->fetch_object($resql)) {
+			$TTypeTimeById[$obj->rowid]=array('code'=>$obj->code,'label'=>$obj->label);
+			$TTypeTimeByCode[$obj->code]=array('rowid'=>$obj->rowid,'label'=>$obj->label);
+		}
+	}
+
     foreach ($session_trainee->lines as $trainee)
     {
         $idTrainee_session = $trainee->stagerowid;
@@ -197,7 +211,18 @@ if($res > 0)
         //heures réalisées par type de créneau
         $trainee_hr = new Agefoddsessionstagiaireheures($db);
         $THoursR = $trainee_hr->fetch_heures_stagiaire_per_type($id, $idtrainee);
-
+	    if (!is_array($THoursR) && $THoursR<0) {
+		   setEventMessage($trainee_hr->error,'errors');
+	    } elseif (is_array($THoursR) && count($THoursR)>0) {
+		    //heures totales réalisées par le stagiaire
+		    $detailHours='';
+		    foreach($THoursR as $typ=>$hrs) {
+			    $detailHours.=$TTypeTimeByCode[$typ]['label'].':'.$hrs.'<br/>';
+		    }
+		    $heureRTotal = array_sum($THoursR);
+	    } else {
+		    $heureRTotal=0;
+	    }
         //heures totales réalisées par le stagiaire
         $heureRTotal = array_sum($THoursR);
         if(empty($heureRTotal)) $heureRTotal = 0;
@@ -219,7 +244,12 @@ if($res > 0)
         print '<tr class="liste_titre">';
         print '<th width="15%" class="liste_titre" style="font-weight: bold;">'.$langs->trans('AgfCalendarType').'</th>';
         print '<th width="35%" class="liste_titre_hoursp_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursP').' ('.$totalScheduledHoursTrainee.')</th>';
-        print '<th class="liste_titre_hoursr_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursR').' ('.$heureRTotal.')</th>';
+	    if (!empty($detailHours)) {
+		    $picto = $form->textwithpicto('', $detailHours);
+	    } else {
+	    	$picto='';
+	    }
+        print '<th class="liste_titre_hoursr_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursR').' ('.$heureRTotal.$picto.')</th>';
         print '<th class="liste_titre_hoursrest_'.$idTrainee_session.'" style="font-weight: bold;">'.$langs->trans('AgfHoursRest').' ('.$heureRestTotal.')</th>';
         print '<th class="linecoldelete center">&nbsp;</th>';
         print '</tr>';
@@ -227,31 +257,17 @@ if($res > 0)
         //Lignes par type de modalité
         foreach($TLinesTraineePlanning as $line)
         {
-            //Modalité
-            $sql = "SELECT";
-            $sql .= " label, code ";
-            $sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
-            $sql .= " WHERE rowid = '".$line->fk_calendrier_type . "'";
-            $resql = $db->query($sql);
-
-            if($resql)
-            {
-                $obj = $db->fetch_object($resql);
-                $codeCalendrierType = $obj->code;
-                $codeCalendrierLabel = $obj->label;
-            }
-
             //Calcul heures restantes
-            $heureRest = $line->heurep - $THoursR[$codeCalendrierType];
+           $heureRest = $line->heurep - $THoursR[$TTypeTimeById[$line->fk_calendrier_type]['code']];
 
             print '<tr>';
 
             //Type créneau
-            print '<td>'.$codeCalendrierLabel.'</td>';
+            print '<td>'.$TTypeTimeById[$line->fk_calendrier_type]['label'].'</td>';
             //Heure saisie prévue
             print '<td>'.$line->heurep.'</td>';
             //Heure réalisées
-            print '<td>'.$THoursR[$codeCalendrierType].'</td>';
+            print '<td>'.$THoursR[$TTypeTimeById[$line->fk_calendrier_type]['code']].'</td>';
             //Heures restantes
             print '<td>'.$heureRest.'</td>';
 

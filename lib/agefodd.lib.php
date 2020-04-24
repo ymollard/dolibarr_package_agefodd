@@ -163,6 +163,11 @@ function session_prepare_head($object, $showconv = 0)
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/calendar.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfCalendrier");
+	$session_calendar = new Agefodd_sesscalendar($db);
+	$badgeNbCal = $session_calendar->fetch_all($id);
+	if (!empty($badgeNbCal))
+		$head [$h] [1] .= " <span class='badge'>" . $badgeNbCal . "</span>";
+
 	$head [$h] [2] = 'calendar';
 	$h++;
 
