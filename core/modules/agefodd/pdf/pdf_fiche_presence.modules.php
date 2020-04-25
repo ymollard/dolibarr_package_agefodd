@@ -707,11 +707,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 */
 	function printSessionSummary($posX, $posY)
 	{
-		$this->formation_widthcol1 = 20;
-		$this->formation_widthcol2 = 80;
-		$this->formation_widthcol3 = 27;
-		$this->formation_widthcol4 = 65;
-
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres23');

@@ -88,6 +88,11 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 		$this->emetteur = $mysoc;
 		if (! $this->emetteur->country_code)
 			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
+
+		$this->formation_widthcol1 = 20;
+		$this->formation_widthcol2 = 80;
+		$this->formation_widthcol3 = 27;
+		$this->formation_widthcol4 = 65;
 	}
 
 	/**
