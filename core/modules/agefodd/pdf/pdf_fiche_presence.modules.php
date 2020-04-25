@@ -46,6 +46,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	protected $colorheaderBg;
 	protected $colorheaderText;
 	protected $colorLine;
+	/** @var TCPDF $pdf */
+	protected $pdf;
 
 	protected $h_ligne;
 
@@ -99,7 +101,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->formation_widthcol1 = 20;
 		$this->formation_widthcol2 = 80;
 		$this->formation_widthcol3 = 27;
-		$this->formation_widthcol4 = 82;
+		$this->formation_widthcol4 = 65;
 
 		$this->trainer_widthcol1 = 44;
 		$this->trainer_widthcol2 = 140;
@@ -161,6 +163,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				$this->pdf->setPrintHeader(false);
 				$this->pdf->setPrintFooter(false);
 			}
+
+			if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER))
+				$this->height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
+
+			$realFooterHeight = $this->getRealHeightLine('foot');
+			$this->height_for_footer = max($this->height_for_footer, $realFooterHeight);
 
 			$this->pdf->Open();
 
@@ -225,12 +233,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$tplidx = $this->pdf->importPage(1);
 		}
 
-		if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER))
-			$this->height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
-
-		$realFooterHeight = $this->getRealHeightLine('foot');
-		$this->height_for_footer = max($this->height_for_footer, $realFooterHeight);
-
 		if (!empty($conf->multicompany->enabled)) {
 			dol_include_once('/multicompany/class/dao_multicompany.class.php');
 			$dao = new DaoMulticompany($this->db);
@@ -271,20 +273,20 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->pdf->AddPage();
 			if (!empty($tplidx))
 				$this->pdf->useTemplate($tplidx);
-			list($posY, $posX) = $this->_pagehead($agf, 1, $this->outputlangs);
+			list($posX, $posY) = $this->_pagehead($agf, 1, $this->outputlangs);
 
 			/**
 			 * *** Bloc formation ****
 			 */
-			list($posY, $posX) = $this->printSessionSummary($posX, $posY);
+			list($posX, $posY) = $this->printSessionSummary($posX, $posY);
 
 			/**
 			 * *** Bloc formateur ****
 			 */
 			if (!empty($this->formateurs->lines))
 			{
-				list($posY, $posX) = $this->printTrainerBlockHeader($posX, $posY, $dates_array);
-				list($posY, $posX) = $this->printTrainerBlockLines($posX, $posY, $dates_array, $agf);
+				list($posX, $posY) = $this->printTrainerBlockHeader($posX, $posY, $dates_array);
+				list($posX, $posY) = $this->printTrainerBlockLines($posX, $posY, $dates_array, $agf);
 			}
 
 			/**
@@ -304,8 +306,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 			if (!empty($this->stagiaires->lines))
 			{
-				list($posY, $posX) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
-				list($posY, $posX) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $agf);
+				list($posX, $posY) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
+				list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $agf);
 			}
 
 			// Cachet et signature
@@ -421,7 +423,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		}
 		$posY = $this->pdf->GetY();
 
-		return array($posY, $posX);
+		return array($posX, $posY);
 	}
 
 	/**
@@ -460,7 +462,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		$posY = $posY + 2;
 
-		return array($posY, $posX);
+		return array($posX, $posY);
 	}
 
 	/**
@@ -555,7 +557,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		}
 		$posY = $this->pdf->GetY();
 
-		return array($posY, $posX);
+		return array($posX, $posY);
 	}
 
 	/**
@@ -588,7 +590,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 			$this->pdf->startTransaction();
 
-			list($posY, $posX) = $this->printTraineeLine($line, $posX, $posY, $nbsta_index, $nbTimeSlots, $timeSlotWidth);
+			list($posX, $posY) = $this->printTraineeLine($line, $posX, $posY, $nbsta_index, $nbTimeSlots, $timeSlotWidth);
 
 			if ($posY > $this->page_hauteur - $this->height_for_footer) {
 				$this->pdf = $this->pdf->rollbackTransaction();
@@ -597,20 +599,20 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				$this->pdf->AddPage();
 				if (!empty($tplidx))
 					$this->pdf->useTemplate($tplidx);
-				list($posY, $posX) = $this->_pagehead($agf, 1, $this->outputlangs);
+				list($posX, $posY) = $this->_pagehead($agf, 1, $this->outputlangs);
 
-				list($posY, $posX) = $this->printSessionSummary($posX, $posY);
+				list($posX, $posY) = $this->printSessionSummary($posX, $posY);
 
 				if ($nbsta_index <= count($this->stagiaires->lines))
 				{
 					if (!empty($this->formateurs->lines) && empty($conf->global->AGF_DONOT_REPEAT_TRAINER_BLOCK))
 					{
-						list($posY, $posX) = $this->printTrainerBlockHeader($posX, $posY, $dates_array);
-						list($posY, $posX) = $this->printTrainerBlockLines($posX, $posY, $dates_array, $agf);
+						list($posX, $posY) = $this->printTrainerBlockHeader($posX, $posY, $dates_array);
+						list($posX, $posY) = $this->printTrainerBlockLines($posX, $posY, $dates_array, $agf);
 					}
 
-					list($posY, $posX) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
-					list($posY, $posX) = $this->printTraineeLine($line, $posX, $posY, $nbsta_index, $nbTimeSlots, $timeSlotWidth);
+					list($posX, $posY) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
+					list($posX, $posY) = $this->printTraineeLine($line, $posX, $posY, $nbsta_index, $nbTimeSlots, $timeSlotWidth);
 				}
 			}
 			else
@@ -620,7 +622,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$nbsta_index++;
 		}
 
-		return array($posY, $posX);
+		return array($posX, $posY);
 	}
 
 	function printTraineeLine(&$line, $posX, $posY, $nbsta_index, $nbTimeSlots, $timeSlotWidth)
@@ -693,7 +695,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		$posY = $this->pdf->GetY();
 
-		return array($posY, $posX);
+		return array($posX, $posY);
 	}
 
 	/**
@@ -757,6 +759,20 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
 		$haut_col2 += $hauteur + 2;
 
+		//Session
+		$posY = $this->pdf->GetY() + 2;
+		$this->pdf->SetXY($posX, $posY);
+		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
+		$str = $this->outputlangs->transnoentities('Session')." :";
+		$this->pdf->Cell($this->formation_widthcol1, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+		$this->pdf->SetXY($posX + $this->formation_widthcol1, $posY);
+		$str = $this->pdf->ref_object->id . '#' . $this->pdf->ref_object->ref;
+		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
+		$this->pdf->MultiCell($this->formation_widthcol2, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
+		$hauteur = dol_nboflines_bis($str, 50) * 4;
+		$haut_col2 += $hauteur + 2;
+
 		// Lieu
 		$this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posYintitule);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres11');
@@ -771,14 +787,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
-		$posY += $hauteur;
 		$haut_col4 += $hauteur + 4;
-
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
-		$this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table);
+		$posY = $posYintitule + $haut_table + 4;
+		$this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table+2);
 
-		return array($posY, $posX);
+		return array($posX, $posY);
 	}
 
 	/**
@@ -830,9 +845,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$posY = $this->marge_haute;
 		$posX = $this->marge_gauche;
 
-		$hautcadre = 30;
-		$this->pdf->SetXY($posX, $posY);
-		$this->pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
+//		$hautcadre = 30;
+//		$this->pdf->SetXY($posX, $posY);
+//		$this->pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 
 		// Show sender name
 		$this->pdf->SetXY($posX, $posY);
@@ -872,7 +887,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			}
 		}
 
-		$posY = $this->pdf->GetY() + 10;
+		$posY = $this->pdf->GetY() + 7;
 		if ($conf->global->AGF_PRINT_INTERNAL_REF_ON_PDF)
 			$posY -= 4;
 
@@ -918,7 +933,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->MultiCell(0, 0, $this->outputlangs->convToOutputCharset($str), 0, 'C');
 		$posY = $this->pdf->GetY() + 1;
 
-		return array($posY, $posX);
+		return array($posX, $posY);
 	}
 
 	/**
