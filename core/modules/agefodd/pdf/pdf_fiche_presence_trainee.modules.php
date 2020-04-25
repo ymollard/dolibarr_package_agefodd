@@ -185,18 +185,19 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 					$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
 					$this->pdf->AddPage();
+					list($posX, $posY) = $this->_pagehead($this->pdf->ref_object);
 
 					/**
 					 * *** Bloc formation ****
 					 */
-					list($this->posX, $this->posY) = $this->printSessionSummary($this->posX, $this->posY);
+					list($posX, $posY) = $this->printSessionSummary($posX, $posY);
 
 					$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 					$this->pdf->MultiCell(0, 3, '', 0, 'J'); // Set interline to 3
 					$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
-					$this->posY = $this->marge_haute;
-					$this->posX = $this->marge_gauche;
+					$posY = $this->marge_haute;
+					$posX = $this->marge_gauche;
 
 					$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("No Trainee"), 0, 'R');
 				}
@@ -240,43 +241,40 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 
 		// New page
 		$this->pdf->AddPage();
+		list($posX, $posY) = $this->_pagehead($this->pdf->ref_object);
 
 		/**
 		 * *** Bloc formation ****
 		 */
-		list($this->posX, $this->posY) = $this->printSessionSummary($this->posX, $this->posY);
-
-		$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
-		$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-
-		list($this->posX, $this->posY) = $this->printDateBlockHeader($this->posX, $this->posY);
-		list($this->posX, $this->posY) = $this->printDateBlockLines($this->posX, $this->posY);
+		list($posX, $posY) = $this->printSessionSummary($posX, $posY);
+		list($posX, $posY) = $this->printDateBlockHeader($posX, $posY);
+		list($posX, $posY) = $this->printDateBlockLines($posX, $posY);
 
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 
 		// Cachet et signature
-		$this->posY += 2;
-		$this->posX -= 2;
-		$this->pdf->SetXY($this->posX, $this->posY);
+		$posY += 2;
+		$posX -= 2;
+		$this->pdf->SetXY($posX, $posY);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
 		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		$this->pdf->SetXY($this->posX + 55, $this->posY);
+		$this->pdf->SetXY($posX + 55, $posY);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($this->ref_object->datef);
 		$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		$this->pdf->SetXY($this->posX + 92, $this->posY);
+		$this->pdf->SetXY($posX + 92, $posY);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
 		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		$this->posY = $this->pdf->GetY();
+		$posY = $this->pdf->GetY();
 
 		// Incrustation image tampon
 		if ($conf->global->AGF_INFO_TAMPON) {
 			$dir = $conf->agefodd->dir_output . '/images/';
 			$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
 			if (file_exists($img_tampon))
-				$this->pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $this->posY, 50);
+				$this->pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
 		}
 
 		// Pied de page
@@ -285,171 +283,6 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		if (method_exists($this->pdf, 'AliasNbPages')) {
 			$this->pdf->AliasNbPages();
 		}
-	}
-
-	/**
-	 * \brief Show header of page
-	 * \param object Object invoice
-	 * \param showaddress 0=no, 1=yes
-	 * \param outputlangs Object lang for output
-	 */
-	function _pagehead() {
-		global $conf, $mysoc;
-
-		$this->outputlangs->load("main");
-
-		$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
-
-		// Fill header with background color
-		$this->pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
-		$this->pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
-
-		pdf_pagehead($this->pdf, $this->outputlangs, $this->pdf->page_hauteur);
-
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
-		$this->pdf->SetTextColor($this->colorheaderText[0], $this->colorheaderText[1], $this->colorheaderText[2]);
-
-		$this->posY = $this->marge_haute;
-		$this->posX = $this->page_largeur - $this->marge_droite - 55;
-
-		// Logo
-		$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
-		if ($this->emetteur->logo) {
-			if (is_readable($logo)) {
-				$height = pdf_getHeightForLogo($logo);
-				$width_logo = pdf_getWidthForLogo($logo);
-				if ($width_logo > 0) {
-					$this->posX = $this->page_largeur - $this->marge_droite - $width_logo;
-				} else {
-					$this->posX = $this->page_largeur - $this->marge_droite - 55;
-				}
-				$this->pdf->Image($logo, $this->posX, $this->posY, 0, $height);
-			} else {
-				$this->pdf->SetTextColor(200, 0, 0);
-				$this->pdf->SetFont('', 'B', $this->default_font_size - 2);
-				$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
-				$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
-			}
-		} else {
-			$text = $this->emetteur->name;
-			$this->pdf->MultiCell(100, 4, $this->outputlangs->convToOutputCharset($text), 0, 'L');
-		}
-		// Other Logo
-		if (!empty($conf->multicompany->enabled) && ! empty($conf->global->AGF_MULTICOMPANY_MULTILOGO)) {
-			$sql = 'SELECT value FROM ' . MAIN_DB_PREFIX . 'const WHERE name =\'MAIN_INFO_SOCIETE_LOGO\' AND entity=1';
-			$resql = $this->db->query($sql);
-			if (! $resql) {
-				setEventMessage($this->db->lasterror, 'errors');
-			} else {
-				$obj = $this->db->fetch_object($resql);
-				$image_name = $obj->value;
-			}
-			if (! empty($image_name)) {
-				$otherlogo = DOL_DATA_ROOT . '/mycompany/logos/' . $image_name;
-				if (is_readable($otherlogo) && $otherlogo != $logo) {
-					$logo_height = pdf_getHeightForLogo($otherlogo);
-					$width_otherlogo = pdf_getWidthForLogo($otherlogo);
-					if ($width_otherlogo > 0 && $width_logo > 0) {
-						$this->posX = $this->page_largeur - $this->marge_droite - $width_otherlogo - $width_logo - 10;
-					} else {
-						$this->posX = $this->marge_gauche + 100;
-					}
-
-					$this->pdf->Image($otherlogo, $this->posX, $this->posY, 0, $logo_height);
-				}
-			}
-		}
-
-		$this->posY = $this->marge_haute;
-		$this->posX = $this->marge_gauche;
-
-		$hautcadre = 30;
-		$this->pdf->SetXY($this->posX, $this->posY);
-		$this->pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
-
-		// Show sender name
-		$this->pdf->SetXY($this->posX, $this->posY);
-		$this->pdf->SetFont('', 'B', $this->default_font_size - 2);
-		$this->pdf->MultiCell(80, 4, $this->outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
-		$this->posY = $this->pdf->GetY();
-
-		// Show sender information
-		$this->pdf->SetXY($this->posX, $this->posY);
-		$this->pdf->SetFont('', '', $this->default_font_size - 3);
-		$this->pdf->MultiCell(70, 4, $this->outputlangs->convToOutputCharset($this->emetteur->address), 0, 'L');
-		$this->posY = $this->pdf->GetY();
-		$this->pdf->SetXY($this->posX, $this->posY);
-		$this->pdf->SetFont('', '', $this->default_font_size - 3);
-		$this->pdf->MultiCell(70, 4, $this->outputlangs->convToOutputCharset($this->emetteur->zip . ' ' . $this->emetteur->town), 0, 'L');
-		$this->posY = $this->pdf->GetY();
-		$this->pdf->SetXY($this->posX, $this->posY);
-		$this->pdf->SetFont('', '', $this->default_font_size - 3);
-		$this->pdf->MultiCell(70, 4, $this->outputlangs->convToOutputCharset($this->emetteur->phone), 0, 'L');
-		$this->posY = $this->pdf->GetY();
-		$this->pdf->SetXY($this->posX, $this->posY);
-		$this->pdf->SetFont('', '', $this->default_font_size - 3);
-		$this->pdf->MultiCell(70, 4, $this->outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
-		$this->posY = $this->pdf->GetY();
-
-		printRefIntForma($this->db, $this->outputlangs, $this->ref_object, $this->default_font_size - 3, $this->pdf, $this->posX, $this->posY, 'L');
-
-		// Affichage du logo commanditaire (optionnel)
-		if ($conf->global->AGF_USE_LOGO_CLIENT) {
-			$staticsoc = new Societe($this->db);
-			$staticsoc->fetch($this->ref_object->socid);
-			$dir = $conf->societe->multidir_output[$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
-			if (! empty($staticsoc->logo)) {
-				$logo_client = $dir . $staticsoc->logo;
-				if (file_exists($logo_client) && is_readable($logo_client))
-					$this->pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute, 40);
-			}
-		}
-
-		$this->posY = $this->pdf->GetY() + 10;
-		if ($conf->global->AGF_PRINT_INTERNAL_REF_ON_PDF) $this->posY -= 4;
-
-		$this->pdf->Line($this->marge_gauche + 0.5, $this->posY, $this->page_largeur - $this->marge_droite, $this->posY);
-
-		// Mise en page de la baseline
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 18);
-		$this->str = $this->outputlangs->transnoentities($mysoc->url);
-		$this->width = $this->pdf->GetStringWidth($this->str);
-
-		// alignement du bord droit du container avec le haut de la page
-		$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
-		$baseline_angle = (M_PI / 2); // angle droit
-		$baseline_x = 8;
-		$baseline_y = $this->espaceV_dispo - $baseline_ecart + 30;
-		$baseline_width = $this->width;
-		$this->pdf->SetXY($baseline_x, $baseline_y);
-
-		/*
-		 * Corps de page
-		 */
-		$this->posX = $this->marge_gauche;
-		$this->posY = $this->posY + 5;
-
-		// Titre
-		$this->pdf->SetXY($this->posX, $this->posY);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 18);
-		$this->pdf->SetTextColor($this->colorhead[0], $this->colorhead[1], $this->colorhead[2]);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres1');
-		$this->pdf->Cell(0, 6, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "C", 0);
-		$this->posY += 6 + 4;
-
-		// Intro
-		$this->pdf->SetXY($this->posX, $this->posY);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
-		$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' »,' . $this->outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
-		$this->str .= $mysoc->address . ' ';
-		$this->str .= $mysoc->zip . ' ' . $mysoc->town;
-		$this->str .= $this->outputlangs->transnoentities('AgfPDFFichePres4') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . ",\n";
-		$this->str .= $this->outputlangs->transnoentities('AgfPDFFichePres5');
-		$this->pdf->MultiCell(0, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'C');
-		$hauteur = dol_nboflines_bis($this->str, 50) * 2;
-		$this->posY += $hauteur + 2;
-
 	}
 
 	/**
@@ -464,107 +297,6 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		$this->pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$this->pdf->SetAutoPageBreak(0);
 		return pdf_agfpagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $this->ref_object, 1, $hidefreetext);
-	}
-
-	/**
-	 * @param $posX
-	 * @param $posY
-	 * @return array
-	 */
-	function printSessionSummary($posX, $posY)
-	{
-		$this->pdf->SetXY($posX, $posY);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres23');
-		$this->pdf->Cell(0, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-		$posY += 4;
-
-		// $this->pdf->Line($posX, $posY, $this->page_largeur - $this->marge_droite, $posY);
-		$cadre_tableau = array(
-			$posX,
-			$posY
-		);
-
-		$posX += 2;
-		$posY += 2;
-		$posYintitule = $posY;
-
-		$this->formation_widthcol1 = 20;
-		$this->formation_widthcol2 = 80;
-		$this->formation_widthcol3 = 27;
-		$this->formation_widthcol4 = 82;
-		$this->haut_col2 = 0;
-		$this->haut_col4 = 0;
-
-		// Intitulé
-		$this->pdf->SetXY($posX, $posY);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres6');
-		$this->pdf->Cell($this->formation_widthcol1, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-
-		$this->pdf->SetXY($posX + $this->formation_widthcol1, $posY);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
-
-		if (empty($this->ref_object->intitule_custo)) {
-			$this->str = '« ' . $this->ref_object->formintitule . ' »';
-		} else {
-			$this->str = '« ' . $this->ref_object->intitule_custo . ' »';
-		}
-		$this->pdf->MultiCell($this->formation_widthcol2, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
-
-		$posY = $this->pdf->GetY() + 2;
-		$hauteur = dol_nboflines_bis($this->str, 50) * 4;
-		$this->haut_col2 += $hauteur;
-
-		// Période
-		$this->pdf->SetXY($posX, $posY);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres7');
-		$this->pdf->Cell($this->formation_widthcol1, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-
-		if ($this->ref_object->dated == $this->ref_object->datef) {
-			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres8') . " " . dol_print_date($this->ref_object->datef, 'daytext');
-		} else {
-			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres9') . " " . dol_print_date($this->ref_object->dated) . ' ' . $this->outputlangs->transnoentities('AgfPDFFichePres10') . ' ' . dol_print_date($this->ref_object->datef, 'daytext');
-		}
-		$this->pdf->SetXY($posX + $this->formation_widthcol1, $posY);
-		$this->pdf->MultiCell($this->formation_widthcol2, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
-		$hauteur = dol_nboflines_bis($this->str, 50) * 4;
-		$this->haut_col2 += $hauteur + 2;
-
-		//Session
-		$posY = $this->pdf->GetY() + 2;
-		$this->pdf->SetXY($posX, $posY);
-		$this->str = $this->outputlangs->transnoentities('Session')." :";
-		$this->pdf->MultiCell($this->formation_widthcol2, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
-		$this->pdf->SetXY($posX + $this->formation_widthcol1, $posY);
-		$this->str = $this->ref_object->id . '#' . $this->ref_object->ref;
-		$this->pdf->MultiCell($this->formation_widthcol2, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
-		$hauteur = dol_nboflines_bis($this->str, 50) * 4;
-		$this->haut_col2 += $hauteur + 5;
-
-		// Lieu
-		$this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posYintitule);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres11');
-		$this->pdf->Cell($this->formation_widthcol3, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-
-		$agf_place = new Agefodd_place($this->db);
-		$resql = $agf_place->fetch($this->ref_object->placeid);
-
-		$this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2 + $this->formation_widthcol3, $posYintitule);
-		$this->str = $agf_place->ref_interne . "\n" . $agf_place->adresse . "\n" . $agf_place->cp . " " . $agf_place->ville;
-		$this->pdf->MultiCell(70, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 'L');
-		$hauteur = dol_nboflines_bis($this->str, 50) * 4;
-		$posY += $hauteur + 5;
-		$this->haut_col4 += $hauteur + 7;
-
-		// Cadre
-		($this->haut_col4 > $this->haut_col2) ? $haut_table = $this->haut_col4 : $haut_table = $this->haut_col2;
-		$this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table);
-
-		$posY = $this->pdf->GetY() + 10;
-
-		return array($posX, $posY);
 	}
 
 	/**
@@ -707,11 +439,11 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
 				$this->pdf->AddPage();
+				list($posX, $posY) = $this->_pagehead($this->pdf->ref_object);
+
 				/**
 				 * *** Bloc formation ****
 				 */
-				$posY = $this->pdf->GetY();
-				$posX-=2;
 				list($posX, $posY) = $this->printSessionSummary($posX, $posY);
 				list($posX, $posY) = $this->printDateBlockHeader($posX, $posY);
 				list($posX, $posY) = $this->printDateLine($posX, $posY, $linedate);
@@ -721,16 +453,6 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$this->pdf->commitTransaction();
 			}
 
-//			if ($nbpage>14) {
-//				$nbpage=0;
-//				$this->pdf->AddPage();
-//				/**
-//				 * *** Bloc formation ****
-//				 */
-//				list($posX, $posY) = $this->printSessionSummary($posX, $posY);
-//				list($posX, $posY) = $this->printDateBlockHeader($posX, $posY);
-//				list($posX, $posY) = $this->printDateLine($posX, $posY, $linedate);
-//			}
 		}
 
 		return array($posX, $posY);
