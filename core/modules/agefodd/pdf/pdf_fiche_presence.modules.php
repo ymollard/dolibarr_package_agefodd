@@ -278,7 +278,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			/**
 			 * *** Bloc formation ****
 			 */
-			list($posX, $posY) = $this->printSessionSummary($posX, $posY);
+			list($posX, $posY) = $this->printSessionSummary($posX, $posY, $dates_array);
 
 			/**
 			 * *** Bloc formateur ****
@@ -705,7 +705,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 * @return array
 	 *
 	 */
-	function printSessionSummary($posX, $posY)
+	function printSessionSummary($posX, $posY, $dates_array = '', $fk_opco = '')
 	{
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
@@ -740,11 +740,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$str = '« ' . $this->pdf->ref_object->intitule_custo . ' »';
 		}
 		$this->pdf->MultiCell($this->formation_widthcol2, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
-
-		$posY = $this->pdf->GetY() + 2;
+        $hauteur = dol_nboflines_bis($str, 50) * 4;
+        $haut_col2 += $hauteur + 2;
 
 		// Période
-		$this->pdf->SetXY($posX, $posY);
+        $posY = $this->pdf->GetY() + 2;
+        $this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres7');
 		$this->pdf->Cell($this->formation_widthcol1, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
@@ -774,7 +775,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$haut_col2 += $hauteur + 2;
 
 		// Lieu
-		$this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posYintitule);
+        $posY_col4 = $posYintitule;
+
+        $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posYintitule);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres11');
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
 		$this->pdf->Cell($this->formation_widthcol3, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
@@ -787,7 +790,50 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
-		$haut_col4 += $hauteur + 4;
+		$haut_col4 += $hauteur;
+        $posY_col4 += $hauteur;
+
+        //Total heures des créneaux
+        if(!empty($dates_array))
+        {
+            $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posY_col4);
+            $str = $this->outputlangs->transnoentities('Nombre d\'heures');
+            $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
+            $this->pdf->Cell($this->formation_widthcol3, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+            //calcul
+            $totalSecondsSessCalendar = 0;
+            foreach ($dates_array as $sess_calendar){
+                $totalSecondsSessCalendar += $sess_calendar->getTime();
+            }
+            $totalSessCalendarHours = intval($totalSecondsSessCalendar / 3600);
+            $totalSessCalendarMin = ($totalSecondsSessCalendar - (3600 * $totalSessCalendarHours)) / 60;
+
+            $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2 + $this->formation_widthcol3 + 2, $posY_col4);
+            $str = str_pad($totalSessCalendarHours, 2, 0, STR_PAD_LEFT).':'.str_pad($totalSessCalendarMin, 2, 0, STR_PAD_LEFT);
+            $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
+            $this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
+            $hauteur = dol_nboflines_bis($str, 50) * 4;
+            $haut_col4 += $hauteur;
+            $posY_col4 += $hauteur;
+        }
+
+        //OPCO
+        if(!empty($fk_opco))
+        {
+            $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posY_col4);
+            $str = $this->outputlangs->transnoentities('OPCO');
+            $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
+            $this->pdf->Cell($this->formation_widthcol3, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+            $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2 + $this->formation_widthcol3 + 2, $posY_col4);
+            $str = $fk_opco;
+            $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
+            $this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
+            $hauteur = dol_nboflines_bis($str, 50) * 4;
+            $haut_col4 += $hauteur;
+        }
+
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
 		$posY = $posYintitule + $haut_table + 4;

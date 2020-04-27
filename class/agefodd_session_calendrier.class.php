@@ -947,6 +947,26 @@ class Agefodd_sesscalendar extends CommonObject{
 	    }
 	    else return -1;
 	}
+
+	public function getTime() {
+
+	    global $db;
+
+	    $sql = "SELECT TIMEDIFF(heuref, heured) AS diff FROM ".MAIN_DB_PREFIX."agefodd_session_calendrier WHERE rowid = ".$this->id;
+        $res = $db->query($sql);
+        if ($res)
+        {
+            $obj = $db->fetch_object($res);
+
+            $TTimes = explode(':', $obj->diff);
+
+            $totalHoursInSeconds = $TTimes[0] * 3600 + $TTimes[1] * 60;
+
+            if ($obj) return $totalHoursInSeconds;
+            else return 0;
+        }
+        else return -1;
+    }
 }
 class Agefodd_sesscalendar_line {
 	public $id;
