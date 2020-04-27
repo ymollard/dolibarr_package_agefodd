@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_stagiaire_planification (
 rowid integer NOT NULL auto_increment PRIMARY KEY,
 fk_agefodd_session integer,
 fk_agefodd_session_stagiaire integer,
+fk_agefodd_session_formateur integer,
 fk_calendrier_type integer,
 heurep integer
 ) ENGINE=InnoDB;

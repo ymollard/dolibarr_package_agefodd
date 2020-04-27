@@ -158,7 +158,8 @@ class Agefodd_session_formateur
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch($id) {
+	public function fetch($id)
+	{
 		$sql = "SELECT";
 		$sql .= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql .= " f.fk_socpeople,";
@@ -179,7 +180,7 @@ class Agefodd_session_formateur
 		$sql .= " ON st.rowid = sf.fk_agefodd_formateur_type";
 		$sql .= " WHERE sf.rowid = " . $id;
 
-		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -207,9 +208,11 @@ class Agefodd_session_formateur
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__ . $this->error, LOG_ERR);
 			return - 1;
 		}
+
+		return 0;
 	}
 
 	/**
@@ -218,7 +221,8 @@ class Agefodd_session_formateur
 	 * @param int $id session object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_formateur_per_session($id) {
+	public function fetch_formateur_per_session($id)
+	{
 		$sql = "SELECT";
 		$sql .= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql .= " f.rowid as formid, f.fk_socpeople, f.fk_user,";
@@ -283,7 +287,7 @@ class Agefodd_session_formateur
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_formateur_per_session " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__ . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -295,7 +299,8 @@ class Agefodd_session_formateur
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0)
+	{
 		global $conf, $langs;
 		$error = 0;
 
@@ -340,7 +345,7 @@ class Agefodd_session_formateur
 
 		// Commit or rollback
 		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
+			foreach ($this->errors as $errmsg) {
 				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
@@ -358,7 +363,8 @@ class Agefodd_session_formateur
 	 * @param int $id of object to delete
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function remove($id) {
+	public function remove($id)
+	{
 		global $conf;
 
 		$error = 0;
@@ -370,7 +376,7 @@ class Agefodd_session_formateur
 			$sql .= '(SELECT fk_actioncomm FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier ';
 			$sql .= 'WHERE fk_agefodd_session_formateur=' . $id . ')';
 
-			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -380,8 +386,21 @@ class Agefodd_session_formateur
 			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier ';
 			$sql .= 'WHERE fk_agefodd_session_formateur=' . $id;
 
-			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
+			if (! $resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			}
+		}
+
+		if (! $error) {
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_planification";
+			$sql .= " WHERE fk_agefodd_session_formateur = " . $id;
+
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+
 			if (! $resql) {
 				$error ++;
 				$this->errors[] = "Error " . $this->db->lasterror();
@@ -392,7 +411,7 @@ class Agefodd_session_formateur
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur";
 			$sql .= " WHERE rowid = " . $id;
 
-			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 
 			if (! $resql) {
@@ -404,7 +423,7 @@ class Agefodd_session_formateur
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__ . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -421,7 +440,8 @@ class Agefodd_session_formateur
 	 * @param int $mode label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
 	 * @return string
 	 */
-	public function getLibStatut($mode = 0) {
+	public function getLibStatut($mode = 0)
+	{
 		return $this->LibStatut($this->trainer_status, $mode);
 	}
 
@@ -515,7 +535,7 @@ class Agefodd_session_formateur
 			if ($statut == 6)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
 		}
-		
+
 		return '';
 	}
 }

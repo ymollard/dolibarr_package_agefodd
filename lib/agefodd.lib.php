@@ -28,6 +28,7 @@ dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
 dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue_modules.class.php');
 dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 
@@ -2162,7 +2163,7 @@ function calcul_margin_percent($cashed_cost, $spend_cost)
  * @param $agf_calendrier Agefodd_sesscalendar
  * @return Agefoddsessionformateurcalendrier[]
  */
-function _getCalendrierFormateurFromCalendrier(&$agf_calendrier)
+function _getCalendrierFormateurFromCalendrier(Agefodd_sesscalendar &$agf_calendrier)
 {
 	global $db, $response;
 
@@ -2335,3 +2336,4 @@ function get_agf_session_mails_infos(Agsession $agsession)
     return $emailInfos;
 
 }
+

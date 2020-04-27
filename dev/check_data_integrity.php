@@ -608,7 +608,84 @@ if ($resql) {
 }
 
 
+//Data intégrity stagiaire heures
+$sql = 'SELECT fk_session FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_session NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session);';
 
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_session.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures qui ont une session qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_session NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+//Data intégrity stagiaire heures
+$sql = 'SELECT fk_calendrier FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_calendrier NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session_calendrier);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_calendrier.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures référence des haures qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_calendrier NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session_calendrier)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+//Data intégrity stagiaire heures planification
+$sql = 'SELECT fk_agefodd_session FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_agefodd_session NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_agefodd_session.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification qui ont une session n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_agefodd_session NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+//Data intégrity stagiaire heures planification
+$sql = 'SELECT fk_agefodd_session_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_agefodd_session_stagiaire NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session_stagiaire);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_agefodd_session_stagiaire.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification qui ont un stagiaire qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_agefodd_session_stagiaire NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session_stagiaire)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+//Data intégrity stagiaire heures planification
+$sql = 'SELECT fk_calendrier_type FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_calendrier_type NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'llx_c_agefodd_session_calendrier_type);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_calendrier_type.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification qui ont un type de modalité qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_calendrier_type NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'llx_c_agefodd_session_calendrier_type)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
 
 if($dolibarr_main_db_type != 'pgsql')
 {

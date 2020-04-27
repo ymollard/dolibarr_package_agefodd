@@ -72,7 +72,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0)
+	{
 	    global $conf, $langs;
 	    $error = 0;
 
@@ -85,7 +86,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    if (isset($this->fk_session))
             $this->fk_session = trim($this->fk_session);
         if (isset($this->heures))
-            $this->heures = (float)$this->heures;
+            $this->heures = (float) $this->heures;
         if (isset($this->fk_user_author))
             $this->fk_user_author = trim($this->fk_user_author);
 
@@ -461,7 +462,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 * @param int $traineeid
 	 * @return float total hours spent in all session by the trainee
 	 */
-	public function heures_stagiaire_totales($traineeid){
+	public function heures_stagiaire_totales($traineeid)
+	{
 	    $trainee = (int) $traineeid;
 	    $sql = 'SELECT fk_session_agefodd as sessid FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire';
 	    $sql.= ' WHERE fk_stagiaire = ' . $trainee;
@@ -527,22 +529,43 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 */
     public function fetch_heures_stagiaire_per_type($sessid, $traineeid)
     {
+    	global $conf;
 
-        $sql = 'SELECT SUM(h.heures) as heures, c.calendrier_type FROM '.MAIN_DB_PREFIX.$this->table_element.' h';
+	    dol_include_once('/agefodd/lib/agefodd.lib.php');
+	    dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+	    dol_include_once('/agefodd/class/agefodd_session_calendrier_formateur.class.php');
+
+        $sql = 'SELECT c.heured, c.heuref, h.heures, c.calendrier_type FROM '.MAIN_DB_PREFIX.$this->table_element.' h';
         $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier c ON h.fk_calendrier = c.rowid';
         $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
         $sql .= ' AND fk_session = ' . $sessid;
-	    $sql .= ' GROUP BY c.calendrier_type';
+	    $sql .= $this->db->order('c.calendrier_type');
 
         $resql = $this->db->query($sql);
 
         if ($resql) {
-
             $TRes = array();
+	        $calrem = new Agefodd_sesscalendar($this->db);
+	        $calrem->sessid=$sessid;
 
             while($obj = $this->db->fetch_object($resql))
             {
-                    $TRes[$obj->calendrier_type] = $obj->heures;
+	            $calrem->heured=$this->db->jdate($obj->heured);
+	            $calrem->heuref=$this->db->jdate($obj->heuref);
+
+	            $TTrainerCalendar = _getCalendrierFormateurFromCalendrier($calrem);
+
+	            if (is_array($TTrainerCalendar) && count($TTrainerCalendar)>0) {
+	            	foreach($TTrainerCalendar as $calItem) {
+	            		if($calItem->status==Agefoddsessionformateurcalendrier::STATUS_FINISH) {
+				            $TRes[$obj->calendrier_type][$calItem->fk_agefodd_session_formateur] += $obj->heures;
+			            } /*else {
+	            		    $TRes[$obj->calendrier_type][0] += $obj->heures;
+	            		}*/
+		            }
+	            } else {
+		            $TRes[$obj->calendrier_type][0] += $obj->heures;
+	            }
             }
 
             return $TRes;

@@ -33,7 +33,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	public $error;
 	public $errors = array ();
 	public $element = 'agefodd';
-	public $table_element = 'agefodd';
+	public $table_element = 'agefodd_session_calendrier';
 	public $id;
 	public $date_session;
 	public $heured;
@@ -95,7 +95,8 @@ class Agefodd_sesscalendar extends CommonObject{
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function create($user, $notrigger = 0, $timeslottrainer = false) {
+	public function create($user, $notrigger = 0, $timeslottrainer = false)
+	{
 		global $conf;
 		$error = 0;
 
