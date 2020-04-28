@@ -464,11 +464,14 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 					$str = '« ' . $agf->intitule_custo . ' »';
 				}
 				$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($str), 0, 'L');
+                $hauteur = dol_nboflines_bis($str, 50) * 4;
+                $haut_col2 += $hauteur + 2;
 
-				$posY = $pdf->GetY() + 2;
-				//$haut_col2 += $hauteur;
+//				$posY = $pdf->GetY() + 2;
+//				$haut_col2 += $hauteur + 2;
 
 				// Période
+                $posY = $pdf->GetY() + 2;
 				$pdf->SetXY($posX, $posY);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 				$str = $outputlangs->transnoentities('AgfPDFFichePres7');
@@ -483,7 +486,24 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 				$hauteur = dol_nboflines_bis($str, 50) * 4;
 				$haut_col2 += $hauteur + 2;
 
+				// Session
+                $posY = $pdf->GetY() + 2;
+				$pdf->SetXY($posX, $posY);
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+				$str = $outputlangs->transnoentities('Session');
+				$pdf->Cell($larg_col1, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+                $pdf->ref_object = $agf;
+                $str = $pdf->ref_object->id . '#' . $pdf->ref_object->ref;
+
+				$pdf->SetXY($posX + $larg_col1, $posY);
+				$pdf->MultiCell($larg_col2, 4, $outputlangs->convToOutputCharset($str), 0, 'L');
+				$hauteur = dol_nboflines_bis($str, 50) * 4;
+				$haut_col2 += $hauteur + 2;
+
 				// Lieu
+                $posY_col4 = $posYintitule;
+
 				$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posYintitule);
 				$str = $outputlangs->transnoentities('AgfPDFFichePres11');
 				$pdf->Cell($larg_col3, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
@@ -496,7 +516,66 @@ class pdf_fiche_presence_societe extends ModelePDFAgefodd {
 				$pdf->MultiCell($larg_col4, 4, $outputlangs->convToOutputCharset($str), 0, 'L');
 				$hauteur = dol_nboflines_bis($str, 50) * 4;
 				$posY += $hauteur + 3;
-				$haut_col4 += $hauteur + 7;
+				$haut_col4 += $hauteur;
+                $posY_col4 += $hauteur;
+
+                //Total heures des créneaux
+                if(!empty($lines_array))
+                {
+                    $pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY_col4);
+                    $str = $outputlangs->transnoentities('Nombre heures');
+                    $pdf->Cell($larg_col3, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+                    //calcul
+                    $totalSecondsSessCalendar = 0;
+                    foreach ($lines_array as $sess_calendar){
+                        $totalSecondsSessCalendar += $sess_calendar->getTime();
+                    }
+                    $totalSessCalendarHours = intval($totalSecondsSessCalendar / 3600);
+                    $totalSessCalendarMin = ($totalSecondsSessCalendar - (3600 * $totalSessCalendarHours)) / 60;
+
+                    $pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $posY_col4);
+                    $str = str_pad($totalSessCalendarHours, 2, 0, STR_PAD_LEFT).':'.str_pad($totalSessCalendarMin, 2, 0, STR_PAD_LEFT);
+                    $pdf->MultiCell($larg_col4, 4, $outputlangs->convToOutputCharset($str), 0, 'L');
+                    $hauteur = dol_nboflines_bis($str, 50) * 4;
+                    $haut_col4 += $hauteur;
+                    $posY_col4 += $hauteur;
+                }
+
+                //OPCO
+                $pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY_col4);
+                $str = $outputlangs->transnoentities('OPCO');
+                $pdf->Cell($larg_col3, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+                $agf_opca = new Agefodd_opca($this->db);
+                $str = '';
+                $i = 0;
+
+                foreach($agfsta->lines as $stagiaire)
+                {
+                    $res = $agf_opca->getOpcaForTraineeInSession($stagiaire->socid, $agf->id, $stagiaire->stagerowid);
+
+                    if($res){
+                        $res = $agf_opca->fetch($res);
+
+                        if($res){
+                            if(!empty($agf_opca->num_OPCA_file)) {
+
+                                if($i != 0) $str .= ', ';
+
+                                $str .= $agf_opca->num_OPCA_file;
+                            }
+                            else $str .= '';
+                        }
+                    }
+
+                    $i++;
+                }
+
+                $pdf->SetXY($posX + $larg_col1 + $larg_col2 + $larg_col3, $posY_col4);
+                $pdf->MultiCell($larg_col4, 4, $outputlangs->convToOutputCharset($str), 0, 'L');
+                $hauteur = dol_nboflines_bis($str, 50) * 4;
+                $haut_col4 += $hauteur;
 
 				// Cadre
 				($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
