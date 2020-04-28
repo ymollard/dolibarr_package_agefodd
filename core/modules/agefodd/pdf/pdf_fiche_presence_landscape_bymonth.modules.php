@@ -237,7 +237,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			foreach ($TTSessionDate as $lines_array) {
 				// New page
 				$this->pdf->AddPage();
-				$this->prepareNewPage($pdf, true);
+				$this->prepareNewPage($pdf, true, $lines_array);
 				$posY = $this->heightForHeader;
 
 				$this->maxSlot = count($lines_array);
@@ -782,8 +782,25 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
 		$haut_col2 += $hauteur + 2;
 
+        // Session
+        $posY = $pdf->GetY() + 2;
+        $pdf->SetXY($posX, $posY);
+        $pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
+        $str = $outputlangs->transnoentities('Session');
+        $pdf->Cell($this->formation_widthcol1, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+        $pdf->ref_object = $agf;
+        $str = $pdf->ref_object->id . '#' . $pdf->ref_object->ref;
+
+        $pdf->SetXY($posX + $this->formation_widthcol1, $posY);
+        $pdf->MultiCell($this->formation_widthcol2, 4, $outputlangs->convToOutputCharset($str), 0, 'L');
+        $hauteur = dol_nboflines_bis($str, 50) * 4;
+        $haut_col2 += $hauteur + 2;
+
 		// Lieu
-		$pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posYintitule);
+        $posY_col4 = $posYintitule;
+
+        $pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posYintitule);
 		$str = $outputlangs->transnoentities('AgfPDFFichePres11');
 		$pdf->Cell($this->formation_widthcol3, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
@@ -796,6 +813,30 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
 		$posY += $hauteur + 3;
 		$haut_col4 += $hauteur + 7;
+        $posY_col4 += $hauteur;
+
+        //Total heures des créneaux
+        if(!empty($lines_array))
+        {
+            $pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posY_col4);
+            $str = $outputlangs->transnoentities('Nombre heures');
+            $pdf->Cell($this->formation_widthcol3, 4, $outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+            //calcul
+            $totalSecondsSessCalendar = 0;
+            foreach ($lines_array as $sess_calendar){
+                $totalSecondsSessCalendar += $sess_calendar->getTime();
+            }
+            $totalSessCalendarHours = intval($totalSecondsSessCalendar / 3600);
+            $totalSessCalendarMin = ($totalSecondsSessCalendar - (3600 * $totalSessCalendarHours)) / 60;
+
+            $pdf->SetXY($posX + $this->formation_widthcol1  + $this->formation_widthcol2 + $this->formation_widthcol3, $posY_col4);
+            $str = str_pad($totalSessCalendarHours, 2, 0, STR_PAD_LEFT).':'.str_pad($totalSessCalendarMin, 2, 0, STR_PAD_LEFT);
+            $pdf->MultiCell($this->formation_widthcol4, 4, $outputlangs->convToOutputCharset($str), 0, 'L');
+            $hauteur = dol_nboflines_bis($str, 50) * 4;
+            $haut_col4 += $hauteur;
+            $posY_col4 += $hauteur;
+        }
 
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
@@ -884,9 +925,9 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 	 * @param TCPDF $pdf
 	 * @return float Y position
 	 */
-	public function prepareNewPage(&$pdf, $forceHead = false)
+	public function prepareNewPage(&$pdf, $forceHead = false, $lines_array = '')
 	{
-		global $conf, $outputlangs, $lines_array;
+		global $conf, $outputlangs;
 
 		// Set path to the background PDF File
 		if (! empty($conf->global->MAIN_ADD_PDF_BACKGROUND))
