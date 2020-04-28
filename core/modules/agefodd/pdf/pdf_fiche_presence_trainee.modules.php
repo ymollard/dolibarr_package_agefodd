@@ -77,7 +77,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 	 * @param int $socid
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function write_file($agf, $outputlangs, $file, $socid, $courrier) {
+	function write_file($agf, $outputlangs, $file, $socid) {
 		global $user, $langs, $conf, $mysoc;
 
 		$this->outputlangs = $outputlangs;
@@ -246,7 +246,21 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		/**
 		 * *** Bloc formation ****
 		 */
-		list($posX, $posY) = $this->printSessionSummary($posX, $posY);
+
+		//calcul temps créneaux
+        $totalSecondsSessCalendar = 0;
+		foreach($this->dates->lines as $sess_calendar){
+            $totalSecondsSessCalendar += $sess_calendar->getTime();
+        }
+
+		//OPCO du participant
+        $agf_opca = new Agefodd_opca($this->db);
+		$TOpco = array();
+        $id_opca = $agf_opca->getOpcaForTraineeInSession($this->line->socid, $this->ref_object->id, $this->line->stagerowid);
+        if($id_opca)  $res = $agf_opca->fetch($id_opca);
+        if($res) $TOpco[] = $agf_opca;
+
+		list($posX, $posY) = $this->printSessionSummary($posX, $posY, $totalSecondsSessCalendar, $TOpco);
 		list($posX, $posY) = $this->printDateBlockHeader($posX, $posY);
 		list($posX, $posY) = $this->printDateBlockLines($posX, $posY);
 
@@ -292,7 +306,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 	 * \param outputlang Object lang for output
 	 * \remarks Need this->emetteur object
 	 */
-	function _pagefoot() {
+	function _pagefoot($object) {
 		$this->pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$this->pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$this->pdf->SetAutoPageBreak(0);

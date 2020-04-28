@@ -278,7 +278,14 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			/**
 			 * *** Bloc formation ****
 			 */
-			list($posX, $posY) = $this->printSessionSummary($posX, $posY, $dates_array);
+
+            //calcul de la durée totale (en seconde) des créneaux
+            $totalSecondsSessCalendar = 0;
+            foreach ($dates_array as $sess_calendar){
+                $totalSecondsSessCalendar += $sess_calendar->getTime();
+            }
+
+			list($posX, $posY) = $this->printSessionSummary($posX, $posY, $totalSecondsSessCalendar);
 
 			/**
 			 * *** Bloc formateur ****
@@ -705,7 +712,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 * @return array
 	 *
 	 */
-	function printSessionSummary($posX, $posY, $dates_array = '', $fk_opco = '')
+	function printSessionSummary($posX, $posY, $time = '', $opco_array = '')
 	{
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
@@ -794,20 +801,15 @@ class pdf_fiche_presence extends ModelePDFAgefodd
         $posY_col4 += $hauteur;
 
         //Total heures des créneaux
-        if(!empty($dates_array))
+        if(!empty($time))
         {
             $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posY_col4);
             $str = $this->outputlangs->transnoentities('Nombre d\'heures');
             $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
             $this->pdf->Cell($this->formation_widthcol3, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
-            //calcul
-            $totalSecondsSessCalendar = 0;
-            foreach ($dates_array as $sess_calendar){
-                $totalSecondsSessCalendar += $sess_calendar->getTime();
-            }
-            $totalSessCalendarHours = intval($totalSecondsSessCalendar / 3600);
-            $totalSessCalendarMin = ($totalSecondsSessCalendar - (3600 * $totalSessCalendarHours)) / 60;
+            $totalSessCalendarHours = intval($time / 3600);
+            $totalSessCalendarMin = ($time - (3600 * $totalSessCalendarHours)) / 60;
 
             $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2 + $this->formation_widthcol3 + 2, $posY_col4);
             $str = str_pad($totalSessCalendarHours, 2, 0, STR_PAD_LEFT).':'.str_pad($totalSessCalendarMin, 2, 0, STR_PAD_LEFT);
@@ -819,15 +821,29 @@ class pdf_fiche_presence extends ModelePDFAgefodd
         }
 
         //OPCO
-        if(!empty($fk_opco))
+        if(!empty($opco_array))
         {
             $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posY_col4);
             $str = $this->outputlangs->transnoentities('OPCO');
             $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
             $this->pdf->Cell($this->formation_widthcol3, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
+            $i = 0;
+            $str = '';
+            foreach($opco_array as $opco_object){
+
+                if(!empty($opco_object->num_OPCA_file)) {
+
+                    if($i != 0) $str .= ', ';
+
+                    $str .= $opco_object->num_OPCA_file;
+                }
+                else $str .= '';
+
+                $i++;
+            }
+
             $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2 + $this->formation_widthcol3 + 2, $posY_col4);
-            $str = $fk_opco;
             $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
             $this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
             $hauteur = dol_nboflines_bis($str, 50) * 4;
@@ -848,7 +864,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 * @param Translate $outputlangs outputlangs
 	 * @return void
 	 */
-	function _pagehead($agf, $dummy = 1, $outputlangs)
+	function _pagehead($agf, $dummy = 1, $outputlangs = '')
 	{
 		global $conf, $mysoc;
 
