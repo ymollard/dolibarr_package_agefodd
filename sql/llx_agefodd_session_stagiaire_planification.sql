@@ -23,5 +23,5 @@ fk_agefodd_session integer,
 fk_agefodd_session_stagiaire integer,
 fk_agefodd_session_formateur integer,
 fk_calendrier_type integer,
-heurep integer
+heurep real
 ) ENGINE=InnoDB;
