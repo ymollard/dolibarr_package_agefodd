@@ -22,5 +22,5 @@ rowid integer NOT NULL auto_increment PRIMARY KEY,
 fk_agefodd_session integer,
 fk_agefodd_session_stagiaire integer,
 fk_calendrier_type integer,
-heurep integer
+heurep real
 ) ENGINE=InnoDB;
