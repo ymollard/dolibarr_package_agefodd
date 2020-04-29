@@ -1834,8 +1834,8 @@ class ActionsAgefodd
 
 				// Add ICS link replacement to mails
 				$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2).'?format=ical&type=event';
-				$thisSubstitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$stagiaires->id;
-				$thisSubstitutionarray['__AGENDAICS__'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftraineeid'.$stagiaires->id);
+				$thisSubstitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$stagiaire->id;
+				$thisSubstitutionarray['__AGENDAICS__'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftraineeid'.$stagiaire->id);
 
 				// Tableau des substitutions
 				if (!empty($agsession->intitule_custo)) {
