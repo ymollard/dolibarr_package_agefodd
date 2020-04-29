@@ -672,7 +672,7 @@ if ($resql) {
 	dol_print_error($db);
 }
 //Data intégrity stagiaire heures planification
-$sql = 'SELECT fk_calendrier_type FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_calendrier_type NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'llx_c_agefodd_session_calendrier_type);';
+$sql = 'SELECT fk_calendrier_type FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_calendrier_type NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type);';
 
 $resql = $db->query($sql);
 if ($resql) {

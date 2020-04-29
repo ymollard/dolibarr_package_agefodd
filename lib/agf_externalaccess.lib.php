@@ -1275,6 +1275,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	$context = Context::getInstance();
 	if (!validateFormateur($context)) return '';
 
+
 	$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
 	$agefodd_sesscalendar->fetch_all($agsession->id);
 	$stagiaires = new Agefodd_session_stagiaire($db);
@@ -3469,94 +3470,184 @@ function getExternalAccessSendEmailFrom($default){
  */
 function getPlanningViewSessionTrainee($session, $idsess, $trainee){
 
-    global $db, $langs;
+    global $db, $langs, $user;
 
 	$context = Context::getInstance();
 
-	//Modalité
-	$sql = "SELECT";
-	$sql .= " rowid, label, code ";
-	$sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
-	$resql = $db->query($sql);
-	if (!$resql) {
-		$context->setEventMessages($db->lasterror,'errors');
-	} else {
-		while($obj = $db->fetch_object($resql)) {
-			$TTypeTimeById[$obj->rowid]=array('code'=>$obj->code,'label'=>$obj->label);
-			$TTypeTimeByCode[$obj->code]=array('rowid'=>$obj->rowid,'label'=>$obj->label);
+    dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
+	dol_include_once('/agefodd/class/agefodd_session_stagiaire_planification.class.php');
+	dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+	dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+
+	$out='';
+	$session_trainer = new Agefodd_session_formateur($db);
+	$formateur = new Agefodd_teacher($db);
+	$formateur->fetchByUser($user);
+	$TtrainerName = array();
+	$fk_agefodd_session_formateur=0;
+	//Find fk_agefodd_session_formateur for the current trainer
+	if (!empty($formateur->id)) {
+		$result = $session_trainer->fetch_formateur_per_session($idsess);
+		if ($result < 0) {
+			$context->setEventMessage($session_trainer->error, 'errors');
+		} else {
+			if (is_array($session_trainer->lines) && count($session_trainer->lines) > 0) {
+				foreach ($session_trainer->lines as $line) {
+					if ($line->formid == $formateur->id) {
+						$fk_agefodd_session_formateur = $line->opsid;
+						$TtrainerName[$fk_agefodd_session_formateur] = $line->firstname . ' ' . $line->lastname;
+						break;
+					}
+				}
+			}
 		}
+
+		$idTrainee_session = $trainee->stagerowid;
+		$idtrainee = $trainee->id;
+
+		//Tableau de toutes les heures plannifiées du participant
+		$planningTrainee = new AgefoddSessionStagiairePlanification($db);
+		$result = $planningTrainee->loadDictModalite();
+		if ($result < 0) {
+			$context->setEventMessage($planningTrainee->error, 'errors');
+		}
+		$TLinesTraineePlanning = $planningTrainee->getSchedulesPerCalendarType($idsess, $idTrainee_session);
+
+		//if(empty($user->rights->agefodd->external_trainer_seeotrainerplantime))
+
+		//Nombre d'heures planifiées
+		$totalScheduledHoursTrainee = $planningTrainee->getTotalScheduledHoursbyTrainee($idsess, $idTrainee_session);
+		if (empty($totalScheduledHoursTrainee))
+			$totalScheduledHoursTrainee = 0;
+
+		//heures réalisées par type de créneau
+
+		$heureRTotal = 0;
+		$trainee_hr = new Agefoddsessionstagiaireheures($db);
+		$THoursR = $trainee_hr->fetch_heures_stagiaire_per_type($idsess, $idtrainee);
+		if (!is_array($THoursR) && $THoursR < 0) {
+			$context->setEventMessages($trainee_hr->error, 'errors');
+		} elseif (is_array($THoursR) && count($THoursR) > 0) {
+			$detailHours = '';
+			foreach ($THoursR as $typ => $trainer_hrs) {
+				foreach ($trainer_hrs as $trainerid => $hrs) {
+					$detailHours .= $planningTrainee->TTypeTimeByCode[$typ]['label'] . ':' . $hrs;
+					if (!empty($trainerid)) {
+						if (!array_key_exists($trainerid, $TtrainerName)) {
+							$result = $session_trainer->fetch($trainerid);
+							if ($result < 0) {
+								setEventMessage($session_trainer->error, 'errors');
+							} elseif ($result == 1) {
+								if (!empty($user->rights->agefodd->external_trainer_seeotrainerplantime)) {
+									$TtrainerName[$trainerid] = $session_trainer->firstname . ' ' . $session_trainer->lastname;
+								} else {
+									$TtrainerName[$trainerid] = $langs->trans('AgfOtherTrainer');
+								}
+							}
+						}
+						$detailHours .= ' (' . $TtrainerName[$trainerid] . ')';
+					}
+					$detailHours .= '<br/>';
+					$heureRTotal += $hrs;
+				}
+			}
+		} else {
+			$heureRTotal = 0;
+		}
+
+		if (!empty($detailHours)) {
+			$detailHours = ' <span data-toggle="popover" title="' . $langs->trans('AgfDetailHeure') . '" data-content="' . $detailHours . '"><i class="fa fa-plus hours-detail"></i></span>';
+		}
+
+		//heures totales restantes : durée de la session - heures réalisées totales
+		$heureRestTotal = $session->duree_session - $heureRTotal;
+
+		$out = '<table class="table table-striped w-100" id="planningTrainee">';
+
+		//Titres
+		$out .= '<tr class="text-center">';
+		$out .= '<th width="15%" class="text-center">' . $langs->trans('AgfCalendarType') . '</th>';
+		$out .= '<th width="35%" class="text-center">' . $langs->trans('AgfHoursP') . ' (' . $totalScheduledHoursTrainee . ')</th>';
+		$out .= '<th class="text-center">' . $langs->trans('AgfHoursR') . ' (' . $heureRTotal . $detailHours . ')</th>';
+		$out .= '<th class="text-center">' . $langs->trans('AgfHoursRest') . ' (' . $heureRestTotal . ')</th>';
+		$out .= '</tr>';
+
+		//Lignes par type de modalité
+		foreach ($TLinesTraineePlanning as $line) {
+
+
+			//Match Trainer
+			if (!empty($line->fk_agefodd_session_formateur)) {
+				if (!array_key_exists($line->fk_agefodd_session_formateur, $TtrainerName)) {
+					$result = $session_trainer->fetch($line->fk_agefodd_session_formateur);
+					if ($result < 0) {
+						setEventMessage($session_trainer->error, 'errors');
+					} elseif($result==1) {
+						$TtrainerName[$line->fk_agefodd_session_formateur] = $session_trainer->firstname . ' ' . $session_trainer->lastname;
+					}
+				}
+				//Calcul heures restantes
+				$heureRest = $line->heurep - $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][$line->fk_agefodd_session_formateur];
+				if ($heureRest<0) {
+					$heureRest ='<div style="color:red;font-weight: bold">'.$heureRest.' (' . $TtrainerName[$line->fk_agefodd_session_formateur].')</div>';
+				} else {
+					$heureRest .=' (' . $TtrainerName[$line->fk_agefodd_session_formateur].')';
+				}
+				//Calcul heures réalisé
+				if (!empty($THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][$line->fk_agefodd_session_formateur])) {
+					$heureDone = $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][$line->fk_agefodd_session_formateur] . ' ('. $TtrainerName[$line->fk_agefodd_session_formateur].')';
+				} else {
+					$heureDone ='';
+				}
+			} else {
+				$heureDoneByModTotal=0;
+				$TrainerDoneByMod=array();
+				foreach($THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']] as $trainerid=>$hrsDone) {
+					$heureDoneByModTotal += $hrsDone;
+					$TrainerDoneByMod[]= $TtrainerName[$trainerid];
+				}
+
+				if (!empty($heureDoneByModTotal)) {
+					$heureDone = $heureDoneByModTotal.' ('.implode(',', $TrainerDoneByMod).')';
+					$heureRest = $line->heurep - $heureDoneByModTotal;
+				} else {
+					$heureRest = $line->heurep - $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][0];
+					$heureDone = $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][0];
+				}
+			}
+
+			$out .= '<tr>';
+
+			//Type créneau
+			$out .= '<td>'.$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['label'].'</td>';
+			//Heure planifé
+			$out .= '<td class="text-center">'.$line->heurep.(array_key_exists($line->fk_agefodd_session_formateur, $TtrainerName)?' (' . $TtrainerName[$line->fk_agefodd_session_formateur].')':'').'</td>';
+			//Heure réalisées
+			$out .= '<td class="text-center">'.$heureDone.'</td>';
+			//Heures restantes
+			$out.= '<td class="text-center">'.$heureRest.'</td>';
+
+			//Calcul heures restantes
+			//$heureRest = $line->heurep - $THoursR[{$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]}['code']];
+
+			/*$out .= '<tr>';
+
+			//Type créneau
+			$out .= '<td>' . $planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['label'] . '</td>';
+			//Heure saisie prévue
+			$out .= '<td class="text-center">' . $line->heurep . '</td>';
+			//Heure réalisées
+			$out .= '<td class="text-center">';
+			//$out .= '$THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']];
+			$out .= '</td>';
+			//Heures restantes
+			$out .= '<td class="text-center">' . $heureRest . '</td>';
+
+			$out .= '</tr>';*/
+
+		}
+
+		$out .= '</table>';
 	}
-
-    require_once (dol_buildpath('/custom/agefodd/class/agefodd_session_stagiaire_heures.class.php'));
-    require_once (dol_buildpath('/custom/agefodd/class/agefodd_session_stagiaire_planification.class.php'));
-
-    $idTrainee_session = $trainee->stagerowid;
-    $idtrainee = $trainee->id;
-
-    //Tableau de toutes les heures plannifiées du participant
-    $planningTrainee = new AgefoddSessionStagiairePlanification($db);
-    $TLinesTraineePlanning = $planningTrainee->getSchedulesPerCalendarType($idsess, $idTrainee_session);
-
-    //Nombre d'heures planifiées
-    $totalScheduledHoursTrainee = $planningTrainee->getTotalScheduledHoursbyTrainee($idsess, $idTrainee_session);
-    if(empty($totalScheduledHoursTrainee)) $totalScheduledHoursTrainee = 0;
-
-    //heures réalisées par type de créneau
-    $trainee_hr = new Agefoddsessionstagiaireheures($db);
-    $THoursR = $trainee_hr->fetch_heures_stagiaire_per_type($idsess, $idtrainee);
-    if (!is_array($THoursR) && $THoursR<0) {
-	    $context->setEventMessages($trainee_hr->error,'errors');
-    } elseif (is_array($THoursR) && count($THoursR)>0) {
-	    //heures totales réalisées par le stagiaire
-	    $detailHours='';
-	    foreach($THoursR as $typ=>$hrs) {
-		    $detailHours.=dol_escape_htmltag($TTypeTimeByCode[$typ]['label'].':'.$hrs.'<br>', 1);
-	    }
-	    $heureRTotal = array_sum($THoursR);
-    } else {
-	    $heureRTotal=0;
-    }
-
-	if (!empty($detailHours)) {
-		$detailHours = ' <span data-toggle="popover" title="' . $langs->trans('AgfDetailHeure') . '" data-content="' . $detailHours . '"><i class="fa fa-plus hours-detail"></i></span>';
-	}
-
-    //heures totales restantes : durée de la session - heures réalisées totales
-    $heureRestTotal = $session->duree_session - $heureRTotal;
-
-    $out = '<table class="table table-striped w-100" id="planningTrainee">';
-
-    //Titres
-    $out .= '<tr class="text-center">';
-    $out .= '<th width="15%" class="text-center">'.$langs->trans('AgfCalendarType').'</th>';
-    $out .= '<th width="35%" class="text-center">'.$langs->trans('AgfHoursP').' ('.$totalScheduledHoursTrainee.')</th>';
-    $out .= '<th class="text-center">'.$langs->trans('AgfHoursR').' ('.$heureRTotal.$detailHours.')</th>';
-    $out .= '<th class="text-center">'.$langs->trans('AgfHoursRest').' ('.$heureRestTotal.')</th>';
-    $out .= '</tr>';
-
-    //Lignes par type de modalité
-    foreach($TLinesTraineePlanning as $line)
-    {
-
-	    //Calcul heures restantes
-	    $heureRest = $line->heurep - $THoursR[$TTypeTimeById[$line->fk_calendrier_type]['code']];
-
-	    $out .= '<tr>';
-
-        //Type créneau
-        $out .= '<td>'.$TTypeTimeById[$line->fk_calendrier_type]['label'].'</td>';
-        //Heure saisie prévue
-        $out .= '<td class="text-center">'.$line->heurep.'</td>';
-        //Heure réalisées
-        $out .= '<td class="text-center">'.$THoursR[$TTypeTimeById[$line->fk_calendrier_type]['code']].'</td>';
-        //Heures restantes
-        $out .= '<td class="text-center">'.$heureRest.'</td>';
-
-        $out .= '</tr>';
-
-    }
-
-    $out .= '</table>';
-
     return $out;
 }

@@ -1543,13 +1543,13 @@ invoice_supplier_trainer=Formateurs
 invoice_supplier_room=Lieu
 invoice_supplier_missions=Déplacement et mission
 AgfSessionRef=Ref. Session
-AgfEATrainerRead=Voir les infos liés au formateur dans l'accés externe
-AgfEATrainerWrite=Créer/modifier les infos liés au formateur dans l'accés externe
-AgfEATrainerDownload=Télécharger des documents (formateur) sur l'accés externe
-AgfEATrainerUpload=Déposer des documents (formateur) sur l'accés externe
-AgfEATrainerAgenda=Accès à l'agenda (formateur) sur l'accés externe
-AgfEATrainerTimeslotDelete=Supprimer un créneau (formateur) sur l'accés externe
-AgfEATrainee=Accès à ces infos stagiaire sur l'accés externe
+AgfEATrainerRead=Portail formateur : Voir les infos liés au formateur
+AgfEATrainerWrite=Portail formateur : Créer/modifier les infos liés au formateur
+AgfEATrainerDownload=Portail formateur : Télécharger des documents (formateur)
+AgfEATrainerUpload=Portail formateur : Déposer des documents (formateur)
+AgfEATrainerAgenda=Portail formateur : Accès à l'agenda (formateur)
+AgfEATrainerTimeslotDelete=Portail formateur : Supprimer un créneau (formateur)
+AgfEATrainee=Portail apprenant : Accès à ces infos stagiaire
 AgfCoutFormationPlanned=Prix de vente planifié
 AgfCostOtherPlanned=Coût(s) autre(s) planifiés
 AgfCostTrainerPlanned=Coût formateur(s)/trice(s) planifié
@@ -1700,7 +1700,7 @@ AgfNbSessEffective=Sessions effectives
 
 AgfHideLegalTextBelowSignatureFichePres=Masquer la mention légale sous le titre "Signature" dans les feuilles d'émargement
 AgfHideCompanyFichePres = Masquer la colonne société dans les feuilles d'émargements pour l'ajouter dans le nom du participants
-AgfEATrainerAndTraineeAccessSessionLink=Portail formateur et apprenant - Voir les liens (URL) associé à la session
+AgfEATrainerAndTraineeAccessSessionLink=Portail formateur et apprenant : Voir les liens (URL) associé à la session
 
 AgfDefaultCalendarStatus=Statut par defaut des creneaux session
 AgfDefaultTrainerCalendarStatus=Statut par defaut des creneaux session formateur
@@ -1734,3 +1734,6 @@ AgfTraineePlanification=Planning de %s %s %s (session de %s heures)
 AgfErrorHoursPTraineeHoursSess=Impossible de dépasser le nombre d'heures total de la session
 
 AgfDetailHeure=Détails des heures
+AgfEATrainerSeeOtherTrainerIdentityPlanedTime = Portail formateur : Voir l'identité des autres formateurs/trices sur les temps planifiés participants
+AgfPlanTraineeStrangeData=Vous avez proposées des heures de modalité <b> %s </b>avec un.e formateur.rice ET sans formateur.rice, cela peux provoquer une lecture difficile des heures ci dessous.
+AgfOtherTrainer=Autre formateur.trice

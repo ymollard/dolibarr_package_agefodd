@@ -22,6 +22,9 @@ class AgefoddSessionStagiairePlanification extends CommonObject
     public $fk_calendrier_type;
     public $heurep;
 
+    public $TTypeTimeById =array();
+	public $TTypeTimeByCode=array();
+
     /**
      * Constructor
      *
@@ -58,6 +61,7 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         if (isset($this->heurep))
             $this->heurep = (float) $this->heurep;
 
+
         // Insert request
         $sql = "INSERT INTO " . MAIN_DB_PREFIX . $this->table_element ."(";
         $sql .= "fk_agefodd_session,";
@@ -67,11 +71,11 @@ class AgefoddSessionStagiairePlanification extends CommonObject
         $sql .= "heurep";
         $sql .= ") VALUES (";
 
-        $sql .= " " . (! isset($this->fk_session) ? 'NULL' : "'" . $this->fk_session . "'") . ",";
-        $sql .= " " . (! isset($this->fk_session_stagiaire) ? 'NULL' : "'" . $this->fk_session_stagiaire . "'") . ",";
-        $sql .= " " . (! isset($this->fk_session_formateur) ? 'NULL' : "'" . $this->fk_session_formateur . "'") . ",";
-        $sql .= " " . (! isset($this->fk_calendrier_type) ? 'NULL' : "'" . $this->fk_calendrier_type . "'") . ",";
-        $sql .= " " . (! isset($this->heurep) ? 'NULL' : "'" . $this->heurep . "'");
+        $sql .= " " . (! isset($this->fk_session) ? 'NULL' : $this->fk_session ) . ",";
+        $sql .= " " . (! isset($this->fk_session_stagiaire) ? 'NULL' : $this->fk_session_stagiaire) . ",";
+        $sql .= " " . (! isset($this->fk_session_formateur) ? 'NULL' : $this->fk_session_formateur) . ",";
+        $sql .= " " . (! isset($this->fk_calendrier_type) ? 'NULL' : $this->fk_calendrier_type) . ",";
+        $sql .= " " . (! isset($this->heurep) ? 'NULL' : $this->heurep);
         $sql .= ")";
 
         $this->db->begin();
@@ -393,5 +397,27 @@ class AgefoddSessionStagiairePlanification extends CommonObject
             return -1;
         }
         return 0;
+    }
+
+	/**
+	 * Load dict data, populate TTypeTimeById and TTypeTimeByCode
+	 * @return int <0 if KO, >0 if OK
+	 */
+    public function loadDictModalite() {
+
+	    $sql = "SELECT";
+	    $sql .= " rowid, label, code ";
+	    $sql .= " FROM ".MAIN_DB_PREFIX."c_agefodd_session_calendrier_type";
+	    $resql = $this->db->query($sql);
+	    if (!$resql) {
+		    $this->error = $this->db->lasterror;
+		    return -1;
+	    } else {
+		    while($obj = $this->db->fetch_object($resql)) {
+			    $this->TTypeTimeById[$obj->rowid]=array('code'=>$obj->code,'label'=>$obj->label);
+			    $this->TTypeTimeByCode[$obj->code]=array('rowid'=>$obj->rowid,'label'=>$obj->label);
+		    }
+	    }
+	    return count($this->TTypeTimeByCode);
     }
 }

@@ -1796,6 +1796,14 @@ class modAgefodd extends DolibarrModules
             $this->rights[$r][4] = 'external_access_link_attatchement';
         }
 
+		$r ++;
+		if (!empty($conf->externalaccess->enabled)) {
+			$this->rights[$r][0] = $this->numero . $r;
+			$this->rights[$r][1] = 'AgfEATrainerSeeOtherTrainerIdentityPlanedTime';
+			$this->rights[$r][3] = 0;
+			$this->rights[$r][4] = 'external_trainer_seeotrainerplantime';
+		}
+
 		// Main menu entries
 		$this->menus = array();
 		$r = 0;
