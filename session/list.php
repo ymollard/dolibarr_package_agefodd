@@ -147,9 +147,9 @@ if (! empty($conf->global->AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH)) {
 $search_by=GETPOST('search_by', 'alpha');
 if (!empty($search_by)) {
     if ($search_by=="search_id") {
-        $sall=GETPOST('sortorder', 'int');
+        $sall=GETPOST('sall', 'int');
     }else{
-        $sall=GETPOST('sortorder', 'alpha');
+        $sall=GETPOST('sall', 'alpha');
     }
 	if (!empty($sall)) {
 		${$search_by}=$sall;
