@@ -1280,7 +1280,7 @@ class ActionsAgefodd
 		global $conf;
 
 		$outputlangs = $parameters['outputlangs'];
-		
+
 		$files = array();
 		dol_syslog(get_class($this) . '::executeHooks action=' . $action);
 
@@ -1832,6 +1832,10 @@ class ActionsAgefodd
 				$thisSubstitutionarray['__agfcreneau_datesession__'] = dol_print_date($agf_calendrier->date_session);
 				$thisSubstitutionarray['__agfcreneau_status__'] = $agf_calendrier->getLibStatut();
 
+				// Add ICS link replacement to mails
+				$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2).'?format=ical&type=event';
+				$thisSubstitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$stagiaire->id;
+				$thisSubstitutionarray['__AGENDAICS__'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftraineeid'.$stagiaire->id);
 
 				// Tableau des substitutions
 				if (!empty($agsession->intitule_custo)) {

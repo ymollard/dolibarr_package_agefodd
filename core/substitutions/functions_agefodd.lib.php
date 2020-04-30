@@ -47,6 +47,7 @@ function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$obj
 		$substitutionarray['__AGENDAICS__'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftraineeid'.$object->id);
 	}
 
+	// show sendCreneauEmailAlertToTrainees for  __AGENDAICS__ external access substitution
 
 
 
