@@ -358,7 +358,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres12');
 		$this->pdf->Cell(0, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-		$posY += 2;
+		$posY += 3;
 
 		// Entête
 		// Cadre
@@ -483,7 +483,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres15');
 		$this->pdf->Cell(0, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-		$posY = $this->pdf->GetY();
+		$posY = $this->pdf->GetY() +1;
 
 		// Entête
 		// Cadre
@@ -711,7 +711,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres23');
 		$this->pdf->Cell(0, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-		$posY += 4;
+		$posY += 5;
 
 		$cadre_tableau = array(
 			$posX,
@@ -741,9 +741,11 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		}
 		$this->pdf->MultiCell($this->formation_widthcol2, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
 
-		$posY = $this->pdf->GetY() + 2;
+		$hauteur = dol_nboflines_bis($str, 50) * 4;
+		$haut_col2 += $hauteur + 2;
 
 		// Période
+		$posY = $this->pdf->GetY() + 2;
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres7');
