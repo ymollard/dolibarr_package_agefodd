@@ -1360,7 +1360,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 					</div>
 					<div class="accordion col-md text-center" id="accordionDetail">
 						<a class="btn btn-primary" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-				          <i class="btn-primary fa fa-plus-circle"></i><span class="btn-primary d-none d-sm-inline">'.$langs->trans('AgfDetailHeure').'</span>
+				          <i class="btn-primary fa fa-plus-circle"></i><span class="btn-primary d-none d-sm-inline">&nbsp;'.$langs->trans('AgfDetailHeure').'</span>
 				        </a>
 						<div class="row clearfix collapse hidde" id="collapseOne" data-parent="#accordionDetail">
 							<div class="col-md">
