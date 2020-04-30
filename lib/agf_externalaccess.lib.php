@@ -3627,24 +3627,6 @@ function getPlanningViewSessionTrainee($session, $idsess, $trainee){
 			//Heures restantes
 			$out.= '<td class="text-center">'.$heureRest.'</td>';
 
-			//Calcul heures restantes
-			//$heureRest = $line->heurep - $THoursR[{$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]}['code']];
-
-			/*$out .= '<tr>';
-
-			//Type créneau
-			$out .= '<td>' . $planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['label'] . '</td>';
-			//Heure saisie prévue
-			$out .= '<td class="text-center">' . $line->heurep . '</td>';
-			//Heure réalisées
-			$out .= '<td class="text-center">';
-			//$out .= '$THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']];
-			$out .= '</td>';
-			//Heures restantes
-			$out .= '<td class="text-center">' . $heureRest . '</td>';
-
-			$out .= '</tr>';*/
-
 		}
 
 		$out .= '</table>';
