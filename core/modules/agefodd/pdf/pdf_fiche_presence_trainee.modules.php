@@ -333,7 +333,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres26');
 		$this->pdf->Cell(0, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-		$posY += 4;
+		$posY += 5;
 
 		// Date
 		$this->pdf->SetXY($posX-2, $posY);
