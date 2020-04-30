@@ -333,7 +333,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres26');
 		$this->pdf->Cell(0, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-		$posY += 4;
+		$posY += 5;
 
 		// Date
 		$this->pdf->SetXY($posX-2, $posY);
@@ -408,7 +408,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$this->pdf->SetXY($posX_trainer, $posY_trainer);
 				$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 7);
 				$this->str = strtoupper($trainer_line->lastname) . "\n" . ucfirst($trainer_line->firstname);
-				$this->pdf->MultiCell(0, 3, $this->outputlangs->convToOutputCharset($this->str), 'LR', "L", false, 1, $posX_trainer, $posY_trainer);
+				$this->pdf->MultiCell(0, 3, $this->outputlangs->convToOutputCharset($this->str), 'LR', "C", false, 1, $posX_trainer, $posY_trainer);
 				// $w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y=''
 
 				$posY = $this->pdf->GetY();
