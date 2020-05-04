@@ -1134,24 +1134,24 @@ class ReportBPF extends AgefoddExportExcel
 		global $langs, $conf;
 		$array_data = array(
 				array(
-						'label' => 'a-Salariés bénéficiant d un financement par l employeur, par un OPCA ou un OPACIF',
+						'label' => 'a-Salariés d’employeurs privés hors apprentis',
 						'idtype' => '1,2,7,5,4'
 				),
 				array(
-						'label' => 'b-Personnes en recherche d’emploi bénéficiant d’un financement public',
-						'idtype' => '3'
+						'label' => 'b-Apprentis',
+						'idtype' => '18'
 				),
 				array(
-						'label' => 'c-Personnes en recherche d’emploi bénéficiant d’un financement OPCA',
+						'label' => 'c-Personnes en recherche d’emploi formées par votre organisme de formation',
 						'idtype' => '17'
 				),
 				array(
-						'label' => 'd-Particuliers à leurs propres frais',
+						'label' => 'd-Particuliers à leurs propres frais formés par votre organisme de formation',
 						'idtype' => '15'
 				),
 				array(
 						'label' => 'e-Autres stagiaires',
-						'idtype' => '6,8,9,10,11,12,13,14,16,0'
+						'idtype' => '6,8,9,10,11,12,13,14,16,0,20'
 				)
 		);
 
@@ -1354,10 +1354,34 @@ function fetch_financial_c($filter = array()) {
 					'datefac'=>1,
 			),
 			array(
+					'idtypesta' => 18,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-a OPCA pour des formations dispensées des contrats d’apprentissage',
+					'confcust' => 'AGF_CAT_BPF_OPCA',
+					'confcustlabel' => 'AgfReportBPFCategOPCA',
+					'employer' => 0,
+					'checkOPCA' => 1,
+					'checkPV' => 0,
+					'datefac'=>1,
+			),
+			array(
 					'idtypesta' => 1,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-a OPCA pour des formations dispensées dans la cadre des contrats de professionnalisation',
+					'label' => 'C-b OPCA pour des formations dispensées des contrats de professionnalisation',
+					'confcust' => 'AGF_CAT_BPF_OPCA',
+					'confcustlabel' => 'AgfReportBPFCategOPCA',
+					'employer' => 0,
+					'checkOPCA' => 1,
+					'checkPV' => 0,
+					'datefac'=>1,
+			),
+			array(
+					'idtypesta' => 19,
+					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+					'confprodlabel' => 'AgfReportBPFCategProdPeda',
+					'label' => 'C-c OPCA pour des formations dispensées de la promotion ou de la reconversion par alternance',
 					'confcust' => 'AGF_CAT_BPF_OPCA',
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
@@ -1369,7 +1393,7 @@ function fetch_financial_c($filter = array()) {
 					'idtypesta' => 7,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-b OPCA pour des formations dispensées dans le cadre des congés individuels de formation',
+					'label' => 'C-d OPCA pour des formations dispensées des congés individuels de formation et des projets de transition professionnelle',
 					'confcust' => 'AGF_CAT_BPF_OPCA',
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
@@ -1381,7 +1405,7 @@ function fetch_financial_c($filter = array()) {
 					'idtypesta' => 5,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-c OPCA pour des formations dispensées dans le cadre du compte personnel de formation',
+					'label' => 'C-e OPCA pour des formations dispensées du compte personnel de formation',
 					'confcust' => 'AGF_CAT_BPF_OPCA',
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
@@ -1390,22 +1414,10 @@ function fetch_financial_c($filter = array()) {
 					'datefac'=>1,
 			),
 			array(
-					'idtypesta' => '17,3',
+					'idtypesta' => 17,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-d OPCA pour des formations dispensées dans le cadre des dispositifs spécifiques pour les personnes en recherche d’emploi',
-					'confcust' => 'AGF_CAT_BPF_OPCA',
-					'confcustlabel' => 'AgfReportBPFCategOPCA',
-					'employer' => 0,
-					'checkOPCA' => 1,
-					'checkPV' => 0,
-					'datefac'=>1,
-			),
-			array(
-					'idtypesta' => 4,
-					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
-					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-e OPCA pour des formations dispensées dans le cadre d’autres dispositifs (plan de formation, périodes de professionnalisation, ...)',
+					'label' => 'C-f OPCA pour des formations dispensées pour des dispositifs spécifiques pour les personnes en recherche d\'emploi',
 					'confcust' => 'AGF_CAT_BPF_OPCA',
 					'confcustlabel' => 'AgfReportBPFCategOPCA',
 					'employer' => 0,
@@ -1417,7 +1429,7 @@ function fetch_financial_c($filter = array()) {
 					'idtypesta' => 8,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-3 des fonds d assurance formation de non-salariés',
+					'label' => 'C-g des fonds d assurance formation de non-salariés',
 					'confcust' => 'AGF_CAT_BPF_FAF',
 					'confcustlabel' => 'AgfReportBPFCategFAF',
 					'employer' => 0,
@@ -1426,10 +1438,22 @@ function fetch_financial_c($filter = array()) {
 					'datefac'=>1,
 			),
 			array(
+				'idtypesta' => 20,
+				'confprod' => 'AGF_CAT_BPF_PRODPEDA',
+				'confprodlabel' => 'AgfReportBPFCategProdPeda',
+				'label' => 'C-h OPCA pour des formations dispensées pour du plan de développement des compétences ou d’autres dispositifs',
+				'confcust' => 'AGF_CAT_BPF_OPCA',
+				'confcustlabel' => 'AgfReportBPFCategOPCA',
+				'employer' => 0,
+				'checkOPCA' => 1,
+				'checkPV' => 0,
+				'datefac'=>1,
+			),
+			array(
 					'idtypesta' => 9,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-4 Pouvoirs publics pour la formation de leurs agents (Etat, collectivités territoriales, établissements publics à caractère administratif)',
+					'label' => 'C-3 Pouvoirs publics pour la formation de leurs agents (Etat, collectivités territoriales, établissements publics à caractère administratif)',
 					'confcust' => 'AGF_CAT_BPF_ADMINISTRATION',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
@@ -1441,7 +1465,7 @@ function fetch_financial_c($filter = array()) {
 					'idtypesta' => 10,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-5 Pouvoirs publics spécifiques Instances européennes',
+					'label' => 'C-4 Pouvoirs publics spécifiques Instances européennes',
 					'confcust' => '',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
@@ -1453,7 +1477,7 @@ function fetch_financial_c($filter = array()) {
 					'idtypesta' => 11,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-6 Pouvoirs publics spécifiques Etat',
+					'label' => 'C-5 Pouvoirs publics spécifiques Etat',
 					'confcust' => '',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
@@ -1465,7 +1489,7 @@ function fetch_financial_c($filter = array()) {
 					'idtypesta' => 12,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-7 Pouvoirs publics spécifiques Conseils régionaux',
+					'label' => 'C-6 Pouvoirs publics spécifiques Conseils régionaux',
 					'confcust' => '',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
@@ -1477,7 +1501,7 @@ function fetch_financial_c($filter = array()) {
 					'idtypesta' => 13,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-8 Pouvoirs publics spécifiques Pôle emploi',
+					'label' => 'C-7 Pouvoirs publics spécifiques Pôle emploi',
 					'confcust' => '',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
@@ -1490,7 +1514,7 @@ function fetch_financial_c($filter = array()) {
 					'idtypesta' => 14,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-9 Pouvoirs publics spécifiques Autres ressources publiques',
+					'label' => 'C-8 Pouvoirs publics spécifiques Autres ressources publiques',
 					'confcust' => '',
 					'confcustlabel' => 'AgfReportBPFCategAdmnistration',
 					'employer' => 0,
@@ -1502,7 +1526,7 @@ function fetch_financial_c($filter = array()) {
 					'idtypesta' => 15,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-10 Contrats conclus avec des personnes à titre individuel et à leurs frais',
+					'label' => 'C-9 Contrats conclus avec des personnes à titre individuel et à leurs frais',
 					'confcust' => 'AGF_CAT_BPF_PARTICULIER',
 					'confcustlabel' => 'AgfReportBPFCategParticulier',
 					'employer' => 0,
@@ -1514,7 +1538,7 @@ function fetch_financial_c($filter = array()) {
 					'idtypesta' => 16,
 					'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 					'confprodlabel' => 'AgfReportBPFCategProdPeda',
-					'label' => 'C-11 Contrats conclus avec d’autres organismes de formation',
+					'label' => 'C-10 Contrats conclus avec d’autres organismes de formation y compris CFA',
 					'confcust' => '',
 					'employer' => 1,
 					'checkOPCA' => 0,
@@ -1532,8 +1556,8 @@ function fetch_financial_c($filter = array()) {
 	}
 
 
-	// C - 12
-	$result = $this->_getAmountFinC12($filter,$sqldebugall);
+	// C - 11
+	$result = $this->_getAmountFinC11($filter,$sqldebugall);
 	if ($result < 0) {
 		return - 1;
 	}
@@ -1545,7 +1569,7 @@ function fetch_financial_c($filter = array()) {
 	}
 
 	dol_syslog(get_class($this) . "::" . __METHOD__ . ' DEBUG ALL C1 to 13 '."\n".implode(' UNION ',$sqldebugall), LOG_DEBUG);
-	
+
 	$invoiceField = floatval(DOL_VERSION) > 9 ? 'factdddd.ref as facnumber' : 'factdddd.facnumber';
 
 	if(floatval(DOL_VERSION) > 9) {
@@ -2077,7 +2101,7 @@ function fetch_financial_d($filter = array()) {
 	 * @param array $filter
 	 * @return number
 	 */
-	private function _getAmountFinC12($filter, &$sqldebugarray=array()) {
+	private function _getAmountFinC11($filter, &$sqldebugarray=array()) {
 		global $conf, $langs;
 
 		if (empty($conf->global->AGF_CAT_BPF_TOOLPEDA)) {
