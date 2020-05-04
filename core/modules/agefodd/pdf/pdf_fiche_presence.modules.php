@@ -102,7 +102,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->formation_widthcol1 = 20;
 		$this->formation_widthcol2 = 80;
 		$this->formation_widthcol3 = 27;
-		$this->formation_widthcol4 = 65;
+		$this->formation_widthcol4 = 60;
 
 		$this->trainer_widthcol1 = 44;
 		$this->trainer_widthcol2 = 140;

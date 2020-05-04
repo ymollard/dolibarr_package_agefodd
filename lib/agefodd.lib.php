@@ -1802,8 +1802,8 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 			$agf->fetch($object->fk_formation_catalogue);
 			$forma_ref_int = $agf->ref_interne;
 			if (empty($conf->global->AGF_HIDE_DATE_ON_HEADER)) {
-				$forma_ref_int .= '(' . $object->libSessionDate();
-				if (!$noSessRef) $forma_ref_int .= ') - ';
+				$forma_ref_int .= '(' . $object->libSessionDate() . ')';
+				if (!$noSessRef) $forma_ref_int .= ' - ';
 			}
 			if (!$noSessRef) $forma_ref_int .= $object->id . '#' . $object->ref ;
 		}
