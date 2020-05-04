@@ -1805,7 +1805,7 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 				$forma_ref_int .= '(' . $object->libSessionDate() . ')';
 				if (!$noSessRef) $forma_ref_int .= ' - ';
 			}
-			if (!$noSessRef) $forma_ref_int .= $object->id . '#' . $object->ref ;
+			if (!$noSessRef) $forma_ref_int .= "\n".$object->id . '#' . $object->ref ;
 		}
 
 		if (!empty($forma_ref_int)) {
