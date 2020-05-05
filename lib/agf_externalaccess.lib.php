@@ -3450,12 +3450,13 @@ function getExternalAccessSendEmailContext(){
 function getExternalAccessSendEmailFrom($default){
     global $conf;
     $mail=$default;
+
     if(!empty($conf->global->AGF_EA_SEND_EMAIL_FROM))
     {
         $mail=$conf->global->AGF_EA_SEND_EMAIL_FROM;
     }
     elseif(!empty($conf->global->MAIN_MAIL_EMAIL_FROM)){
-        $mail=$conf->MAIN_MAIL_EMAIL_FROM;
+        $mail=$conf->global->MAIN_MAIL_EMAIL_FROM;
     }
 
     return $mail;
