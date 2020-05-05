@@ -1773,11 +1773,12 @@ class ActionsAgefodd
 
 		require_once(DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
 
+		$formateur = new Agefodd_teacher($this->db);
+		$formateur->fetchByUser($user);
+
 		// copy email to
 		$addr_cc = "";
 		if (!empty($conf->global->AGF_SEND_COPY_EMAIL_TO_TRAINER)) {
-			$formateur = new Agefodd_teacher($this->db);
-			$formateur->fetchByUser($user);
 			if (!empty($formateur->id)) {
 				$addr_cc = $formateur->email;
 			}
@@ -1872,6 +1873,10 @@ class ActionsAgefodd
 
 				$from = getExternalAccessSendEmailFrom($user->email);
 				$replyto = $user->email;
+				if (!empty($formateur->id) && !empty($formateur->email) && filter_var($formateur->email, FILTER_VALIDATE_EMAIL)) {
+                                	$replyto = $formateur->email;
+                        	}
+
 				$errors_to = $conf->global->MAIN_MAIL_ERRORS_TO;
 
 				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, "", 0, 1, $errors_to, '', '', '', getExternalAccessSendEmailContext(), $replyto);
