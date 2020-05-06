@@ -689,35 +689,32 @@ if ($resql) {
 
 if($dolibarr_main_db_type != 'pgsql')
 {
+	//Collation, PS: il existe aussi un script dans abricot pour ça.
+	$sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET utf8 COLLATE '.$dolibarr_main_db_collation.';\') AS    mySQL
+	        FROM INFORMATION_SCHEMA.TABLES
+	        WHERE TABLE_SCHEMA= "'.$dolibarr_main_db_name.'"
+	                AND TABLE_TYPE="BASE TABLE"
+	                AND TABLE_COLLATION != \''.$dolibarr_main_db_collation.'\'' ;
+	$sql .= '                AND (TABLE_NAME LIKE \''.MAIN_DB_PREFIX.'agefodd%\' OR TABLE_NAME = \''.MAIN_DB_PREFIX.'c_civility\')';
+	//echo $sql;
+	$resql = $db->query($sql);
+	if ($resql) {
+	    if ($db->num_rows($resql)) {
+
+	        print 'Certaines tables ne sont pas en collation utf8';
+	        print '<BR><BR><BR>Suggestion de correction<BR><BR>';
+
+	        print '<BR>SET foreign_key_checks = 0;';
+	        while ( $obj = $db->fetch_object($resql) ) {
+	            print $obj->mySQL.'<BR>';
+	        }
+	        print '<BR>SET foreign_key_checks = 1;<BR><BR><BR>';
 
 
-//Collation, PS: il existe aussi un script dans abricot pour ça.
-$sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET utf8 COLLATE '.$dolibarr_main_db_collation.';\') AS    mySQL
-        FROM INFORMATION_SCHEMA.TABLES
-        WHERE TABLE_SCHEMA= "'.$dolibarr_main_db_name.'"
-                AND TABLE_TYPE="BASE TABLE"
-                AND TABLE_COLLATION != \''.$dolibarr_main_db_collation.'\'' ;
-$sql .= '                AND (TABLE_NAME LIKE \''.MAIN_DB_PREFIX.'agefodd%\' OR TABLE_NAME = \''.MAIN_DB_PREFIX.'c_civility\')';
-//echo $sql;
-$resql = $db->query($sql);
-if ($resql) {
-    if ($db->num_rows($resql)) {
-
-        print 'Certaines tables ne sont pas en collation utf8';
-        print '<BR><BR><BR>Suggestion de correction<BR><BR>';
-
-        print '<BR>SET foreign_key_checks = 0;';
-        while ( $obj = $db->fetch_object($resql) ) {
-            print $obj->mySQL.'<BR>';
-        }
-        print '<BR>SET foreign_key_checks = 1;<BR><BR><BR>';
-
-
-    }
-}else {
-    dol_print_error($db);
-}
-
+	    }
+	}else {
+	    dol_print_error($db);
+	}
 }
 
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur', 'datec');

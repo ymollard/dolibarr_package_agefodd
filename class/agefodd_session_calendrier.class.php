@@ -769,7 +769,9 @@ class Agefodd_sesscalendar extends CommonObject{
 		$action->percentage = - 1;
 		$action->userownerid = $user->id;
 		if (! empty($session->fk_soc)) {
-			$action->societe->id = $session->fk_soc;
+			if (property_exists($action,'societe') && is_object($action->societe) && property_exists($action->societe,'id')){
+			    $action->societe->id = $session->fk_soc;
+			}
 			$action->socid = $session->fk_soc;
 		}
 
