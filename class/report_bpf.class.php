@@ -1438,7 +1438,7 @@ function fetch_financial_c($filter = array()) {
 					'datefac'=>1,
 			),
 			array(
-				'idtypesta' => 20,
+				'idtypesta' => ('20,4'),
 				'confprod' => 'AGF_CAT_BPF_PRODPEDA',
 				'confprodlabel' => 'AgfReportBPFCategProdPeda',
 				'label' => 'C-h OPCA pour des formations dispensées pour du plan de développement des compétences ou d’autres dispositifs',
