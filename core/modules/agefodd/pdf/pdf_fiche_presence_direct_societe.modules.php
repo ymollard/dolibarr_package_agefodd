@@ -712,7 +712,9 @@ class pdf_fiche_presence_direct_societe extends ModelePDFAgefodd {
 			$pdf->SetFont('','', $this->default_font_size - 3);
 			$pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 
+			$posy=$pdf->GetY();
 			printRefIntForma($this->db, $outputlangs, $object, $this->default_font_size - 3, $pdf, $posx, $posy, 'L');
+			$this->marge_haute+=5;
 		}
 
 		/*

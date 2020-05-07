@@ -97,11 +97,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->emetteur->country_code = substr($langs->defaultlang, -2); // By default, if was not defined
 
 		$this->header_vertical_margin = 3;
+		$this->summaryPaddingBottom = 3;
 
 		$this->formation_widthcol1 = 20;
 		$this->formation_widthcol2 = 80;
 		$this->formation_widthcol3 = 27;
-		$this->formation_widthcol4 = 65;
+		$this->formation_widthcol4 = 60;
 
 		$this->trainer_widthcol1 = 44;
 		$this->trainer_widthcol2 = 140;
@@ -115,7 +116,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->trainee_widthtimeslot = 24.7;
 		}
 
-		$this->height_for_footer = 40;
+		$this->height_for_footer = 20;
 
 		$this->nbtimeslots = 6;
 
@@ -789,11 +790,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
-		$haut_col4 += $hauteur + 4;
+		$haut_col4 += $hauteur + 2;
+
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
 		$posY = $posYintitule + $haut_table + 4;
-		$this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table+2);
+		$this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table + $this->summaryPaddingBottom);
 
 		return array($posX, $posY);
 	}
@@ -847,10 +849,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$posY = $this->marge_haute;
 		$posX = $this->marge_gauche;
 
-//		$hautcadre = 30;
-//		$this->pdf->SetXY($posX, $posY);
-//		$this->pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
-
 		// Show sender name
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont('', 'B', $this->default_font_size - 2);
@@ -875,7 +873,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->MultiCell(70, 4, $this->outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 		$posY = $this->pdf->GetY();
 
-		printRefIntForma($this->db, $this->outputlangs, $agf, $this->default_font_size - 3, $this->pdf, $posX, $posY, 'L');
+		printRefIntForma($this->db, $this->outputlangs, $agf, $this->default_font_size - 3, $this->pdf, $posX, $posY, 'L', true);
 
 		// Affichage du logo commanditaire (optionnel)
 		if ($conf->global->AGF_USE_LOGO_CLIENT) {
