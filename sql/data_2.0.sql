@@ -38,6 +38,10 @@ INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALU
 (19, 'Alternance', 3, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
 (20, 'Plan de développement des compétences ou autres dispositifs', 5, 1, '2017-03-23 12:00:00');
+-- From new 2020 BPF
+UPDATE llx_agefodd_stagiaire_type SET active=0 WHERE rowid=4 AND intitule LIKE 'Autre dispositifs (plan de formation%';
+UPDATE llx_agefodd_session_stagiaire SET fk_agefodd_stagiaire_type=20 WHERE fk_agefodd_stagiaire_type=4;
+
 
 INSERT INTO llx_agefodd_formateur_type (rowid,intitule, sort, active, tms) VALUES
 (1,'Formateur interne', 0, 1,'2017-03-23 12:00:00');

@@ -681,7 +681,7 @@ if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			print 'Session '.$obj->fk_calendrier_type.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification qui ont un type de modalité qui n existe plus<BR>';
 		}
-		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_calendrier_type NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'llx_c_agefodd_session_calendrier_type)<BR><BR><BR>';
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_calendrier_type NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type)<BR><BR><BR>';
 	}
 }else {
 	dol_print_error($db);
@@ -715,6 +715,49 @@ if($dolibarr_main_db_type != 'pgsql')
 	}else {
 	    dol_print_error($db);
 	}
+}
+
+if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+	dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+
+	$statusToTest[]=Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT;
+	$statusToTest[]=Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT;
+
+	$sql = 'SELECT DISTINCT s.rowid,s.ref FROM '.MAIN_DB_PREFIX.'agefodd_session as s
+			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire as sesssta ON sesssta.fk_session_agefodd=s.rowid
+			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier as secal ON secal.fk_agefodd_session=s.rowid
+			LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures as sth ON sth.fk_stagiaire=sesssta.fk_stagiaire AND sth.fk_calendrier=secal.rowid
+			WHERE sesssta.status_in_session IN ('.implode(',',$statusToTest).')
+				AND sth.rowid IS NULL';
+
+	$resql = $db->query($sql);
+	if ($resql) {
+		if ($db->num_rows($resql)) {
+			print '<BR><BR>Vous utiliser la gestion du temps réél des participants<BR>';
+			while ( $obj = $db->fetch_object($resql) ) {
+				print 'Pour la session '.$obj->id.'#'.$obj->ref.' , mais il semble que des heures stagiaires n est pas été saisie alors qu ils sont notés présents<BR>';
+			}
+			print '<BR><BR><BR>Suggestion de correction : INSERT INTO llx_agefodd_session_stagiaire_heures(entity, fk_stagiaire, fk_session, fk_calendrier, heures, fk_user_author, datec, tms, import_key, mail_sended, planned_absence)
+			SELECT '.$conf->entity.',sesssta.fk_stagiaire,s.rowid,secal.rowid,';
+			if ($db->type == 'pgsql') {
+				print "TIME_TO_SEC(TIMEDIFF('second',secal.heuref, secal.heured))/(3600),";
+			} else {
+				print "TIME_TO_SEC(TIMEDIFF(secal.heuref, secal.heured))/(3600),";
+			}
+
+			print '1,NOW(),NOW(),\'Fixtime\',0,0 FROM '.MAIN_DB_PREFIX.'agefodd_session as s
+			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire as sesssta ON sesssta.fk_session_agefodd=s.rowid
+			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier as secal ON secal.fk_agefodd_session=s.rowid AND secal.date_session BETWEEN \'2018-09-01\' AND \'2019-08-30\'
+			LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures as sth ON sth.fk_stagiaire=sesssta.fk_stagiaire AND sth.fk_calendrier=secal.rowid
+			WHERE sesssta.status_in_session IN ('.implode(',',$statusToTest).')
+			AND sth.rowid IS NULL;
+
+			<BR><BR><BR>';
+		}
+	}else {
+		dol_print_error($db);
+	}
+
 }
 
 _datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur', 'datec');
