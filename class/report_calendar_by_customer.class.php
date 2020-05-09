@@ -57,15 +57,15 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 		);
 
 		$array_column_header[0] = array (
-				0 => array (
+				1 => array (
 						'type' => 'text',
 						'header' => $outputlangs->transnoentities('SessionRef')
 				),
-				1 => array (
+				2 => array (
 						'type' => 'text',
 						'header' => $outputlangs->transnoentities('AgfMenuActStagiaire')
 				),
-				2 => array (
+				3 => array (
 						'type' => 'text',
 						'header' => $outputlangs->transnoentities('Type')
 				)
@@ -167,13 +167,9 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 		}
 
 		$array_sub_total = array ();
-		$array_total = array ();
-
-		$session = new Agsession($this->db);
 
 		$total_line = count($this->lines);
 		if (count($this->lines) > 0) {
-		    //var_dump($this->lines);
 			foreach ( $this->lines as $line ) {
 			    if (!empty($refsession) && $refsession != $line->refsession)
 			    {
@@ -182,13 +178,6 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			        if ($result < 0) {
 			            return $result;
 			        }
-
-// 			        $array_total[9] += $array_sub_total[9];
-// 			        $array_total[11] += $array_sub_total[11];
-// 			        $array_total[18] += $array_sub_total[18];
-// 			        $array_total[19] += $array_sub_total[19];
-// 			        $array_total[20] += $array_sub_total[20];
-// 			        $array_total[21] += $array_sub_total[21];
 
 			        $array_sub_total = array ();
 			    }
@@ -216,21 +205,21 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			    $refsession = $line->refsession;
 
 			    // ref session
-			    if ($displayref) $line_to_output[0] = $line->refsession;
-			    else $line_to_output[0] = '';
-			    $array_sub_total[0] = $line->refsession;
+			    if ($displayref) $line_to_output[1] = $line->refsession;
+			    else $line_to_output[1] = '';
+			    $array_sub_total[1] = $line->refsession;
 
 			    // nom du stagiaire
 			    if ($displaytraineename){
-			        $line_to_output[1] = $line->stagiaire;
-			        $array_sub_trainee[1] = $line->stagiaire;
+			        $line_to_output[2] = $line->stagiaire;
+			        $array_sub_trainee[2] = $line->stagiaire;
 			    }
-			    else $line_to_output[1] = '';
+			    else $line_to_output[2] = '';
 
                 // modalité pédagogique
-			    $line_to_output[2] = $line->modalite;
+			    $line_to_output[3] = $line->modalite;
 
-			    $i = 3;
+			    $i = 4;
 			    // colonnes des mois
 			    foreach ($line->months as $m => $type)
 			    {
@@ -274,18 +263,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 				return $result;
 			}
 
-// 			$array_total[9] += $array_sub_total[9];
-// 			$array_total[11] += $array_sub_total[11];
-// 			$array_total[18] += $array_sub_total[18];
-// 			$array_total[19] += $array_sub_total[19];
-// 			$array_total[20] += $array_sub_total[20];
-// 			$array_total[21] += $array_sub_total[21];
 		}
-
-// 		$result = $this->write_line_total($array_total, '3d85c6');
-// 		if ($result < 0) {
-// 			return $result;
-// 		}
 
 		$this->row[0]++;
 		if (array_key_exists('so.rowid', $filter))
@@ -610,31 +588,34 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 
 	public function apply_header_style()
 	{
-	    $styleArray = array (
-	        'borders' => array (
-	            'allborders' => array (
-	                'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-	                'color' => array (
-	                    'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
-	                )
-	            )
-	        ),
-	        'fill' => array (
-	            'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-	            'color' => array (
-	                'rgb' => 'cfe2f3'
-	            )
-	        ),
-	        'font' => array (
-	            'color' => array (
-	                'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
-	            ),
-	            'bold' => true
-	        ),
-	        'alignment' => array (
-	            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
-	        )
-	    );
+		$styleArray = array (
+			'borders' => array (
+				'allBorders' => array (
+					'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+					'color' => array (
+						'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
+					)
+				)
+			),
+			'fill' => array (
+				'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+				'startColor' => array (
+					'rgb' => 'cfe2f3'
+				),
+				'endColor' => array (
+					'rgb' => 'cfe2f3'
+				)
+			),
+			'font' => array (
+				'color' => array (
+					'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
+				),
+				'bold' => true
+			),
+			'alignment' => array (
+				'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
+			)
+		);
 
 	    $min_value_key = min(array_keys($this->array_column_header[0]));
 	    $max_value_key = max(array_keys($this->array_column_header[0]));
