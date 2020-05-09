@@ -93,12 +93,12 @@ class ReportCA extends AgefoddExportExcel {
 						if ($key == 'startyear') {
 							$str_cirteria = $this->outputlangs->transnoentities('Year') . ' ';
 							$str_criteria_value = $value;
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $str_cirteria);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $str_criteria_value);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $str_cirteria);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $str_criteria_value);
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'so.nom') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('Company'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $value);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('Company'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $value);
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'so.parent|sorequester.parent') {
 							require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
@@ -108,12 +108,12 @@ class ReportCA extends AgefoddExportExcel {
 								$this->error = $socparent->error;
 								return $result;
 							}
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('ParentCompany'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $socparent->name);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('ParentCompany'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $socparent->name);
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'socrequester.nom') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfTypeRequester'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $value);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfTypeRequester'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $value);
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'sale.fk_user_com') {
 							require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
@@ -123,20 +123,20 @@ class ReportCA extends AgefoddExportExcel {
 								$this->error = $user_salesman->error;
 								return $result;
 							}
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('SalesRepresentatives'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $user_salesman->getFullName($this->outputlangs));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('SalesRepresentatives'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $user_salesman->getFullName($this->outputlangs));
 							$this->row[$keysheet] ++;
 						} elseif ($key == 's.type_session') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('Type'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('Type'));
 							if ($value == 0) {
 								$type_session = $this->outputlangs->transnoentities('AgfFormTypeSessionIntra');
 							} elseif ($value == 1) {
 								$type_session = $this->outputlangs->transnoentities('AgfFormTypeSessionInter');
 							}
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $type_session);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $type_session);
 							$this->row[$keysheet] ++;
 						} elseif ($key == 's.status') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfStatusSession'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfStatusSession'));
 							$session_status = '';
 							$sql = "SELECT t.rowid, t.code ,t.intitule ";
 							$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
@@ -161,24 +161,24 @@ class ReportCA extends AgefoddExportExcel {
 								dol_syslog(get_class($this) . "::write_filter " . $this->error, LOG_ERR);
 								return - 1;
 							}
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], implode(',', $session_status));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], implode(',', $session_status));
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'invstatus') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('Status'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('Status'));
 							if (is_array($value) && count($value)>0) {
 								foreach($value as $key=>$invstatus) {
 									$invoice_status[]=$this->status_array_noentities[$invstatus];
 								}
 							}
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], implode(',', $invoice_status));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], implode(',', $invoice_status));
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'group_by_session') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfReportCASessionDetail'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('Yes'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfReportCASessionDetail'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $this->outputlangs->transnoentities('Yes'));
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'accounting_date') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfReportCAInvoiceAccountingDate'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities($this->T_ACCOUNTING_DATE_CHOICES[$value]));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfReportCAInvoiceAccountingDate'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $this->outputlangs->transnoentities($this->T_ACCOUNTING_DATE_CHOICES[$value]));
 							$this->row[$keysheet] ++;
 						}
 					}

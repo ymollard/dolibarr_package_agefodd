@@ -260,33 +260,33 @@ class AgefoddExportExcelByCustomer {
 						$str_cirteria = $this->outputlangs->transnoentities('AgfSessionDetail') . ' ';
 						if (array_key_exists('start', $value)) {
 							$str_criteria_value = $this->outputlangs->transnoentities("AgfDateDebut"). ':' . dol_print_date($value['start'],'daytext', 'tzserver', $this->outputlangs);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row, $str_cirteria);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $str_criteria_value);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $str_cirteria);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row, $str_criteria_value);
 							$this->row ++;
 						}
 						if (array_key_exists('end', $value)) {
 							$str_criteria_value = $this->outputlangs->transnoentities("AgfDateFin") . ':' . dol_print_date($value['end'],'daytext', 'tzserver', $this->outputlangs);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row, $str_cirteria);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $str_criteria_value);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $str_cirteria);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row, $str_criteria_value);
 							$this->row ++;
 						}
 					} elseif ($key=='f.datef') {
 						$str_cirteria = $this->outputlangs->transnoentities('InvoiceCustomer') . ' ';
 						if (array_key_exists('start', $value)) {
 							$str_criteria_value = $this->outputlangs->transnoentities("AgfDateDebut"). ':' . dol_print_date($value['start'],'daytext', 'tzserver', $this->outputlangs);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row, $str_cirteria);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $str_criteria_value);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $str_cirteria);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row, $str_criteria_value);
 							$this->row ++;
 						}
 						if (array_key_exists('end', $value)) {
 							$str_criteria_value = $this->outputlangs->transnoentities("AgfDateFin") . ':' . dol_print_date($value['end'],'daytext', 'tzserver', $this->outputlangs);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row, $str_cirteria);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $str_criteria_value);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $str_cirteria);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row, $str_criteria_value);
 							$this->row ++;
 						}
 					} elseif ($key == 'so.nom') {
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row, $this->outputlangs->transnoentities('Company'));
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $value);
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $this->outputlangs->transnoentities('Company'));
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row, $value);
 						$this->row ++;
 					} elseif ($key == 'so.parent|sorequester.parent') {
 						require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
@@ -296,12 +296,12 @@ class AgefoddExportExcelByCustomer {
 							$this->error = $socparent->error;
 							return $result;
 						}
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row, $this->outputlangs->transnoentities('ParentCompany'));
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $socparent->name);
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $this->outputlangs->transnoentities('ParentCompany'));
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row, $socparent->name);
 						$this->row ++;
 					} elseif ($key == 'socrequester.nom') {
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row, $this->outputlangs->transnoentities('AgfTypeRequester'));
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $value);
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $this->outputlangs->transnoentities('AgfTypeRequester'));
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row, $value);
 						$this->row ++;
 					} elseif ($key == 'sale.fk_user_com') {
 						require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
@@ -311,20 +311,20 @@ class AgefoddExportExcelByCustomer {
 							$this->error = $user_salesman->error;
 							return $result;
 						}
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row, $this->outputlangs->transnoentities('SalesRepresentatives'));
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $user_salesman->getFullName($this->outputlangs));
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $this->outputlangs->transnoentities('SalesRepresentatives'));
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row, $user_salesman->getFullName($this->outputlangs));
 						$this->row ++;
 					} elseif ($key == 's.type_session') {
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row, $this->outputlangs->transnoentities('Type'));
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $this->outputlangs->transnoentities('Type'));
 						if ($value == 0) {
 							$type_session = $this->outputlangs->transnoentities('AgfFormTypeSessionIntra');
 						} elseif ($value == 1) {
 							$type_session = $this->outputlangs->transnoentities('AgfFormTypeSessionInter');
 						}
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $type_session);
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row, $type_session);
 						$this->row ++;
 					}elseif ($key == 's.status') {
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row, $this->outputlangs->transnoentities('AgfStatusSession'));
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, $this->outputlangs->transnoentities('AgfStatusSession'));
 						$session_status=array();
 						$sql = "SELECT t.rowid, t.code ,t.intitule ";
 						$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
@@ -349,7 +349,7 @@ class AgefoddExportExcelByCustomer {
 							dol_syslog(get_class($this) . "::write_filter " . $this->error, LOG_ERR);
 							return - 1;
 						}
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row, implode(',',$session_status));
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row, implode(',',$session_status));
 						$this->row ++;
 					}
 				}

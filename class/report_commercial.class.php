@@ -196,8 +196,8 @@ class ReportCommercial extends AgefoddExportExcel
 
 						if(! empty($filterName))
 						{
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $filterName);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $filterValue);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $filterName);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $filterValue);
 							$this->row[$keysheet]++;
 						}
 					}

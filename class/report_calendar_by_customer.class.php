@@ -561,19 +561,19 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 	                    $str_cirteria = $this->outputlangs->transnoentities('AgfSessionDetail') . ' ';
 	                    if (array_key_exists('start', $value)) {
 	                        $str_criteria_value = $this->outputlangs->transnoentities("AgfDateDebut"). ':' . dol_print_date($value['start'],'daytext', 'tzserver', $this->outputlangs);
-	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[0], $str_cirteria);
-	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $str_criteria_value);
+	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $str_cirteria);
+	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[0], $str_criteria_value);
 	                        $this->row[0]++;
 	                    }
 	                    if (array_key_exists('end', $value)) {
 	                        $str_criteria_value = $this->outputlangs->transnoentities("AgfDateFin") . ':' . dol_print_date($value['end'],'daytext', 'tzserver', $this->outputlangs);
-	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[0], $str_cirteria);
-	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $str_criteria_value);
+	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $str_cirteria);
+	                        $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[0], $str_criteria_value);
 	                        $this->row[0]++;
 	                    }
 	                } elseif ($key == 'so.nom') {
-	                    $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[0], $this->outputlangs->transnoentities('Company'));
-	                    $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $value);
+	                    $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[0], $this->outputlangs->transnoentities('Company'));
+	                    $this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[0], $value);
 	                    $this->row[0]++;
 	                }
 	            }
