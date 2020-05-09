@@ -328,12 +328,12 @@ class ReportCA extends AgefoddExportExcel {
 		$array_column_header = array ();
 		if (count($this->year_to_report_array) > 0) {
 
-			$array_column_header[0][0] = array (
+			$array_column_header[0][1] = array (
 					'type' => 'text',
 					'title' => ''
 			);
 
-			$i = 1;
+			$i = 2;
 			foreach ( $this->year_to_report_array as $year_todo ) {
 				$array_column_header[0][$i] = array (
 						'type' => 'number',
@@ -377,11 +377,11 @@ class ReportCA extends AgefoddExportExcel {
 			for($month_todo = 1; $month_todo <= 12; $month_todo ++) {
 
 				if (strlen($month_todo) == 1) {
-					$line_to_output[0] = $this->outputlangs->transnoentities('Month0' . $month_todo);
+					$line_to_output[1] = $this->outputlangs->transnoentities('Month0' . $month_todo);
 				} else {
-					$line_to_output[0] = $this->outputlangs->transnoentities('Month' . $month_todo);
+					$line_to_output[1] = $this->outputlangs->transnoentities('Month' . $month_todo);
 				}
-				$i = 1;
+				$i = 2;
 
 				$sessions = array();
 
@@ -425,9 +425,9 @@ class ReportCA extends AgefoddExportExcel {
 				foreach($sessions as $sessionId) {
 
 					$line_to_output = array();
-					$line_to_output[0] = $sessionId;
+					$line_to_output[1] = $sessionId;
 
-					$i = 1;
+					$i = 2;
 
 					$toPrint = false;
 
@@ -456,27 +456,14 @@ class ReportCA extends AgefoddExportExcel {
 			$this->row[0]++;
 
 			// Write total HTHF
-			$line_to_output[0] = $this->outputlangs->transnoentities('Total HT/HF');
+			$line_to_output[1] = $this->outputlangs->transnoentities('Total HT/HF');
 
-			$i = 1;
+			$i = 2;
 			foreach ( $this->year_to_report_array as $year_todo ) {
 
 				$line_to_output[$i] = $array_total_hthf[$year_todo];
 				$line_to_output[$i+1] = 0;
 				$line_to_output[$i+2] = 'N/A';
-				/*if (array_key_exists($year_todo - 1, $array_total_hthf)) {
-					if ($array_total_hthf[$year_todo] != 0) {
-						$line_to_output[$i + 2] = ((($array_total_hthf[$year_todo] - $array_total_hthf[$year_todo - 1]) * 100) / $array_total_hthf[$year_todo]);
-						$line_to_output[$i + 2] = $line_to_output[$i + 1] / 100;
-					} else {
-						$line_to_output[$i + 2] = 'N/A';
-					}
-				} else {
-					$line_to_output[$i + 2] = 'N/A';
-				}*/
-
-
-
 
 				$i = $i + 3;
 			}
@@ -486,9 +473,9 @@ class ReportCA extends AgefoddExportExcel {
 			}
 
 			// Write total HT
-			$line_to_output[0] = $this->outputlangs->transnoentities('Total HT');
+			$line_to_output[1] = $this->outputlangs->transnoentities('Total HT');
 
-			$i = 1;
+			$i = 2;
 			foreach ( $this->year_to_report_array as $year_todo ) {
 
 				$line_to_output[$i] = 0;
@@ -511,9 +498,9 @@ class ReportCA extends AgefoddExportExcel {
 			}
 
 			// Write total TTC
-			$line_to_output[0] = $this->outputlangs->transnoentities('Total TTC');
+			$line_to_output[1] = $this->outputlangs->transnoentities('Total TTC');
 
-			$i = 1;
+			$i = 2;
 			foreach ( $this->year_to_report_array as $year_todo ) {
 
 				$line_to_output[$i] = 0;
@@ -540,9 +527,9 @@ class ReportCA extends AgefoddExportExcel {
 
 			// Write total by trimesters
 			for($trim = 1; $trim <= 4; $trim ++) {
-				$line_to_output[0] = $this->outputlangs->transnoentities('Trimestre ' . $trim);
+				$line_to_output[1] = $this->outputlangs->transnoentities('Trimestre ' . $trim);
 
-				$i = 1;
+				$i = 2;
 				foreach ( $this->year_to_report_array as $year_todo ) {
 
 					$line_to_output[$i] = ${'array_total_hthf_trim' . $trim}[$year_todo];
