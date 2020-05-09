@@ -48,97 +48,97 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 		$outputlangs->load("products");
 
 		$array_column_header = array(
-			0  => array(
+			1  => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfRptSocRequester')
 			),
-			1  => array(
+			2  => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('Contact')
 			),
-			2  => array(
+			3  => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('Company')
 			),
-			3  => array(
+			4  => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfRptPole')
 			),
-			4  => array(
+			5  => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfRptTypeSess')
 			),
-			5  => array(
+			6  => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfNumDossier')
 			),
-			6  => array(
+			7  => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfLieu')
 			),
-			7  => array(
+			8  => array(
 				'type'  => 'date',
 				'title' => $outputlangs->transnoentities('AgfDateDebut')
 			),
-			8  => array(
+			9  => array(
 				'type'  => 'date',
 				'title' => $outputlangs->transnoentities('AgfDateFin')
 			),
-			9  => array(
+			10  => array(
 				'type'  => 'hour',
 				'title' => $outputlangs->transnoentities('AgfRptNbHour')
 			),
-			10 => array(
+			11 => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfMenuActStagiaire') . '-' . $outputlangs->transnoentities('Name'),
 				//'header' => $outputlangs->transnoentities('AgfMenuActStagiaire')
 			),
-			11 => array(
+			12 => array(
 				'type'  => 'int',
 				'title' => $outputlangs->transnoentities('AgfMenuActStagiaire') . '-' . $outputlangs->transnoentities('Nb'),
 				//'header' => $outputlangs->transnoentities('AgfMenuActStagiaire')
 			),
-			12 => array(
+			13 => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfRptIntervenant')
 			),
-			13 => array(
+			14 => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfRptIntituleSession')
 			),
-			14 => array(
+			15 => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('Product')
 			),
-			15 => array(
+			16 => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfRptEntityToInvoice')
 			),
-			16 => array(
+			17 => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfRptNumOrder')
 			),
-			17 => array(
+			18 => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfRptNumInvoice')
 			),
-			18 => array(
+			19 => array(
 				'type'  => 'amount',
 				'title' => $outputlangs->transnoentities('AgfRptProductHT')
 			),
-			19 => array(
+			20 => array(
 				'type'  => 'amount',
 				'title' => $outputlangs->transnoentities('AgfRptFraisHT')
 			),
-			20 => array(
+			21 => array(
 				'type'  => 'amount',
 				'title' => $outputlangs->transnoentities('AgfRptTotalHT')
 			),
-			21 => array(
+			22 => array(
 				'type'  => 'amount',
 				'title' => $outputlangs->transnoentities('AgfRptTotalTTC')
 			),
-			22 => array(
+			23 => array(
 				'type'  => 'text',
 				'title' => $outputlangs->transnoentities('AgfStatusSession')
 			)
@@ -303,40 +303,23 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 		/**
 		 * @var array $array_sub_total
 		 *
-		 * [1] = not used
-		 * [2] = not used
-		 * [3] = not used
-		 * [4] = not used
-		 * [5] = not used
-		 * [6] = not used
-		 * [7] = not used
-		 * [8] = not used
-		 * [9] = total durée session ( += $line->duree_session )
-		 * [10] = not used
-		 * [11] = nombre de participant ( count($traineelist) )
-		 * [12] = not used
-		 * [13] = not used
-		 * [14] = not used
-		 * [15] = not used
-		 * [16] = not used
-		 * [17] = not used
-		 * [18] = total HT des lignes de facture ( += $invoice_lines->total_ht )
-		 * [19] = somme des charges ( += $result => $result = $session_elem_fin_frais->get_charges_amount(...) )
-		 * [20] = total HT des factures ( += $facture->total_ht )
-		 * [21] = total TTC des factures ( += $facture->total_ttc )
-		 * [22] = not used
-		 * [23] = not used
+		 * [10] = total durée session ( += $line->duree_session )
+		 * [12] = nombre de participant ( count($traineelist) )
+		 * [19] = total HT des lignes de facture ( += $invoice_lines->total_ht )
+		 * [20] = somme des charges ( += $result => $result = $session_elem_fin_frais->get_charges_amount(...) )
+		 * [21] = total HT des factures ( += $facture->total_ht )
+		 * [22] = total TTC des factures ( += $facture->total_ttc )
 		 */
 		$array_sub_total = array();
 
 		/** @var array $array_total
 		 *
-		 * [9] = total durée session
-		 * [11] = total nombre de participant
-		 * [18] = total HT des lignes de facture
-		 * [19] = somme des charges
-		 * [20] = total HT des factures
-		 * [21] = total TTC des factures
+		 * [10] = total durée session
+		 * [12] = total nombre de participant
+		 * [19] = total HT des lignes de facture
+		 * [20] = somme des charges
+		 * [21] = total HT des factures
+		 * [22] = total TTC des factures
 		 */
 		$array_total = array();
 
@@ -355,12 +338,12 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 						return $result;
 					}
 
-					$array_total[9] += $array_sub_total[9];
-					$array_total[11] += $array_sub_total[11];
-					$array_total[18] += $array_sub_total[18];
+					$array_total[10] += $array_sub_total[10];
+					$array_total[12] += $array_sub_total[12];
 					$array_total[19] += $array_sub_total[19];
 					$array_total[20] += $array_sub_total[20];
 					$array_total[21] += $array_sub_total[21];
+					$array_total[22] += $array_sub_total[22];
 
 					$array_sub_total = array();
 				}
@@ -372,7 +355,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 				$requestername = $line->socrequestername;
 
 				// Soc reuester
-				$line_to_output[0] = $line->socrequestername;
+				$line_to_output[1] = $line->socrequestername;
 
 				// Contact requester
 				if (!empty($line->fk_socpeople_requester)) {
@@ -382,15 +365,15 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 						$this->error = $contact->error;
 						return $result;
 					}
-					$line_to_output[1] = $contact->getFullName($this->outputlangs);
+					$line_to_output[2] = $contact->getFullName($this->outputlangs);
 				} else {
-					$line_to_output[1] = '';
+					$line_to_output[2] = '';
 				}
 
 				// Thirdparty is manage in trainee
 
 				// Pole
-				$line_to_output[3] = $line->raissocial2;
+				$line_to_output[4] = $line->raissocial2;
 
 				// TypeSession
 				if ($line->type_session == 0) {
@@ -400,7 +383,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 				} else {
 					$type_session = '';
 				}
-				$line_to_output[4] = $type_session;
+				$line_to_output[5] = $type_session;
 
 				// Num dossier and trainee and nb trainee
 				$numdossier = array();
@@ -512,16 +495,16 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 									// If comapny is empty we are probably in inter-entre or false inter
 									// In this case we add into company column the trainee company
 									if (empty($line->socname)) {
-										$line_to_output[2][$trainee_session_id] = $stagiaire_conv->socname;
+										$line_to_output[3][$trainee_session_id] = $stagiaire_conv->socname;
 									} else {
-										$line_to_output[2] = $line->socname;
+										$line_to_output[3] = $line->socname;
 									}
 								}
 							}
 						}
-						$line_to_output[10][$convline->id] = $traineelist;
-						$line_to_output[11][$convline->id] = is_array($traineelist)?count($traineelist):0;
-						$array_sub_total[11] += is_array($traineelist)?count($traineelist):0;
+						$line_to_output[11][$convline->id] = $traineelist;
+						$line_to_output[12][$convline->id] = is_array($traineelist)?count($traineelist):0;
+						$array_sub_total[12] += is_array($traineelist)?count($traineelist):0;
 					}
 				} else {
 					if (is_array($conv->lines) && count($conv->lines) > 1 && empty($line->socid)) {
@@ -624,9 +607,9 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 											// If comapny is empty we are probably in inter-entre or false inter
 											// In this case we add into company column the trainee company
 											if (empty($line->socname)) {
-												$line_to_output[2][$traine_line->stagerowid] = $traine_line->socname;
+												$line_to_output[3][$traine_line->stagerowid] = $traine_line->socname;
 											} else {
-												$line_to_output[2] = $line->socname;
+												$line_to_output[3] = $line->socname;
 											}
 
 											$sessionOPCA = new Agefodd_opca($this->db);
@@ -642,9 +625,9 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 								}
 							}
 
-							$line_to_output[10][$convline->id] = $traineelist;
-							$line_to_output[11][$convline->id] = count($traineelist);
-							$array_sub_total[11] += count($traineelist);
+							$line_to_output[11][$convline->id] = $traineelist;
+							$line_to_output[12][$convline->id] = count($traineelist);
+							$array_sub_total[12] += count($traineelist);
 						}
 					} else {
 						$traineelist = array ();
@@ -754,9 +737,9 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 									// If comapny is empty we are probably in inter-entre or false inter
 									// In this case we add into company column the trainee company
 									if (empty($line->socname)) {
-										$line_to_output[2][$traine_line->stagerowid] = $traine_line->socname;
+										$line_to_output[3][$traine_line->stagerowid] = $traine_line->socname;
 									} else {
-										$line_to_output[2] = $line->socname;
+										$line_to_output[3] = $line->socname;
 									}
 
 									$sessionOPCA = new Agefodd_opca($this->db);
@@ -771,33 +754,28 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 							}
 						}
 
-						$line_to_output[10][0] = $traineelist;
-						$line_to_output[11][0] = count($traineelist);
-						$array_sub_total[11] += count($traineelist);
+						$line_to_output[11][0] = $traineelist;
+						$line_to_output[12][0] = count($traineelist);
+						$array_sub_total[12] += count($traineelist);
 					}
 				}
 
 				// var_dump($numdossier);
-				$line_to_output[5] = $numdossier;
+				$line_to_output[6] = $numdossier;
 
 				// Place
-				$line_to_output[6] = $line->lieucode;
+				$line_to_output[7] = $line->lieucode;
 
 				// dtDeb
-				//$line_to_output[7] = dol_print_date($line->dated, 'dayrfc', 'tzserver', $this->outputlangs);
-				$line_to_output[7] = PHPExcel_Shared_Date::PHPToExcel(dol_mktime(12, 0, 0, dol_print_date($line->dated, '%m'), dol_print_date($line->dated, '%d'), dol_print_date($line->dated, '%Y')));
+				$line_to_output[8] = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel(dol_mktime(12, 0, 0, dol_print_date($line->dated, '%m'), dol_print_date($line->dated, '%d'), dol_print_date($line->dated, '%Y')));
 
 				// dtFin
-				//$line_to_output[8] = dol_print_date($line->datef, 'day', 'tzserver', $this->outputlangs);
-				$line_to_output[8] = PHPExcel_Shared_Date::PHPToExcel(dol_mktime(12, 0, 0, dol_print_date($line->datef, '%m'), dol_print_date($line->datef, '%d'), dol_print_date($line->datef, '%Y')));
+				$line_to_output[9] = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel(dol_mktime(12, 0, 0, dol_print_date($line->datef, '%m'), dol_print_date($line->datef, '%d'), dol_print_date($line->datef, '%Y')));
 
 				// Nb hours
-				$line_to_output[9] = $line->duree_session;
-				$array_sub_total[9] += $line->duree_session;
+				$line_to_output[10] = $line->duree_session;
+				$array_sub_total[10] += $line->duree_session;
 
-				// Traine name $line_to_output[10] is done on convention $line_to_output[5]
-
-				// Nb Trainee $line_to_output[11] is done on convention $line_to_output[5]
 
 				// Trainer
 				$trainerlist = array();
@@ -812,13 +790,13 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 						$trainerlist[$trainer_lines->opsid] = $trainer_lines->firstname . ' ' . $trainer_lines->lastname;
 					}
 				}
-				$line_to_output[12] = $trainerlist;
+				$line_to_output[13] = $trainerlist;
 
 				// Session title
 				if (empty($line->intitule_custo)) {
-					$line_to_output[13] = $line->intitule;
+					$line_to_output[14] = $line->intitule;
 				} else {
-					$line_to_output[13] = $line->intitule_custo;
+					$line_to_output[14] = $line->intitule_custo;
 				}
 
 				// Product and order and Invoice/propal and price
@@ -989,7 +967,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 											}
 
 											$productHTlist[$facture->id][$invoice_lines->rowid] = $invoice_lines->total_ht;
-											$array_sub_total[18] += $invoice_lines->total_ht;
+											$array_sub_total[19] += $invoice_lines->total_ht;
 										}
 									}
 
@@ -999,8 +977,8 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 									$totalHTlist[$facture->id] = $facture->total_ht;
 									$totalTTClist[$facture->id] = $facture->total_ttc;
 
-									$array_sub_total[20] += $facture->total_ht;
-									$array_sub_total[21] += $facture->total_ttc;
+									$array_sub_total[21] += $facture->total_ht;
+									$array_sub_total[22] += $facture->total_ttc;
 								}
 							}
 						}
@@ -1209,20 +1187,20 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 									$totalHTlist[$propal->id] = $propal->total_ht;
 									$totalTTClist[$propal->id] = $propal->total_ttc;
 
-									$array_sub_total[20] += $propal->total_ht;
-									$array_sub_total[21] += $propal->total_ttc;
+									$array_sub_total[21] += $propal->total_ht;
+									$array_sub_total[22] += $propal->total_ttc;
 								}
 							}
 						}
 					}
 				}
-				$line_to_output[14] = $productlist;
-				$line_to_output[15] = $destservlist;
-				$line_to_output[16] = $refcustlist;
-				$line_to_output[17] = $invoicelist;
-				$line_to_output[18] = $productHTlist;
-				$line_to_output[20] = $totalHTlist;
-				$line_to_output[21] = $totalTTClist;
+				$line_to_output[15] = $productlist;
+				$line_to_output[16] = $destservlist;
+				$line_to_output[17] = $refcustlist;
+				$line_to_output[18] = $invoicelist;
+				$line_to_output[19] = $productHTlist;
+				$line_to_output[21] = $totalHTlist;
+				$line_to_output[22] = $totalTTClist;
 
 				// Total Frais HT
 				//if ($invoice_found) {
@@ -1240,11 +1218,11 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 						return $result;
 					}
 				}*/
-				$line_to_output[19] = $result;
-				$array_sub_total[19] += $result;
+				$line_to_output[20] = $result;
+				$array_sub_total[20] += $result;
 
 				// Session status
-				$line_to_output[22] = $line->session_status;
+				$line_to_output[23] = $line->session_status;
 
 				// Output line into Excel File
 				$this->write_line($line_to_output);
@@ -1254,12 +1232,12 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 				return $result;
 			}
 
-			$array_total[9] += $array_sub_total[9];
-			$array_total[11] += $array_sub_total[11];
-			$array_total[18] += $array_sub_total[18];
+			$array_total[10] += $array_sub_total[10];
+			$array_total[12] += $array_sub_total[12];
 			$array_total[19] += $array_sub_total[19];
 			$array_total[20] += $array_sub_total[20];
 			$array_total[21] += $array_sub_total[21];
+			$array_total[22] += $array_sub_total[22];
 		}
 
 		if (empty($this->avoidNotLinkedInvoices)) {
@@ -1293,47 +1271,47 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 					}
 
 					// Soc reuester
-					$line_to_output[0] = $line->socrequestername;
+					$line_to_output[1] = $line->socrequestername;
 
 					// contact
-					$line_to_output[1] = '';
+					$line_to_output[2] = '';
 
 					// Societe
-					$line_to_output[2] = $line->socname;
+					$line_to_output[3] = $line->socname;
 
 					// Pole
-					$line_to_output[3] = $line->raissocial2;
+					$line_to_output[4] = $line->raissocial2;
 
 					// type session
-					$line_to_output[4] = '';
+					$line_to_output[5] = '';
 
 					// Num Dossier
-					$line_to_output[5] = array();
+					$line_to_output[6] = array();
 
 					// Lieu
-					$line_to_output[6] = '';
-
-					// dt deb
 					$line_to_output[7] = '';
 
-					// dt fin
+					// dt deb
 					$line_to_output[8] = '';
 
-					// nb heure
+					// dt fin
 					$line_to_output[9] = '';
 
+					// nb heure
+					$line_to_output[10] = '';
+
 					// Participant
-					$line_to_output[10] = array();
+					$line_to_output[11] = array();
 					// Nb
-					$line_to_output[11] = array(
+					$line_to_output[12] = array(
 						0 => ''
 					);
 
 					// Intervenant
-					$line_to_output[12] = array();
+					$line_to_output[13] = array();
 
 					// Session
-					$line_to_output[13] = '';
+					$line_to_output[14] = '';
 
 					// Product and order and Invoice/propal and price
 					$productlist = array();
@@ -1386,28 +1364,28 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 						$totalHTlist[$facture->id] = $facture->total_ht;
 						$totalTTClist[$facture->id] = $facture->total_ttc;
 
-						$array_sub_total[20] += $facture->total_ht;
-						$array_sub_total[21] += $facture->total_ttc;
+						$array_sub_total[21] += $facture->total_ht;
+						$array_sub_total[22] += $facture->total_ttc;
 
 					}
 
-					$line_to_output[14] = $productlist;
-					$line_to_output[15] = $destservlist;
-					$line_to_output[16] = $refcustlist;
-					$line_to_output[17] = $invoicelist;
-					$line_to_output[18] = $productHTlist;
-					$line_to_output[20] = $totalHTlist;
-					$line_to_output[21] = $totalTTClist;
+					$line_to_output[15] = $productlist;
+					$line_to_output[16] = $destservlist;
+					$line_to_output[17] = $refcustlist;
+					$line_to_output[18] = $invoicelist;
+					$line_to_output[19] = $productHTlist;
+					$line_to_output[21] = $totalHTlist;
+					$line_to_output[22] = $totalTTClist;
 
 					// Output line into Excel File
 					$this->write_line($line_to_output);
 
 					// $array_total[9] += $array_sub_total[9];
 					// $array_total[11] += $array_sub_total[11];
-					$array_total[18] += $array_sub_total[18];
 					$array_total[19] += $array_sub_total[19];
 					$array_total[20] += $array_sub_total[20];
 					$array_total[21] += $array_sub_total[21];
+					$array_total[22] += $array_sub_total[22];
 				}
 			}
 		}

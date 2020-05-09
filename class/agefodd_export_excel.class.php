@@ -232,14 +232,14 @@ class AgefoddExportExcel {
 		$styleArray = array (
 				'borders' => array (
 						'outline' => array (
-								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
 								'color' => array (
 										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 								)
 						)
 				),
 				'fill' => array (
-						'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_PATTERN_DARKGRAY
+						'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_PATTERN_DARKGRAY
 				),
 				'font' => array (
 						'color' => array (

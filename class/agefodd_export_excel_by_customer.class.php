@@ -51,7 +51,7 @@ class AgefoddExportExcelByCustomer {
 	public $version_lib;
 	public $workbook; // Handle fichier
 	public $worksheet; // Handle onglet
-	public $row=array();
+	public $row;
 	public $col;
 	public $file; // To save filename
 	public $title;
@@ -81,7 +81,6 @@ class AgefoddExportExcelByCustomer {
 		$this->version = '1.30'; // Driver version
 
 		// If driver use an external library, put its name here
-		#$this->label_lib = 'PhpExcel';
 		$this->label_lib = 'PhpSpreadSheet';
 		$this->version_lib = '1.6.0';
 
@@ -178,7 +177,6 @@ class AgefoddExportExcelByCustomer {
 			$this->workbook = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 			$this->workbook->getProperties()->setCreator($user->getFullName($this->outputlangs) . ' - Dolibarr ' . DOL_VERSION);
 			$this->workbook->getProperties()->setLastModifiedBy($user->getFullName($this->outputlangs) . ' - Dolibarr ' . DOL_VERSION);
-			// $this->workbook->getProperties()->setLastModifiedBy('Dolibarr '.DOL_VERSION);
 
 			$this->workbook->getProperties()->setTitle($this->title);
 			$this->workbook->getProperties()->setSubject($this->subject);
@@ -213,14 +211,14 @@ class AgefoddExportExcelByCustomer {
 			$styleArray = array (
 					'borders' => array (
 							'outline' => array (
-								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
 									'color' => array (
 										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 									)
 							)
 					),
 					'fill' => array (
-						'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_PATTERN_DARKGRAY
+						'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_PATTERN_DARKGRAY
 					),
 					'font' => array (
 							'color' => array (
@@ -380,16 +378,19 @@ class AgefoddExportExcelByCustomer {
 		// Style for heeader tittle SpreadSheet
 		$styleArray = array (
 				'borders' => array (
-						'allborders' => array (
-								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+						'allBorders' => array (
+								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
 								'color' => array (
 										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 								)
 						)
 				),
 				'fill' => array (
-						'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-						'color' => array (
+						'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+						'startColor' => array (
+								'rgb' => 'cfe2f3'
+						),
+						'endColor' => array (
 								'rgb' => 'cfe2f3'
 						)
 				),
@@ -453,16 +454,19 @@ class AgefoddExportExcelByCustomer {
 	public function write_line_total($array_subtotal = array(), $style_color = 'cfe2f3') {
 		$styleArray = array (
 				'borders' => array (
-						'allborders' => array (
-								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+						'allBorders' => array (
+								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
 								'color' => array (
 										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 								)
 						)
 				),
 				'fill' => array (
-						'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-						'color' => array (
+						'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+						'startColor' => array (
+							'rgb' => $style_color
+						),
+						'endColor' => array (
 								'rgb' => $style_color
 						)
 				),
@@ -477,7 +481,7 @@ class AgefoddExportExcelByCustomer {
 			if (count($array_subtotal) > 0) {
 				foreach ( $array_subtotal as $col => $value ) {
 					$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row, $value);
-					if ($col!=9 && $col!=11) {
+					if ($col!=10 && $col!=12) {
 						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 					}
 				}
@@ -505,7 +509,7 @@ class AgefoddExportExcelByCustomer {
 		$styleArray = array (
 				'borders' => array (
 						'top' => array (
-							'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
 							'color' => array (
 								'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 							)
@@ -514,7 +518,7 @@ class AgefoddExportExcelByCustomer {
 		);
 		try {
 			foreach ( $array_line as $col => $value ) {
-				if ($col == 5) {
+				if ($col == 6) {
 					// Case num dossier & participants
 					$next_block_row_sta = $this->row;
 					$next_block_row_conv = $this->row;
@@ -525,16 +529,16 @@ class AgefoddExportExcelByCustomer {
 							// Num dossier
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $next_block_row_conv, $numdossier);
 							// trainee
-							if (is_array($array_line[10][$convid]) && count($array_line[10][$convid]) > 0) {
+							if (is_array($array_line[11][$convid]) && count($array_line[11][$convid]) > 0) {
 
 								$next_block_row_sta = $next_block_row_conv;
 
-								foreach ( $array_line[10][$convid] as $stagerowid=>$trainee ) {
-									$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(10, $next_block_row_sta, $trainee);
+								foreach ( $array_line[11][$convid] as $stagerowid=>$trainee ) {
+									$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(11, $next_block_row_sta, $trainee);
 
 
-									if (is_array($array_line[2])) {
-										$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $next_block_row_sta, $array_line[2][$stagerowid]);
+									if (is_array($array_line[3])) {
+										$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(3, $next_block_row_sta, $array_line[3][$stagerowid]);
 										/*var_dump($stagerowid);
 										var_dump($array_line[2]);*/
 									}
@@ -545,7 +549,7 @@ class AgefoddExportExcelByCustomer {
 							}
 
 							// Nb Trainee
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(11, $next_block_row_conv, $array_line[11][$convid]);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(12, $next_block_row_conv, $array_line[12][$convid]);
 
 
 							$next_block_row_conv = $next_block_row_sta;
@@ -555,26 +559,26 @@ class AgefoddExportExcelByCustomer {
 						// Num dossier
 						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $next_block_row_conv, $value[0]);
 						// trainee
-						if (is_array($array_line[10][0]) && count($array_line[10][0]) > 0) {
-							foreach ( $array_line[10][0] as $stagerowid=>$trainee ) {
-								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(10, $next_block_row_sta, $trainee);
+						if (is_array($array_line[11][0]) && count($array_line[11][0]) > 0) {
+							foreach ( $array_line[11][0] as $stagerowid=>$trainee ) {
+								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(11, $next_block_row_sta, $trainee);
 
-								if (is_array($array_line[2])) {
-									$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $next_block_row_sta, $array_line[2][0][$stagerowid]);
+								if (is_array($array_line[3])) {
+									$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(3, $next_block_row_sta, $array_line[3][0][$stagerowid]);
 								}
 
 								$next_block_row_sta ++;
 							}
 						}
 						// Nb Trainee
-						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(11, $next_block_row_conv, $array_line[11][0]);
+						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(12, $next_block_row_conv, $array_line[12][0]);
 						$next_block_row_conv = $next_block_row_sta;
 					}
 
 
 
 
-				} elseif ($col == 12) {
+				} elseif ($col == 13) {
 					// Trainer
 					$next_block_row_trainer = $this->row;
 
@@ -584,40 +588,40 @@ class AgefoddExportExcelByCustomer {
 							$next_block_row_trainer ++;
 						}
 					}
-				} elseif ($col == 17) {
+				} elseif ($col == 18) {
 					// Invoice or propal
 					$next_block_row_invoice = $this->row;
 
 					if (is_array($value) && count($value) > 0) {
 						foreach ( $value as $invoiceid => $refcust ) {
 							// Invoice ref cust
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(16, $next_block_row_invoice, $array_line[16][$invoiceid]);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(16, $next_block_row_invoice, $array_line[17][$invoiceid]);
 
 							// Invoice destinaries service name
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(15, $next_block_row_invoice, $array_line[15][$invoiceid]);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(15, $next_block_row_invoice, $array_line[16][$invoiceid]);
 
 							// Invoice Ref
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(17, $next_block_row_invoice, $array_line[17][$invoiceid]);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(17, $next_block_row_invoice, $array_line[18][$invoiceid]);
 
 							// Invoice Total HT
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(20, $next_block_row_invoice, $array_line[20][$invoiceid]);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(20, $next_block_row_invoice, $array_line[21][$invoiceid]);
 							$this->workbook->getActiveSheet()->getStyleByColumnAndRow(20, $next_block_row_invoice)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
 							// Invoice Total TTC
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(21, $next_block_row_invoice, $array_line[21][$invoiceid]);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(21, $next_block_row_invoice, $array_line[22][$invoiceid]);
 							$this->workbook->getActiveSheet()->getStyleByColumnAndRow(21, $next_block_row_invoice)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
 							// Product
 							$next_block_row_product = $next_block_row_invoice;
 
-							if (is_array($array_line[14][$invoiceid]) && count($array_line[14][$invoiceid]) > 0) {
-								foreach ( $array_line[14][$invoiceid] as $invoicelineid => $product ) {
+							if (is_array($array_line[15][$invoiceid]) && count($array_line[15][$invoiceid]) > 0) {
+								foreach ( $array_line[15][$invoiceid] as $invoicelineid => $product ) {
 									// Product
-									$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(14, $next_block_row_product, $product);
+									$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(15, $next_block_row_product, $product);
 
 									// Product HT
-									$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(18, $next_block_row_product, $array_line[18][$invoiceid][$invoicelineid]);
-									$this->workbook->getActiveSheet()->getStyleByColumnAndRow(18, $next_block_row_product)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+									$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(19, $next_block_row_product, $array_line[19][$invoiceid][$invoicelineid]);
+									$this->workbook->getActiveSheet()->getStyleByColumnAndRow(19, $next_block_row_product)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
 									$next_block_row_product ++;
 									$next_block_row_invoice ++;
@@ -628,15 +632,15 @@ class AgefoddExportExcelByCustomer {
 							}
 						}
 					}
-				} elseif ($col == 19) {
+				} elseif ($col == 20) {
 					$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row, $value);
-					$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-				}elseif ($col == 2) {
+					$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+				}elseif ($col == 3) {
 					//If company is an array the company was outputed in trainee block (5)
 					if ( ! is_array($value)) {
 						$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row, $value);
 					}
-				} elseif ($col != 10 && $col != 11 && $col != 14 && $col != 15 && $col != 16 && $col != 17 && $col != 18 && $col != 20 && $col != 21) {
+				} elseif ($col != 11 && $col != 12 && $col != 15 && $col != 16 && $col != 17 && $col != 18 && $col != 19 && $col != 21 && $col != 22) {
 					$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row, $value);
 					if ($this->array_column_header[$col]['type']=='date') {
 						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row)->getNumberFormat()->setFormatCode('dd/mm/yyyy');
@@ -656,7 +660,7 @@ class AgefoddExportExcelByCustomer {
 
 			$min_value_key = min(array_keys($this->array_column_header));
 			$max_value_key = max(array_keys($this->array_column_header));
-			$range_session = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($min_value_key) . ($this->row) . ':' . PHPExcel_Cell::stringFromColumnIndex($max_value_key) . ($this->row);
+			$range_session = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($min_value_key) . ($this->row) . ':' . \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($max_value_key) . ($this->row);
 			$this->workbook->getActiveSheet()->getStyle($range_session)->applyFromArray($styleArray);
 		} catch ( Exception $e ) {
 			unset($this->workbook);
@@ -673,9 +677,7 @@ class AgefoddExportExcelByCustomer {
 	 */
 	public function close_file() {
 		try {
-			\PhpOffice\PhpSpreadsheet\Shared\Font::setAutoSizeMethod(\PhpOffice\PhpSpreadsheet\Shared\Font::AUTOSIZE_METHOD_EXACT);
 			$max_value_key = max(array_keys($this->array_column_header));
-
 
 			$this->workbook->getActiveSheet()->getStyle('A1:'.\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($max_value_key).$this->row)->getAlignment()->setWrapText(true);
 
@@ -708,11 +710,6 @@ class AgefoddExportExcelByCustomer {
 			$this->error = $e->getMessage();
 			return - 1;
 		}
-		/*As CSV
-		$objWriterCSV = PHPExcel_IOFactory::createWriter($objPHPExcelFromCSV, 'CSV');
-		$objWriterCSV->setExcelCompatibility(true);
-		$objWriterCSV->save(str_replace('.php', '_excel.csv', __FILE__));
-		*/
 	}
 
 	/**
