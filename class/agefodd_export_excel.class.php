@@ -21,9 +21,21 @@
  * \brief File of class to generate report for agefodd
  * \author Florian Henry
  */
-require_once DOL_DOCUMENT_ROOT.'/includes/phpoffice/autoloader.php';
-require_once DOL_DOCUMENT_ROOT.'/includes/Psr/autoloader.php';
-require_once PHPEXCELNEW_PATH.'Spreadsheet.php';
+if (file_exists(DOL_DOCUMENT_ROOT.'/includes/phpoffice/autoloader.php')) {
+	require_once DOL_DOCUMENT_ROOT . '/includes/phpoffice/autoloader.php';
+} else {
+	dol_include_once('/agefodd/includes/phpoffice/autoloader.php');
+}
+if (file_exists(DOL_DOCUMENT_ROOT.'/includes/Psr/autoloader.php')) {
+	require_once DOL_DOCUMENT_ROOT.'/includes/Psr/autoloader.php';
+} else {
+	dol_include_once('/agefodd/includes/Psr/autoloader.php');
+}
+if (file_exists(DOL_DOCUMENT_ROOT.'/includes/phpoffice/PhpSpreadsheet/Spreadsheet.php')) {
+	require_once DOL_DOCUMENT_ROOT.'/includes/phpoffice/PhpSpreadsheet/Spreadsheet.php';
+} else {
+	dol_include_once('/includes/phpoffice/PhpSpreadsheet/Spreadsheet.php');
+}
 
 require_once DOL_DOCUMENT_ROOT. '/core/lib/date.lib.php';
 
@@ -57,9 +69,12 @@ class AgefoddExportExcel {
 	 *
 	 * @param DoliDB $db handler
 	 * @param DoliDB $array_column_header array header array
+	 * @param Translate $outputlangs langs
+	 * @param array $sheet_array array of sheet
 	 */
 	public function __construct($db, $array_column_header, $outputlangs, $sheet_array=array()) {
-		global $conf, $langs;
+		global $langs;
+
 		$this->db = $db;
 
 		$this->id = 'excel2007'; // Same value then xxx in file name export_xxx.modules.php
@@ -70,7 +85,6 @@ class AgefoddExportExcel {
 		$this->version = '1.30'; // Driver version
 
 		// If driver use an external library, put its name here
-		#$this->label_lib = 'PhpExcel';
 		$this->label_lib = 'PhpSpreadSheet';
 		$this->version_lib = '1.6.0';
 
@@ -163,7 +177,7 @@ class AgefoddExportExcel {
 	 * @return int if KO, >=0 if OK
 	 */
 	public function open_file($file) {
-		global $user, $conf, $langs;
+		global $user, $langs;
 
 		dol_syslog(get_class($this) . "::open_file file=" . $file);
 		$this->file = $file;
@@ -182,7 +196,6 @@ class AgefoddExportExcel {
 			$this->workbook = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 			$this->workbook->getProperties()->setCreator($user->getFullName($this->outputlangs) . ' - Dolibarr ' . DOL_VERSION);
 			$this->workbook->getProperties()->setLastModifiedBy($user->getFullName($this->outputlangs) . ' - Dolibarr ' . DOL_VERSION);
-			// $this->workbook->getProperties()->setLastModifiedBy('Dolibarr '.DOL_VERSION);
 
 			$this->workbook->getProperties()->setTitle($this->title);
 			$this->workbook->getProperties()->setSubject($this->subject);
