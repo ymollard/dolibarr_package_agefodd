@@ -340,7 +340,7 @@ class ReportCommercial extends AgefoddExportExcel
 		$this->keywords = $this->outputlangs->transnoentities('AgfMenuReportCommercial');
 
 
-		$this->year_to_report_array = array($filter['startyear']);
+		$this->year_to_report_array = array((int)$filter['startyear']);
 
 		for($i = 1; $i < $filter['nbyears']; $i++)
 		{
@@ -369,24 +369,26 @@ class ReportCommercial extends AgefoddExportExcel
 		$array_column_header = array ();
 		if (count($this->year_to_report_array) > 0) {
 
-			$array_column_header[0][] = array (
+			$array_column_header[0][1] = array (
 				'type' => 'text',
 				'title' => 'Société - Code - Client/Prospect - Maison-mère' // TODO translate
 			);
 
-			$array_column_header[0][] = array (
+			$array_column_header[0][2] = array (
 				'type' => 'text',
 				'title' => 'CP'
 			);
 
+			$y=0;
 			foreach ( $this->year_to_report_array as $year_todo ) {
-				$array_column_header[0][] = array (
+				$array_column_header[0][3+$y] = array (
 					'type' => 'number',
 					'title' => $year_todo
 				);
+				$y++;
 			}
 
-			$array_column_header[0][] = array (
+			$array_column_header[0][3+count($this->year_to_report_array)] = array (
 				'type' => 'number',
 				'title' => 'Total'
 			);
@@ -402,10 +404,7 @@ class ReportCommercial extends AgefoddExportExcel
 			}
 			$array_total_hthf = array ();
 
-			// Ouput Lines
-			$line_to_output = array ();
-
-			$TTotal = array_fill(0, count($this->year_to_report_array) + 1, 0);
+			$TTotal = array_fill(1, count($this->year_to_report_array) + 1, 0);
 
 			foreach($this->TData as $TDataLine)
 			{
@@ -425,20 +424,20 @@ class ReportCommercial extends AgefoddExportExcel
 
 				foreach($TDataLine['row'] as $index => $value)
 				{
-					if($index < 2)
+					if($index < 3)
 					{
 						continue;
 					}
 
 					$total += $value;
 
-					$TTotal[$index - 2] += $value;
+					$TTotal[$index - 3] += $value;
 				}
 
-				$TDataLine['row'][2 + count($this->year_to_report_array)] = $total;
+				$TDataLine['row'][3 + count($this->year_to_report_array)] = $total;
 
 
-				$TTotal[count($this->year_to_report_array)] += $total;
+				$TTotal[count($this->year_to_report_array)+1] += $total;
 
 				$result = $this->write_line($TDataLine['row'], 0, $fill);
 				if ($result < 0)
@@ -652,8 +651,8 @@ class ReportCommercial extends AgefoddExportExcel
 			$companyName .= ' - M';
 		}
 
-		$TDataRow[] = $companyName;
-		$TDataRow[] = $salesrepInitials;
+		$TDataRow[1] = $companyName;
+		$TDataRow[2] = $salesrepInitials;
 
 		$result = $this->fetch_company_ca_data($TDataRow, $societe->rowid, $filter);
 		if($result < 0)
@@ -699,7 +698,7 @@ class ReportCommercial extends AgefoddExportExcel
 			{
 				foreach($TDataRow as $index => $cell)
 				{
-					if($index < 2)
+					if($index < 3)
 					{
 						continue;
 					}
@@ -766,7 +765,7 @@ class ReportCommercial extends AgefoddExportExcel
 					$this->TFacture[$obj->facid] = '<tr><td>'.$companyID. '</td><td>.'. $type. '</td><td>'. $obj->facid.'<td></tr>';
 					//$this->TFacture[$obj->facid] = $obj->facid;
 				}
-				$TDataRow[2 + $maxYear - $obj->year] += $obj->total;
+				$TDataRow[3 + $maxYear - $obj->year] += $obj->total;
 			}
 		}
 
