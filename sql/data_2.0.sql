@@ -5,7 +5,7 @@ INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALU
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
 (3, 'Dispositifs spécifiques pour les personnes en recherche d emploi financement publique', 4, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
-(4, 'Autre dispositifs (plan de formation, périodes de professionnalisation,...)', 5, 1, '2017-03-23 12:00:00');
+(4, 'Autre dispositifs (plan de formation, périodes de professionnalisation,...)', 5, 0, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
 (5, 'Compte personnel de formation (CPF)', 3, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
@@ -31,7 +31,17 @@ INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALU
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
 (16, 'Contrats conclus avec d’autres organismes de formation', 14, 1, '2017-03-23 12:00:00');
 INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
-(17, 'Dispositifs spécifiques pour les personnes en recherche d''emploi financement OPCA', 4, 1, '2017-03-23 12:00:00');
+(17, 'Dispositifs spécifiques pour les personnes en recherche d''emploi financement OPCO', 4, 1, '2017-03-23 12:00:00');
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
+(18, 'Contrats d''apprentissage', 2, 1, '2017-03-23 12:00:00');
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
+(19, 'Alternance', 3, 1, '2017-03-23 12:00:00');
+INSERT INTO llx_agefodd_stagiaire_type (rowid, intitule, sort, active, tms) VALUES
+(20, 'Plan de développement des compétences ou autres dispositifs', 5, 1, '2017-03-23 12:00:00');
+-- From new 2020 BPF
+UPDATE llx_agefodd_stagiaire_type SET active=0 WHERE rowid=4 AND intitule LIKE 'Autre dispositifs (plan de formation%';
+UPDATE llx_agefodd_session_stagiaire SET fk_agefodd_stagiaire_type=20 WHERE fk_agefodd_stagiaire_type=4;
+
 
 INSERT INTO llx_agefodd_formateur_type (rowid,intitule, sort, active, tms) VALUES
 (1,'Formateur interne', 0, 1,'2017-03-23 12:00:00');
