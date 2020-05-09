@@ -21,10 +21,10 @@
  * \brief File of class to generate report for agefodd
  * \author Florian Henry
  */
-//require_once DOL_DOCUMENT_ROOT. '/includes/phpoffice/phpexcel/Classes/PHPExcel.php';
-dol_include_once('/agefodd/includes/phpoffice/phpexcel/Classes/PHPExcel.php');
-//require_once DOL_DOCUMENT_ROOT. '/includes/phpoffice/phpexcel/Classes/PHPExcel/Style/Alignment.php';
-dol_include_once('/agefodd/includes/phpoffice/phpexcel/Classes/PHPExcel/Style/Alignment.php');
+require_once DOL_DOCUMENT_ROOT.'/includes/phpoffice/autoloader.php';
+require_once DOL_DOCUMENT_ROOT.'/includes/Psr/autoloader.php';
+require_once PHPEXCELNEW_PATH.'Spreadsheet.php';
+
 require_once DOL_DOCUMENT_ROOT. '/core/lib/date.lib.php';
 
 /**
@@ -70,8 +70,9 @@ class AgefoddExportExcel {
 		$this->version = '1.30'; // Driver version
 
 		// If driver use an external library, put its name here
-		$this->label_lib = 'PhpExcel';
-		$this->version_lib = '1.8.0';
+		#$this->label_lib = 'PhpExcel';
+		$this->label_lib = 'PhpSpreadSheet';
+		$this->version_lib = '1.6.0';
 
 		$this->array_column_header = $array_column_header;
 
@@ -178,13 +179,7 @@ class AgefoddExportExcel {
 
 		try {
 
-			$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_discISAM;
-			$cacheSettings = array (
-					'dir' => $conf->agefodd->dir_output . '/report/'
-			);
-			PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
-
-			$this->workbook = new PHPExcel();
+			$this->workbook = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 			$this->workbook->getProperties()->setCreator($user->getFullName($this->outputlangs) . ' - Dolibarr ' . DOL_VERSION);
 			$this->workbook->getProperties()->setLastModifiedBy($user->getFullName($this->outputlangs) . ' - Dolibarr ' . DOL_VERSION);
 			// $this->workbook->getProperties()->setLastModifiedBy('Dolibarr '.DOL_VERSION);
@@ -195,7 +190,7 @@ class AgefoddExportExcel {
 
 			$this->workbook->getProperties()->setKeywords($this->keywords);
 			foreach($this->sheet_array as $keysheet=>$sheet) {
-				$myWorkSheet = new PHPExcel_Worksheet($this->workbook, $sheet['title']);
+				$myWorkSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($this->workbook, $sheet['title']);
 				$this->workbook->addSheet($myWorkSheet, $keysheet);
 
 				$this->workbook->setActiveSheetIndex($keysheet);
@@ -224,23 +219,23 @@ class AgefoddExportExcel {
 		$styleArray = array (
 				'borders' => array (
 						'outline' => array (
-								'style' => PHPExcel_Style_Border::BORDER_THICK,
+								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
 								'color' => array (
-										'argb' => PHPExcel_Style_Color::COLOR_BLACK
+										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 								)
 						)
 				),
 				'fill' => array (
-						'type' => PHPExcel_Style_Fill::FILL_PATTERN_DARKGRAY
+						'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_PATTERN_DARKGRAY
 				),
 				'font' => array (
 						'color' => array (
-								'argb' => PHPExcel_Style_Color::COLOR_WHITE
+								'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE
 						),
 						'bold' => true
 				),
 				'alignment' => array (
-						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+						'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
 				)
 		);
 		// Create a format for the column headings
@@ -280,26 +275,26 @@ class AgefoddExportExcel {
 		$styleArray = array (
 				'borders' => array (
 						'allborders' => array (
-								'style' => PHPExcel_Style_Border::BORDER_THIN,
+								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
 								'color' => array (
-										'argb' => PHPExcel_Style_Color::COLOR_BLACK
+										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 								)
 						)
 				),
 				'fill' => array (
-						'type' => PHPExcel_Style_Fill::FILL_SOLID,
+						'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
 						'color' => array (
 								'rgb' => 'cfe2f3'
 						)
 				),
 				'font' => array (
 						'color' => array (
-								'argb' => PHPExcel_Style_Color::COLOR_BLACK
+								'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 						),
 						'bold' => true
 				),
 				'alignment' => array (
-						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+						'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
 				)
 		);
 
@@ -310,7 +305,7 @@ class AgefoddExportExcel {
 				$this->row[$keysheet] ++;
 
 				foreach ( $this->array_column_header[$keysheet] as $col => $value ) {
-				    
+
 					$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row[$keysheet], $value['title']);
 					// If header is set then write header
 					if (array_key_exists('header', $value)) {
@@ -321,7 +316,7 @@ class AgefoddExportExcel {
 						}
 					} else {
 						if ($colstartheader > 0) {
-							$range_upper_header = PHPExcel_Cell::stringFromColumnIndex($colstartheader) . ($this->row[$keysheet] - 1) . ':' . PHPExcel_Cell::stringFromColumnIndex($col - 1) . ($this->row[$keysheet] - 1);
+							$range_upper_header = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colstartheader) . ($this->row[$keysheet] - 1) . ':' . \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col - 1) . ($this->row[$keysheet] - 1);
 
 							$this->workbook->getActiveSheet()->mergeCells($range_upper_header);
 							$this->workbook->getActiveSheet()->getStyle($range_upper_header)->applyFromArray($styleArray);
@@ -334,7 +329,7 @@ class AgefoddExportExcel {
 
 				$min_value_key = min(array_keys($this->array_column_header[$keysheet]));
 				$max_value_key = max(array_keys($this->array_column_header[$keysheet]));
-				$range_header = PHPExcel_Cell::stringFromColumnIndex($min_value_key) . ($this->row[$keysheet]) . ':' . PHPExcel_Cell::stringFromColumnIndex($max_value_key) . ($this->row[$keysheet]);
+				$range_header = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($min_value_key) . ($this->row[$keysheet]) . ':' . \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($max_value_key) . ($this->row[$keysheet]);
 				$this->rowheader[$keysheet]=$this->row[$keysheet];
 				$this->workbook->getActiveSheet()->getStyle($range_header)->applyFromArray($styleArray);
 
@@ -357,21 +352,21 @@ class AgefoddExportExcel {
 		$styleArray = array (
 				'borders' => array (
 						'allborders' => array (
-								'style' => PHPExcel_Style_Border::BORDER_THIN,
+								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
 								'color' => array (
-										'argb' => PHPExcel_Style_Color::COLOR_BLACK
+										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 								)
 						)
 				),
 				'fill' => array (
-						'type' => PHPExcel_Style_Fill::FILL_SOLID,
+						'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
 						'color' => array (
 								'rgb' => $style_color
 						)
 				),
 				'font' => array (
 						'color' => array (
-								'argb' => PHPExcel_Style_Color::COLOR_BLACK
+								'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 						),
 						'bold' => true
 				),
@@ -382,16 +377,16 @@ class AgefoddExportExcel {
 				foreach ( $array_subtotal as $col => $value ) {
 					$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row[$sheetkey], $value);
 					if ($this->array_column_header[$sheetkey][$col]['type']=='number') {
-						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 					}
 					if ($this->array_column_header[$sheetkey][$col]['type']=='int') {
-						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER);
 					}
 					if ($this->array_column_header[$sheetkey][$col]['type']=='percent') {
-						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00);
+						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
 					}
 					if ($this->array_column_header[$sheetkey][$col]['type']=='amount') {
-						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_00);
 					}
 					if ($this->array_column_header[$sheetkey][$col]['type']=='hours') {
 						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode('[h]:mm');
@@ -406,7 +401,7 @@ class AgefoddExportExcel {
 			}
 			$min_value_key = min(array_keys($this->array_column_header[$sheetkey]));
 			$max_value_key = max(array_keys($this->array_column_header[$sheetkey]));
-			$range_header = PHPExcel_Cell::stringFromColumnIndex($min_value_key) . ($this->row[$sheetkey]) . ':' . PHPExcel_Cell::stringFromColumnIndex($max_value_key) . ($this->row[$sheetkey]);
+			$range_header = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($min_value_key) . ($this->row[$sheetkey]) . ':' . \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($max_value_key) . ($this->row[$sheetkey]);
 			$this->workbook->getActiveSheet()->getStyle($range_header)->applyFromArray($styleArray);
 
 			$this->row[$sheetkey] ++;
@@ -427,9 +422,9 @@ class AgefoddExportExcel {
 		$styleArray = array (
 				'borders' => array (
 						'top' => array (
-								'style' => PHPExcel_Style_Border::BORDER_THIN,
+								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
 								'color' => array (
-										'argb' => PHPExcel_Style_Color::COLOR_BLACK
+										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 								)
 						)
 				)
@@ -437,7 +432,7 @@ class AgefoddExportExcel {
 		if(! empty($fill))
 		{
 			$styleArray['fill'] = array(
-				'type' => PHPExcel_Style_Fill::FILL_SOLID,
+				'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
 				'color' => array (
 					'rgb' => $fill
 				)
@@ -448,16 +443,16 @@ class AgefoddExportExcel {
 			foreach ( $array_line as $col => $value ) {
 					$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row[$sheetkey], $value);
 					if ($this->array_column_header[$sheetkey][$col]['type']=='number') {
-						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 					}
 					if ($this->array_column_header[$sheetkey][$col]['type']=='int') {
-						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER);
+						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER);
 					}
 					if ($this->array_column_header[$sheetkey][$col]['type']=='percent') {
-						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00);
+						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
 					}
 					if ($this->array_column_header[$sheetkey][$col]['type']=='amount') {
-						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_00);
 					}
 					if ($this->array_column_header[$sheetkey][$col]['type']=='hours') {
 						$this->workbook->getActiveSheet()->getStyleByColumnAndRow($col, $this->row[$sheetkey])->getNumberFormat()->setFormatCode('[h]:mm');
@@ -472,7 +467,7 @@ class AgefoddExportExcel {
 
 			$min_value_key = min(array_keys($this->array_column_header[$sheetkey]));
 			$max_value_key = max(array_keys($this->array_column_header[$sheetkey]));
-			$range_session = PHPExcel_Cell::stringFromColumnIndex($min_value_key) . ($this->row[$sheetkey]) . ':' . PHPExcel_Cell::stringFromColumnIndex($max_value_key) . ($this->row[$sheetkey]);
+			$range_session = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($min_value_key) . ($this->row[$sheetkey]) . ':' . \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($max_value_key) . ($this->row[$sheetkey]);
 			$this->workbook->getActiveSheet()->getStyle($range_session)->applyFromArray($styleArray);
 
 			$this->row[$sheetkey] ++;
@@ -494,7 +489,7 @@ class AgefoddExportExcel {
 		dol_syslog(get_class($this) . "::close_file ");
 		try {
 			//Auto size column
-			PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
+			\PhpOffice\PhpSpreadsheet\Shared\Font::setAutoSizeMethod(\PhpOffice\PhpSpreadsheet\Shared\Font::AUTOSIZE_METHOD_EXACT);
 			foreach($this->sheet_array as $keysheet=>$sheet) {
 				$this->workbook->setActiveSheetIndex($keysheet);
 				$max_value_key = max(array_keys($this->array_column_header[$keysheet]));
@@ -503,15 +498,15 @@ class AgefoddExportExcel {
 				for($i=0; $i <= $max_value_key; $i++) {
 					//If key is not define auto size column
 					if (!array_key_exists('autosize', $this->array_column_header[$keysheet][$i])) {
-						$column_array[]=PHPExcel_Cell::stringFromColumnIndex($i);
+						$column_array[]=\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
 					} elseif (!empty($this->array_column_header[$keysheet][$i]['noautosize'])) {
 						//If exists but not empty then add it else do not auto adjust
-						$column_array[]=PHPExcel_Cell::stringFromColumnIndex($i);
+						$column_array[]=\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
 					}
 
 					if (array_key_exists('width', $this->array_column_header[$keysheet][$i])
 							&& !empty($this->array_column_header[$keysheet][$i]['width'])) {
-								$column_array_manually_sized[PHPExcel_Cell::stringFromColumnIndex($i)]=$this->array_column_header[$keysheet][$i]['width'];
+								$column_array_manually_sized[\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i)]=$this->array_column_header[$keysheet][$i]['width'];
 					}
 				}
 
@@ -536,8 +531,8 @@ class AgefoddExportExcel {
 					$this->workbook->getActiveSheet()->freezePaneByColumnAndRow($max_value_key, $this->rowheader[$keysheet]+1);
 				}
 
-				$this->workbook->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
-				$this->workbook->getActiveSheet()->getPageSetup()->setPrintArea('A1:'.PHPExcel_Cell::stringFromColumnIndex($max_value_key).$this->row[$keysheet]);
+				$this->workbook->getActiveSheet()->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+				$this->workbook->getActiveSheet()->getPageSetup()->setPrintArea('A1:'.\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($max_value_key).$this->row[$keysheet]);
 
 
 				//$this->workbook->getActiveSheet()->getPageMargins()->setTop(1);
@@ -547,7 +542,7 @@ class AgefoddExportExcel {
 			}
 
 			$this->workbook->setActiveSheetIndex(0);
-			$objWriter = PHPExcel_IOFactory::createWriter($this->workbook, 'Excel2007');
+			$objWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($this->workbook, 'Xlsx');
 			$objWriter->save($this->file);
 			unset($this->workbook);
 		} catch ( Exception $e ) {
