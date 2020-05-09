@@ -1786,7 +1786,18 @@ function pdf_getInstance_agefodd($session, &$model, $format = '', $metric = 'mm'
 	return $pdf;
 }
 
-function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $y, $align)
+/**
+ * @param $db
+ * @param Translate $outputlangs
+ * @param $object
+ * @param $font_size
+ * @param TCPDF $pdf
+ * @param $x
+ * @param $y
+ * @param $align
+ * @param bool $noSessRef
+ */
+function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $y, $align, $noSessRef = false)
 {
 	global $conf;
 
@@ -1802,13 +1813,13 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 			$agf->fetch($object->fk_formation_catalogue);
 			$forma_ref_int = $agf->ref_interne;
 			if (empty($conf->global->AGF_HIDE_DATE_ON_HEADER)) {
-				$forma_ref_int .= '(' . $object->libSessionDate() . ') - ';
+				$forma_ref_int .= '(' . $object->libSessionDate() . ')';
+				if (!$noSessRef) $forma_ref_int .= ' - ';
 			}
-			$forma_ref_int .= $object->id . '#' . $object->ref ;
+			if (!$noSessRef) $forma_ref_int .= "\n".$object->id . '#' . $object->ref ;
 		}
 
-
-		if ($forma_ref_int != null) {
+		if (!empty($forma_ref_int)) {
 			$pdf->SetXY($x, $y);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $font_size);
 			$pdf->MultiCell(70, 4, $outputlangs->transnoentities('AgfRefInterne') . ' : ' . $outputlangs->convToOutputCharset($forma_ref_int), 0, $align);

@@ -64,6 +64,8 @@ class pdf_fiche_presence_landscape extends pdf_fiche_presence
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
+		$this->header_vertical_margin = 1;
+		$this->summaryPaddingBottom = 1;
 
 		$this->formation_widthcol1 = 20;
 		$this->formation_widthcol2 = 130;
