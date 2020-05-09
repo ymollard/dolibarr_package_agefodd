@@ -142,7 +142,7 @@ if ($action == 'builddoc') {
 	$report_by_cust = new ReportByCustomer($db, $outputlangs);
 
 	if(!empty($avoidNotLinked)) $report_by_cust->avoidNotLinkedInvoices = 1;
-	
+
 	$file_sub_title=$report_by_cust->getSubTitlFileName($filter);
 	$report_by_cust->file = $upload_dir . 'reportbycust-' . $file_sub_title . '.xlsx';
 
@@ -253,7 +253,8 @@ print '</table>' . "\n";
 $liste = array (
 		'excel2007' => 'Excel 2007'
 );
-$formfile->show_documents('export', '', $upload_dir, $_SERVER["PHP_SELF"], $liste, 1, (! empty($modelexport) ? $modelexport : 'excel2007'), 1, 0, 0, 150, 1);
+dol_fiche_end();
+print $formfile->showdocuments('export', '', $upload_dir, $_SERVER["PHP_SELF"], $liste, 1, (! empty($modelexport) ? $modelexport : 'excel2007'), 1, 0, 0, 150, 1);
 
 // TODO : Hack to update link on document beacuse merge unpaid is always link to unpaid invoice ...
 echo '<script type="text/javascript">

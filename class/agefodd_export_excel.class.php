@@ -287,17 +287,20 @@ class AgefoddExportExcel {
 		// Style for heeader tittle SpreadSheet
 		$styleArray = array (
 				'borders' => array (
-						'allborders' => array (
-								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+						'allBorders' => array (
+								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
 								'color' => array (
 										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 								)
 						)
 				),
 				'fill' => array (
-						'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-						'color' => array (
+						'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+						'startColor' => array (
 								'rgb' => 'cfe2f3'
+						),
+						'endColor' => array (
+							'rgb' => 'cfe2f3'
 						)
 				),
 				'font' => array (
@@ -318,7 +321,6 @@ class AgefoddExportExcel {
 				$this->row[$keysheet] ++;
 
 				foreach ( $this->array_column_header[$keysheet] as $col => $value ) {
-
 					$this->workbook->getActiveSheet()->setCellValueByColumnAndRow($col, $this->row[$keysheet], $value['title']);
 					// If header is set then write header
 					if (array_key_exists('header', $value)) {
@@ -364,17 +366,20 @@ class AgefoddExportExcel {
 	public function write_line_total($array_subtotal = array(), $style_color = 'cfe2f3', $sheetkey=0) {
 		$styleArray = array (
 				'borders' => array (
-						'allborders' => array (
-								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+						'allBorders' => array (
+								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
 								'color' => array (
 										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 								)
 						)
 				),
 				'fill' => array (
-						'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-						'color' => array (
-								'rgb' => $style_color
+						'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+						'startColor' => array (
+							'rgb' => $style_color
+						),
+						'endColor' => array (
+							'rgb' => $style_color
 						)
 				),
 				'font' => array (
@@ -435,7 +440,7 @@ class AgefoddExportExcel {
 		$styleArray = array (
 				'borders' => array (
 						'top' => array (
-								'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
 								'color' => array (
 										'argb' => \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK
 								)
@@ -445,8 +450,11 @@ class AgefoddExportExcel {
 		if(! empty($fill))
 		{
 			$styleArray['fill'] = array(
-				'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-				'color' => array (
+				'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+				'startColor' => array (
+					'rgb' => $fill
+				),
+				'endColor' => array (
 					'rgb' => $fill
 				)
 			);
@@ -501,14 +509,12 @@ class AgefoddExportExcel {
 	public function close_file($row_header_height=0,$line_header_height=0,$freezepan=1) {
 		dol_syslog(get_class($this) . "::close_file ");
 		try {
-			//Auto size column
-			\PhpOffice\PhpSpreadsheet\Shared\Font::setAutoSizeMethod(\PhpOffice\PhpSpreadsheet\Shared\Font::AUTOSIZE_METHOD_EXACT);
 			foreach($this->sheet_array as $keysheet=>$sheet) {
 				$this->workbook->setActiveSheetIndex($keysheet);
 				$max_value_key = max(array_keys($this->array_column_header[$keysheet]));
 				$column_array=array();
 				$column_array_manually_sized=array();
-				for($i=0; $i <= $max_value_key; $i++) {
+				for($i=1; $i <= $max_value_key; $i++) {
 					//If key is not define auto size column
 					if (!array_key_exists('autosize', $this->array_column_header[$keysheet][$i])) {
 						$column_array[]=\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
@@ -548,14 +554,13 @@ class AgefoddExportExcel {
 				$this->workbook->getActiveSheet()->getPageSetup()->setPrintArea('A1:'.\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($max_value_key).$this->row[$keysheet]);
 
 
-				//$this->workbook->getActiveSheet()->getPageMargins()->setTop(1);
 				$this->workbook->getActiveSheet()->getPageMargins()->setRight(0.20);
 				$this->workbook->getActiveSheet()->getPageMargins()->setLeft(0.20);
-				//$this->workbook->getActiveSheet()->getPageMargins()->setBottom(1);
 			}
 
 			$this->workbook->setActiveSheetIndex(0);
 			$objWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($this->workbook, 'Xlsx');
+			#$objWriter = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($this->workbook);
 			$objWriter->save($this->file);
 			unset($this->workbook);
 		} catch ( Exception $e ) {
@@ -563,11 +568,6 @@ class AgefoddExportExcel {
 			unset($this->workbook);
 			return - 1;
 		}
-		/*As CSV
-		$objWriterCSV = PHPExcel_IOFactory::createWriter($objPHPExcelFromCSV, 'CSV');
-		$objWriterCSV->setExcelCompatibility(true);
-		$objWriterCSV->save(str_replace('.php', '_excel.csv', __FILE__));
-		*/
 	}
 
 	/**

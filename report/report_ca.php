@@ -251,7 +251,7 @@ print '<td>' . $formAgefodd->multiselect_session_status('search_session_status',
 print '</tr>';*/
 
 print '</table>' . "\n";
-
+dol_fiche_end();
 $liste = array (
 		'excel2007' => 'Excel 2007'
 );

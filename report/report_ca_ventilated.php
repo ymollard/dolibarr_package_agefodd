@@ -248,7 +248,7 @@ print '</tr>';
 //print '</tr>';
 
 print '</table>' . "\n";
-
+dol_fiche_end();
 $liste = array (
 	'excel2007' => 'Excel 2007'
 );

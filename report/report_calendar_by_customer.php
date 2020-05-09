@@ -105,16 +105,16 @@ if ($action == 'builddoc') {
         		$outputlangs = new Translate("", $conf);
         		$outputlangs->setDefaultLang($newlang);
         	}
-        
+
         	$outputlangs->load('agefodd@agefodd');
-        
+
         	$report_calendar_by_cust = new ReportCalendarByCustomer($db, $outputlangs);
-        
+
         	if (empty($session_dt_end)) $filter['sesscal.date_session']['end'] = dol_now();
-        	
+
         	$file_sub_title=$report_calendar_by_cust->getSubTitlFileName($filter);
         	$report_calendar_by_cust->file = $upload_dir . 'reportcalendarbycust-' . $file_sub_title . '.xlsx';
-        
+
         	$result = $report_calendar_by_cust->write_file($filter);
         	if ($result < 0) {
         		setEventMessage($report_calendar_by_cust->error, 'errors');
@@ -167,7 +167,8 @@ print '</table>' . "\n";
 $liste = array (
 		'excel2007' => 'Excel 2007'
 );
-$formfile->show_documents('export', '', $upload_dir, $_SERVER["PHP_SELF"], $liste, 1, (! empty($modelexport) ? $modelexport : 'excel2007'), 1, 0, 0, 150, 1);
+dol_fiche_end();
+print $formfile->showdocuments('export', '', $upload_dir, $_SERVER["PHP_SELF"], $liste, 1, (! empty($modelexport) ? $modelexport : 'excel2007'), 1, 0, 0, 150, 1);
 
 // TODO : Hack to update link on document beacuse merge unpaid is always link to unpaid invoice ...
 echo '<script type="text/javascript">

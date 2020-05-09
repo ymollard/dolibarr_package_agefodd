@@ -21,9 +21,21 @@
  * \brief File of class to generate report for agefodd
  * \author Florian Henry
  */
-require_once DOL_DOCUMENT_ROOT.'/includes/phpoffice/autoloader.php';
-require_once DOL_DOCUMENT_ROOT.'/includes/Psr/autoloader.php';
-require_once PHPEXCELNEW_PATH.'Spreadsheet.php';
+if (file_exists(DOL_DOCUMENT_ROOT.'/includes/phpoffice/autoloader.php')) {
+	require_once DOL_DOCUMENT_ROOT . '/includes/phpoffice/autoloader.php';
+} else {
+	dol_include_once('/agefodd/includes/phpoffice/autoloader.php');
+}
+if (file_exists(DOL_DOCUMENT_ROOT.'/includes/Psr/autoloader.php')) {
+	require_once DOL_DOCUMENT_ROOT.'/includes/Psr/autoloader.php';
+} else {
+	dol_include_once('/agefodd/includes/Psr/autoloader.php');
+}
+if (file_exists(DOL_DOCUMENT_ROOT.'/includes/phpoffice/PhpSpreadsheet/Spreadsheet.php')) {
+	require_once DOL_DOCUMENT_ROOT.'/includes/phpoffice/PhpSpreadsheet/Spreadsheet.php';
+} else {
+	dol_include_once('/includes/phpoffice/PhpSpreadsheet/Spreadsheet.php');
+}
 
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 

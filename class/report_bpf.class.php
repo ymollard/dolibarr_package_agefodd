@@ -149,12 +149,12 @@ class ReportBPF extends AgefoddExportExcel
 
 		// Contruct header (column name)
 		$array_column_header = array();
-		$array_column_header[0][0] = array(
+		$array_column_header[0][1] = array(
 				'type' => 'text',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFOrigProd')
 		);
 
-		$array_column_header[0][1] = array(
+		$array_column_header[0][2] = array(
 				'type' => 'number',
 				'title' => $this->outputlangs->transnoentities('Amount')
 		);
@@ -166,16 +166,18 @@ class ReportBPF extends AgefoddExportExcel
 			return $result;
 		}
 
+
+
 		// Ouput Lines
 		$line_to_output = array();
 		$array_total_output = array();
 		if (is_array($this->financial_data) && count($this->financial_data) > 0) {
 			foreach ( $this->financial_data as $label_type => $financial_data ) {
-				$line_to_output[0] = $label_type;
-				$line_to_output[1] = $financial_data;
+				$line_to_output[1] = $label_type;
+				$line_to_output[2] = $financial_data;
 
-				$array_total_output[0] = $this->outputlangs->transnoentities('Total');
-				$array_total_output[1] += $financial_data;
+				$array_total_output[1] = $this->outputlangs->transnoentities('Total');
+				$array_total_output[2] += $financial_data;
 
 				$result = $this->write_line($line_to_output, 0);
 				if ($result < 0) {
@@ -196,12 +198,12 @@ class ReportBPF extends AgefoddExportExcel
 
 		// Contruct header (column name)
 		$array_column_header = array();
-		$array_column_header[0][0] = array(
+		$array_column_header[0][1] = array(
 				'type' => 'text',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFChargeProd')
 		);
 
-		$array_column_header[0][1] = array(
+		$array_column_header[0][2] = array(
 				'type' => 'number',
 				'title' => $this->outputlangs->transnoentities('Amount')
 		);
@@ -218,11 +220,11 @@ class ReportBPF extends AgefoddExportExcel
 		$array_total_output = array();
 		if (is_array($this->financial_data_d) && count($this->financial_data_d) > 0) {
 			foreach ( $this->financial_data_d as $label_type => $financial_data ) {
-				$line_to_output[0] = $label_type;
-				$line_to_output[1] = $financial_data;
+				$line_to_output[1] = $label_type;
+				$line_to_output[2] = $financial_data;
 
-				$array_total_output[0] = $this->outputlangs->transnoentities('Total');
-				$array_total_output[1] += $financial_data;
+				$array_total_output[1] = $this->outputlangs->transnoentities('Total');
+				$array_total_output[2] += $financial_data;
 
 				$result = $this->write_line($line_to_output, 0);
 				if ($result < 0) {
@@ -243,16 +245,16 @@ class ReportBPF extends AgefoddExportExcel
 
 		// Contruct header (column name)
 		$array_column_header = array();
-		$array_column_header[0][0] = array(
+		$array_column_header[0][1] = array(
 				'type' => 'text',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFChaperE')
 		);
 
-		$array_column_header[0][1] = array(
+		$array_column_header[0][2] = array(
 				'type' => 'int',
 				'title' => $this->outputlangs->transnoentities('AgfFormateurNb')
 		);
-		$array_column_header[0][2] = array(
+		$array_column_header[0][3] = array(
 				'type' => 'hours',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbHour')
 		);
@@ -268,17 +270,17 @@ class ReportBPF extends AgefoddExportExcel
 		// Ouput Lines
 		$line_to_output = array();
 		$array_total_output = array();
-		$array_total_output[1] = 0;
 		$array_total_output[2] = 0;
+		$array_total_output[3] = 0;
 		if (is_array($this->trainer_data) && count($this->trainer_data) > 0) {
 			foreach ( $this->trainer_data as $label_type => $trainer_data ) {
-				$line_to_output[0] = $label_type;
-				$line_to_output[1] = $trainer_data['nb'];
-				$line_to_output[2] = $trainer_data['time'];
+				$line_to_output[1] = $label_type;
+				$line_to_output[2] = $trainer_data['nb'];
+				$line_to_output[3] = $trainer_data['time'];
 
-				$array_total_output[0] = 'Total';
-				$array_total_output[1] += $trainer_data['nb'];
-				$array_total_output[2] += $trainer_data['time'];
+				$array_total_output[1] = 'Total';
+				$array_total_output[2] += $trainer_data['nb'];
+				$array_total_output[3] += $trainer_data['time'];
 
 				$result = $this->write_line($line_to_output, 0);
 				if ($result < 0) {
@@ -300,16 +302,16 @@ class ReportBPF extends AgefoddExportExcel
 
 		// Contruct header (column name)
 		$array_column_header = array();
-		$array_column_header[0][0] = array(
+		$array_column_header[0][1] = array(
 				'type' => 'text',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFChaperF1')
 		);
 
-		$array_column_header[0][1] = array(
+		$array_column_header[0][2] = array(
 				'type' => 'int',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbPart')
 		);
-		$array_column_header[0][2] = array(
+		$array_column_header[0][3] = array(
 				'type' => 'hours',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbHeureSta')
 		);
@@ -327,12 +329,12 @@ class ReportBPF extends AgefoddExportExcel
 		$array_total_output = array();
 		if (is_array($this->trainee_data) && count($this->trainee_data) > 0) {
 			foreach ( $this->trainee_data as $label_type => $trainee_data ) {
-				$line_to_output[0] = $label_type;
-				$line_to_output[1] = $trainee_data['nb'];
-				$line_to_output[2] = $trainee_data['time'];
-				$array_total_output[0] = 'Total';
-				$array_total_output[1] += $trainee_data['nb'];
-				$array_total_output[2] += $trainee_data['time'];
+				$line_to_output[1] = $label_type;
+				$line_to_output[2] = $trainee_data['nb'];
+				$line_to_output[3] = $trainee_data['time'];
+				$array_total_output[1] = 'Total';
+				$array_total_output[2] += $trainee_data['nb'];
+				$array_total_output[3] += $trainee_data['time'];
 
 				$result = $this->write_line($line_to_output, 0);
 				if ($result < 0) {
@@ -353,16 +355,16 @@ class ReportBPF extends AgefoddExportExcel
 
 		// Contruct header (column name)
 		$array_column_header = array();
-		$array_column_header[0][0] = array(
+		$array_column_header[0][1] = array(
 				'type' => 'text',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFChaperF2')
 		);
 
-		$array_column_header[0][1] = array(
+		$array_column_header[0][2] = array(
 				'type' => 'int',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbPart')
 		);
-		$array_column_header[0][2] = array(
+		$array_column_header[0][3] = array(
 				'type' => 'hours',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbHeureSta')
 		);
@@ -380,12 +382,12 @@ class ReportBPF extends AgefoddExportExcel
 		$array_total_output = array();
 		if (is_array($this->trainee_data_f2) && count($this->trainee_data_f2) > 0) {
 			foreach ( $this->trainee_data_f2 as $label_type => $trainee_data ) {
-				$line_to_output[0] = $label_type;
-				$line_to_output[1] = $trainee_data['nb'];
-				$line_to_output[2] = $trainee_data['time'];
-				$array_total_output[0] = 'Total';
-				$array_total_output[1] += $trainee_data['nb'];
-				$array_total_output[2] += $trainee_data['time'];
+				$line_to_output[1] = $label_type;
+				$line_to_output[2] = $trainee_data['nb'];
+				$line_to_output[3] = $trainee_data['time'];
+				$array_total_output[1] = 'Total';
+				$array_total_output[2] += $trainee_data['nb'];
+				$array_total_output[3] += $trainee_data['time'];
 
 				$result = $this->write_line($line_to_output, 0);
 				if ($result < 0) {
@@ -406,16 +408,16 @@ class ReportBPF extends AgefoddExportExcel
 
 		// Contruct header (column name)
 		$array_column_header = array();
-		$array_column_header[0][0] = array(
+		$array_column_header[0][1] = array(
 				'type' => 'text',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFChaperF3')
 		);
 
-		$array_column_header[0][1] = array(
+		$array_column_header[0][2] = array(
 				'type' => 'int',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbPart')
 		);
-		$array_column_header[0][2] = array(
+		$array_column_header[0][3] = array(
 				'type' => 'hours',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbHeureSta')
 		);
@@ -433,12 +435,12 @@ class ReportBPF extends AgefoddExportExcel
 		$array_total_output = array();
 		if (is_array($this->trainee_data_f3) && count($this->trainee_data_f3) > 0) {
 			foreach ( $this->trainee_data_f3 as $label_type => $trainee_data ) {
-				$line_to_output[0] = $label_type;
-				$line_to_output[1] = $trainee_data['nb'];
-				$line_to_output[2] = $trainee_data['time'];
-				$array_total_output[0] = 'Total';
-				$array_total_output[1] += $trainee_data['nb'];
-				$array_total_output[2] += $trainee_data['time'];
+				$line_to_output[1] = $label_type;
+				$line_to_output[2] = $trainee_data['nb'];
+				$line_to_output[3] = $trainee_data['time'];
+				$array_total_output[1] = 'Total';
+				$array_total_output[2] += $trainee_data['nb'];
+				$array_total_output[3] += $trainee_data['time'];
 
 				$result = $this->write_line($line_to_output, 0);
 				if ($result < 0) {
@@ -459,16 +461,16 @@ class ReportBPF extends AgefoddExportExcel
 
 		// Contruct header (column name)
 		$array_column_header = array();
-		$array_column_header[0][0] = array(
+		$array_column_header[0][1] = array(
 				'type' => 'text',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFChaperF4')
 		);
 
-		$array_column_header[0][1] = array(
+		$array_column_header[0][2] = array(
 				'type' => 'int',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbPart')
 		);
-		$array_column_header[0][2] = array(
+		$array_column_header[0][3] = array(
 				'type' => 'hours',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbHeureSta')
 		);
@@ -486,12 +488,12 @@ class ReportBPF extends AgefoddExportExcel
 		$array_total_output = array();
 		if (is_array($this->trainee_data_f4) && count($this->trainee_data_f4) > 0) {
 			foreach ( $this->trainee_data_f4 as $label_type => $trainee_data ) {
-				$line_to_output[0] = $label_type;
-				$line_to_output[1] = $trainee_data['nb'];
-				$line_to_output[2] = $trainee_data['time'];
-				$array_total_output[0] = 'Total';
-				$array_total_output[1] += $trainee_data['nb'];
-				$array_total_output[2] += $trainee_data['time'];
+				$line_to_output[1] = $label_type;
+				$line_to_output[2] = $trainee_data['nb'];
+				$line_to_output[3] = $trainee_data['time'];
+				$array_total_output[1] = 'Total';
+				$array_total_output[2] += $trainee_data['nb'];
+				$array_total_output[3] += $trainee_data['time'];
 
 				$result = $this->write_line($line_to_output, 0);
 				if ($result < 0) {
@@ -512,16 +514,16 @@ class ReportBPF extends AgefoddExportExcel
 
 		// Contruct header (column name)
 		$array_column_header = array();
-		$array_column_header[0][0] = array(
+		$array_column_header[0][1] = array(
 				'type' => 'text',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFChaperG')
 		);
 
-		$array_column_header[0][1] = array(
+		$array_column_header[0][2] = array(
 				'type' => 'int',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbPart')
 		);
-		$array_column_header[0][2] = array(
+		$array_column_header[0][3] = array(
 				'type' => 'hours',
 				'title' => $this->outputlangs->transnoentities('AgfReportBPFNbHeureSta')
 		);
@@ -539,12 +541,12 @@ class ReportBPF extends AgefoddExportExcel
 		$array_total_output = array();
 		if (is_array($this->trainee_data_g) && count($this->trainee_data_g) > 0) {
 			foreach ( $this->trainee_data_g as $label_type => $trainee_data ) {
-				$line_to_output[0] = $label_type;
-				$line_to_output[1] = $trainee_data['nb'];
-				$line_to_output[2] = $trainee_data['time'];
-				$array_total_output[0] = 'Total';
-				$array_total_output[1] += $trainee_data['nb'];
-				$array_total_output[2] += $trainee_data['time'];
+				$line_to_output[1] = $label_type;
+				$line_to_output[2] = $trainee_data['nb'];
+				$line_to_output[3] = $trainee_data['time'];
+				$array_total_output[1] = 'Total';
+				$array_total_output[2] += $trainee_data['nb'];
+				$array_total_output[3] += $trainee_data['time'];
 
 				$result = $this->write_line($line_to_output, 0);
 				if ($result < 0) {
