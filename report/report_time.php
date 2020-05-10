@@ -150,7 +150,7 @@ print '<table class="border" width="100%">';
 print '<tr>';
 print '<td>' . $langs->trans('AgfReportTimeTypeReport').'</td>';
 print '<td>';
-print $form->selectarray('type_report', $report->TType_report, $type_report,0,);
+print $form->selectarray('type_report', $report->TType_report, $type_report,0);
 print '</td>';
 print '</tr>';
 
