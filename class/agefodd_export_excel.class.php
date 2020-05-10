@@ -170,6 +170,16 @@ class AgefoddExportExcel {
 		$this->array_column_header=$array_column_header;
 	}
 
+
+	/**
+	 * set column hearder
+	 *
+	 * @return string
+	 */
+	public function getArrayColumnHeader() {
+		return $this->array_column_header;
+	}
+
 	/**
 	 * Open output file
 	 *
@@ -281,8 +291,6 @@ class AgefoddExportExcel {
 
 		// Title header merge subarea is outputted (case of merge cell on line upper the header to explain kind of data)
 		$upper_hearder_output = '';
-
-
 
 		// Style for heeader tittle SpreadSheet
 		$styleArray = array (

@@ -704,7 +704,7 @@ function agf_calendars_prepare_head($param)
  *
  * @return array Array of head
  */
-function agf_revenue_report_prepare_head()
+function agf_report_revenue_prepare_head()
 {
 	global $langs, $conf, $user;
 
@@ -740,7 +740,7 @@ function agf_revenue_report_prepare_head()
  *
  * @return array Array of head
  */
-function agf_revenue_ventilated_report_prepare_head() {
+function agf_report_revenue_ventilated_prepare_head() {
 	global $langs, $conf, $user;
 
 	$h = 0;
@@ -751,10 +751,10 @@ function agf_revenue_ventilated_report_prepare_head() {
 	$head[$h][2] = 'card';
 	$h++;
 
-//	$head[$h][0] = dol_buildpath("/agefodd/report/report_ca_ventilated_help.php", 1);
-//	$head[$h][1] = $langs->trans("Help");
-//	$head[$h][2] = 'help';
-//	$h++;
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_ca_ventilated_help.php", 1);
+	$head[$h][1] = $langs->trans("Help");
+	$head[$h][2] = 'help';
+	$h++;
 
 	$object=new stdClass();
 
@@ -840,7 +840,7 @@ function agf_report_calendar_by_customer_prepare_head()
  *
  * @return array Array of head
  */
-function agf_commercial_report_prepare_head()
+function agf_report_commercial_prepare_head()
 {
 	global $langs, $conf, $user;
 
@@ -866,6 +866,41 @@ function agf_commercial_report_prepare_head()
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_report_commercial');
 
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_report_commercial', 'remove');
+
+	return $head;
+}
+
+/**
+ * Define head array for tabs of commercial report
+ *
+ * @return array Array of head
+ */
+function agf_report_time_prepare_head()
+{
+	global $langs, $conf, $user;
+
+	$h = 0;
+	$head = array();
+
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_time.php", 1);
+	$head[$h][1] = $langs->trans("AgfMenuReportTime");
+	$head[$h][2] = 'card';
+	$h++;
+
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_time_help.php", 1);
+	$head[$h][1] = $langs->trans("Help");
+	$head[$h][2] = 'help';
+	$h++;
+
+	$object = new stdClass();
+
+	// Show more tabs from modules
+	// Entries must be declared in modules descriptor with line
+	// $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
+	// $this->tabs = array('entity:-tabname);   												to remove a tab
+	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_report_time');
+
+	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_report_time', 'remove');
 
 	return $head;
 }

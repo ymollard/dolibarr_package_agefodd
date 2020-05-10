@@ -202,7 +202,7 @@ elseif ($action == 'remove_file')
 
 $report = new ReportCommercial($db, $langs);
 
-$head = agf_commercial_report_prepare_head(http_build_query($_REQUEST));
+$head = agf_report_commercial_prepare_head(http_build_query($_REQUEST));
 dol_fiche_head($head, 'card', $langs->trans("AgfMenuReportCommercial"), 0, 'bill');
 
 

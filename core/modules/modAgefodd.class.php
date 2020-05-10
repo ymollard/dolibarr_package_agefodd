@@ -86,6 +86,7 @@ class modAgefodd extends DolibarrModules
 		        "/agefodd/report/bycust/",
 		        "/agefodd/report/calendarbycust/",
 		        "/agefodd/report/commercial",
+		        "/agefodd/report/time",
 				"/agefodd/background"
 		);
 		$r = 0;
@@ -2446,7 +2447,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/index.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 900 + $r,
-				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report && $conf->global->AGF_MANAGE_BPF',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report',
 				'perms' => '$user->rights->agefodd->report',
 				'target' => '',
 				'user' => 0
@@ -2474,7 +2475,7 @@ class modAgefodd extends DolibarrModules
 				'url' => '/agefodd/report/report_by_customer.php',
 				'langs' => 'agefodd@agefodd',
 				'position' => 900 + $r,
-				'enabled' => '$user->rights->agefodd->report',
+				'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report',
 				'perms' => '$user->rights->agefodd->report',
 				'target' => '',
 				'user' => 0
@@ -2488,7 +2489,7 @@ class modAgefodd extends DolibarrModules
 		    'url' => '/agefodd/report/report_calendar_by_customer.php',
 		    'langs' => 'agefodd@agefodd',
 		    'position' => 900 + $r,
-		    'enabled' => '$user->rights->agefodd->report',
+		    'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report',
 		    'perms' => '$user->rights->agefodd->report',
 		    'target' => '',
 		    'user' => 0
@@ -2502,7 +2503,7 @@ class modAgefodd extends DolibarrModules
 		    'url' => '/agefodd/report/report_ca.php',
 		    'langs' => 'agefodd@agefodd',
 		    'position' => 900 + $r,
-		    'enabled' => '$user->rights->agefodd->report',
+		    'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report',
 		    'perms' => '$user->rights->agefodd->report',
 		    'target' => '',
 		    'user' => 0
@@ -2513,11 +2514,10 @@ class modAgefodd extends DolibarrModules
 			'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
 			'type' => 'left',
 			'titre' => 'AgfMenuReportCommercial',
-			'leftmenu' => 'AgfMenuReportCommercial',
 			'url' => '/agefodd/report/report_commercial.php',
 			'langs' => 'agefodd@agefodd',
 			'position' => 900 + $r,
-			'enabled' => '$user->rights->agefodd->report',
+			'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report',
 			'perms' => '$user->rights->agefodd->report',
 			'target' => '',
 			'user' => 0
@@ -2528,11 +2528,24 @@ class modAgefodd extends DolibarrModules
 			'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
 			'type' => 'left',
 			'titre' => 'AgfMenuReportCAVentilated',
-			'leftmenu' => 'AgfMenuReportCAVentilated',
 			'url' => '/agefodd/report/report_ca_ventilated.php',
 			'langs' => 'agefodd@agefodd',
 			'position' => 900 + $r,
-			'enabled' => '$user->rights->agefodd->report',
+			'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report',
+			'perms' => '$user->rights->agefodd->report',
+			'target' => '',
+			'user' => 0
+		);
+
+		$r ++;
+		$this->menu [$r] = array (
+			'fk_menu' => 'fk_mainmenu=agefodd,fk_leftmenu=AgfMenuReport',
+			'type' => 'left',
+			'titre' => 'AgfMenuReportTime',
+			'url' => '/agefodd/report/report_time.php',
+			'langs' => 'agefodd@agefodd',
+			'position' => 900 + $r,
+			'enabled' => '$conf->agefodd->enabled && $user->rights->agefodd->report && $conf->global->AGF_USE_REAL_HOURS',
 			'perms' => '$user->rights->agefodd->report',
 			'target' => '',
 			'user' => 0

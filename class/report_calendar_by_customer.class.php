@@ -324,7 +324,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 
 		$sql.= ' ORDER BY s.ref, sesscal.date_session, sesscal.calendrier_type DESC';
 
-		dol_syslog(get_class($this) . "::fetch_all_session sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
@@ -442,7 +442,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_all_session " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__.' ERROR ' . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -555,8 +555,6 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 	        // Manage filter
 	        if (count($filter) > 0) {
 	            foreach ( $filter as $key => $value ) {
-
-
 	                if ($key=='sesscal.date_session') {
 	                    $str_cirteria = $this->outputlangs->transnoentities('AgfSessionDetail') . ' ';
 	                    if (array_key_exists('start', $value)) {

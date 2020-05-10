@@ -41,6 +41,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 	 * @param DoliDB $db handler
 	 */
 	public function __construct($db, $outputlangs) {
+
 		$outputlangs->load('agefodd@agefodd');
 		$outputlangs->load('bills');
 		$outputlangs->load("exports");
@@ -56,7 +57,48 @@ class ReportCAVentilated extends AgefoddExportExcel {
 				)
 		);
 
+		// Contruct header (column name)
 		$array_column_header = array ();
+
+		$array_column_header[0][1] = array (
+			'type' => 'text',
+			'title' => 'Numéro de facture'
+		);
+
+		$array_column_header[0][2] = array (
+			'type' => 'date',
+			'title'=> $outputlangs->transnoentities('DateInvoice')
+		);
+
+		$array_column_header[0][3] = array (
+			'type' => 'text',
+			'title'=> 'ID Session'
+		);
+
+		$array_column_header[0][4] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('Customer')
+		);
+
+		$array_column_header[0][5] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('AgfTypeRequester')
+		);
+
+		$array_column_header[0][6] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('AgfSessionInvoicedThirdparty')
+		);
+
+		$array_column_header[0][7] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('ParentCompany')
+		);
+
+		$array_column_header[0][8] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('SalesRepresentatives')
+		);
 
 		// Je laisse ça pour quand le client voudra filter par status des factures
 		$this->status_array=array(1=>$outputlangs->trans('BillShortStatusDraft'),2=>$outputlangs->trans('BillShortStatusPaid'), 3=>$outputlangs->trans('BillShortStatusNotPaid'));
@@ -228,51 +270,8 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			return $result;
 		}
 
-		// Contruct header (column name)
-		$array_column_header = array ();
-
-		$array_column_header[0][1] = array (
-				'type' => 'text',
-				'title' => 'Numéro de facture'
-		);
-
-		$array_column_header[0][2] = array (
-			'type' => 'date',
-			'title'=> $this->outputlangs->transnoentities('DateInvoice')
-		);
-
-		$array_column_header[0][3] = array (
-			'type' => 'text',
-			'title'=> 'ID Session'
-		);
-
-		$array_column_header[0][4] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('Customer')
-		);
-
-		$array_column_header[0][5] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('AgfTypeRequester')
-		);
-
-		$array_column_header[0][6] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('AgfSessionInvoicedThirdparty')
-		);
-
-		$array_column_header[0][7] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('ParentCompany')
-		);
-
-		$array_column_header[0][8] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('SalesRepresentatives')
-		);
-
 		// Récupérer les ref produits présentes dans le rapport pour ajouter des colonnes
-		$result = $this->fetch_columns($filter, $array_column_header); // pour récupérer tous les produits à présenter en colonne + 1 colonne pour les lignes libres
+		$result = $this->fetch_columns($filter); // pour récupérer tous les produits à présenter en colonne + 1 colonne pour les lignes libres
 		if ($result < 0) return $result;
 
 		$result = $this->fetch_ca($filter);
@@ -280,7 +279,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 
 		if ($result > 0) {
 
-			$this->setArrayColumnHeader($array_column_header);
+			$this->setArrayColumnHeader($this->array_column_header);
 
 			$result = $this->write_header();
 			if ($result < 0) {
@@ -291,13 +290,13 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			$line_to_output = $line_total = array ();
 			$line_total[1] = "Total HT";
 			for ($i = 2; $i < 9; $i++) $line_total[$i] = "";
-			$headercol = count($array_column_header[0]);
+			$headercol = count($this->array_column_header[0]);
 			for ($i = 9; $i < $headercol; $i++) $line_total[$i] = 0; // to avoid non-numeric warning
 
 			foreach ($this->Tfacture as $fac_id => $Tsession)
 			{
 				// reinit de la ligne à écrire
-				foreach ($array_column_header[0] as $k => $colsetup) $line_to_output[$k] = "";
+				foreach ($this->array_column_header[0] as $k => $colsetup) $line_to_output[$k] = "";
 
 				$facture = new Facture($this->db);
 				$ret = $facture->fetch($fac_id);
@@ -410,7 +409,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 							$line_to_output[$productKey] = $line->total_ht;
 						}
 
-						foreach ($array_column_header[0] as $k => $dummy)
+						foreach ($this->array_column_header[0] as $k => $dummy)
 						{
 							if ($k > 8) $line_total[$k] += floatval($line_to_output[$k]);
 						}
@@ -432,11 +431,16 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			return $result;
 		}
 
+		$result = $this->write_filter($filter);
+		if ($result < 0) {
+			return $result;
+		}
+
 		$this->close_file();
 		return 1;
 	}
 
-	public function fetch_columns($filter = array(), &$array_column_header)
+	public function fetch_columns($filter = array())
 	{
 		$this->productRefMap = array();
 
@@ -450,11 +454,11 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			$num = $this->db->num_rows($resql);
 			if ($num)
 			{
-				$index = count($array_column_header[0]);
+				$index = count($this->array_column_header[0])+1;
 				while ($obj = $this->db->fetch_object($resql))
 				{
 					$this->productRefMap[$obj->rowid] = $index;
-					$array_column_header[0][$index] = array(
+					$this->array_column_header[0][$index] = array(
 						'type' 	=> 'number',
 						'title' => $obj->ref
 					);
@@ -462,7 +466,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 				}
 				// pour les lignes libres
 				$this->productRefMap[null] = $index;
-				$array_column_header[0][$index] = array(
+				$this->array_column_header[0][$index] = array(
 					'type' 	=> 'number',
 					'title' => "Lignes libres"
 				);

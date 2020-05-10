@@ -18,7 +18,7 @@
  */
 
 /**
- * \file		/agefodd/report/report_ca.php
+ * \file		/agefodd/report/report_time.php
  * \brief		report part
  * (Agefodd).
  */
@@ -31,9 +31,7 @@ if (! $res)
 require_once ('../class/agsession.class.php');
 require_once ('../lib/agefodd.lib.php');
 require_once ('../class/html.formagefodd.class.php');
-require_once ('../class/agefodd_formateur.class.php');
-require_once ('../class/report_ca.class.php');
-require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
+require_once ('../class/report_time.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 
@@ -44,21 +42,12 @@ if (! $user->rights->agefodd->lire)
 $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 
-$search_year = GETPOST('search_year','int');
-$search_accounting_date = GETPOST('search_accounting_date');
-if(empty($search_accounting_date))  $search_accounting_date = 'invoice';
-$search_sale = GETPOST('search_sale', 'int');
+$caldt_st = dol_mktime(0, 0, 0, GETPOST('caldt_stmonth', 'int'), GETPOST('caldt_stday', 'int'), GETPOST('caldt_styear', 'int'));
+$caldt_end = dol_mktime(23, 59, 59, GETPOST('caldt_endmonth', 'int'), GETPOST('caldt_endday', 'int'), GETPOST('caldt_endyear', 'int'));
 $search_type_session = GETPOST("search_type_session", 'int');
-$search_parent = GETPOST('search_parent', 'int');
-if ($search_parent == - 1)
-	$search_parent = '';
-$search_soc_requester = GETPOST('search_soc_requester');
-$search_soc = GETPOST("search_soc");
-$search_invoice_status = GETPOST('search_invoice_status');
-$search_by_session = GETPOST('search_by_session');
+$search_session_status = GETPOST("search_session_status", 'array');
 
-//$ts_logistique = GETPOST('options_ts_logistique', 'int');
-//$search_session_status=GETPOST('search_session_status','array');
+$type_report = GETPOST("type_report", 'alpha');
 
 $modelexport = GETPOST('modelexport', 'alpha');
 $lang_id = GETPOST('lang_id');
@@ -75,8 +64,8 @@ $extracss = array (
 		'/agefodd/css/agefodd.css'
 );
 
-llxHeader('', $langs->trans('AgfMenuReportCA'), '', '', '', '', $extrajs, $extracss);
-$upload_dir = $conf->agefodd->dir_output . '/report/ca/';
+llxHeader('', $langs->trans('AgfMenuReportTime'), '', '', '', '', $extrajs, $extracss);
+$upload_dir = $conf->agefodd->dir_output . '/report/time/';
 
 $agf = new Agsession($db);
 
@@ -85,37 +74,18 @@ $formAgefodd = new FormAgefodd($db);
 $formother = new FormOther($db);
 $formfile = new FormFile($db);
 
-$filter = array ('accounting_date' => $search_accounting_date);
-
-if (! empty($search_year)) {
-	$filter['startyear'] = $search_year;
+$filter = array ();
+if (! empty($caldt_st)) {
+	$filter['secal.date_session']['start'] = $caldt_st;
 }
-if (! empty($search_sale)) {
-	$filter['sale.fk_user'] = $search_sale;
+if (! empty($caldt_end)) {
+	$filter['secal.date_session']['end'] = $caldt_end;
 }
 if ($search_type_session != '' && $search_type_session != - 1) {
 	$filter['s.type_session'] = $search_type_session;
 }
-if (! empty($search_parent)) {
-	$filter['so.parent|sorequester.parent'] = $search_parent;
-}
-if (! empty($search_soc)) {
-	$filter['so.nom'] = $search_soc;
-}
-if (! empty($search_soc_requester)) {
-	$filter['socrequester.nom'] = $search_soc_requester;
-}
-
-if (! empty($search_invoice_status)) {
-	$filter['invstatus'] = $search_invoice_status;
-}
-
-/*if (! empty($search_session_status) && count($search_session_status)>0) {
+if (! empty($search_session_status) && count($search_session_status)>0) {
 	$filter['s.status'] = $search_session_status;
-}*/
-
-if (! empty($search_by_session)) {
-	$filter['group_by_session'] = true;
 }
 
 /*
@@ -136,16 +106,15 @@ if ($action == 'builddoc') {
 
 		$outputlangs->load('agefodd@agefodd');
 
-		$report_ca = new ReportCA($db, $outputlangs);
+		$report_time = new ReportTime($db, $outputlangs);
+		$report_time->type_report=$type_report;
+		$file_sub_title=$report_time->getSubTitlFileName($filter);
+		$report_time->file = $upload_dir . 'reporttime-' . $file_sub_title . '.xlsx';
 
-		//$report_by_cust->file = $upload_dir . 'reportbycust-' . dol_print_date(dol_now(), 'dayhourlog') . '.xlsx';
-		$file_sub_title=$report_ca->getSubTitlFileName($filter);
-		$report_ca->file = $upload_dir . 'reportca-' . $file_sub_title . '.xlsx';
 
-
-		$result = $report_ca->write_file($filter);
+		$result = $report_time->write_file($filter);
 		if ($result < 0) {
-			setEventMessage($report_ca->error, 'errors');
+			setEventMessage($report_time->error, 'errors');
 		} elseif ($result == 0) {
 			setEventMessage($langs->trans("NoData"), 'warnings');
 		} else {
@@ -169,63 +138,30 @@ if ($action == 'builddoc') {
 	$action = '';
 }
 
-$report = new ReportCA($db, $langs);
+$report = new ReportTime($db, $langs);
 
-$head = agf_report_revenue_prepare_head(http_build_query($_REQUEST));
-dol_fiche_head($head, 'card', $langs->trans("AgfMenuReportCA"), 0, 'bill');
+$head = agf_report_time_prepare_head(http_build_query($_REQUEST));
+dol_fiche_head($head, 'card', $langs->trans("AgfMenuReportTime"), 0, 'bill');
 
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
 
 print '<table class="border" width="100%">';
 
-/*$extrafields = new ExtraFields($db);
-$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, true);
-if (is_array($extralabels) && key_exists('ts_logistique', $extralabels)) {
-	print '<tr>';
-	print '<td width="15%">' . $extralabels['ts_logistique'] . '</td>';
-	print '<td>' . $extrafields->showInputField('ts_logistique', $ts_logistique) . '</td>';
-	print '</tr>';
-}*/
 print '<tr>';
-print '<td>' . $langs->trans('Year').'</td>';
+print '<td>' . $langs->trans('AgfReportTimeTypeReport').'</td>';
 print '<td>';
-print $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 15, 0);
+print $form->selectarray('type_report', $report->TType_report, $type_report,0,);
 print '</td>';
 print '</tr>';
 
 print '<tr>';
-print '<td>' . $langs->trans('AgfReportCAInvoiceAccountingDate').'</td>';
+print '<td>' . $langs->trans('AgfReportTimeCalTime').'</td>';
 print '<td>';
-print $form->selectarray('search_accounting_date', $report->T_ACCOUNTING_DATE_CHOICES, $search_accounting_date, 0, 0, 0, '', 1);
+print $langs->trans('From').' ';
+print $form->selectDate($caldt_st, "caldt_st", 0,0,1);
+print $langs->trans('to').' ';
+print $form->selectDate($caldt_end, "caldt_end", 0,0,1);
 print '</td>';
-print '</tr>';
-
-print '<tr>';
-print '<td>' . $langs->trans('Company') . '</td>';
-print '<td><input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20"></td>';
-print '</tr>';
-
-print '<tr>';
-print '<td>' . $langs->trans('ParentCompany') . '</td>';
-$extrafields = new ExtraFields($db);
-$extrafields->fetch_name_optionals_label('thirdparty');
-if (is_array($extrafields->attributes['societe']) && array_key_exists('ts_maison',$extrafields->attributes['societe']['type'])) {
-
-	$filter='extra.ts_maison=1';
-} else {
-	$filter='';
-}
-print '<td>' . $form->select_company($search_parent, 'search_parent', $filter, 1) . '</td>';
-print '</tr>';
-
-print '<tr>';
-print '<td>' . $langs->trans('AgfTypeRequester') . '</td>';
-print '<td><input type="text" class="flat" name="search_soc_requester" value="' . $search_soc_requester . '" size="20"></td>';
-print '</tr>';
-
-print '<tr>';
-print '<td>' . $langs->trans('SalesRepresentatives') . '</td>';
-print '<td>' . $formother->select_salesrepresentatives($search_sale, 'search_sale', $user) . '</td>';
 print '</tr>';
 
 print '<tr>';
@@ -234,21 +170,9 @@ print '<td>' . $formAgefodd->select_type_session('search_type_session', $search_
 print '</tr>';
 
 print '<tr>';
-print '<td>' . $langs->trans('Status') . '</td>';
-$langs->load('bills');
-$report_ca_status = new ReportCA($db, $langs);
-print '<td>' . $formAgefodd->multiselectarray('search_invoice_status', $report_ca_status->status_array, $search_invoice_status);
-print '</tr>';
-
-print '<tr>';
-print '<td>' . $langs->trans('AgfReportCASessionDetail') . '</td>';
-print '<td><input type="checkbox" name="search_by_session" value="1"'.(! empty($search_by_session)?' checked':'').' /></td>';
-print '</tr>';
-
-/*print '<tr>';
 print '<td>' . $langs->trans('AgfStatusSession') . '</td>';
 print '<td>' . $formAgefodd->multiselect_session_status('search_session_status',$search_session_status,'t.active=1') . '</td>';
-print '</tr>';*/
+print '</tr>';
 
 print '</table>' . "\n";
 dol_fiche_end();
@@ -268,7 +192,7 @@ echo '<script type="text/javascript">
 								      this.href = this.href.replace(/export/,
 								         "agefodd");
 									  this.href =this.href.replace(/file=/,
-								         "file=/report/ca/")
+								         "file=/report/time/")
 								   });
                         });
                     });

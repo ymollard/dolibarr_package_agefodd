@@ -18,7 +18,7 @@
  */
 
 /**
- * \file		/agefodd/report/report_calendar_by_customer_help.php
+ * \file		/agefodd/report/report_ca_ventilated_help.php
  * \brief		report part
  * (Agefodd).
  */
@@ -29,6 +29,7 @@ if (! $res)
 	die("Include of main fails");
 
 require_once ('../lib/agefodd.lib.php');
+require_once ('../class/report_time.class.php');
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -39,51 +40,45 @@ $langs->load('agefodd@agefodd');
 $langs->load('bills');
 $langs->load("exports");
 
-llxHeader('', $langs->trans('AgfMenuReportCA'), '', '', '', '', $extrajs, $extracss);
+llxHeader('', $langs->trans('AgfMenuReportTime'), '', '', '', '', $extrajs, $extracss);
 
 
 /*
  * View
  */
 
-$head = agf_report_calendar_by_customer_prepare_head(implode('&amp;', $_REQUEST));
-dol_fiche_head($head, 'help', $langs->trans("AgfMenuReportByCustomer"), 0, 'bill');
+$head = agf_report_time_prepare_head(implode('&amp;', $_REQUEST));
+dol_fiche_head($head, 'help', $langs->trans("AgfMenuReportTime"), 0, 'bill');
 
 
-print '<h2>'.$langs->trans('AgfReportCAHelpAvailableFilters').'</h2>';
+print '<h2>'.$langs->trans('AgfReportTimeHelpAvailableFilters').'</h2>';
 
-$TFilters = array('Company', 'AgfRptSession');
+$TFilters = array('AgfReportTimeTypeReport', 'AgfReportTimeCalTime', 'Type', 'AgfStatusSession');
 
 print '<table class="centpercent">';
 
 foreach($TFilters as $filterKey) {
-	print '<tr><td class="titlefieldcreate">'.$langs->trans($filterKey).'</td><td>'.$langs->trans('AgfReportUserHelpCalendarFilter'.$filterKey).'</td></tr>';
+	print '<tr><td class="titlefieldcreate">'.$langs->trans($filterKey).'</td><td>'.$langs->trans('AgfReportTimeHelpFilter'.$filterKey).'</td></tr>';
 }
 
 print '</table>';
 
+print '<h2>'.$langs->trans('AgfReportTimeHelpReportStructure').'</h2>';
 
-
-print '<h2>'.$langs->trans('AgfReportUserHelpReportStructure').'</h2>';
-
-$imghelp = '<img  src="'.dol_buildpath('/agefodd/img/report_calendar_by_customer_help.png', 1).'"/>';
-
-$TExplainations = array(1 => 'LineExported', 2 =>'ParticipantList', 3 => 'modalites', 4 => 'DetailMois', 5 => 'Recap');
-$i = 1;
-
-print $imghelp;
-
-print '<fieldset><legend>'.$langs->trans('Legend').'</legend>';
-print '<table class="centpercent">';
-
-foreach($TExplainations as $i => $explaination) {
-	print '<tr>';
-	print '<td style="width:30px" valign="top" >'.$i.'</td><td>'.$langs->trans('AgfReportUserCalendarHelpExplaination'.$explaination).'</td></tr>';
-
+$rptTime = new ReportTime($db,$langs);
+$columnHeader=$rptTime->getArrayColumnHeader();
+if (is_array($columnHeader) && count($columnHeader)>0) {
+	foreach ($columnHeader as $typeReport=>$dataCol) {
+		print '<h3>'.$langs->trans($rptTime->TType_report[$typeReport]).'</h3>';
+		print '<ul>';
+		foreach ($dataCol as $colInfo) {
+			print '<li>' . $langs->trans($colInfo['title']) . '</li>';
+		}
+		print '</ul>';
+	}
 }
 
 print '</table>';
-print '</fieldset>';
 
 llxFooter();
 $db->close();

@@ -172,7 +172,7 @@ if ($action == 'builddoc') {
 
 $report = new ReportCAVentilated($db, $langs);
 
-$head = agf_revenue_ventilated_report_prepare_head();
+$head = agf_report_revenue_ventilated_prepare_head();
 dol_fiche_head($head, 'card', $langs->trans("AgfMenuReportCAVentilated"), 0, 'bill');
 
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
@@ -183,9 +183,9 @@ print '<tr>';
 print '<td>' . $langs->trans('DateInvoice').'</td>';
 print '<td>';
 print $langs->trans('From').' ';
-$form->select_date($date_start, "date_start", 0,0,1);
+print $form->selectDate($date_start, "date_start", 0,0,1);
 print $langs->trans('to').' ';
-$form->select_date($date_end, "date_end", 0,0,1);
+print $form->selectDate($date_end, "date_end", 0,0,1);
 print '</td>';
 print '</tr>';
 
@@ -234,18 +234,6 @@ print '<td>' . $langs->trans('SalesRepresentatives') . '</td>';
 $TabSales = getMultiSalesRepresentative();
 print '<td>' . $form->multiselectarray('search_sale', $TabSales, $search_sale) .'</td>';
 print '</tr>';
-
-//print '<tr>';
-//print '<td>' . $langs->trans('Type') . '</td>';
-//print '<td>' . $formAgefodd->select_type_session('search_type_session', $search_type_session, 1) . '</td>';
-//print '</tr>';
-
-//print '<tr>';
-//print '<td>' . $langs->trans('Status') . '</td>';
-//$langs->load('bills');
-//$report_ca_status = new ReportCA($db, $langs);
-//print '<td>' . $formAgefodd->multiselectarray('search_invoice_status', $report_ca_status->status_array, $search_invoice_status);
-//print '</tr>';
 
 print '</table>' . "\n";
 dol_fiche_end();
