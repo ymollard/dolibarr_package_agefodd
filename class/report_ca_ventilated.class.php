@@ -127,7 +127,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 				foreach ( $this->sheet_array as $keysheet => $sheet ) {
 
 					$this->workbook->setActiveSheetIndex($keysheet);
-
+					$this->row[$keysheet] ++;
 					foreach ( $filter as $key => $value ) {
 						if ($key == 'f.datef') {
 							if (isset($value['start'])) {
@@ -138,36 +138,46 @@ class ReportCAVentilated extends AgefoddExportExcel {
 							if (isset($value['end'])) {
 								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfExportTo'));
 								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], date('d-m-Y', $value['end']));
+								$this->row[$keysheet] ++;
 							}
 						} elseif ($key == 'so.nom') {
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('Company'));
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $value);
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'so.parent|sorequester.parent') {
-							require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
-							$socparent = new Societe($this->db);
-							$result = $socparent->fetch($value);
-							if ($result < 0) {
-								$this->error = $socparent->error;
-								return $result;
+							$socParent='';
+							foreach ($value as $parentSocid)
+							{
+								$socparent = new Societe($this->db);
+								$result = $socparent->fetch($parentSocid);
+								if ($result < 0) {
+									$this->error = $socparent->error;
+									return $result;
+								}
+								$socParent .= $socparent->name.',';
 							}
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('ParentCompany'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $socparent->name);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $socParent);
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'socrequester.nom') {
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfTypeRequester'));
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $value);
 							$this->row[$keysheet] ++;
-						} elseif ($key == 'sale.fk_user_com') {
+						} elseif ($key == 'sale.fk_user') {
 							require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
-							$user_salesman = new User($this->db);
-							$result = $user_salesman->fetch($value);
-							if ($result < 0) {
-								$this->error = $user_salesman->error;
-								return $result;
+							$salesMan='';
+							foreach ($value as $sale_id)
+							{
+								$user_salesman = new User($this->db);
+								$result = $user_salesman->fetch($sale_id);
+								if ($result < 0) {
+									$this->error = $user_salesman->error;
+									return $result;
+								}
+								$salesMan .= $user_salesman->getFullName($this->outputlangs).",";
 							}
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('SalesRepresentatives'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $user_salesman->getFullName($this->outputlangs));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $salesMan);
 							$this->row[$keysheet] ++;
 						}
 					}
@@ -406,7 +416,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 						}
 
 						//Total de ligne
-						$line_to_output[count($array_column_header[0])-1]=0;
+						$line_to_output[$headercol]=0;
 						// remplissage des colonnes produits
 						foreach ($facture->lines as $line)
 						{
@@ -417,7 +427,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 								$line_to_output[$productKey]=0;
 							}
 							$line_to_output[$productKey] += floatval($line->total_ht);
-							$line_to_output[count($array_column_header[0])-1] += floatval($line->total_ht);
+							$line_to_output[$headercol] += floatval($line->total_ht);
 						}
 
 						foreach ($this->array_column_header[0] as $k => $dummy)
