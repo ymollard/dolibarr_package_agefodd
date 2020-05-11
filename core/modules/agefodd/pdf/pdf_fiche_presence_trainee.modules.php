@@ -407,8 +407,12 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 			foreach ( $this->formateurs->lines as $trainer_line ) {
 				$this->pdf->SetXY($posX_trainer, $posY_trainer);
 				$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 7);
-				$this->str = strtoupper($trainer_line->lastname) . "\n" . ucfirst($trainer_line->firstname);
-				$this->pdf->MultiCell(0, 3, $this->outputlangs->convToOutputCharset($this->str), 'LR', "C", false, 1, $posX_trainer, $posY_trainer);
+				$this->str = strtoupper($trainer_line->lastname) . "<br>" . ucfirst($trainer_line->firstname);
+				$hauteur = dol_nboflines_bis($this->str, 50) * 4;
+				$largeurCell = $this->larg_col4/$nbForm;
+				if ($posX_trainer + $largeurCell > $this->espaceH_dispo) $largeurCell = $this->espaceH_dispo - $posX_trainer + $this->marge_droite;
+
+				$this->pdf->MultiCell($largeurCell, $hauteur, $this->outputlangs->convToOutputCharset($this->str), 'LR', "C", false, 1, $posX_trainer, $posY_trainer, true, 0, true);
 				// $w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y=''
 
 				$posY = $this->pdf->GetY();
