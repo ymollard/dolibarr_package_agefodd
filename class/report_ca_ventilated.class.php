@@ -634,7 +634,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			$res = $soc->fetch($socid);
 			if ($res > 0)
 			{
-				$ret = ($soc->code_client ? $soc->code_client.' - ' : '') . $soc->name;
+				$ret = $soc->name.($soc->code_client ? ' - '.$soc->code_client : '');
 			}
 		}
 
