@@ -77,25 +77,30 @@ class ReportCAVentilated extends AgefoddExportExcel {
 
 		$array_column_header[0][4] = array (
 			'type' => 'text',
-			'title'=> $outputlangs->transnoentities('Customer')
+			'title'=> $outputlangs->transnoentities('AgfLieu')
 		);
 
 		$array_column_header[0][5] = array (
 			'type' => 'text',
-			'title'=> $outputlangs->transnoentities('AgfTypeRequester')
+			'title'=> $outputlangs->transnoentities('Customer')
 		);
 
 		$array_column_header[0][6] = array (
 			'type' => 'text',
-			'title'=> $outputlangs->transnoentities('AgfSessionInvoicedThirdparty')
+			'title'=> $outputlangs->transnoentities('AgfTypeRequester')
 		);
 
 		$array_column_header[0][7] = array (
 			'type' => 'text',
-			'title'=> $outputlangs->transnoentities('ParentCompany')
+			'title'=> $outputlangs->transnoentities('AgfSessionInvoicedThirdparty')
 		);
 
 		$array_column_header[0][8] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('ParentCompany')
+		);
+
+		$array_column_header[0][9] = array (
 			'type' => 'text',
 			'title'=> $outputlangs->transnoentities('SalesRepresentatives')
 		);
@@ -124,12 +129,16 @@ class ReportCAVentilated extends AgefoddExportExcel {
 					$this->workbook->setActiveSheetIndex($keysheet);
 
 					foreach ( $filter as $key => $value ) {
-						if ($key == 'startyear') {
-							$str_cirteria = $this->outputlangs->transnoentities('Year') . ' ';
-							$str_criteria_value = $value;
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $str_cirteria);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $str_criteria_value);
-							$this->row[$keysheet] ++;
+						if ($key == 'f.datef') {
+							if (isset($value['start'])) {
+								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfExportFrom'));
+								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], date('d-m-Y', $value['start']));
+								$this->row[$keysheet] ++;
+							}
+							if (isset($value['end'])) {
+								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfExportTo'));
+								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], date('d-m-Y', $value['end']));
+							}
 						} elseif ($key == 'so.nom') {
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('Company'));
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $value);
@@ -159,15 +168,6 @@ class ReportCAVentilated extends AgefoddExportExcel {
 							}
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('SalesRepresentatives'));
 							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $user_salesman->getFullName($this->outputlangs));
-							$this->row[$keysheet] ++;
-						} elseif ($key == 'invstatus') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('Status'));
-							if (is_array($value) && count($value)>0) {
-								foreach($value as $key=>$invstatus) {
-									$invoice_status[]=$this->status_array_noentities[$invstatus];
-								}
-							}
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], implode(',', $invoice_status));
 							$this->row[$keysheet] ++;
 						}
 					}
@@ -320,6 +320,9 @@ class ReportCAVentilated extends AgefoddExportExcel {
 						// ID Session
 						$line_to_output[3] = $sessid;
 
+						// Lieu
+						$line_to_output[4] = $session->placecode;
+
 						// Client
 						$socclient = clone($facture->thirdparty);
 						$session->fetch_societe_per_session($sessid);
@@ -354,10 +357,10 @@ class ReportCAVentilated extends AgefoddExportExcel {
 								}
 							}
 						}
-						$line_to_output[4] = ($socclient->code_client ? $socclient->code_client.' - ' : '') . $socclient->name;
+						$line_to_output[5] = $socclient->name.($socclient->code_client ? ' - '. $socclient->code_client : '');
 
 						// Demandeur
-						$line_to_output[5] = "";
+						$line_to_output[6] = "";
 						$socrequester = new Societe($this->db);
 						if ($s_line->typeline == 'trainee_OPCA')
 						{
@@ -383,30 +386,38 @@ class ReportCAVentilated extends AgefoddExportExcel {
 							$socrequester->fetch($session->fk_soc_requester);
 						}
 
-						if ($socrequester->id) $line_to_output[5] = ($socrequester->code_client ? $socrequester->code_client.' - ' : '').$socrequester->name;
+						if ($socrequester->id) $line_to_output[6] = $socrequester->name.($socrequester->code_client ? ' - '. $socrequester->code_client : '');
 
 						// Payeur
-						$line_to_output[6] = ($facture->thirdparty->code_client ? $facture->thirdparty->code_client.' - ' : '') . $facture->thirdparty->name;
+						$line_to_output[7] = $facture->thirdparty->name.($facture->thirdparty->code_client ? ' - ' . $facture->thirdparty->code_client: '');
 
 						// Maison mère
-						$line_to_output[7] = $this->getParentName($socclient->parent);
+						$line_to_output[8] = $this->getParentName($socclient->parent);
 
 						// Commerciaux
-						$line_to_output[8] = "";
+						$line_to_output[9] = "";
 						$commArray = $socclient->getSalesRepresentatives($user);
 						if (!empty($commArray))
 						{
 							$tab = array();
 							foreach ($commArray as $commData) $tab[] = $commData['firstname'].' '.$commData['lastname'];
 
-							$line_to_output[8] .= implode(', ', $tab);
+							$line_to_output[9] .= implode(', ', $tab);
 						}
 
+						//Total de ligne
+						$line_to_output[count($array_column_header[0])-1]=0;
 						// remplissage des colonnes produits
 						foreach ($facture->lines as $line)
 						{
 							$productKey = $this->productRefMap[$line->fk_product];
-							$line_to_output[$productKey] = $line->total_ht;
+							if (!array_key_exists($productKey,$line_to_output)) {
+								$line_to_output[$productKey]=0;
+							} elseif(empty($line_to_output[$productKey])) {
+								$line_to_output[$productKey]=0;
+							}
+							$line_to_output[$productKey] += floatval($line->total_ht);
+							$line_to_output[count($array_column_header[0])-1] += floatval($line->total_ht);
 						}
 
 						foreach ($this->array_column_header[0] as $k => $dummy)
@@ -436,7 +447,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			return $result;
 		}
 
-		$this->close_file();
+		$this->close_file(0,0,0);
 		return 1;
 	}
 
@@ -469,6 +480,12 @@ class ReportCAVentilated extends AgefoddExportExcel {
 				$this->array_column_header[0][$index] = array(
 					'type' 	=> 'number',
 					'title' => "Lignes libres"
+				);
+				// pour les totaux de ligne
+
+				$this->array_column_header[0][$index+1] = array(
+					'type' 	=> 'number',
+					'title' => "Total"
 				);
 
 				return 1;
@@ -606,7 +623,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			$res = $soc->fetch($socid);
 			if ($res > 0)
 			{
-				$ret = ($soc->code_client ? $soc->code_client.' - ' : '') . $soc->name;
+				$ret = $soc->name.($soc->code_client ? ' - '.$soc->code_client : '');
 			}
 		}
 
