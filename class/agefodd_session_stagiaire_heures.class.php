@@ -55,6 +55,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
     public $mail_sended = 0;
     public $planned_absence = 0;
 
+    public $warning='';
+
 	/**
 	 * Constructor
 	 *
@@ -503,9 +505,9 @@ class Agefoddsessionstagiaireheures extends CommonObject
 
         $stagiaire = new Agefodd_session_stagiaire($db);
         $stagiaire->fetch_by_trainee($sessid, $traineeid);
-        if ($stagiaire->status_in_session == 3){
+        if ($stagiaire->status_in_session == Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT){
             return $dureeCalendrier;
-        } elseif ($stagiaire->status_in_session == 4) {
+        } else {
             $sql = 'SELECT SUM(heures) as total FROM '.MAIN_DB_PREFIX.$this->table_element;
             $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
             $sql .= ' AND fk_session = ' . $sessid;
@@ -622,8 +624,9 @@ class Agefoddsessionstagiaireheures extends CommonObject
 			}
 
 			$this->db->begin();
-			if (in_array($sessta->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_CANCELED))) {
+			if (in_array($sessta->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_CANCELED, Agefodd_session_stagiaire::STATUS_IN_SESSION_EXCUSED))) {
 				foreach ($this->lines as $creneaux) {
+
 					$res = $creneaux->delete($user);
 					if ($res < 0) {
 						$error++;
@@ -676,6 +679,72 @@ class Agefoddsessionstagiaireheures extends CommonObject
 				return 1;
 			}
 		}
+		return 0;
+	}
+
+	public function setStatusAccordingTime($user, $sessId = 0, $stagiaireId = 0) {
+
+		global $conf, $langs;
+
+		$error = 0;
+
+		if (!empty($conf->global->AGF_USE_REAL_HOURS)) {
+
+			$cal = new Agefodd_sesscalendar($this->db);
+			$res = $cal->fetch_all($sessId);
+			if ($res < 0) {
+				$this->errors[] = $cal->error;
+				$error++;
+			} else {
+
+				//Reset trainee status according time set
+
+				//Total time must have been done
+				foreach ($cal->lines as $creneauxCal) {
+					if ($creneauxCal->status==Agefodd_sesscalendar::STATUS_CONFIRMED || $creneauxCal->status==Agefodd_sesscalendar::STATUS_FINISH) {
+						$dureeCalendrier = ($creneauxCal->heuref - $creneauxCal->heured) / 3600;
+					}
+				}
+
+				$stagiaire = new Agefodd_session_stagiaire($this->db);
+				$res = $stagiaire->fetch_by_trainee($sessId, $stagiaireId);
+				if ($res < 0) {
+					$this->errors[] = $stagiaire->error;
+					$error++;
+				}
+				$orginStatut = $stagiaire->status_in_session;
+				$totalheures = $this->heures_stagiaire($sessId, $stagiaireId);
+				var_dump($dureeCalendrier, $totalheures);
+				if (( float )$dureeCalendrier == ( float )$totalheures) {
+					// stagiaire entièrement présent
+					$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT;
+				} elseif (!empty($totalheures)) {
+					// stagiaire partiellement présent
+					$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT;
+				} elseif (empty($totalheures)) {
+					//Not present
+					$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT;
+				}
+				if ($orginStatut != $stagiaire->status_in_session) {
+					$res = $stagiaire->update($user);
+					if ($res < 0) {
+						$this->errors[] = $stagiaire->error;
+						$error++;
+					}
+				}
+			}
+
+			if ($error) {
+				foreach ($this->errors as $errmsg) {
+					dol_syslog(get_class($this) . "::" . __METHOD__ . ' ' . $errmsg, LOG_ERR);
+					$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+				}
+				return -1 * $error;
+			} else {
+				return 1;
+			}
+		}
+		return 0;
 	}
 }
 

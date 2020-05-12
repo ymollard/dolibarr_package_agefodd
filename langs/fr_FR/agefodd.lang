@@ -1769,6 +1769,9 @@ AgfReportCAVentilatedHelpColPerProductRef=puis autant de colonnes par code produ
 AgfReportCAVentilatedHelpReportStructure=Structure du rapport
 AgfReportCAVentilatedHelp1= (1) : Montant total HT des lignes de facture associées à la session pour le produit/service de la colonne
 
+AgfTimeInfoStatusDraft=L'état du crénaux ne permet pas de saisir un temps
+AgfTimeInfoStatusFuture=Vous ne pouvez saisir un temps de présence dans le future
+
 
 
 
