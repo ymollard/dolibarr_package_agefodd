@@ -177,6 +177,9 @@ print load_fiche_titre($langs->trans("AgfReportBPFChaperF1"), '', 'object_action
 print '<hr>';
 print "<br>\n";
 print img_picto('', 'puce').' '.$langs->trans("AgfBPFExplanationChaperF1", $langs->transnoentities('AgfTraineeType'), $langs->transnoentities('TraineeSessionStatusPresent'), $langs->transnoentities('TraineeSessionStatusPartPresent'));
+if (!empty($conf->global->AGF_USE_REAL_HOURS)) {
+	print $langs->trans("AgfBPFExplanationChaperFRealTime");
+}
 print "<br>\n";
 print "<br>\n";
 print img_picto('', 'puce').' '.$langs->trans("AgfBPFF1a");
@@ -200,6 +203,9 @@ print load_fiche_titre($langs->trans("AgfReportBPFChaperF2"), '', 'object_action
 print '<hr>';
 print "<br>\n";
 print img_picto('', 'puce').' '.$langs->trans("AgfBPFExplanationChaperF2", $langs->transnoentities('TraineeSessionStatusPresent'), $langs->transnoentities('TraineeSessionStatusPartPresent'));
+if (!empty($conf->global->AGF_USE_REAL_HOURS)) {
+	print $langs->trans("AgfBPFExplanationChaperFRealTime");
+}
 print "<br>\n";
 print "<br>\n";
 print img_picto('', 'puce').' '.$langs->trans("AgfBPFF2a", $langs->transnoentities('TraineeSessionStatusPresent'), $langs->transnoentities('TraineeSessionStatusPartPresent'));
@@ -214,6 +220,9 @@ print load_fiche_titre($langs->trans("AgfReportBPFChaperF3"), '', 'object_action
 print '<hr>';
 print "<br>\n";
 print img_picto('', 'puce').' '.$langs->trans("AgfBPFExplanationChaperF3", $langs->transnoentities('TraineeSessionStatusPresent'), $langs->transnoentities('TraineeSessionStatusPartPresent'),$langs->transnoentities('AgfTrainingCategTblBPF'));
+if (!empty($conf->global->AGF_USE_REAL_HOURS)) {
+	print $langs->trans("AgfBPFExplanationChaperFRealTime");
+}
 print "<br>\n";
 print "<br>\n";
 
