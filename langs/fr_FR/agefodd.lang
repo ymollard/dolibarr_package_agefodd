@@ -1406,6 +1406,7 @@ AgfBPFF1d=Indicateur F - 1 : d<br> - les participants de type <strong>Contrats c
 AgfBPFF1e=Indicateur F - 1 : e<br> - Tous les autres
 AgfReportBPFChaperF2=F - 2. ACTIVITÉ EN PROPRE DE L’ORGANISME
 AgfBPFExplanationChaperF2=Le temps comptabilisé est issu des sessions au statut <strong> "réalisées" </strong> ou <strong> "en cours" </strong><br> - le calendrier de la session sert de base de calcul<br> - il <strong>n'y a pas</strong> de sous traitant défini sur la session<br> - le statut des participants dans les sessions doit être <strong> %s </strong> ou <strong> %s </strong>
+AgfBPFExplanationChaperFRealTime=<br>- les heures de <b>présences réélles</b> des participants sont comptabilisé
 AgfBPFF2a=Indicateur F - 2 : a<br> - il <strong>n'y a pas</strong> de "Pour le compte de" de définie sur les sessions
 AgfBPFF2b=Indicateur F - 2 : b<br> - il <strong>y a</strong> "Pour le compte de" de définie sur les sessions 
 AgfTrainingCategTblBPF=Agefodd - Catégorie de formation prestation
