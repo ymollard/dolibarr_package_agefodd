@@ -425,7 +425,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $sql .= " WHERE t.fk_session = " . $id;
 	    $sql .= " AND t.fk_stagiaire = " . $trainee;
 
-	    dol_syslog(get_class($this) . "::fetch_by_session", LOG_DEBUG);
+	    dol_syslog(get_class($this) . "::".__METHOD__ , LOG_DEBUG);
 	    $resql = $this->db->query($sql);
 
 	    if ($resql) {
@@ -453,7 +453,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        return 1;
 	    } else {
 	        $this->error = "Error " . $this->db->lasterror();
-	        dol_syslog(get_class($this) . "::fetch_by_session " . $this->error, LOG_ERR);
+	        dol_syslog(get_class($this) . "::".__METHOD__ . ' Error ' . $this->error, LOG_ERR);
 	        return - 1;
 	    }
 	}
@@ -590,6 +590,93 @@ class Agefoddsessionstagiaireheures extends CommonObject
 		$this->initAsSpecimenCommon();
 	}
 
+	/**
+	 * Set Real Time according trainee status
+	 *
+	 * @param     $user
+	 * @param int $sessId
+	 * @param int $stagiaireId
+	 * @return float|int
+	 * @throws Exception
+	 */
+	public function setRealTimeAccordingTraineeStatus($user, $sessId = 0, $stagiaireId = 0)
+	{
+		global $conf;
+
+		if (!empty($conf->global->AGF_USE_REAL_HOURS)) {
+
+			$error = 0;
+			$sessta = new Agefodd_session_stagiaire($this->db);
+			$res = $sessta->fetch_by_trainee($sessId, $stagiaireId);
+			if ($res < 0) {
+				$this->errors[] = $sessta->error;
+				$error++;
+			} elseif ($res == 0) {
+				return 0;
+			}
+
+			//Load all time input for this trainee in this session
+			$res = $this->fetch_all_by_session($sessId, $stagiaireId);
+			if ($res < 0) {
+				return -1;
+			}
+
+			$this->db->begin();
+			if (in_array($sessta->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_CANCELED))) {
+				foreach ($this->lines as $creneaux) {
+					$res = $creneaux->delete($user);
+					if ($res < 0) {
+						$error++;
+					}
+				}
+			} elseif ($sessta->status_in_session == Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT) {
+				//Time already input for this trainee in this session
+				$TCrenauxSta = array();
+				foreach ($this->lines as $creneauxSta) {
+					$TCrenauxSta[$creneauxSta->fk_calendrier] = $creneauxSta->fk_calendrier;
+				}
+
+				$cal = new Agefodd_sesscalendar($this->db);
+				$res = $cal->fetch_all($sessId);
+				if ($res < 0) {
+					$this->errors[] = $cal->error;
+					$error++;
+				} else {
+					foreach ($cal->lines as $creneauxCal) {
+						//We Compute, if real time trainee is not already input for this trainee we set it
+						if (!array_key_exists($creneauxCal->id, $TCrenauxSta) && ($creneauxCal->status==Agefodd_sesscalendar::STATUS_CONFIRMED || $creneauxCal->status==Agefodd_sesscalendar::STATUS_FINISH)) {
+							$new_heures = new self($this->db);
+							$new_heures->fk_stagiaire = $stagiaireId;
+							//$new_heures->nom_stagiaire = $creneaux->nom_stagiaire;
+							$new_heures->fk_user_author = $user->id;
+							$new_heures->fk_calendrier = $creneauxCal->id;
+							$new_heures->fk_session = $sessId;
+							$new_heures->heures = ($creneauxCal->heuref - $creneauxCal->heured) / 3600;
+							$new_heures->datec = dol_now();
+							$res = $new_heures->create($user);
+							if ($res < 0) {
+								$this->errors[] = $new_heures->error;
+								$error++;
+							}
+						}
+					}
+				}
+			}
+
+			// Commit or rollback
+			if ($error) {
+				foreach ($this->errors as $errmsg) {
+					dol_syslog(get_class($this) . "::" . __METHOD__ . ' ' . $errmsg, LOG_ERR);
+					$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+				}
+				$this->db->rollback();
+				return -1 * $error;
+			} else {
+				$this->db->commit();
+				return 1;
+			}
+		}
+	}
 }
 
 /**

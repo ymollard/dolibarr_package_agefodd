@@ -1480,7 +1480,7 @@ ErrUpdateHeures=Certaines heures stagiaires n'ont pas pu être mises à jour.<br
 AgfModifyTraineeHours=Modifier les heures de présence
 AgfSchedules=Créneaux horaires
 AgfSetReelHours=Veuillez saisir les temps de présence des participants partiellement présents
-AgfEditReelHours=Veuillez modifier les horaires de %s
+AgfEditReelHours=Veuillez préciser (si besoin) les horaires de présence réél de %s
 AgfDureeCard=Durée présentielle (heures)
 AgfDelaiSessionLevelEnd=Délai d'alerte (jours) par rapport à la fin de la session
 AgefoddRefFormationSessionId=Réf. formation (session)
@@ -1728,7 +1728,7 @@ AgfFichePresByTraineeTrainerTitle=Formateurs
 AgfFichePresByTraineeTraineeTitleM=Stagiaire
 
 #PLANNING TRAINEES
-AgfHoursP=Heures plannifiées
+AgfHoursP=Heures attribuées
 AgfHoursR=Heures réalisées
 AgfHoursRest=Heures restantes
 AgfAddScheduledHours=Durée ("-" pour enlever des heures)
