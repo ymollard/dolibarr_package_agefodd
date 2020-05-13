@@ -118,6 +118,17 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 				if ($result < 0) {
 					setEventMessage($heures->error, 'errors');
 				}
+				$result = $heures->setStatusAccordingTime($user, GETPOST('sessid', 'int'), $agfsta->fk_stagiaire);
+				if ($result < 0) {
+					setEventMessage($heures->error, 'errors');
+				} elseif($result<>$agfsta->status_in_session) {
+					$sta = new Agefodd_stagiaire($db);
+					$res = $sta->fetch($agfsta->fk_stagiaire);
+					if ($res < 0) {
+						setEventMessage($sta->error, 'errors');
+					}
+					setEventMessage($langs->trans('AgfStatusRecalculateWithRealTime',$sta->nom.' '.$sta->prenom), 'warnings');
+				}
 			}
 
 			$redirect = true;
@@ -280,10 +291,16 @@ if ($action == 'editrealhours') {
 					setEventMessage($agf->error, 'error');
 					break;
 				} elseif ($result) {
-					// édition d'heure existante
-					if ($agf->heures !== $heures) {
+					if ($heures=='') {
+						$res = $agf->delete($user);
+					} elseif ($agf->heures !== $heures) {
+						// édition d'heure existante
 						$agf->heures = ( float ) $heures;
-						$agf->update($user);
+						$res = $agf->update($user);
+					}
+					if ($res < 0) {
+						setEventMessage($agf->error, 'error');
+						break;
 					}
 				} else {
 					// création d'heure
@@ -291,7 +308,11 @@ if ($action == 'editrealhours') {
 					$agf->fk_calendrier = $creneaux;
 					$agf->fk_session = $id;
 					$agf->heures = ( float ) $heures;
-					$agf->create($user);
+					$res = $agf->create($user);
+					if ($res < 0) {
+						setEventMessage($agf->error, 'error');
+						break;
+					}
 				}
 			}
 			$agf = new Agefoddsessionstagiaireheures($db);
@@ -414,27 +435,46 @@ if ($action == 'updatetraineestatus') {
 		if ($result < 0) {
 			setEventMessage($stagiaires->error, 'errors');
 		} else {
+			$part=false;
 			if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
 				$result = $stagiaires->fetch_stagiaire_per_session($agf->id);
 				if ($result < 0) {
 					setEventMessage($stagiaires->error, 'errors');
 				} else {
 					foreach ($stagiaires->lines as $trainee) {
-						$heures = new Agefoddsessionstagiaireheures($db);
-						$result = $heures->setRealTimeAccordingTraineeStatus($user, $agf->id, $trainee->id);
-						if ($result < 0) {
-							setEventMessages($heures->error, 'errors');
-						}
-
-						if (!empty($conf->global->AGF_USE_REAL_HOURS) && $statusinsession == Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT) {
+						if ($statusinsession == Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT) {
 							setEventMessage($langs->trans('AgfEditReelHours', $trainee->nom . ' ' . $trainee->prenom), 'warnings');
+							$part=true;
+						} else {
+							$heures = new Agefoddsessionstagiaireheures($db);
+							$result = $heures->setRealTimeAccordingTraineeStatus($user, $agf->id, $trainee->id);
+							if ($result < 0) {
+								setEventMessages($heures->error, 'errors');
+							}
+
+							$result = $heures->setStatusAccordingTime($user, $agf->id, $trainee->id);
+							if ($result < 0) {
+								setEventMessage($heures->error, 'errors');
+							} elseif ($result <> $statusinsession) {
+								$sta = new Agefodd_stagiaire($db);
+								$res = $sta->fetch($trainee->id);
+								if ($res < 0) {
+									setEventMessage($sta->error, 'errors');
+								}
+								setEventMessage($langs->trans('AgfStatusRecalculateWithRealTime', $sta->nom . ' ' . $sta->prenom), 'warnings');
+							}
 						}
 					}
 				}
 			}
 
-			Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
-			exit();
+			if ($part) {
+				Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id . "&edithours=true");
+				exit();
+			} else {
+				Header("Location: " . $_SERVER['PHP_SELF'] . "?action=edit&id=" . $id);
+				exit();
+			}
 		}
 	}
 }
@@ -592,7 +632,7 @@ if (! empty($id)) {
 			$blocNumber = count($calendrier->lines);
 			$dureeCalendrier = 0;
 			foreach ( $calendrier->lines as $horaire ) {
-				if ($horaire->status==Agefodd_sesscalendar::STATUS_CONFIRMED || $horaire->status==Agefodd_sesscalendar::STATUS_FINISH) {
+				if (in_array($horaire->status,$calendrier->statusCountTime)) {
 					$dureeCalendrier += ($horaire->heuref - $horaire->heured) / 3600;
 				}
 			}
@@ -634,18 +674,15 @@ if (! empty($id)) {
 								$val = $agfssh->heures;
 							} else {
 								$val = $defaultvalue;
+								$warning = true;
 								if ($stagiaires->lines[$i]->status_in_session==Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT) {
-									$val=0;
+									$val='';
+									$warning = false;
 								}
-								if (in_array($stagiaires->lines[$i]->status_in_session, array(
-									Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT,
-									Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT
-								))) {
-									$warning = true;
-								}
+
 							}
 						} else {
-							$val = 0;
+							$val = '';
 						}
 
 						print '<td align="center">';
@@ -1090,13 +1127,32 @@ if (! empty($id)) {
 					if($agf->dated >= dol_now() && in_array($statuskey,$stagiaires->statusAvalaibleForFuture)) {
 						$optionStatus.= '<option value="'.$statuskey.'">'. $statuslabelshort.'</option>';
 					} elseif ($agf->dated <= dol_now() && in_array($statuskey,$stagiaires->statusAvalaibleForPast)) {
-						$optionStatus.= '<option value="'.$statuskey.'">'. $statuslabelshort.'</option>';
+						$optionStatus.= '<option value="'.$statuskey.'">'. $statuslabelshort;
+						$optionStatus.='</option>';
 					}
+
 				}
 				if (!empty($optionStatus)) {
-					print '<input type="submit" class="butAction" value="'.$langs->trans('AgfSetTrainneStatusTo').'"><select class="flat updatetraineestatus" name="statusinsession" id="statusinsession">';
+					print '<input type="submit" class="butAction" name="changestatusinsession" value="'.$langs->trans('AgfSetTrainneStatusTo').'">';
+					print '<select class="flat updatetraineestatus" name="statusinsession" id="statusinsession">';
 					print $optionStatus;
 					print '</select>';
+
+					if (!empty($stagiaires->statusDeleteTime) && ! empty($conf->global->AGF_USE_REAL_HOURS)) {
+						print '<div style="display:none" id="warningdelete">'.img_warning($langs->trans('AgfWarnTimeWillBeDelete')).$langs->trans('AgfWarnTimeWillBeDelete').'</div>';
+						print '<script type="text/javascript">
+								$(document).ready(function() {
+								    var stawarning = ' . json_encode($stagiaires->statusDeleteTime) . ';
+									$("#statusinsession").change(function() {
+										if (stawarning.indexOf(parseInt($(this).val()))!==-1) {
+											$("#warningdelete").show();
+										} else {
+											$("#warningdelete").hide();
+										}
+									});
+								});
+							</script>';
+					}
 				}
 				print '</form>';
 			}

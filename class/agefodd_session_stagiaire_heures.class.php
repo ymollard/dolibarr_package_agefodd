@@ -579,6 +579,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
 
 	/**
 	 * Set Real Time according trainee status
+	 * For not present or cancelled remove all time inputed
+	 * For present or patially present fill blanks with missing date
 	 *
 	 * @param     $user
 	 * @param int $sessId
@@ -609,7 +611,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 			}
 
 			$this->db->begin();
-			if (in_array($sessta->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_CANCELED, Agefodd_session_stagiaire::STATUS_IN_SESSION_EXCUSED))) {
+			if (in_array($sessta->status_in_session, $sessta->statusDeleteTime)) {
 				foreach ($this->lines as $creneaux) {
 
 					$res = $creneaux->delete($user);
@@ -632,7 +634,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 				} else {
 					foreach ($cal->lines as $creneauxCal) {
 						//We Compute, if real time trainee is not already input for this trainee we set it
-						if (!array_key_exists($creneauxCal->id, $TCrenauxSta) && ($creneauxCal->status==Agefodd_sesscalendar::STATUS_CONFIRMED || $creneauxCal->status==Agefodd_sesscalendar::STATUS_FINISH)) {
+						if (!array_key_exists($creneauxCal->id, $TCrenauxSta) && in_array($creneauxCal->status,$cal->statusCountTime)) {
 							$new_heures = new self($this->db);
 							$new_heures->fk_stagiaire = $stagiaireId;
 							//$new_heures->nom_stagiaire = $creneaux->nom_stagiaire;
@@ -667,6 +669,15 @@ class Agefoddsessionstagiaireheures extends CommonObject
 		return 0;
 	}
 
+	/**
+	 * According inputed time, set trainee status
+	 *
+	 * @param     $user
+	 * @param int $sessId
+	 * @param int $stagiaireId
+	 * @return float|int -1 if KO or status in session
+	 * @throws Exception
+	 */
 	public function setStatusAccordingTime($user, $sessId = 0, $stagiaireId = 0) {
 
 		global $conf, $langs;
@@ -687,7 +698,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 				//Total time must have been done
 				$dureeCalendrier=0;
 				foreach ($cal->lines as $creneauxCal) {
-					if ($creneauxCal->status==Agefodd_sesscalendar::STATUS_CONFIRMED || $creneauxCal->status==Agefodd_sesscalendar::STATUS_FINISH) {
+					if (in_array($creneauxCal->status,$cal->statusCountTime)) {
 						$dureeCalendrier += ($creneauxCal->heuref - $creneauxCal->heured) / 3600;
 					}
 				}
@@ -700,7 +711,6 @@ class Agefoddsessionstagiaireheures extends CommonObject
 				}
 				$orginStatut = $stagiaire->status_in_session;
 				$totalheures = $this->heures_stagiaire($sessId, $stagiaireId);
-				var_dump($dureeCalendrier, $totalheures);
 				if (( float )$dureeCalendrier == ( float )$totalheures) {
 					// stagiaire entièrement présent
 					$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT;
@@ -727,7 +737,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 				}
 				return -1 * $error;
 			} else {
-				return 1;
+				return $stagiaire->status_in_session;
 			}
 		}
 		return 0;

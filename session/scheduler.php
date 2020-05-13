@@ -131,12 +131,12 @@ $select_calendrier_status = $langs->trans('Status') . '&nbsp;' . $form->selectar
 
 ob_start();
 echo '<label>'.$langs->trans("DateActionStart").'</label> ';
-$form->select_date(null,'date_start',1,1,1,"action",1,1,0,0,'fulldaystart');
+$form->selectDate(null,'date_start',1,1,1,"action",1,1,0,0,'fulldaystart');
 $select_date_start = ob_get_clean();
 
 ob_start();
 echo '<label>'.$langs->trans("DateActionEnd").'</label> ';
-$form->select_date(null,'date_end',1,1,1,"action",1,1,0,0,'fulldayend');
+$form->selectDate(null,'date_end',1,1,1,"action",1,1,0,0,'fulldayend');
 $select_date_end = ob_get_clean();
 
 $html_participants = '';

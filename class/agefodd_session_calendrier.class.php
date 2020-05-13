@@ -53,6 +53,8 @@ class Agefodd_sesscalendar extends CommonObject{
 	const STATUS_MISSING = 2;
 	const STATUS_FINISH = 3;
 	const STATUS_CANCELED = -1;
+
+	public $statusCountTime =array();
 	/**
 	 * Constructor
 	 *
@@ -60,6 +62,9 @@ class Agefodd_sesscalendar extends CommonObject{
 	 */
 	public function __construct($db) {
 		$this->db = $db;
+
+		$this->statusCountTime = array(self::STATUS_CONFIRMED,self::STATUS_FINISH);
+
 		return 1;
 	}
 

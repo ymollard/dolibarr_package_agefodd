@@ -195,6 +195,7 @@ if($res > 0)
 {
 	foreach ($session_trainee->lines as $trainee)
     {
+	    $heureRTotal=0;
         $idTrainee_session = $trainee->stagerowid;
         $idtrainee = $trainee->id;
 

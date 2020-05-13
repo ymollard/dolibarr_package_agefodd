@@ -1771,7 +1771,8 @@ AgfReportCAVentilatedHelp1= (1) : Montant total HT des lignes de facture associ�
 
 AgfTimeInfoStatusDraft=L'état du crénaux ne permet pas de saisir un temps
 AgfTimeInfoStatusFuture=Vous ne pouvez saisir un temps de présence dans le future
-
+AgfStatusRecalculateWithRealTime=Le statut du participant %s à été recalculé/forcé en fonction des temps réels de présence/absence
+AgfWarnTimeWillBeDelete=Attention: les temps déja saisis vont être supprimer
 
 
 

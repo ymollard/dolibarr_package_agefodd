@@ -79,7 +79,8 @@ class Agefodd_session_stagiaire extends CommonObject {
 	public $hour_foad;
 
 	public $statusAvalaibleForPast = array();
-	public $statusAvalaibleForFuture =array();
+	public $statusAvalaibleForFuture = array();
+	public $statusDeleteTime = array();
 
 	/**
 	 * Constructor
@@ -121,6 +122,10 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$this->statusAvalaibleForFuture =array(self::STATUS_IN_SESSION_PROSPECT,
 		                                        self::STATUS_IN_SESSION_VERBAL_AGREEMENT,
 		                                        self::STATUS_IN_SESSION_CONFIRMED);
+
+		$this->statusDeleteTime =array (self::STATUS_IN_SESSION_NOT_PRESENT,
+		                               self::STATUS_IN_SESSION_CANCELED,
+		                               self::STATUS_IN_SESSION_EXCUSED);
 
 		return 1;
 	}
