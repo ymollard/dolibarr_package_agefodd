@@ -102,7 +102,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	 */
 	public function create($user, $notrigger = 0, $timeslottrainer = false)
 	{
-		global $conf;
+		global $conf, $langs;
 		$error = 0;
 
 		// Clean parameters
