@@ -493,32 +493,17 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 */
 	public function heures_stagiaire($sessid, $traineeid)
 	{
-	    global $db;
+        $sql = 'SELECT SUM(heures) as total FROM '.MAIN_DB_PREFIX.$this->table_element;
+        $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
+        $sql .= ' AND fk_session = ' . $sessid;
 
-        $calendrier = new Agefodd_sesscalendar($db);
-        $calendrier->fetch_all($sessid);
-
-        $dureeCalendrier = 0;
-        foreach ($calendrier->lines as $horaire){
-            $dureeCalendrier += ($horaire->heuref - $horaire->heured)/3600;
+        dol_syslog(get_class($this) . "::heures_stagiaire", LOG_DEBUG);
+        $resql = $this->db->query($sql);
+        if ($resql) {
+            $obj = $this->db->fetch_object($resql);
+            return (float)$obj->total;
         }
 
-        $stagiaire = new Agefodd_session_stagiaire($db);
-        $stagiaire->fetch_by_trainee($sessid, $traineeid);
-        if ($stagiaire->status_in_session == Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT){
-            return $dureeCalendrier;
-        } else {
-            $sql = 'SELECT SUM(heures) as total FROM '.MAIN_DB_PREFIX.$this->table_element;
-            $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
-            $sql .= ' AND fk_session = ' . $sessid;
-
-            dol_syslog(get_class($this) . "::heures_stagiaire", LOG_DEBUG);
-            $resql = $this->db->query($sql);
-            if ($resql) {
-                $obj = $this->db->fetch_object($resql);
-                return (float)$obj->total;
-            }
-        }
         return 0;
 
 	}
@@ -700,9 +685,10 @@ class Agefoddsessionstagiaireheures extends CommonObject
 				//Reset trainee status according time set
 
 				//Total time must have been done
+				$dureeCalendrier=0;
 				foreach ($cal->lines as $creneauxCal) {
 					if ($creneauxCal->status==Agefodd_sesscalendar::STATUS_CONFIRMED || $creneauxCal->status==Agefodd_sesscalendar::STATUS_FINISH) {
-						$dureeCalendrier = ($creneauxCal->heuref - $creneauxCal->heured) / 3600;
+						$dureeCalendrier += ($creneauxCal->heuref - $creneauxCal->heured) / 3600;
 					}
 				}
 

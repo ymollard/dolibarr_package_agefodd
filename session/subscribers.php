@@ -295,7 +295,7 @@ if ($action == 'editrealhours') {
 				}
 			}
 			$agf = new Agefoddsessionstagiaireheures($db);
-			$result = $agf->setStatusAccordingTime($id, $staId);
+			$result = $agf->setStatusAccordingTime($user, $id, $staId);
 			if ($result < 0) {
 				setEventMessage($agf->error, 'error');
 				break;
@@ -989,7 +989,7 @@ if (! empty($id)) {
 					if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
 						require_once ('../class/agefodd_session_stagiaire_heures.class.php');
 						$agfssh = new Agefoddsessionstagiaireheures($db);
-						print '<td>' . $langs->trans('AgfTraineeHours') . ' : ' . $agfssh->heures_stagiaire($id, $stagiaires->lines[$i]->id) . 'h</td>';
+						print '<td>' . $langs->trans('AgfTraineeHours') . ' : ' . $agfssh->heures_stagiaire($id, $stagiaires->lines[$i]->id) . '</td>';
 					}
 
 					print '<td>';

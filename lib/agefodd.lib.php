@@ -2128,6 +2128,9 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml = '', $shownav = 1,
 		if (!empty($object->datef)) {
 			$morehtmlref .= '<br>' . $langs->trans("AgfDateFin") . ' : ' . dol_print_date($object->datef, 'daytext');
 		}
+		if (!empty($object->datef)) {
+			$morehtmlref .= '<br>' . $langs->trans("AgfDuree") . ' : ' . $object->duree_session;
+		}
 		// var_dump($object);
 
 		$morehtmlref .= '</div>';

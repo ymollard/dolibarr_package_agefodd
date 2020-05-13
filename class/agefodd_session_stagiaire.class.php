@@ -1090,7 +1090,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				return img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4');
 			if ($statut == self::STATUS_IN_SESSION_TOTALLY_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6');
-			if ($statut == self::STATUS_IN_SESSION_TOTALLY_PRESENT)
+			if ($statut == self::STATUS_IN_SESSION_PARTIALLY_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7');
 			if ($statut == self::STATUS_IN_SESSION_NOT_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9');
@@ -1108,7 +1108,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				return img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4') . ' ' . $this->labelstatut[$statut];
 			if ($statut == self::STATUS_IN_SESSION_TOTALLY_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6') . ' ' . $this->labelstatut[$statut];
-			if ($statut == self::STATUS_IN_SESSION_TOTALLY_PRESENT)
+			if ($statut == self::STATUS_IN_SESSION_PARTIALLY_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7') . ' ' . $this->labelstatut[$statut];
 			if ($statut == self::STATUS_IN_SESSION_NOT_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9') . ' ' . $this->labelstatut[$statut];
