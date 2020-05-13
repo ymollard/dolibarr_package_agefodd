@@ -70,7 +70,7 @@ if ($id) {
 		$head = trainee_prepare_head($agf);
 
 		dol_fiche_head($head, 'sessionlist', $langs->trans("AgfStagiaireDetail"), 0, 'user');
-
+		dol_fiche_end();
 		dol_agefodd_banner_tab($agf, 'id');
 		print '<div class="underbanner clearboth"></div>';
 

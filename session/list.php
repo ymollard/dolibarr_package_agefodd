@@ -357,6 +357,7 @@ foreach ( $arrayfields as $colname => $fields ) {
 	}
 }
 // Extra fields
+
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
 	foreach ( $extrafields->attribute_label as $key => $val ) {
 		$arrayfields["ef." . $key] = array(
@@ -568,7 +569,10 @@ if ($training_view && ! empty($search_training_ref)) {
 	$head = training_prepare_head($agf);
 
 	dol_fiche_head($head, 'sessions', $langs->trans("AgfCatalogDetail"), 0, 'label');
+	dol_fiche_end();
+
 	dol_agefodd_banner_tab($agf, 'idforma');
+
 	print '<div class="underbanner clearboth"></div>';
 }
 
@@ -583,13 +587,17 @@ if (! empty($site_view)) {
 		$head = site_prepare_head($agf);
 
 		dol_fiche_head($head, 'sessions', $langs->trans("AgfSessPlace"), 0, 'address');
-
+		dol_fiche_end();
 		dol_agefodd_banner_tab($agf, 'site_view=1&search_site');
 		print '<div class="underbanner clearboth"></div>';
+
 	}
 }
 
 $agf = new Agsession($db);
+//Since dolibarr 11 extrafield is global so reload extrafield to avoid extrafeild for non agesession
+$extrafields = new ExtraFields($db);
+$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, true);
 
 // Count total nb of records
 $nbtotalofrecords = 0;
@@ -1290,13 +1298,13 @@ if ($resql != - 1) {
 			}
 
 			if (array_key_exists('AgfSheduleBillingState', $arrayfields) && ! empty($arrayfields['AgfSheduleBillingState']['checked'])) {
-			    
+
 			    $billed = Agefodd_sesscalendar::countBilledshedule($line->id);
 			    $total = Agefodd_sesscalendar::countTotalshedule($line->id);
-			    
+
 			    if (empty($total)) $roundedBilled = 0;
 			    else $roundedBilled = round($billed*100/$total);
-			    
+
 			    print '<td>';
 			    print displayProgress($roundedBilled, '', $billed."/".$total, '6em');
 			    print '</td>';

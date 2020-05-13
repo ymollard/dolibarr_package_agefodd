@@ -224,7 +224,8 @@ class FormAgefodd extends Form
 	 * @param string $excludeid est necessaire d'exclure une valeur de sortie
 	 * @return string select field
 	 */
-	public function select_action_session_adm($selectid = '', $htmlname = 'action_level', $excludeid = '') {
+	public function select_action_session_adm($selectid = '', $htmlname = 'action_level', $excludeid = '')
+	{
 		global $conf, $langs;
 
 		$sql = "SELECT";
@@ -237,7 +238,7 @@ class FormAgefodd extends Form
 		}
 		$sql .= " ORDER BY t.indice";
 
-		dol_syslog(get_class($this) . "::select_action_session_adm", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			$var = True;
@@ -260,7 +261,7 @@ class FormAgefodd extends Form
 			return '<select class="flat" style="width:300px" name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::select_action_session_adm " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__. ' Error' . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -274,7 +275,8 @@ class FormAgefodd extends Form
 	 * @param string $fk_training
 	 * @return string select field
 	 */
-	public function select_action_training_adm($selectid = '', $htmlname = 'action_level', $excludeid = '', $fk_training = 0) {
+	public function select_action_training_adm($selectid = '', $htmlname = 'action_level', $excludeid = '', $fk_training = 0)
+	{
 		global $conf, $langs;
 
 		$sqlwhere = array();
@@ -295,10 +297,10 @@ class FormAgefodd extends Form
 		}
 		$sql .= " ORDER BY t.indice";
 
-		dol_syslog(get_class($this) . "::select_action_training_adm", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
-			$var = True;
+			$var = true;
 			$num = $this->db->num_rows($result);
 			$i = 0;
 			$options = '<option value=""></option>' . "\n";
@@ -318,7 +320,7 @@ class FormAgefodd extends Form
 			return '<select class="flat" style="width:300px" name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::select_action_training_adm " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__. ' ' . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -393,8 +395,7 @@ class FormAgefodd extends Form
 				unset($placetmpselect);
 			}
 			// mode=1 means customers products
-			$filter = str_replace('FROM', 'TOREPLACE', $filter);
-			$urloption = 'htmlname=' . $htmlname . '&outjson=1&filter=' . $filter;
+			$urloption = 'htmlname=' . $htmlname . '&outjson=1&filter=';
 
 			print ajax_autocompleter($selectid, $htmlname, '../ajax/lieu.php', $urloption, $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT, 0, '');
 
@@ -497,7 +498,6 @@ class FormAgefodd extends Form
 				$selected_input_value = $traineetmpselect->nom . ' ' . $traineetmpselect->prenom;
 				unset($traineetmpselect);
 			}
-			// mode=1 means customers products
 			$filter = str_replace('FROM', 'TOREPLACE', $filter);
 			$urloption = 'htmlname=' . $htmlname . '&outjson=1&filter=' . $filter;
 
