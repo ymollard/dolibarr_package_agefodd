@@ -2024,7 +2024,7 @@ class FormAgefodd extends Form
 			$out .= '<option value=""></options>';
 
 		// TODO optimisation possible en stockant dans un attribut les codes lors d'un premier passage
-		$sql = 'SELECT code, label FROM ' . MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type WHERE active = 1 AND entity = ' . $conf->entity;
+		$sql = 'SELECT code, label FROM ' . MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type WHERE active = 1 AND entity IN (0,' . $conf->entity.')';
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			while ( $obj = $this->db->fetch_object($resql) ) {
