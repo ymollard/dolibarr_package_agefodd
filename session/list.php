@@ -616,6 +616,9 @@ if (! empty($site_view)) {
 }
 
 $agf = new Agsession($db);
+//Since dolibarr 11 extrafield is global so reload extrafield to avoid extrafeild for non agesession
+$extrafields = new ExtraFields($db);
+$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, true);
 
 // Count total nb of records
 $nbtotalofrecords = 0;
