@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -59,14 +59,6 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 	if ($ret > 0)
 	{
 		$outref = $object->ref_interne;
-		
-
-	//	$found = false;
-
-		
-
-		
-
 		$outjson = array('ref' => $outref);
 	}
 
@@ -93,22 +85,19 @@ else
 
 	$idplace = (! empty($match[0]) ? $match[0] : '');
 
-	if (GETPOST($htmlname,'alpha') == '' && (! $idplace || ! GETPOST($idplace,'alpha')))
+	if (GETPOST($htmlname,'alpha') == '' && (! $idplace || ! GETPOST($idplace, 'alpha')))
 	{
 		print json_encode(array());
 	    return;
 	}
-	if(!empty($filter)){
-		
-	}
 
 	// When used from jQuery, the search term is added as GET param "term".
-	$searchkey = (($idplace && GETPOST($idplace,'alpha')) ? GETPOST($idplace,'alpha') :  (GETPOST($htmlname, 'alpha') ? GETPOST($htmlname, 'alpha') : ''));
-	
+	$searchkey = (($idplace && GETPOST($idplace, 'alpha')) ? GETPOST($idplace, 'alpha') :  (GETPOST($htmlname, 'alpha') ? GETPOST($htmlname, 'alpha') : ''));
+
 	$form = new FormAgefodd($db);
-	
-	$arrayresult = $form->select_site_forma_liste("", $htmlname,   0, 0, array(),'',1,"(p.ref_interne LIKE '%$searchkey%') ".$filter);
-	
+
+	$arrayresult = $form->select_site_forma_liste("", $htmlname,   0, 0, array(), '', 1, "(p.ref_interne LIKE '%$searchkey%') ".$filter);
+
 	$db->close();
 
 	if ($outjson)
