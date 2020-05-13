@@ -542,9 +542,9 @@ class ActionsAgefodd
 
 										if ($r < 0) $error++;
 										else {
-											// TODO à faire évoluer, mais en l'état cela semble bien compliqué d'automatisé le statut du participant
-											if ($duree > 0 && !in_array($stagiaire->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT))) {
-												$stagiaires->setValueFrom('status_in_session', Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT, '', $stagiaire->stagerowid, 'int', '', 'none');
+											if ($duree > 0) {
+												$r = $stagiaires->setStatusAccordingTime($user,$agsession->id,$stagiaire->id);
+												if ($r < 0) $error++;
 											}
 										}
 									}
