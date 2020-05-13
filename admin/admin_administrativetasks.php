@@ -88,7 +88,7 @@ if ($action == 'sessionlevel_create') {
     } else {
         $result = $agf->create($user);
 
-        if ($result1 != 1) {
+        if ($result != 1) {
             setEventMessage($agf->error, 'errors');
         }
     }
@@ -98,7 +98,7 @@ if ($action == 'sessionlevel_update') {
     $agf = new Agefodd_session_admlevel($db);
 
     $id = GETPOST('id', 'int');
-    $parent_level = GETPOST('parent_level', 'int');
+    $parent_level = GETPOST('fk_parent_level', 'int');
 
     $result = $agf->fetch($id);
 
@@ -172,9 +172,6 @@ if ($action == 'sesslevel_remove' && $confirm == 'yes'){
  *  Admin Form
  *
  */
-
-
-
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 $formother=new FormOther($db);
@@ -193,8 +190,6 @@ dol_fiche_end(0);
 
 $admlevel = new Agefodd_session_admlevel($db);
 $result0 = $admlevel->fetch_all();
-
-
 
 $morehtmlright = '';
 print load_fiche_titre($langs->trans("AgfAdminSessionLevel"), $morehtmlright);
@@ -239,13 +234,13 @@ print '<script src="'.dol_buildpath('agefodd/js/jquery-sortable-lists.min.js',1)
 print '<link rel="stylesheet" href="'.dol_buildpath('agefodd/css/sortable.css',1).'" >';
 print '<div id="dialog-form-edit" >'._displayFormField($admlevel).'</div>';
 
-print '	
+print '
 <script type="text/javascript">
 $(function()
 {
 	var options = {
 		insertZone: 5, // This property defines the distance from the left, which determines if item will be inserted outside(before/after) or inside of another item.
-	
+
 		placeholderClass: \'agf-sortable-list__item--placeholder\',
 		// or like a jQuery css object
 		//placeholderCss: {\'background-color\': \'#ff8\'},
@@ -254,21 +249,20 @@ $(function()
 		//hintCss: {\'background-color\':\'#bbf\'},
 		onChange: function( cEl )
 		{
-			
+
 			$("#ajaxResults").html("");
-			
+
 			$.ajax({
-				url: "'.dol_buildpath('agefodd/scripts/interface.php?action=setAgefoddAdminAdmlevelHierarchy',1).'",
+				url: "'.dol_buildpath('agefodd/scripts/interface.php?action=setAgefoddAdminAdmlevelHierarchy', 1).'",
 				method: "POST",
 				data: {
 					\'items\' : $(\'#sortableLists\').sortableListsToHierarchy()
 				},
 				dataType: "json",
-				
+
 				// La fonction à apeller si la requête aboutie
 				success: function (data) {
 					// Loading data
-					console.log(data);
 					if(data.result > 0 ){
 					   // ok case
 					   $("#ajaxResults").html(\'<span class="badge badge-success">\' + data.msg + \'</span>\');
@@ -278,7 +272,7 @@ $(function()
 					   $("#ajaxResults").html(\'<span class="badge badge-danger">\' + data.errorMsg + \'</span>\');
 					}
 					else{
-					   // nothing to do ? 
+					   // nothing to do ?
 					}
 				},
 				// La fonction à appeler si la requête n\'a pas abouti
@@ -289,28 +283,11 @@ $(function()
 		},
 		complete: function( cEl )
 		{
-			 
-		   
-			
+
 		},
 		isAllowed: function( cEl, hint, target )
 		{
-			
 			return true;
-		
-			// Be carefull if you test some ul/ol elements here.
-			// Sometimes ul/ols are dynamically generated and so they have not some attributes as natural ul/ols.
-			// Be careful also if the hint is not visible. It has only display none so it is at the previouse place where it was before(excluding first moves before showing).
-//				if( target.data(\'module\') === \'c\' && cEl.data(\'module\') !== \'c\' )
-//				{
-//					hint.css(\'background-color\', \'#ff9999\');
-//					return false;
-//				}
-//				else
-//				{
-//					hint.css(\'background-color\', \'#99ff99\');
-//					return true;
-//				}
 		},
 		opener: {
 			active: true,
@@ -319,19 +296,17 @@ $(function()
 			open: \'<i class="fa fa-plus"></i>\',  // or \'fa-plus\',  // or\'./imgs/Add2.png\',
 			openerCss: {
 				\'display\': \'inline-block\',
-				//\'width\': \'18px\', \'height\': \'18px\',
 				\'float\': \'left\',
 				\'margin-left\': \'-35px\',
 				\'margin-right\': \'5px\',
-				//\'background-position\': \'center center\', \'background-repeat\': \'no-repeat\',
 				\'font-size\': \'1.1em\'
 			}
 		},
 		ignoreClass: \'clickable\',
-		
+
 		insertZonePlus: true,
 	};
-	
+
 
 	$(\'#sortableLists\').sortableLists( options );
 
@@ -342,17 +317,15 @@ $(function()
 	});
 
 
-	
+
 	var dialogBox = jQuery("#dialog-form-edit");
 	var width = $(window).width();
 	var height = $(window).height();
 	if(width > 700){ width = 700; }
 	if(height > 600){ height = 600; }
-	//console.log(height);
 	dialogBox.dialog({
 	autoOpen: false,
 	resizable: true,
-//		height: height,
 	width: width,
 	modal: true,
 	buttons: {
@@ -362,35 +335,28 @@ $(function()
 			}
 		}
 	});
-	
+
 	function popTrainingAdmFormDialog(id)
 	{
-		
 		var item = $("#item_" + id);
-		
 		dialogBox.dialog({
 		  title: $("#item_" + id).data("title")
 		});
-		
+
 		dialogBox.find( "input[name=\'id\']" ).val(id);
 		dialogBox.find( "input[name=\'intitule\']" ).val(item.data("title"));
 		dialogBox.find( "input[name=\'delai\']" ).val(item.data("alert"));
 		dialogBox.find( "input[name=\'delai_end\']" ).val(item.data("alert_end"));
-		
-		
+		dialogBox.find( "input[name=\'fk_parent_level\']" ).val(item.data("parent_level"));
+
 		dialogBox.dialog( "open" );
 	}
-
 });
-
 
 </script>';
 
-
 llxFooter();
 $db->close();
-
-
 
 /**
  * @param $admlevel Agefodd_session_admlevel
@@ -402,6 +368,7 @@ function _displayFormField($admlevel)
 	$outForm= '<form name="SessionLevel_update" action="' . $_SERVER['PHP_SELF'] . '" method="POST">' . "\n";
 	$outForm.= '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 	$outForm.= '<input type="hidden" name="id" value="' . $admlevel->id . '">' . "\n";
+	$outForm.= '<input type="hidden" name="fk_parent_level" value="' . $admlevel->fk_parent_level . '">' . "\n";
 	$outForm.= '<input type="hidden" name="action" value="sessionlevel_update">' . "\n";
 
 	// changed by JS
@@ -443,7 +410,7 @@ function _displaySortableNestedItems($TNested, $htmlId='', $open = true){
 			if(empty($object->id)) $object->id = $object->rowid;
 
 			$class = '';
-			if($open){
+			if($open) {
 				$class.= 'sortableListsClosed';
 			}
 
@@ -451,6 +418,7 @@ function _displaySortableNestedItems($TNested, $htmlId='', $open = true){
 			$out.= ' data-id="'.$object->id.'" ';
 			$out.= ' data-title="'.dol_escape_htmltag($object->intitule).'" ';
 			$out.= ' data-alert="'.dol_escape_htmltag($object->alerte).'" ';
+			$out.= ' data-parent_level="'.dol_escape_htmltag($object->fk_parent_level).'" ';
 			$out.= ' data-alert_end="'.dol_escape_htmltag($object->alerte_end).'" ';
 			$out.= '>';
 			$out.= '<div class="agf-sortable-list__item__title  move">';
