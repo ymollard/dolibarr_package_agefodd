@@ -747,7 +747,7 @@ if (!empty($conf->global->AGF_USE_REAL_HOURS)){
 
 			print '1,NOW(),NOW(),\'Fixtime\',0,0 FROM '.MAIN_DB_PREFIX.'agefodd_session as s
 			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire as sesssta ON sesssta.fk_session_agefodd=s.rowid
-			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier as secal ON secal.fk_agefodd_session=s.rowid AND secal.date_session BETWEEN \'2018-09-01\' AND \'2019-08-30\'
+			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier as secal ON secal.fk_agefodd_session=s.rowid AND secal.date_session
 			LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures as sth ON sth.fk_stagiaire=sesssta.fk_stagiaire AND sth.fk_calendrier=secal.rowid
 			WHERE sesssta.status_in_session IN ('.implode(',',$statusToTest).')
 			AND sth.rowid IS NULL;
