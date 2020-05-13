@@ -601,6 +601,14 @@ class modAgefodd extends DolibarrModules
 		$this->const[$r][5] = 0;
 		$r ++;
 
+		$this->const[$r][0] = "THIRDPARTY_SUGGEST_ALSO_ADDRESS_CREATION";
+		$this->const[$r][1] = "yesno";
+		$this->const[$r][2] = '1';
+		$this->const[$r][3] = 'Can create contact in same time as third party';
+		$this->const[$r][4] = 1;
+		$this->const[$r][5] = 0;
+		$r ++;
+
 		foreach ( array(
 				1,
 				2,
