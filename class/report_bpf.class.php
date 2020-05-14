@@ -1677,7 +1677,7 @@ function fetch_financial_d($filter = array()) {
 	public function createDefaultCategAffectConst() {
 		global $conf;
 
-		$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF\',2,\'\',NULL,1,\'agefodd\')';
+		$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',0,\'BPF\',2,\'\',NULL,1,\'agefodd\')';
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -1689,7 +1689,7 @@ function fetch_financial_d($filter = array()) {
 		}
 
 		if (! empty($parent)) {
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - OPCA\',2,\'\',NULL,1,\'agefodd\')';
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',' . $parent . ',\'BPF - OPCA\',2,\'\',NULL,1,\'agefodd\')';
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -1712,7 +1712,7 @@ function fetch_financial_d($filter = array()) {
 				}
 			}
 
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - Admnistration\',2,\'\',NULL,1,\'agefodd\')';
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',' . $parent . ',\'BPF - Admnistration\',2,\'\',NULL,1,\'agefodd\')';
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -1735,7 +1735,7 @@ function fetch_financial_d($filter = array()) {
 				}
 			}
 
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - FAF\',2,\'\',NULL,1,\'agefodd\')';
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',' . $parent . ',\'BPF - FAF\',2,\'\',NULL,1,\'agefodd\')';
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -1758,7 +1758,7 @@ function fetch_financial_d($filter = array()) {
 				}
 			}
 
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - Particulier\',2,\'\',NULL,1,\'agefodd\')';
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',' . $parent . ',\'BPF - Particulier\',2,\'\',NULL,1,\'agefodd\')';
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -1781,7 +1781,7 @@ function fetch_financial_d($filter = array()) {
 				}
 			}
 
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - Entreprise etrangere\',2,\'\',NULL,1,\'agefodd\')';
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',' . $parent . ',\'BPF - Entreprise etrangere\',2,\'\',NULL,1,\'agefodd\')';
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -1805,7 +1805,7 @@ function fetch_financial_d($filter = array()) {
 			}
 		}
 
-		$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF\',1,\'\',NULL,1,\'agefodd\')';
+		$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',0,\'BPF\',1,\'\',NULL,1,\'agefodd\')';
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -1817,7 +1817,7 @@ function fetch_financial_d($filter = array()) {
 		}
 
 		if (! empty($parent)) {
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - Prestataire\',1,\'\',NULL,1,\'agefodd\')';
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',' . $parent . ',\'BPF - Prestataire\',1,\'\',NULL,1,\'agefodd\')';
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -1841,7 +1841,7 @@ function fetch_financial_d($filter = array()) {
 			}
 		}
 
-		$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,0,\'BPF\',0,\'\',NULL,1,\'agefodd\')';
+		$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',0,\'BPF\',0,\'\',NULL,1,\'agefodd\')';
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -1853,7 +1853,7 @@ function fetch_financial_d($filter = array()) {
 		}
 
 		if (! empty($parent)) {
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - Produit Formation\',0,\'\',NULL,1,\'agefodd\')';
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',' . $parent . ',\'BPF - Produit Formation\',0,\'\',NULL,1,\'agefodd\')';
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -1876,7 +1876,7 @@ function fetch_financial_d($filter = array()) {
 				}
 			}
 
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - Outils pédagogiques\',0,\'\',NULL,1,\'agefodd\')';
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',' . $parent . ',\'BPF - Outils pédagogiques\',0,\'\',NULL,1,\'agefodd\')';
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -1899,7 +1899,7 @@ function fetch_financial_d($filter = array()) {
 				}
 			}
 
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - Frais Autre \',0,\'\',NULL,1,\'agefodd\')';
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',' . $parent . ',\'BPF - Frais Autre \',0,\'\',NULL,1,\'agefodd\')';
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -1922,7 +1922,7 @@ function fetch_financial_d($filter = array()) {
 				}
 			}
 
-			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES (1,' . $parent . ',\'BPF - Frais/honoraire prestataires\',0,\'\',NULL,1,\'agefodd\')';
+			$sql = ' INSERT INTO ' . MAIN_DB_PREFIX . 'categorie (entity,fk_parent,label,type,description,fk_soc,visible,import_key) VALUES ('.$conf->entity.',' . $parent . ',\'BPF - Frais/honoraire prestataires\',0,\'\',NULL,1,\'agefodd\')';
 			dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
