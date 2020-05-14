@@ -2191,7 +2191,8 @@ class ActionsAgefodd
 	 */
 	public function attachMoreFiles($parameters, &$object, &$action, $hookmanager) {
 		global $conf,$langs;
-		if ($conf->attachments->enabled && !empty($conf->global->ATTACHMENTS_INCLUDE_OBJECT_LINKED)) {
+		$documentToDealWith=array('Commande','Facture','Propal','FactureFournisseur','CommandeFournisseur');
+		if ($conf->attachments->enabled && !empty($conf->global->ATTACHMENTS_INCLUDE_OBJECT_LINKED) && in_array(get_class($object),$documentToDealWith)) {
             $langs->load('agefodd@agefodd');
 			dol_include_once('/agefodd/class/agsession.class.php');
 			$agf = new Agsession($this->db);
