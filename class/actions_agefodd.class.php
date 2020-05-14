@@ -543,7 +543,7 @@ class ActionsAgefodd
 										if ($r < 0) $error++;
 										else {
 											if ($duree > 0) {
-												$r = $stagiaires->setStatusAccordingTime($user,$agsession->id,$stagiaire->id);
+												$r = $agfssh->setStatusAccordingTime($user,$agsession->id,$stagiaire->id);
 												if ($r < 0) $error++;
 											}
 										}
@@ -1893,6 +1893,13 @@ class ActionsAgefodd
 		return $nbMailSend;
 	}
 
+	/**
+	 * @param $parameters
+	 * @param $object
+	 * @param $action
+	 * @param $hookmanager
+	 * @return int
+	 */
 	function addStatisticLine($parameters, &$object, &$action, $hookmanager)
 	{
 		global $langs;
