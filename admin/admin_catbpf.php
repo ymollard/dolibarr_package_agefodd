@@ -180,14 +180,14 @@ $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
 $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">' . $langs->trans("BackToModuleList") . '</a>';
-print_fiche_titre($langs->trans("AgefoddSetupDesc"), $linkback, 'setup');
+print load_fiche_titre($langs->trans("AgefoddSetupDesc"), $linkback, 'setup');
 
 // Configuration header
 $head = agefodd_admin_prepare_head();
 dol_fiche_head($head, 'catbpf', $langs->trans("Module103000Name"), 0, "agefodd@agefodd");
 
 
-print_titre($langs->trans("AgfAdmBPFCreateCategorie"));
+print load_fiche_titre($langs->trans("AgfAdmBPFCreateCategorie"));
 
 print '<table class="noborder" width="100%">';
 
@@ -200,7 +200,7 @@ print "</tr>\n";
 print '</table>';
 
 // Admin var of module
-print_titre($langs->trans("AgfAdmVar"));
+print load_fiche_titre($langs->trans("AgfAdmVar"));
 
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" enctype="multipart/form-data" >';
 print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
