@@ -176,11 +176,11 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 					foreach ( $agfsta->lines as $line ) {
 						if ($line->status_in_session !=6){
 							$this->line = $line;
-							$this->_pagebody();
+							$this->_pagebody($this->ref_object,$this->outputlangs);
 						}
 					}
 				} else {
-					$this->_pagefoot();
+					$this->_pagefoot($this->ref_object,$this->outputlangs);
 					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
@@ -236,7 +236,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 	 * \param outputlangs Object lang for output
 	 * \param $line Trainee object
 	 */
-	function _pagebody() {
+	function _pagebody($agf, $outputlangs) {
 		global $user, $langs, $conf, $mysoc;
 
 		// New page
@@ -292,7 +292,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 	 * \param outputlang Object lang for output
 	 * \remarks Need this->emetteur object
 	 */
-	function _pagefoot() {
+	function _pagefoot($object, $outputlangs) {
 		$this->pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$this->pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$this->pdf->SetAutoPageBreak(0);
