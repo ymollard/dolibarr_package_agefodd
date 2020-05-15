@@ -129,7 +129,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 * @param int $socid socid
 	 * @return int
 	 */
-	function write_file($agf, $outputlangs, $file, $socid)
+	function write_file($agf, $outputlangs, $file, $socid, $courrier)
 	{
 		global $user, $langs, $conf, $hookmanager;
 
