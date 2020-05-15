@@ -407,19 +407,22 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 
 
 		// Cachet et signature
-		$posY += 2;
-		$posX -= 2;
-		$this->pdf->SetXY($posX, $posY);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
-		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+		if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES))
+		{
+			$posY += 2;
+			$posX -= 2;
+			$this->pdf->SetXY($posX, $posY);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
+			$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		$this->pdf->SetXY($posX + 55, $posY);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($agf->datef);
-		$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+			$this->pdf->SetXY($posX + 55, $posY);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($agf->datef);
+			$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		$this->pdf->SetXY($posX + 92, $posY);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
-		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+			$this->pdf->SetXY($posX + 92, $posY);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
+			$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+		}
 
 		$posY = $this->pdf->GetY();
 
