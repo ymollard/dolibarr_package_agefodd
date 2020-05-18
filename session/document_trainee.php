@@ -51,6 +51,10 @@ $langs->load('orders');
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
+$hookmanager->initHooks(array(
+		'agefoddsessiondocumenttrainee'
+));
+
 $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
 $session_trainee_id = GETPOST('sessiontraineeid', 'int');

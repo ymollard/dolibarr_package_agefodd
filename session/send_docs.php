@@ -69,6 +69,8 @@ $form = new Form($db);
 $formmail = new FormMail($db);
 $formAgefodd = new FormAgefodd($db);
 
+$hookmanager->initHooks(array('agefodd_send_docs'));
+
 if (GETPOST('modelselected')) {
 	$action = GETPOST('pre_action');
 }
