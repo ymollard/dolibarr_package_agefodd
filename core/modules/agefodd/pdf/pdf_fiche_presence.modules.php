@@ -744,7 +744,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 * @return array
 	 *
 	 */
-	function printSessionSummary($posX, $posY, $opco_array = array())
+	function printSessionSummary($posX, $posY)
 	{
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
@@ -814,6 +814,38 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
 		$haut_col2 += $hauteur + 2;
 
+		//OPCO
+		$opco_array = $this->TOpco;
+		if(!empty($opco_array))
+		{
+			$posY = $this->pdf->GetY() + 2;
+			$this->pdf->SetXY($posX, $posY);
+			$str = $this->outputlangs->transnoentities('OPCO').' :';
+			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
+			$this->pdf->Cell($this->formation_widthcol3, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+			$i = 0;
+			$str = '';
+			foreach($opco_array as $opco_object){
+
+				if(!empty($opco_object->num_OPCA_file)) {
+
+					if($i != 0) $str .= ', ';
+
+					$str .= $opco_object->num_OPCA_file;
+				}
+				else $str .= '';
+
+				$i++;
+			}
+
+			$this->pdf->SetXY($posX + $this->formation_widthcol1 + 2, $posY);
+			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
+			$this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
+			$hauteur = dol_nboflines_bis($str, 50) * 4;
+			$haut_col2 += $hauteur;
+		}
+
 		// Lieu
 		$posY_col4 = $posYintitule;
 		$this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posYintitule);
@@ -851,36 +883,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
             $hauteur = dol_nboflines_bis($str, 50) * 4;
             $haut_col4 += $hauteur + 2;
             $posY_col4 += $hauteur + 2;
-        }
-
-        //OPCO
-        if(!empty($opco_array))
-        {
-            $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posY_col4);
-            $str = $this->outputlangs->transnoentities('OPCO');
-            $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
-            $this->pdf->Cell($this->formation_widthcol3, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-            $i = 0;
-            $str = '';
-            foreach($opco_array as $opco_object){
-
-                if(!empty($opco_object->num_OPCA_file)) {
-
-                    if($i != 0) $str .= ', ';
-
-                    $str .= $opco_object->num_OPCA_file;
-                }
-                else $str .= '';
-
-                $i++;
-            }
-
-            $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2 + $this->formation_widthcol3 + 2, $posY_col4);
-            $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
-            $this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
-            $hauteur = dol_nboflines_bis($str, 50) * 4;
-            $haut_col4 += $hauteur;
         }
 
 		// Cadre

@@ -1390,6 +1390,14 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AGF_FICHEPRES_SHOW_OPCO_NUMBERS") . '</td>';
+print '<td align="right">';
+print ajax_constantonoff('AGF_FICHEPRES_SHOW_OPCO_NUMBERS');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
 
 
 
