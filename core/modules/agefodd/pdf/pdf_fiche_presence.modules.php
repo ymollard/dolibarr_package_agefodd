@@ -608,6 +608,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			{
 				$this->pdf = $this->pdf->rollbackTransaction();
 				list($posX, $posY) = $this->printTraineeLine($line, $posX, $startPosY, $nbsta_index, $nbTimeSlots, $timeSlotWidth);
+				if ($nbsta_index == count($this->stagiaires->lines)) $this->printSignatureBloc($posX, $posY);
 			}
 			$nbsta_index++;
 		}
@@ -692,11 +693,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	{
 		global $conf;
 
-		$posX+= 2;
-
 		// Cachet et signature
 		if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES)) {
-			$posX -= 2;
 			$this->pdf->SetXY($posX, $posY);
 			$str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
 			$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
@@ -710,7 +708,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
 		}
-		$posY = $this->pdf->GetY();
+		$posY = $this->pdf->GetY() +2;
 
 		// Incrustation image tampon
 		if ($conf->global->AGF_INFO_TAMPON) {
