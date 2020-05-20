@@ -1739,3 +1739,4 @@ AgfErrorHoursPTraineeHoursSess=Impossible de dépasser le nombre d'heures total 
 
 AgfDetailHeure=Détails des heures
 AGF_HIDE_CACHET_FICHEPRES=Masquer la ligne qui précède le tampon sur les feuilles d'émargement
+AGF_FICHEPRES_SHOW_TIME_FOR_PAGE=Afficher le temps total des créneaux de la page dans les feuilles d'émargement

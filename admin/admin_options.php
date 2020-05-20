@@ -1382,6 +1382,14 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AGF_FICHEPRES_SHOW_TIME_FOR_PAGE") . '</td>';
+print '<td align="right">';
+print ajax_constantonoff('AGF_FICHEPRES_SHOW_TIME_FOR_PAGE');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
 
 
 

@@ -300,7 +300,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 				/**
 				 * *** Bloc formation ****
 				 */
-				$this->setSummaryTime($dates_array);
+				if (!empty($conf->global->AGF_FICHEPRES_SHOW_TIME_FOR_PAGE)) $this->setSummaryTime($dates_array);
 				list($posX, $posY) = $this->printSessionSummary($posX, $posY);
 
 				/**

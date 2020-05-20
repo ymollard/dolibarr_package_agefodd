@@ -280,7 +280,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			 * *** Bloc formation ****
 			 */
 
-            $this->setSummaryTime($dates_array); // durée total des créneaux de la page
+            if (!empty($conf->global->AGF_FICHEPRES_SHOW_TIME_FOR_PAGE)) $this->setSummaryTime($dates_array); // durée total des créneaux de la page
 			list($posX, $posY) = $this->printSessionSummary($posX, $posY);
 
 			/**
