@@ -332,6 +332,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 */
 	function printTrainerBlockHeader($posX, $posY, $dates_array)
 	{
+		global $conf;
+
 		$this->pdf->SetXY($posX - 2, $posY - 2);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres12');
@@ -352,10 +354,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres18');
 		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
 
-		$this->pdf->SetXY($posX + $this->trainer_widthcol1, $posY + 3);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 7);
-		$str = $this->outputlangs->transnoentities('AgfPDFFichePres13');
-		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+		if (empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER))
+		{
+			$this->pdf->SetXY($posX + $this->trainer_widthcol1, $posY + 3);
+			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 7);
+			$str = $this->outputlangs->transnoentities('AgfPDFFichePres13');
+			$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+		}
 		$posY += $this->h_ligne;
 
 		// Date
@@ -487,10 +492,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres18');
 		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
 
-		$this->pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2, $posY + 3);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 7);
-		$str = $this->outputlangs->transnoentities('AgfPDFFichePres19');
-		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+		if (empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER))
+		{
+			$this->pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2, $posY + 3);
+			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 7);
+			$str = $this->outputlangs->transnoentities('AgfPDFFichePres19');
+			$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+		}
 		$posY += $this->h_ligne;
 
 		// Date

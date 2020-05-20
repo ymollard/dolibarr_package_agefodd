@@ -115,7 +115,7 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 	 * file		Name of file to generate
 	 * \return int 1=ok, 0=ko
 	 */
-	function write_file($agf, $outputlangs, $file, $socid, $courrier) {
+	function write_file($agf, $outputlangs, $file, $socid, $courrier = '') {
 		global $user, $langs, $conf, $mysoc;
 
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
@@ -206,7 +206,7 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 	 * \param showaddress 0=no, 1=yes
 	 * \param outputlangs		Object lang for output
 	 */
-	function _pagebody($agf, $showaddress = 1, $outputlangs) {
+	function _pagebody($agf, $outputlangs) {
 		global $user, $langs, $conf, $mysoc;
 
 		// Set path to the background PDF File
@@ -263,10 +263,13 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres18');
 		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
 
-		$this->pdf->SetXY($posX + $larg_col1, $posY + 3);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 7);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres13');
-		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
+		if (empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER))
+		{
+			$this->pdf->SetXY($posX + $larg_col1, $posY + 3);
+			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 7);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres13');
+			$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
+		}
 		$posY += $h_ligne;
 
 		//Date
@@ -358,10 +361,13 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres18');
 		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
 
-		$this->pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY + 3);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 7);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres19');
-		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
+		if (empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER))
+		{
+			$this->pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY + 3);
+			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 7);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres19');
+			$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($this->str), 'LR', 2, "C", 0);
+		}
 		$posY += $h_ligne;
 
 		// Date
@@ -441,31 +447,6 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 			$this->pdf->AliasNbPages();
 		}
 	}
-
-	/**
-	 * \brief Show header of page
-	 * \param pdf Object PDF
-	 * \param object Object invoice
-	 * \param showaddress 0=no, 1=yes
-	 * \param outputlangs		Object lang for output
-	 */
-//	function _pagehead($object, $showaddress = 1, $outputlangs) {
-//		global $conf, $langs;
-//
-//		$this->outputlangs->load("main");
-//
-//		// Fill header with background color
-//		$this->pdf->SetFillColor($this->colorheaderBg[0], $this->colorheaderBg[1], $this->colorheaderBg[2]);
-//		$this->pdf->MultiCell($this->page_largeur, 40, '', 0, 'L', true, 1, 0, 0);
-//
-//
-//		pdf_pagehead($this->pdf, $this->outputlangs, $this->page_hauteur);
-//
-//		$posX = $this->pdf->GetX();
-//		$posY = $this->pdf->GetY();
-//
-//		return array($posX, $posY);
-//	}
 
 	/**
 	 * \brief		Show footer of page

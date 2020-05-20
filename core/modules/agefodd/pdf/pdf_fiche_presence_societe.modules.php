@@ -123,7 +123,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 	 * @param int $socid socid
 	 * @return int
 	 */
-	function write_file($agf, $outputlangs, $file, $socid)
+	function write_file($agf, $outputlangs, $file, $socid, $courrier = '')
 	{
 		global $user, $langs, $conf, $hookmanager;
 
@@ -218,7 +218,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 	 * @param Translate $outputlangs Object lang for output
 	 * @return void
 	 */
-	function _pagebody(&$agf, $outputlangs)
+	function _pagebody($agf, $outputlangs)
 	{
 		global $conf, $mysoc;
 
@@ -260,8 +260,8 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 		}
 
 		//On récupère l'id des sociétés des participants
-		$agfstaglobal = new Agefodd_session_stagiaire($this->db);
-		$resql = $agfstaglobal->fetch_stagiaire_per_session($this->pdf->ref_object->id);
+		$this->stagiaires = new Agefodd_session_stagiaire($this->db);
+		$resql = $this->stagiaires->fetch_stagiaire_per_session($this->pdf->ref_object->id);
 		$socstagiaires = array();
 
 		$TStagiaireStatusToExclude = array();
@@ -270,7 +270,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 			$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
 		}
 
-		foreach ($agfstaglobal->lines as $line) {
+		foreach ($this->stagiaires->lines as $line) {
 			if (! empty($TStagiaireStatusToExclude) && in_array($line->status_in_session, $TStagiaireStatusToExclude)) {
 				continue;
 			}
@@ -300,6 +300,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 				/**
 				 * *** Bloc formation ****
 				 */
+				$this->setSummaryTime($dates_array);
 				list($posX, $posY) = $this->printSessionSummary($posX, $posY);
 
 				/**
