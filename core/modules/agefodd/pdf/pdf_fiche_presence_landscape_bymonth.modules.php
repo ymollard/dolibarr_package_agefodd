@@ -232,6 +232,22 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			$this->dao->getEntities();
 		}
 
+		if (!empty($conf->global->AGF_FICHEPRES_SHOW_OPCO_NUMBERS))
+		{
+			$this->TOpco = array();
+			if (!empty($this->stagiaires->lines))
+			{
+				foreach ($this->stagiaires->lines as $line)
+				{
+					//OPCO du participant
+					$agf_opca = new Agefodd_opca($this->db);
+					$id_opca = $agf_opca->getOpcaForTraineeInSession($line->socid, $this->pdf->ref_object->id, $line->stagerowid);
+					if($id_opca)  $res = $agf_opca->fetch($id_opca);
+					if($res && !array_key_exists($agf_opca->num_OPCA_file, $this->TOpco)) $this->TOpco[$agf_opca->num_OPCA_file] = $agf_opca;
+				}
+			}
+		}
+
 		foreach ($this->datesByMonth as $monthYear => $TTSessionDate) {
 			foreach ($TTSessionDate as $dates_array) {
 				// New page

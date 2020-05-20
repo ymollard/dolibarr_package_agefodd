@@ -269,6 +269,22 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->stagiaires = new Agefodd_session_stagiaire($this->db);
 		$resql = $this->stagiaires->fetch_stagiaire_per_session($this->pdf->ref_object->id);
 
+		if (!empty($conf->global->AGF_FICHEPRES_SHOW_OPCO_NUMBERS))
+		{
+			$this->TOpco = array();
+			if (!empty($this->stagiaires->lines))
+			{
+				foreach ($this->stagiaires->lines as $line)
+				{
+					//OPCO du participant
+					$agf_opca = new Agefodd_opca($this->db);
+					$id_opca = $agf_opca->getOpcaForTraineeInSession($line->socid, $this->pdf->ref_object->id, $line->stagerowid);
+					if($id_opca)  $res = $agf_opca->fetch($id_opca);
+					if($res && !array_key_exists($agf_opca->num_OPCA_file, $this->TOpco)) $this->TOpco[$agf_opca->num_OPCA_file] = $agf_opca;
+				}
+			}
+		}
+
 		foreach ($session_hours as $key => $dates_array) {
 			// New page
 			$this->pdf->AddPage();
@@ -313,8 +329,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $agf);
 			}
 
-			// Cachet et signature
-			list($posX, $posY) = $this->printSignatureBloc($posX, $posY);
+//			// Cachet et signature
+//			list($posX, $posY) = $this->printSignatureBloc($posX, $posY);
 
 			// Pied de page
 			$this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
@@ -839,7 +855,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				$i++;
 			}
 
-			$this->pdf->SetXY($posX + $this->formation_widthcol1 + 2, $posY);
+			$this->pdf->SetXY($posX + $this->formation_widthcol1, $posY);
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 			$this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
 			$hauteur = dol_nboflines_bis($str, 50) * 4;
