@@ -77,7 +77,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 	 * @param int $socid
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function write_file($agf, $outputlangs, $file, $socid) {
+	function write_file($agf, $outputlangs, $file, $socid, $courrier) {
 		global $user, $langs, $conf, $mysoc;
 
 		$this->outputlangs = $outputlangs;
@@ -176,11 +176,11 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 					foreach ( $agfsta->lines as $line ) {
 						if ($line->status_in_session !=6){
 							$this->line = $line;
-							$this->_pagebody();
+							$this->_pagebody($this->ref_object,$this->outputlangs);
 						}
 					}
 				} else {
-					$this->_pagefoot();
+					$this->_pagefoot($this->ref_object,$this->outputlangs);
 					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
@@ -236,7 +236,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 	 * \param outputlangs Object lang for output
 	 * \param $line Trainee object
 	 */
-	function _pagebody() {
+	function _pagebody($agf, $outputlangs) {
 		global $user, $langs, $conf, $mysoc;
 
 		// New page
@@ -267,19 +267,22 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 
 		// Cachet et signature
-		$posY += 2;
-		$posX -= 2;
-		$this->pdf->SetXY($posX, $posY);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
-		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+		if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES))
+		{
+			$posY += 2;
+			$posX -= 2;
+			$this->pdf->SetXY($posX, $posY);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
+			$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		$this->pdf->SetXY($posX + 55, $posY);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($this->ref_object->datef);
-		$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+			$this->pdf->SetXY($posX + 55, $posY);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($this->ref_object->datef);
+			$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		$this->pdf->SetXY($posX + 92, $posY);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
-		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+			$this->pdf->SetXY($posX + 92, $posY);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
+			$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+		}
 
 		$posY = $this->pdf->GetY();
 
@@ -306,7 +309,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 	 * \param outputlang Object lang for output
 	 * \remarks Need this->emetteur object
 	 */
-	function _pagefoot($object) {
+	function _pagefoot($object, $outputlangs) {
 		$this->pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$this->pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$this->pdf->SetAutoPageBreak(0);
@@ -347,7 +350,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres26');
 		$this->pdf->Cell(0, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-		$posY += 4;
+		$posY += 5;
 
 		// Date
 		$this->pdf->SetXY($posX-2, $posY);
@@ -421,8 +424,12 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 			foreach ( $this->formateurs->lines as $trainer_line ) {
 				$this->pdf->SetXY($posX_trainer, $posY_trainer);
 				$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 7);
-				$this->str = strtoupper($trainer_line->lastname) . "\n" . ucfirst($trainer_line->firstname);
-				$this->pdf->MultiCell(0, 3, $this->outputlangs->convToOutputCharset($this->str), 'LR', "L", false, 1, $posX_trainer, $posY_trainer);
+				$this->str = strtoupper($trainer_line->lastname) . "<br>" . ucfirst($trainer_line->firstname);
+				$hauteur = dol_nboflines_bis($this->str, 50) * 4;
+				$largeurCell = $this->larg_col4/$nbForm;
+				if ($posX_trainer + $largeurCell > $this->espaceH_dispo) $largeurCell = $this->espaceH_dispo - $posX_trainer + $this->marge_droite;
+
+				$this->pdf->MultiCell($largeurCell, $hauteur, $this->outputlangs->convToOutputCharset($this->str), 'LR', "C", false, 1, $posX_trainer, $posY_trainer, true, 0, true);
 				// $w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y=''
 
 				$posY = $this->pdf->GetY();

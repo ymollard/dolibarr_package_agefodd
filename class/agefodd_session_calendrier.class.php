@@ -96,7 +96,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	public function create($user, $notrigger = 0, $timeslottrainer = false) {
-		global $conf;
+		global $conf, $langs;
 		$error = 0;
 
 		// Clean parameters

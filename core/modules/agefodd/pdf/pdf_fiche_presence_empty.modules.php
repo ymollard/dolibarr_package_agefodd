@@ -53,6 +53,8 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 	function __construct($db) {
 		global $conf, $langs, $mysoc;
 
+		parent::__construct($db);
+
 		$this->db = $db;
 		$this->name = "fiche_presence_empty";
 		$this->description = $langs->trans('AgfModPDFFichePres');
@@ -93,6 +95,17 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 		$this->formation_widthcol2 = 80;
 		$this->formation_widthcol3 = 27;
 		$this->formation_widthcol4 = 65;
+
+		$this->largeur_date_trainee = 18;
+		$this->largeur_date_trainer = 24;
+
+		$this->predefline=11;
+		if ($conf->global->AGF_INFO_TAMPON) {
+			$dir = $conf->agefodd->dir_output . '/images/';
+			$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+			if (file_exists($img_tampon))
+				$this->predefline=10;
+		}
 	}
 
 	/**
@@ -258,18 +271,17 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 
 		//Date
 		$this->str = '';
-		$largeur_date = 24;
-		for($y = 0; $y < 6; $y ++) {
+		for($y = 0; $y < $this->nbtimeslots; $y ++) {
 			// Jour
 			$this->pdf->SetXY($posX + $larg_col1 + (20 * $y), $posY);
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 8);
-			$this->pdf->SetXY($posX + $larg_col1 + ($largeur_date * $y) - ($largeur_date * ($same_day)), $posY);
-			$this->pdf->Cell($largeur_date * ($same_day + 1), 4, $this->outputlangs->convToOutputCharset($this->str), 1, 2, "C", $same_day);
+			$this->pdf->SetXY($posX + $larg_col1 + ($this->largeur_date_trainer * $y) - ($this->largeur_date_trainer * ($same_day)), $posY);
+			$this->pdf->Cell($this->largeur_date_trainer * ($same_day + 1), 4, $this->outputlangs->convToOutputCharset($this->str), 1, 2, "C", $same_day);
 
 			// horaires
-			$this->pdf->SetXY($posX + $larg_col1 + ($largeur_date * $y), $posY + 4);
+			$this->pdf->SetXY($posX + $larg_col1 + ($this->largeur_date_trainer * $y), $posY + 4);
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 7);
-			$this->pdf->Cell($largeur_date, 4, $this->outputlangs->convToOutputCharset($this->str), 1, 2, "C", 0);
+			$this->pdf->Cell($this->largeur_date_trainer, 4, $this->outputlangs->convToOutputCharset($this->str), 1, 2, "C", 0);
 		}
 		$posY = $this->pdf->GetY();
 
@@ -287,8 +299,8 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 			$this->pdf->MultiCell($larg_col1 + 2, $h_ligne, $this->outputlangs->convToOutputCharset($this->str), 1, "L", false, 1, '', '', true, 0, false, false, $h_ligne, 'M');
 
 
-			for($i = 0; $i < 5; $i ++) {
-				$this->pdf->Rect($posX + $larg_col1 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
+			for($i = 0; $i < $this->nbtimeslots; $i ++) {
+				$this->pdf->Rect($posX + $larg_col1 + $this->largeur_date_trainer * $i, $posY, $this->largeur_date_trainer, $h_ligne);
 			}
 
 			$posY = $this->pdf->GetY();
@@ -311,7 +323,7 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres15');
 		$this->pdf->Cell(0, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
-		$posY = $this->pdf->GetY() + 4;
+		$posY = $this->pdf->GetY() + 2;
 
 		$cadre_tableau = array (
 				$posX - 2,
@@ -354,18 +366,17 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 
 		// Date
 		$this->str = '';
-		$largeur_date = 18;
-		for($y = 0; $y < 6; $y ++) {
+		for($y = 0; $y < $this->nbtimeslots; $y ++) {
 			// Jour
 			$this->pdf->SetXY($posX + $larg_col1 + $larg_col2 + (20 * $y), $posY);
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 8);
-			$this->pdf->SetXY($posX + $larg_col1 + $larg_col2 + ($largeur_date * $y) - ($largeur_date * ($same_day)), $posY);
-			$this->pdf->Cell($largeur_date * ($same_day + 1), 4, $this->outputlangs->convToOutputCharset($this->str), 1, 2, "C", $same_day);
+			$this->pdf->SetXY($posX + $larg_col1 + $larg_col2 + ($this->largeur_date_trainee * $y) - ($this->largeur_date_trainee * ($same_day)), $posY);
+			$this->pdf->Cell($this->largeur_date_trainee * ($same_day + 1), 4, $this->outputlangs->convToOutputCharset($this->str), 1, 2, "C", $same_day);
 
 			// horaires
-			$this->pdf->SetXY($posX + $larg_col1 + $larg_col2 + ($largeur_date * $y), $posY + 4);
+			$this->pdf->SetXY($posX + $larg_col1 + $larg_col2 + ($this->largeur_date_trainee * $y), $posY + 4);
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 7);
-			$this->pdf->Cell($largeur_date, 4, $this->outputlangs->convToOutputCharset($this->str), 1, 2, "C", 0);
+			$this->pdf->Cell($this->largeur_date_trainee, 4, $this->outputlangs->convToOutputCharset($this->str), 1, 2, "C", 0);
 		}
 		$posY = $this->pdf->GetY();
 
@@ -373,15 +384,7 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 		$h_ligne = 8;
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 
-		$predefline=11;
-		if ($conf->global->AGF_INFO_TAMPON) {
-			$dir = $conf->agefodd->dir_output . '/images/';
-			$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-			if (file_exists($img_tampon))
-				$predefline=10;
-		}
-
-		for($y = 0; $y <= $predefline; $y ++) {
+		for($y = 0; $y < $this->predefline; $y ++) {
 			// Cadre
 			$this->pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $h_ligne);
 
@@ -395,8 +398,8 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 			$this->pdf->Cell($larg_col2, $h_ligne, $this->outputlangs->convToOutputCharset(''), 0, 2, "C", 0);
 
-			for($i = 0; $i < 5; $i ++) {
-				$this->pdf->Rect($posX + $larg_col1 + $larg_col2 + $largeur_date * $i, $posY, $largeur_date, $h_ligne);
+			for($i = 0; $i < $this->nbtimeslots; $i ++) {
+				$this->pdf->Rect($posX + $larg_col1 + $larg_col2 + $this->largeur_date_trainee * $i, $posY, $this->largeur_date_trainee, $h_ligne);
 			}
 			$posY = $this->pdf->GetY();
 		}
@@ -404,19 +407,22 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 
 
 		// Cachet et signature
-		$posY += 2;
-		$posX -= 2;
-		$this->pdf->SetXY($posX, $posY);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
-		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+		if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES))
+		{
+			$posY += 2;
+			$posX -= 2;
+			$this->pdf->SetXY($posX, $posY);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
+			$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		$this->pdf->SetXY($posX + 55, $posY);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($agf->datef);
-		$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+			$this->pdf->SetXY($posX + 55, $posY);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($agf->datef);
+			$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
 
-		$this->pdf->SetXY($posX + 92, $posY);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
-		$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+			$this->pdf->SetXY($posX + 92, $posY);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
+			$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($this->str), 0, 2, "L", 0);
+		}
 
 		$posY = $this->pdf->GetY();
 

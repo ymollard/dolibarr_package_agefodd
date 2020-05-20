@@ -146,10 +146,10 @@ if (! empty($conf->global->AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH)) {
 //Since 8.0 sall get parameters is sent with rapid search
 $search_by=GETPOST('search_by', 'alpha');
 if (!empty($search_by)) {
-    if ($search_by="search_id") {
-        $sall=GETPOST('sortorder', 'int');
+    if ($search_by=="search_id") {
+        $sall=GETPOST('sall', 'int');
     }else{
-        $sall=GETPOST('sortorder', 'alpha');
+        $sall=GETPOST('sall', 'alpha');
     }
 	if (!empty($sall)) {
 		${$search_by}=$sall;
@@ -618,6 +618,9 @@ if (! empty($site_view)) {
 }
 
 $agf = new Agsession($db);
+//Since dolibarr 11 extrafield is global so reload extrafield to avoid extrafeild for non agesession
+$extrafields = new ExtraFields($db);
+$extralabels = $extrafields->fetch_name_optionals_label($agf->table_element, true);
 
 // Count total nb of records
 $nbtotalofrecords = 0;

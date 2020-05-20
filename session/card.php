@@ -1461,8 +1461,12 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 								$fourninvoice = new FactureFournisseur($db);
 								$fourninvoice->fetch($objj->fk_element);
 								$agff = new Agsession($db);
-								$agff->fetch_all_by_order_invoice_propal('', '', '', '', '', '', '', $fourninvoice->id, '');
-								$cost_trainer_for_session += price2num($fourninvoice->total_ht / count($agff->lines), 'MT');
+								$res = $agff->fetch_all_by_order_invoice_propal('', '', '', '', '', '', '', $fourninvoice->id, '');
+								if ($res<0) {
+									setEventMessage($agff->error, 'errors');
+								} else {
+									$cost_trainer_for_session += price2num($fourninvoice->total_ht / count($agff->lines), 'MT');
+								}
 							}
 						}
 
