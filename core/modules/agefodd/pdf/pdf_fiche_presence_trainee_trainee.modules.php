@@ -332,8 +332,7 @@ class pdf_fiche_presence_trainee_trainee extends pdf_fiche_presence_landscape
 
         $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 
-//        $this->_tryToPrint('_showTrainerTableForPage', 1, array($TSessionDate));
-        $this->_showTrainerTableForPage($TSessionDate);
+        $this->_tryToPrint('_showTrainerTableForPage', 1, array($TSessionDate));
         $this->_tryToPrint('_showTraineeTableForPage', 1, array($TSessionDate));
     }
 
