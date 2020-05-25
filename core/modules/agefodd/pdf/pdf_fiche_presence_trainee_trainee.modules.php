@@ -365,8 +365,6 @@ class pdf_fiche_presence_trainee_trainee extends pdf_fiche_presence_landscape
             $trainerN++;
         }
         $this->pdf->SetY($this->pdf->GetY()+3);
-
-        return array($this->marge_gauche, $this->pdf->GetY());
     }
 
     /**
