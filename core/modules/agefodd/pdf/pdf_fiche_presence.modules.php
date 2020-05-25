@@ -329,9 +329,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $agf);
 			}
 
-//			// Cachet et signature
-//			list($posX, $posY) = $this->printSignatureBloc($posX, $posY);
-
 			// Pied de page
 			$this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
 			if (method_exists($this->pdf, 'AliasNbPages')) {
