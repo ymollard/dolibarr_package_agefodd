@@ -877,8 +877,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
-		$haut_col4 += $hauteur +5;
-        $posY_col4 += $hauteur +5;
+		$haut_col4 += $hauteur +2;
+        $posY_col4 += $hauteur +2;
 
         //Total heures des créneaux de la page
         $time = $this->totalSecondsSessCalendar;
