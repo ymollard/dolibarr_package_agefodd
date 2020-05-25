@@ -772,7 +772,7 @@ class pdf_fiche_presence_trainee_trainee extends pdf_fiche_presence_landscape
      * \param outputlang Object lang for output
      * \remarks Need this->emetteur object
      */
-    function _pagefoot() {
+    function _pagefoot($object, $outputlangs) {
         $this->pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
         $this->pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
         $this->pdf->SetAutoPageBreak(0);

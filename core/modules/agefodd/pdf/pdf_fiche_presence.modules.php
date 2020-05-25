@@ -885,7 +885,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
         if(!empty($time))
         {
             $this->pdf->SetXY($posX + $this->formation_widthcol1 + $this->formation_widthcol2, $posY_col4);
-            $str = $this->outputlangs->transnoentities('Nombre d\'heures');
+            $str = $this->outputlangs->transnoentities('Nombre d\'heures :');
             $this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
             $this->pdf->Cell($this->formation_widthcol3, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
 
