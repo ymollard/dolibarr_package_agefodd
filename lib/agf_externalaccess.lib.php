@@ -1275,7 +1275,6 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	$context = Context::getInstance();
 	if (!validateFormateur($context)) return '';
 
-
 	$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
 	$agefodd_sesscalendar->fetch_all($agsession->id);
 	$stagiaires = new Agefodd_session_stagiaire($db);
@@ -3450,7 +3449,6 @@ function getExternalAccessSendEmailContext(){
 function getExternalAccessSendEmailFrom($default){
     global $conf;
     $mail=$default;
-
     if(!empty($conf->global->AGF_EA_SEND_EMAIL_FROM))
     {
         $mail=$conf->global->AGF_EA_SEND_EMAIL_FROM;

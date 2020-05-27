@@ -1374,6 +1374,31 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AGF_HIDE_CACHET_FICHEPRES") . '</td>';
+print '<td align="right">';
+print ajax_constantonoff('AGF_HIDE_CACHET_FICHEPRES');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AGF_FICHEPRES_SHOW_TIME_FOR_PAGE") . '</td>';
+print '<td align="right">';
+print ajax_constantonoff('AGF_FICHEPRES_SHOW_TIME_FOR_PAGE');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AGF_FICHEPRES_SHOW_OPCO_NUMBERS") . '</td>';
+print '<td align="right">';
+print ajax_constantonoff('AGF_FICHEPRES_SHOW_OPCO_NUMBERS');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+
 
 
 print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';

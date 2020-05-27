@@ -65,6 +65,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		$this->name = "fiche_presence_trainee";
 
 		$this->height_for_footer = 20;
+
 	}
 
 	/**
@@ -248,6 +249,19 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		/**
 		 * *** Bloc formation ****
 		 */
+
+		if (!empty($conf->global->AGF_FICHEPRES_SHOW_OPCO_NUMBERS))
+		{
+			//OPCO du participant
+			$agf_opca = new Agefodd_opca($this->db);
+			$this->TOpco = array();
+			$id_opca = $agf_opca->getOpcaForTraineeInSession($this->line->socid, $this->ref_object->id, $this->line->stagerowid);
+			if($id_opca)  $res = $agf_opca->fetch($id_opca);
+			if($res) $this->TOpco[] = $agf_opca;
+		}
+
+		if (!empty($conf->global->AGF_FICHEPRES_SHOW_TIME_FOR_PAGE)) $this->setSummaryTime($this->dates->lines); // durée total des créneaux de la page
+
 		list($posX, $posY) = $this->printSessionSummary($posX, $posY);
 		list($posX, $posY) = $this->printDateBlockHeader($posX, $posY);
 		list($posX, $posY) = $this->printDateBlockLines($posX, $posY);
@@ -389,10 +403,14 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres18');
 		$this->pdf->Cell($this->larg_col3, 5, $this->outputlangs->convToOutputCharset($this->str), 'R', 2, "C", 0);
-		$this->pdf->SetXY($posX + $this->larg_col1 + $this->larg_col2, $posY + 3);
-		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 5);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres19');
-		$this->pdf->Cell($this->larg_col3, 5, $this->outputlangs->convToOutputCharset($this->str), 'R', 2, "C", 0);
+
+		if (empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER))
+		{
+			$this->pdf->SetXY($posX + $this->larg_col1 + $this->larg_col2, $posY + 3);
+			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 5);
+			$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres19');
+			$this->pdf->Cell($this->larg_col3, 5, $this->outputlangs->convToOutputCharset($this->str), 'R', 2, "C", 0);
+		}
 		$posY = $this->pdf->GetY();
 
 		// Trainer
@@ -401,9 +419,10 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres12'); // ."\n".$this->outputlangs->transnoentities('AgfPDFFichePres13');
 		$this->pdf->MultiCell(0, 2, $this->outputlangs->convToOutputCharset($this->str), 'TLR', "C");
 		$posY_trainer = $this->pdf->GetY();
+
 		$this->pdf->SetXY($posX + $this->larg_col1 + $this->larg_col2 + $this->larg_col3, $posY_trainer);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 5);
-		$this->str = $this->outputlangs->transnoentities('AgfPDFFichePres13'); // ."\n".$this->outputlangs->transnoentities('AgfPDFFichePres13');
+		$this->str = (empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER) ? $this->outputlangs->transnoentities('AgfPDFFichePres13') : "");
 		$this->pdf->MultiCell(0, 2, $this->outputlangs->convToOutputCharset($this->str), 'BLR', "C");
 
 		$posY_trainer = $this->pdf->GetY();

@@ -1481,7 +1481,7 @@ ErrUpdateHeures=Certaines heures stagiaires n'ont pas pu être mises à jour.<br
 AgfModifyTraineeHours=Modifier les heures de présence
 AgfSchedules=Créneaux horaires
 AgfSetReelHours=Veuillez saisir les temps de présence des participants partiellement présents
-AgfEditReelHours=Veuillez préciser (si besoin) les horaires de présence réél de %s
+AgfEditReelHours=Veuillez modifier les horaires de %s
 AgfDureeCard=Durée présentielle (heures)
 AgfDelaiSessionLevelEnd=Délai d'alerte (jours) par rapport à la fin de la session
 AgefoddRefFormationSessionId=Réf. formation (session)
@@ -1729,7 +1729,7 @@ AgfFichePresByTraineeTrainerTitle=Formateurs
 AgfFichePresByTraineeTraineeTitleM=Stagiaire
 
 #PLANNING TRAINEES
-AgfHoursP=Heures attribuées
+AgfHoursP=Heures plannifiées
 AgfHoursR=Heures réalisées
 AgfHoursRest=Heures restantes
 AgfAddScheduledHours=Durée ("-" pour enlever des heures)
@@ -1778,3 +1778,6 @@ AgfWarnTimeWillBeDelete=Attention: les temps déja saisis vont être supprimer
 
 
 
+AGF_HIDE_CACHET_FICHEPRES=Masquer la ligne qui précède le tampon sur les feuilles d'émargement
+AGF_FICHEPRES_SHOW_TIME_FOR_PAGE=Afficher le temps total des créneaux de la page dans les feuilles d'émargement
+AGF_FICHEPRES_SHOW_OPCO_NUMBERS=Afficher les numeros de dossier OPCO dans les feuilles d'émargement

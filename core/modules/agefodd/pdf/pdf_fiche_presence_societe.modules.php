@@ -123,7 +123,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 	 * @param int $socid socid
 	 * @return int
 	 */
-	function write_file($agf, $outputlangs, $file, $socid)
+	function write_file($agf, $outputlangs, $file, $socid, $courrier = '')
 	{
 		global $user, $langs, $conf, $hookmanager;
 
@@ -218,7 +218,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 	 * @param Translate $outputlangs Object lang for output
 	 * @return void
 	 */
-	function _pagebody(&$agf, $outputlangs)
+	function _pagebody($agf, $outputlangs)
 	{
 		global $conf, $mysoc;
 
@@ -260,8 +260,8 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 		}
 
 		//On récupère l'id des sociétés des participants
-		$agfstaglobal = new Agefodd_session_stagiaire($this->db);
-		$resql = $agfstaglobal->fetch_stagiaire_per_session($this->pdf->ref_object->id);
+		$this->stagiaires = new Agefodd_session_stagiaire($this->db);
+		$resql = $this->stagiaires->fetch_stagiaire_per_session($this->pdf->ref_object->id);
 		$socstagiaires = array();
 
 		$TStagiaireStatusToExclude = array();
@@ -270,7 +270,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 			$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
 		}
 
-		foreach ($agfstaglobal->lines as $line) {
+		foreach ($this->stagiaires->lines as $line) {
 			if (! empty($TStagiaireStatusToExclude) && in_array($line->status_in_session, $TStagiaireStatusToExclude)) {
 				continue;
 			}
@@ -291,6 +291,22 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 
 			$this->stagiaires->lines = $agfsta->lines;
 
+			if (!empty($conf->global->AGF_FICHEPRES_SHOW_OPCO_NUMBERS))
+			{
+				$this->TOpco = array();
+				if (!empty($this->stagiaires->lines))
+				{
+					foreach ($this->stagiaires->lines as $line)
+					{
+						//OPCO du participant
+						$agf_opca = new Agefodd_opca($this->db);
+						$id_opca = $agf_opca->getOpcaForTraineeInSession($line->socid, $this->pdf->ref_object->id, $line->stagerowid);
+						if($id_opca)  $res = $agf_opca->fetch($id_opca);
+						if($res && !array_key_exists($agf_opca->num_OPCA_file, $this->TOpco)) $this->TOpco[$agf_opca->num_OPCA_file] = $agf_opca;
+					}
+				}
+			}
+
 			foreach ($session_hours as $key => $dates_array) {
 				// New page
 				$this->pdf->AddPage();
@@ -300,6 +316,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 				/**
 				 * *** Bloc formation ****
 				 */
+				if (!empty($conf->global->AGF_FICHEPRES_SHOW_TIME_FOR_PAGE)) $this->setSummaryTime($dates_array);
 				list($posX, $posY) = $this->printSessionSummary($posX, $posY);
 
 				/**
@@ -331,36 +348,6 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 				{
 					list($posX, $posY) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
 					list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $this->pdf->ref_object);
-				}
-
-				// Cachet et signature
-				if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES))
-				{
-
-					$posY += 2;
-					$posX -= 2;
-					$this->pdf->SetXY($posX, $posY);
-					$str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
-					$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-					$this->pdf->SetXY($posX + 55, $posY);
-					$str = $this->outputlangs->transnoentities('AgfPDFFichePres21').dol_print_date($this->pdf->ref_object->datef);
-					$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-					$this->pdf->SetXY($posX + 92, $posY);
-					$str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
-					$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-				}
-
-				$posY = $this->pdf->GetY();
-
-				// Incrustation image tampon
-				if ($conf->global->AGF_INFO_TAMPON) {
-					$dir = $conf->agefodd->dir_output . '/images/';
-					$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-					if (file_exists($img_tampon))
-						$this->pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
 				}
 
 				// Pied de page
