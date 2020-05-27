@@ -369,7 +369,7 @@ class Agefodd_stagiaire extends CommonObject {
 					$sql .= ' AND (s.nom LIKE \'%' . $this->db->escape($value) . '%\' OR s.prenom LIKE \'%' . $this->db->escape($value) . '%\')';
 				} elseif ($key == 's.fk_socpeople' || $key == 's.fk_soc') {
 					$sql .= ' AND ' . $key . ' = ' . $this->db->escape($value) . '';
-				} elseif ($key != 's.tel1') {
+				} elseif ($key != 's.tel1' && $key != 's.tel2' ) {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				} elseif (strpos($key,'ef.')!==false){
 					$sql.= $value;
