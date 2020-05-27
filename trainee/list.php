@@ -54,6 +54,7 @@ $search_firstname = GETPOST("search_firstname");
 $search_civ = GETPOST("search_civ");
 $search_soc = GETPOST("search_soc");
 $search_tel = GETPOST("search_tel");
+$search_tel2 = GETPOST("search_tel2");
 $search_mail = GETPOST("search_mail");
 $search_namefirstname = GETPOST("search_namefirstname");
 
@@ -73,6 +74,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_civ = '';
 	$search_soc = '';
 	$search_tel = '';
+	$search_tel2 = '';
 	$search_mail = '';
 }
 
@@ -91,8 +93,9 @@ $arrayfields=array(
 		's.nom'			=>array('label'=>"AgfNomPrenom", 'checked'=>1),
 		'civ.code'			=>array('label'=>"AgfCivilite", 'checked'=>1),
 		'so.nom'			=>array('label'=>"Company", 'checked'=>1),
-		's.tel1'			=>array('Phone'=>"Company", 'checked'=>1),
-		's.mail'			=>array('Mail'=>"Company", 'checked'=>1),
+		's.tel1'			=>array('label'=>"Phone", 'checked'=>1),
+		's.tel2'			=>array('label'=>"Mobile", 'checked'=>1),
+		's.mail'			=>array('label'=>"Mail", 'checked'=>1),
 );
 
 // Extra fields
@@ -128,12 +131,17 @@ if (! empty($search_tel)) {
 	$filter ['s.tel1'] = $search_tel;
 	$option .= '&search_tel=' . $search_tel;
 }
+if (! empty($search_tel2)) {
+	$filter ['s.tel2'] = $search_tel2;
+	$option .= '&search_tel2=' . $search_tel2;
+}
 if (! empty($search_mail)) {
 	$filter ['s.mail'] = $search_mail;
+	$option .= '&search_mail=' . $search_mail;
 }
 if (! empty($search_namefirstname)) {
 	$filter ['naturalsearch'] = $search_namefirstname;
-	$option .= '&search_mail=' . $search_mail;
+	$option .= '&search_namefirstname=' . $search_namefirstname;
 }
 if (!empty($limit)) {
 	$option .= '&limit=' . $limit;
@@ -234,6 +242,12 @@ if ($result >= 0) {
 		print '</td>';
 	}
 
+	if (! empty($arrayfields['s.tel2']['checked'])) {
+		print '<td class="liste_titre">';
+		print '<input type="text" class="flat" name="search_tel2" value="' . $search_tel2 . '" size="10">';
+		print '</td>';
+	}
+
 	if (! empty($arrayfields['s.mail']['checked'])) {
 		print '<td class="liste_titre">';
 		print '<input type="text" class="flat" name="search_mail" value="' . $search_mail . '" size="20">';
@@ -313,6 +327,9 @@ if ($result >= 0) {
 	if (! empty($arrayfields['s.tel1']['checked'])) {
 		print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "s.tel1", "", $option, '', $sortfield, $sortorder);
 	}
+	if (! empty($arrayfields['s.tel2']['checked'])) {
+		print_liste_field_titre($langs->trans("Mobile"), $_SERVER ['PHP_SELF'], "s.tel2", "", $option, '', $sortfield, $sortorder);
+	}
 	if (! empty($arrayfields['s.mail']['checked'])) {
 		print_liste_field_titre($langs->trans("Mail"), $_SERVER ['PHP_SELF'], "s.mail", "", $option, '', $sortfield, $sortorder);
 	}
@@ -335,7 +352,7 @@ if ($result >= 0) {
 		}
 	}
 
-	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');
+	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"', $sortfield, $sortorder,'maxwidthsearch ');
 	print "</tr>\n";
 
 	$var = true;
@@ -372,6 +389,9 @@ if ($result >= 0) {
 		}
 		if (! empty($arrayfields['s.tel1']['checked'])) {
 			print '<td>' . dol_print_phone($line->tel1) . '</td>';
+		}
+		if (! empty($arrayfields['s.tel2']['checked'])) {
+			print '<td>' . dol_print_phone($line->tel2) . '</td>';
 		}
 		if (! empty($arrayfields['s.mail']['checked'])) {
 			print '<td>' . dol_print_email($line->mail, $line->rowid, $line->socid, 'AC_EMAIL', 25) . '</td>';

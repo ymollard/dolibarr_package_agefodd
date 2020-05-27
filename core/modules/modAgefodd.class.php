@@ -1293,6 +1293,8 @@ class modAgefodd extends DolibarrModules
 				'sta.prenom as traineefirstname' => 'AgfStaFirstname',
 				'sta.mail as traineemail' => 'AgfStaMail',
 				'sta.date_birth' => "DateToBirth",
+				'sta.tel1' => "Phone",
+				'sta.tel2' => "Mobile",
 				'sta.place_birth' => "AgfPlaceBirth",
 				'ssdicttype.intitule as statype' => 'AgfStagiaireModeFinancement',
 				'sosta.nom as traineecustomer' => 'Customer',
@@ -1314,6 +1316,8 @@ class modAgefodd extends DolibarrModules
 				's.ref'=>'Text',
 				's.rowid'=>'Text',
 				'sta.date_birth' => "Date",
+				'sta.tel1' => "Text",
+				'sta.tel2' => "Text",
 		);
 		$this->export_entities_array[$r] = array(
 				's.rowid' => "AgfSessionDetail",
@@ -1369,6 +1373,8 @@ class modAgefodd extends DolibarrModules
 				'sta.mail as traineemail' => 'AgfNbreParticipants',
 				'sta.date_birth' => "AgfNbreParticipants",
 				'sta.place_birth' => "AgfNbreParticipants",
+				'sta.tel1' => "AgfNbreParticipants",
+				'sta.tel2' => "AgfNbreParticipants",
 				'ssdicttype.intitule as statype' => 'AgfNbreParticipants',
 				'sosta.nom as traineecustomer' => 'AgfNbreParticipants',
 				's.is_opca as staisopca' => 'AgfNbreParticipants',
