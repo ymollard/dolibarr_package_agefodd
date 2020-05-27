@@ -111,6 +111,7 @@ AgfSendEmailTrainee=Formation
 AgfSendEmailTrainer=Formation
 PredefinedMailContentAgf_trainee=Bonjour<br/>__SIGNATURE__
 PredefinedMailContentAgf_trainer=Bonjour<br/>__SIGNATURE__
+PredefinedMailContentConvention=Bonjour<br/><br/>__SIGNATURE__
 PredefinedMailContentFiche_presence_trainee_trainee=Bonjour,<br/>Veuillez trouver ci-joint vos feuilles d'émargement pour la formation « __FORMINTITULE__ ».<br/><br/> __SIGNATURE__
 AgfConfirmDeleteTeacher=Souhaitez-vous vraiment supprimer ce formateur ?
 AgfNoObj=Aucun objectif pédagogique défini
