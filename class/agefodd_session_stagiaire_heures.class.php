@@ -55,6 +55,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
     public $mail_sended = 0;
     public $planned_absence = 0;
 
+    public $warning='';
+
 	/**
 	 * Constructor
 	 *
@@ -72,7 +74,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0)
+	{
 	    global $conf, $langs;
 	    $error = 0;
 
@@ -85,7 +88,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    if (isset($this->fk_session))
             $this->fk_session = trim($this->fk_session);
         if (isset($this->heures))
-            $this->heures = (float)$this->heures;
+            $this->heures = (float) $this->heures;
         if (isset($this->fk_user_author))
             $this->fk_user_author = trim($this->fk_user_author);
 
@@ -424,7 +427,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	    $sql .= " WHERE t.fk_session = " . $id;
 	    $sql .= " AND t.fk_stagiaire = " . $trainee;
 
-	    dol_syslog(get_class($this) . "::fetch_by_session", LOG_DEBUG);
+	    dol_syslog(get_class($this) . "::".__METHOD__ , LOG_DEBUG);
 	    $resql = $this->db->query($sql);
 
 	    if ($resql) {
@@ -452,7 +455,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	        return 1;
 	    } else {
 	        $this->error = "Error " . $this->db->lasterror();
-	        dol_syslog(get_class($this) . "::fetch_by_session " . $this->error, LOG_ERR);
+	        dol_syslog(get_class($this) . "::".__METHOD__ . ' Error ' . $this->error, LOG_ERR);
 	        return - 1;
 	    }
 	}
@@ -461,7 +464,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 * @param int $traineeid
 	 * @return float total hours spent in all session by the trainee
 	 */
-	public function heures_stagiaire_totales($traineeid){
+	public function heures_stagiaire_totales($traineeid)
+	{
 	    $trainee = (int) $traineeid;
 	    $sql = 'SELECT fk_session_agefodd as sessid FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire';
 	    $sql.= ' WHERE fk_stagiaire = ' . $trainee;
@@ -489,32 +493,17 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 */
 	public function heures_stagiaire($sessid, $traineeid)
 	{
-	    global $db;
+        $sql = 'SELECT SUM(heures) as total FROM '.MAIN_DB_PREFIX.$this->table_element;
+        $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
+        $sql .= ' AND fk_session = ' . $sessid;
 
-        $calendrier = new Agefodd_sesscalendar($db);
-        $calendrier->fetch_all($sessid);
-
-        $dureeCalendrier = 0;
-        foreach ($calendrier->lines as $horaire){
-            $dureeCalendrier += ($horaire->heuref - $horaire->heured)/3600;
+        dol_syslog(get_class($this) . "::heures_stagiaire", LOG_DEBUG);
+        $resql = $this->db->query($sql);
+        if ($resql) {
+            $obj = $this->db->fetch_object($resql);
+            return (float)$obj->total;
         }
 
-        $stagiaire = new Agefodd_session_stagiaire($db);
-        $stagiaire->fetch_by_trainee($sessid, $traineeid);
-        if ($stagiaire->status_in_session == 3){
-            return $dureeCalendrier;
-        } elseif ($stagiaire->status_in_session == 4) {
-            $sql = 'SELECT SUM(heures) as total FROM '.MAIN_DB_PREFIX.$this->table_element;
-            $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
-            $sql .= ' AND fk_session = ' . $sessid;
-
-            dol_syslog(get_class($this) . "::heures_stagiaire", LOG_DEBUG);
-            $resql = $this->db->query($sql);
-            if ($resql) {
-                $obj = $this->db->fetch_object($resql);
-                return (float)$obj->total;
-            }
-        }
         return 0;
 
 	}
@@ -527,22 +516,43 @@ class Agefoddsessionstagiaireheures extends CommonObject
 	 */
     public function fetch_heures_stagiaire_per_type($sessid, $traineeid)
     {
+    	global $conf;
 
-        $sql = 'SELECT SUM(h.heures) as heures, c.calendrier_type FROM '.MAIN_DB_PREFIX.$this->table_element.' h';
+	    dol_include_once('/agefodd/lib/agefodd.lib.php');
+	    dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+	    dol_include_once('/agefodd/class/agefodd_session_calendrier_formateur.class.php');
+
+        $sql = 'SELECT c.heured, c.heuref, h.heures, c.calendrier_type FROM '.MAIN_DB_PREFIX.$this->table_element.' h';
         $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier c ON h.fk_calendrier = c.rowid';
         $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
         $sql .= ' AND fk_session = ' . $sessid;
-	    $sql .= ' GROUP BY c.calendrier_type';
+	    $sql .= $this->db->order('c.calendrier_type');
 
         $resql = $this->db->query($sql);
 
         if ($resql) {
-
             $TRes = array();
+	        $calrem = new Agefodd_sesscalendar($this->db);
+	        $calrem->sessid=$sessid;
 
             while($obj = $this->db->fetch_object($resql))
             {
-                    $TRes[$obj->calendrier_type] = $obj->heures;
+	            $calrem->heured=$this->db->jdate($obj->heured);
+	            $calrem->heuref=$this->db->jdate($obj->heuref);
+
+	            $TTrainerCalendar = _getCalendrierFormateurFromCalendrier($calrem);
+
+	            if (is_array($TTrainerCalendar) && count($TTrainerCalendar)>0) {
+	            	foreach($TTrainerCalendar as $calItem) {
+	            		if($calItem->status==Agefoddsessionformateurcalendrier::STATUS_FINISH) {
+				            $TRes[$obj->calendrier_type][$calItem->fk_agefodd_session_formateur] += $obj->heures;
+			            } /*else {
+	            		    $TRes[$obj->calendrier_type][0] += $obj->heures;
+	            		}*/
+		            }
+	            } else {
+		            $TRes[$obj->calendrier_type][0] += $obj->heures;
+	            }
             }
 
             return $TRes;
@@ -567,6 +577,171 @@ class Agefoddsessionstagiaireheures extends CommonObject
 		$this->initAsSpecimenCommon();
 	}
 
+	/**
+	 * Set Real Time according trainee status
+	 * For not present or cancelled remove all time inputed
+	 * For present or patially present fill blanks with missing date
+	 *
+	 * @param     $user
+	 * @param int $sessId
+	 * @param int $stagiaireId
+	 * @return float|int
+	 * @throws Exception
+	 */
+	public function setRealTimeAccordingTraineeStatus($user, $sessId = 0, $stagiaireId = 0)
+	{
+		global $conf;
+
+		if (!empty($conf->global->AGF_USE_REAL_HOURS)) {
+
+			$error = 0;
+			$sessta = new Agefodd_session_stagiaire($this->db);
+			$res = $sessta->fetch_by_trainee($sessId, $stagiaireId);
+			if ($res < 0) {
+				$this->errors[] = $sessta->error;
+				$error++;
+			} elseif ($res == 0) {
+				return 0;
+			}
+
+			//Load all time input for this trainee in this session
+			$res = $this->fetch_all_by_session($sessId, $stagiaireId);
+			if ($res < 0) {
+				return -1;
+			}
+
+			$this->db->begin();
+			if (in_array($sessta->status_in_session, $sessta->statusDeleteTime)) {
+				foreach ($this->lines as $creneaux) {
+
+					$res = $creneaux->delete($user);
+					if ($res < 0) {
+						$error++;
+					}
+				}
+			} elseif ($sessta->status_in_session == Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT) {
+				//Time already input for this trainee in this session
+				$TCrenauxSta = array();
+				foreach ($this->lines as $creneauxSta) {
+					$TCrenauxSta[$creneauxSta->fk_calendrier] = $creneauxSta->fk_calendrier;
+				}
+
+				$cal = new Agefodd_sesscalendar($this->db);
+				$res = $cal->fetch_all($sessId);
+				if ($res < 0) {
+					$this->errors[] = $cal->error;
+					$error++;
+				} else {
+					foreach ($cal->lines as $creneauxCal) {
+						//We Compute, if real time trainee is not already input for this trainee we set it
+						if (!array_key_exists($creneauxCal->id, $TCrenauxSta) && in_array($creneauxCal->status,$cal->statusCountTime)) {
+							$new_heures = new self($this->db);
+							$new_heures->fk_stagiaire = $stagiaireId;
+							//$new_heures->nom_stagiaire = $creneaux->nom_stagiaire;
+							$new_heures->fk_user_author = $user->id;
+							$new_heures->fk_calendrier = $creneauxCal->id;
+							$new_heures->fk_session = $sessId;
+							$new_heures->heures = ($creneauxCal->heuref - $creneauxCal->heured) / 3600;
+							$new_heures->datec = dol_now();
+							$res = $new_heures->create($user);
+							if ($res < 0) {
+								$this->errors[] = $new_heures->error;
+								$error++;
+							}
+						}
+					}
+				}
+			}
+
+			// Commit or rollback
+			if ($error) {
+				foreach ($this->errors as $errmsg) {
+					dol_syslog(get_class($this) . "::" . __METHOD__ . ' ' . $errmsg, LOG_ERR);
+					$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+				}
+				$this->db->rollback();
+				return -1 * $error;
+			} else {
+				$this->db->commit();
+				return 1;
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * According inputed time, set trainee status
+	 *
+	 * @param     $user
+	 * @param int $sessId
+	 * @param int $stagiaireId
+	 * @return float|int -1 if KO or status in session
+	 * @throws Exception
+	 */
+	public function setStatusAccordingTime($user, $sessId = 0, $stagiaireId = 0) {
+
+		global $conf, $langs;
+
+		$error = 0;
+
+		if (!empty($conf->global->AGF_USE_REAL_HOURS)) {
+
+			$cal = new Agefodd_sesscalendar($this->db);
+			$res = $cal->fetch_all($sessId);
+			if ($res < 0) {
+				$this->errors[] = $cal->error;
+				$error++;
+			} else {
+
+				//Reset trainee status according time set
+
+				//Total time must have been done
+				$dureeCalendrier=0;
+				foreach ($cal->lines as $creneauxCal) {
+					if (in_array($creneauxCal->status,$cal->statusCountTime)) {
+						$dureeCalendrier += ($creneauxCal->heuref - $creneauxCal->heured) / 3600;
+					}
+				}
+
+				$stagiaire = new Agefodd_session_stagiaire($this->db);
+				$res = $stagiaire->fetch_by_trainee($sessId, $stagiaireId);
+				if ($res < 0) {
+					$this->errors[] = $stagiaire->error;
+					$error++;
+				}
+				$orginStatut = $stagiaire->status_in_session;
+				$totalheures = $this->heures_stagiaire($sessId, $stagiaireId);
+				if (( float )$dureeCalendrier == ( float )$totalheures) {
+					// stagiaire entièrement présent
+					$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT;
+				} elseif (!empty($totalheures)) {
+					// stagiaire partiellement présent
+					$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT;
+				} elseif (empty($totalheures)) {
+					//Not present
+					$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT;
+				}
+				if ($orginStatut != $stagiaire->status_in_session) {
+					$res = $stagiaire->update($user);
+					if ($res < 0) {
+						$this->errors[] = $stagiaire->error;
+						$error++;
+					}
+				}
+			}
+
+			if ($error) {
+				foreach ($this->errors as $errmsg) {
+					dol_syslog(get_class($this) . "::" . __METHOD__ . ' ' . $errmsg, LOG_ERR);
+					$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+				}
+				return -1 * $error;
+			} else {
+				return $stagiaire->status_in_session;
+			}
+		}
+		return 0;
+	}
 }
 
 /**

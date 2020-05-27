@@ -41,6 +41,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 	 * @param DoliDB $db handler
 	 */
 	public function __construct($db, $outputlangs) {
+
 		$outputlangs->load('agefodd@agefodd');
 		$outputlangs->load('bills');
 		$outputlangs->load("exports");
@@ -56,7 +57,53 @@ class ReportCAVentilated extends AgefoddExportExcel {
 				)
 		);
 
+		// Contruct header (column name)
 		$array_column_header = array ();
+
+		$array_column_header[0][1] = array (
+			'type' => 'text',
+			'title' => 'Numéro de facture'
+		);
+
+		$array_column_header[0][2] = array (
+			'type' => 'date',
+			'title'=> $outputlangs->transnoentities('DateInvoice')
+		);
+
+		$array_column_header[0][3] = array (
+			'type' => 'text',
+			'title'=> 'ID Session'
+		);
+
+		$array_column_header[0][4] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('AgfLieu')
+		);
+
+		$array_column_header[0][5] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('Customer')
+		);
+
+		$array_column_header[0][6] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('AgfTypeRequester')
+		);
+
+		$array_column_header[0][7] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('AgfSessionInvoicedThirdparty')
+		);
+
+		$array_column_header[0][8] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('ParentCompany')
+		);
+
+		$array_column_header[0][9] = array (
+			'type' => 'text',
+			'title'=> $outputlangs->transnoentities('SalesRepresentatives')
+		);
 
 		// Je laisse ça pour quand le client voudra filter par status des factures
 		$this->status_array=array(1=>$outputlangs->trans('BillShortStatusDraft'),2=>$outputlangs->trans('BillShortStatusPaid'), 3=>$outputlangs->trans('BillShortStatusNotPaid'));
@@ -80,52 +127,57 @@ class ReportCAVentilated extends AgefoddExportExcel {
 				foreach ( $this->sheet_array as $keysheet => $sheet ) {
 
 					$this->workbook->setActiveSheetIndex($keysheet);
-
+					$this->row[$keysheet] ++;
 					foreach ( $filter as $key => $value ) {
-						if ($key == 'startyear') {
-							$str_cirteria = $this->outputlangs->transnoentities('Year') . ' ';
-							$str_criteria_value = $value;
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $str_cirteria);
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $str_criteria_value);
-							$this->row[$keysheet] ++;
+						if ($key == 'f.datef') {
+							if (isset($value['start'])) {
+								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfExportFrom'));
+								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], date('d-m-Y', $value['start']));
+								$this->row[$keysheet] ++;
+							}
+							if (isset($value['end'])) {
+								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfExportTo'));
+								$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], date('d-m-Y', $value['end']));
+								$this->row[$keysheet] ++;
+							}
 						} elseif ($key == 'so.nom') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('Company'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $value);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('Company'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $value);
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'so.parent|sorequester.parent') {
-							require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
-							$socparent = new Societe($this->db);
-							$result = $socparent->fetch($value);
-							if ($result < 0) {
-								$this->error = $socparent->error;
-								return $result;
+							$socParent='';
+							foreach ($value as $parentSocid)
+							{
+								$socparent = new Societe($this->db);
+								$result = $socparent->fetch($parentSocid);
+								if ($result < 0) {
+									$this->error = $socparent->error;
+									return $result;
+								}
+								$socParent .= $socparent->name.',';
 							}
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('ParentCompany'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $socparent->name);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('ParentCompany'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $socParent);
 							$this->row[$keysheet] ++;
 						} elseif ($key == 'socrequester.nom') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfTypeRequester'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $value);
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('AgfTypeRequester'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $value);
 							$this->row[$keysheet] ++;
-						} elseif ($key == 'sale.fk_user_com') {
+						} elseif ($key == 'sale.fk_user') {
 							require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
-							$user_salesman = new User($this->db);
-							$result = $user_salesman->fetch($value);
-							if ($result < 0) {
-								$this->error = $user_salesman->error;
-								return $result;
-							}
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('SalesRepresentatives'));
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $user_salesman->getFullName($this->outputlangs));
-							$this->row[$keysheet] ++;
-						} elseif ($key == 'invstatus') {
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(0, $this->row[$keysheet], $this->outputlangs->transnoentities('Status'));
-							if (is_array($value) && count($value)>0) {
-								foreach($value as $key=>$invstatus) {
-									$invoice_status[]=$this->status_array_noentities[$invstatus];
+							$salesMan='';
+							foreach ($value as $sale_id)
+							{
+								$user_salesman = new User($this->db);
+								$result = $user_salesman->fetch($sale_id);
+								if ($result < 0) {
+									$this->error = $user_salesman->error;
+									return $result;
 								}
+								$salesMan .= $user_salesman->getFullName($this->outputlangs).",";
 							}
-							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], implode(',', $invoice_status));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(1, $this->row[$keysheet], $this->outputlangs->transnoentities('SalesRepresentatives'));
+							$this->workbook->getActiveSheet()->setCellValueByColumnAndRow(2, $this->row[$keysheet], $salesMan);
 							$this->row[$keysheet] ++;
 						}
 					}
@@ -227,61 +279,9 @@ class ReportCAVentilated extends AgefoddExportExcel {
 		if ($result < 0) {
 			return $result;
 		}
-		/*$result = $this->write_title();
-		if ($result < 0) {
-			return $result;
-		}*/
-
-		// Contruct header (column name)
-		$array_column_header = array ();
-
-		$array_column_header[0][0] = array (
-				'type' => 'text',
-				'title' => 'Numéro de facture'
-		);
-
-		$array_column_header[0][1] = array (
-			'type' => 'date',
-			'title'=> $this->outputlangs->transnoentities('DateInvoice')
-		);
-
-		$array_column_header[0][2] = array (
-			'type' => 'text',
-			'title'=> 'ID Session'
-		);
-
-		$array_column_header[0][3] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('AgfLieu')
-		);
-
-		$array_column_header[0][4] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('Customer')
-		);
-
-		$array_column_header[0][5] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('AgfTypeRequester')
-		);
-
-		$array_column_header[0][6] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('AgfSessionInvoicedThirdparty')
-		);
-
-		$array_column_header[0][7] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('ParentCompany')
-		);
-
-		$array_column_header[0][8] = array (
-			'type' => 'text',
-			'title'=> $this->outputlangs->transnoentities('SalesRepresentatives')
-		);
 
 		// Récupérer les ref produits présentes dans le rapport pour ajouter des colonnes
-		$result = $this->fetch_columns($filter, $array_column_header); // pour récupérer tous les produits à présenter en colonne + 1 colonne pour les lignes libres
+		$result = $this->fetch_columns($filter); // pour récupérer tous les produits à présenter en colonne + 1 colonne pour les lignes libres
 		if ($result < 0) return $result;
 
 		$result = $this->fetch_ca($filter);
@@ -289,7 +289,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 
 		if ($result > 0) {
 
-			$this->setArrayColumnHeader($array_column_header);
+			$this->setArrayColumnHeader($this->array_column_header);
 
 			$result = $this->write_header();
 			if ($result < 0) {
@@ -298,15 +298,15 @@ class ReportCAVentilated extends AgefoddExportExcel {
 
 			// Ouput Lines
 			$line_to_output = $line_total = array ();
-			$line_total[0] = "Total HT";
-			for ($i = 1; $i < 9; $i++) $line_total[$i] = "";
-			$headercol = count($array_column_header[0]);
-			for ($i = 8; $i < $headercol; $i++) $line_total[$i] = 0; // to avoid non-numeric warning
+			$line_total[1] = "Total HT";
+			for ($i = 2; $i < 9; $i++) $line_total[$i] = "";
+			$headercol = count($this->array_column_header[0]);
+			for ($i = 9; $i < $headercol; $i++) $line_total[$i] = 0; // to avoid non-numeric warning
 
 			foreach ($this->Tfacture as $fac_id => $Tsession)
 			{
 				// reinit de la ligne à écrire
-				foreach ($array_column_header[0] as $k => $colsetup) $line_to_output[$k] = "";
+				foreach ($this->array_column_header[0] as $k => $colsetup) $line_to_output[$k] = "";
 
 				$facture = new Facture($this->db);
 				$ret = $facture->fetch($fac_id);
@@ -322,16 +322,16 @@ class ReportCAVentilated extends AgefoddExportExcel {
 						$session->fetch_thirdparty();
 
 						// ref facture
-						$line_to_output[0] = $facture->ref;
+						$line_to_output[1] = $facture->ref;
 
 						// date facture
-						$line_to_output[1] = date("d/m/Y",$facture->date);
+						$line_to_output[2] = date("d/m/Y",$facture->date);
 
 						// ID Session
-						$line_to_output[2] = $sessid;
+						$line_to_output[3] = $sessid;
 
 						// Lieu
-						$line_to_output[3] = $session->placecode;
+						$line_to_output[4] = $session->placecode;
 
 						// Client
 						$socclient = clone($facture->thirdparty);
@@ -367,10 +367,10 @@ class ReportCAVentilated extends AgefoddExportExcel {
 								}
 							}
 						}
-						$line_to_output[4] = $socclient->name.($socclient->code_client ? ' - '. $socclient->code_client : '');
+						$line_to_output[5] = $socclient->name.($socclient->code_client ? ' - '. $socclient->code_client : '');
 
 						// Demandeur
-						$line_to_output[5] = "";
+						$line_to_output[6] = "";
 						$socrequester = new Societe($this->db);
 						if ($s_line->typeline == 'trainee_OPCA')
 						{
@@ -396,27 +396,27 @@ class ReportCAVentilated extends AgefoddExportExcel {
 							$socrequester->fetch($session->fk_soc_requester);
 						}
 
-						if ($socrequester->id) $line_to_output[5] = $socrequester->name.($socrequester->code_client ? ' - '. $socrequester->code_client : '');
+						if ($socrequester->id) $line_to_output[6] = $socrequester->name.($socrequester->code_client ? ' - '. $socrequester->code_client : '');
 
 						// Payeur
-						$line_to_output[6] = $facture->thirdparty->name.($facture->thirdparty->code_client ? ' - ' . $facture->thirdparty->code_client: '');
+						$line_to_output[7] = $facture->thirdparty->name.($facture->thirdparty->code_client ? ' - ' . $facture->thirdparty->code_client: '');
 
 						// Maison mère
-						$line_to_output[7] = $this->getParentName($socclient->parent);
+						$line_to_output[8] = $this->getParentName($socclient->parent);
 
 						// Commerciaux
-						$line_to_output[8] = "";
+						$line_to_output[9] = "";
 						$commArray = $socclient->getSalesRepresentatives($user);
 						if (!empty($commArray))
 						{
 							$tab = array();
 							foreach ($commArray as $commData) $tab[] = $commData['firstname'].' '.$commData['lastname'];
 
-							$line_to_output[8] .= implode(', ', $tab);
+							$line_to_output[9] .= implode(', ', $tab);
 						}
 
 						//Total de ligne
-						$line_to_output[count($array_column_header[0])-1]=0;
+						$line_to_output[$headercol]=0;
 						// remplissage des colonnes produits
 						foreach ($facture->lines as $line)
 						{
@@ -427,10 +427,10 @@ class ReportCAVentilated extends AgefoddExportExcel {
 								$line_to_output[$productKey]=0;
 							}
 							$line_to_output[$productKey] += floatval($line->total_ht);
-							$line_to_output[count($array_column_header[0])-1] += floatval($line->total_ht);
+							$line_to_output[$headercol] += floatval($line->total_ht);
 						}
 
-						foreach ($array_column_header[0] as $k => $dummy)
+						foreach ($this->array_column_header[0] as $k => $dummy)
 						{
 							if ($k > 8) $line_total[$k] += floatval($line_to_output[$k]);
 						}
@@ -447,13 +447,12 @@ class ReportCAVentilated extends AgefoddExportExcel {
 
 		}
 
-//		$this->row[0]++;
-//		$result = $this->write_filter($filter);
-//		if ($result < 0) {
-//			return $result;
-//		}
-
 		$result = $this->write_line_total($line_total);
+		if ($result < 0) {
+			return $result;
+		}
+
+		$result = $this->write_filter($filter);
 		if ($result < 0) {
 			return $result;
 		}
@@ -462,7 +461,7 @@ class ReportCAVentilated extends AgefoddExportExcel {
 		return 1;
 	}
 
-	public function fetch_columns($filter = array(), &$array_column_header)
+	public function fetch_columns($filter = array())
 	{
 		$this->productRefMap = array();
 
@@ -476,11 +475,11 @@ class ReportCAVentilated extends AgefoddExportExcel {
 			$num = $this->db->num_rows($resql);
 			if ($num)
 			{
-				$index = count($array_column_header[0]);
+				$index = count($this->array_column_header[0])+1;
 				while ($obj = $this->db->fetch_object($resql))
 				{
 					$this->productRefMap[$obj->rowid] = $index;
-					$array_column_header[0][$index] = array(
+					$this->array_column_header[0][$index] = array(
 						'type' 	=> 'number',
 						'title' => $obj->ref
 					);
@@ -488,13 +487,13 @@ class ReportCAVentilated extends AgefoddExportExcel {
 				}
 				// pour les lignes libres
 				$this->productRefMap[null] = $index;
-				$array_column_header[0][$index] = array(
+				$this->array_column_header[0][$index] = array(
 					'type' 	=> 'number',
 					'title' => "Lignes libres"
 				);
 				// pour les totaux de ligne
 
-				$array_column_header[0][$index+1] = array(
+				$this->array_column_header[0][$index+1] = array(
 					'type' 	=> 'number',
 					'title' => "Total"
 				);

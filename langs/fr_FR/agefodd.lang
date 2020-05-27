@@ -1738,6 +1738,46 @@ AgfTraineePlanification=Planning de %s %s %s (session de %s heures)
 AgfErrorHoursPTraineeHoursSess=Impossible de dépasser le nombre d'heures total de la session
 
 AgfDetailHeure=Détails des heures
+AgfEATrainerSeeOtherTrainerIdentityPlanedTime = Portail formateur : Voir l'identité des autres formateurs/trices sur les temps planifiés participants
+AgfPlanTraineeStrangeData=Vous avez proposées des heures de modalité <b> %s </b>avec un.e formateur.rice ET sans formateur.rice, cela peux provoquer une lecture difficile des heures ci dessous.
+AgfOtherTrainer=Autre formateur.trice
+
+AgfMenuReportTime=Rapport temps réalisé
+AgfReportTimeSta=Temps stagiaire réalisé
+AgfReportTimeStaDetail=Temps stagiaire réalisé détaillé
+AgfReportTimeTrainer=Temps formateur
+AgfTrainingRef=Référence Formation
+AgfReportTimeDoneReal= Temps de présence réel
+AgfReportTimeCalTime=Période Calendrier
+AgfReportTimeTypeReport=Type de rapport
+AgfReportTimeDtCreneaux=Date des creneaux
+AgfReportTimeHelpFilterAgfReportTimeTypeReport=Type de rapport
+AgfReportTimeHelpFilterAgfReportTimeCalTime=Filter sur les creanaux des sessions
+AgfReportTimeHelpFilterType=Filtre sur les sessions intra/inter
+AgfReportTimeHelpFilterAgfStatusSession=Filtre sur le status des creneaux
+AgfReportTimeHelpReportStructure=Colonnes des rapports par type
+AgfReportTimeHelpAvailableFilters=Filtres disponibles
+
+
+AgfReportCAVentilatedHelpAvailableFilters=Filtres disponibles
+AgfReportCAVentilatedHelpFilterDateInvoice=Restreint le rapport aux factures dont la date est dans la période
+AgfReportCAVentilatedHelpFilterAgfSessionCustomer=Restreint le rapport session qui ont ce tier comme client principal
+AgfReportCAVentilatedHelpFilterAgfTypeRequester=Restreint le rapport session qui ont ce tier comme demandeur principal
+AgfReportCAVentilatedHelpFilterAgfSessionInvoicedThirdparty=Restreint le rapport aux factures qui sont adressées à ce tiers
+AgfReportCAVentilatedHelpFilterParentCompany=Restreint le rapport aux factures qui sont adressées aux tiers qui ont ce tiers en maison mére
+AgfReportCAVentilatedHelpFilterSalesRepresentatives=Restreint le rapport aux sessions qui ont cet utilisateur comme commercial
+AgfReportCAVentilatedHelpColPerProductRef=puis autant de colonnes par code produits présent dans les factures
+AgfReportCAVentilatedHelpReportStructure=Structure du rapport
+AgfReportCAVentilatedHelp1= (1) : Montant total HT des lignes de facture associées à la session pour le produit/service de la colonne
+
+AgfTimeInfoStatusDraft=L'état du crénaux ne permet pas de saisir un temps
+AgfTimeInfoStatusFuture=Vous ne pouvez saisir un temps de présence dans le future
+AgfStatusRecalculateWithRealTime=Le statut du participant %s à été recalculé/forcé en fonction des temps réels de présence/absence
+AgfWarnTimeWillBeDelete=Attention: les temps déja saisis vont être supprimer
+
+
+
+
 AGF_HIDE_CACHET_FICHEPRES=Masquer la ligne qui précède le tampon sur les feuilles d'émargement
 AGF_FICHEPRES_SHOW_TIME_FOR_PAGE=Afficher le temps total des créneaux de la page dans les feuilles d'émargement
 AGF_FICHEPRES_SHOW_OPCO_NUMBERS=Afficher les numeros de dossier OPCO dans les feuilles d'émargement

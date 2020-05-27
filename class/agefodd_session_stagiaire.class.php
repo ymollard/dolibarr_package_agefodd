@@ -78,6 +78,10 @@ class Agefodd_session_stagiaire extends CommonObject {
 	public $lines = array ();
 	public $hour_foad;
 
+	public $statusAvalaibleForPast = array();
+	public $statusAvalaibleForFuture = array();
+	public $statusDeleteTime = array();
+
 	/**
 	 * Constructor
 	 *
@@ -89,24 +93,39 @@ class Agefodd_session_stagiaire extends CommonObject {
 
 		$this->db = $db;
 
-		// TODO basculer ce truc en dictionnaire
-		$this->labelstatut[0] = $langs->trans("TraineeSessionStatusProspect");
-		$this->labelstatut[1] = $langs->trans("TraineeSessionStatusVerbalAgreement");
-		$this->labelstatut[2] = $langs->trans("TraineeSessionStatusConfirm");
-		$this->labelstatut[3] = $langs->trans("TraineeSessionStatusPresent");
-		$this->labelstatut[4] = $langs->trans("TraineeSessionStatusPartPresent");
-		$this->labelstatut[5] = $langs->trans("TraineeSessionStatusNotPresent");
-		$this->labelstatut[6] = $langs->trans("TraineeSessionStatusCancelled");
-		$this->labelstatut[7] = $langs->trans('TraineeSessionStatusExcuse');
+		$this->labelstatut[self::STATUS_IN_SESSION_PROSPECT] = $langs->trans("TraineeSessionStatusProspect");
+		$this->labelstatut[self::STATUS_IN_SESSION_VERBAL_AGREEMENT] = $langs->trans("TraineeSessionStatusVerbalAgreement");
+		$this->labelstatut[self::STATUS_IN_SESSION_CONFIRMED] = $langs->trans("TraineeSessionStatusConfirm");
+		$this->labelstatut[self::STATUS_IN_SESSION_TOTALLY_PRESENT] = $langs->trans("TraineeSessionStatusPresent");
+		$this->labelstatut[self::STATUS_IN_SESSION_PARTIALLY_PRESENT] = $langs->trans("TraineeSessionStatusPartPresent");
+		$this->labelstatut[self::STATUS_IN_SESSION_NOT_PRESENT] = $langs->trans("TraineeSessionStatusNotPresent");
+		$this->labelstatut[self::STATUS_IN_SESSION_CANCELED] = $langs->trans("TraineeSessionStatusCancelled");
+		$this->labelstatut[self::STATUS_IN_SESSION_EXCUSED] = $langs->trans('TraineeSessionStatusExcuse');
 
-		$this->labelstatut_short[0] = $langs->trans("TraineeSessionStatusProspectShort");
-		$this->labelstatut_short[1] = $langs->trans("TraineeSessionStatusVerbalAgreementShort");
-		$this->labelstatut_short[2] = $langs->trans("TraineeSessionStatusConfirmShort");
-		$this->labelstatut_short[3] = $langs->trans("TraineeSessionStatusPresentShort");
-		$this->labelstatut_short[4] = $langs->trans("TraineeSessionStatusPartPresentShort");
-		$this->labelstatut_short[5] = $langs->trans("TraineeSessionStatusNotPresentShort");
-		$this->labelstatut_short[6] = $langs->trans("TraineeSessionStatusCancelledShort");
-		$this->labelstatut_short[7] = $langs->trans('TraineeSessionStatusExcuseShort');
+		$this->labelstatut_short[self::STATUS_IN_SESSION_PROSPECT] = $langs->trans("TraineeSessionStatusProspectShort");
+		$this->labelstatut_short[self::STATUS_IN_SESSION_VERBAL_AGREEMENT] = $langs->trans("TraineeSessionStatusVerbalAgreementShort");
+		$this->labelstatut_short[self::STATUS_IN_SESSION_CONFIRMED] = $langs->trans("TraineeSessionStatusConfirmShort");
+		$this->labelstatut_short[self::STATUS_IN_SESSION_TOTALLY_PRESENT] = $langs->trans("TraineeSessionStatusPresentShort");
+		$this->labelstatut_short[self::STATUS_IN_SESSION_PARTIALLY_PRESENT] = $langs->trans("TraineeSessionStatusPartPresentShort");
+		$this->labelstatut_short[self::STATUS_IN_SESSION_NOT_PRESENT] = $langs->trans("TraineeSessionStatusNotPresentShort");
+		$this->labelstatut_short[self::STATUS_IN_SESSION_CANCELED] = $langs->trans("TraineeSessionStatusCancelledShort");
+		$this->labelstatut_short[self::STATUS_IN_SESSION_EXCUSED] = $langs->trans('TraineeSessionStatusExcuseShort');
+
+		$this->statusAvalaibleForPast = array(
+			self::STATUS_IN_SESSION_CONFIRMED,
+			self::STATUS_IN_SESSION_TOTALLY_PRESENT,
+			self::STATUS_IN_SESSION_PARTIALLY_PRESENT,
+			self::STATUS_IN_SESSION_NOT_PRESENT,
+			self::STATUS_IN_SESSION_CANCELED,
+			self::STATUS_IN_SESSION_EXCUSED
+		);
+		$this->statusAvalaibleForFuture =array(self::STATUS_IN_SESSION_PROSPECT,
+		                                        self::STATUS_IN_SESSION_VERBAL_AGREEMENT,
+		                                        self::STATUS_IN_SESSION_CONFIRMED);
+
+		$this->statusDeleteTime =array (self::STATUS_IN_SESSION_NOT_PRESENT,
+		                               self::STATUS_IN_SESSION_CANCELED,
+		                               self::STATUS_IN_SESSION_EXCUSED);
 
 		return 1;
 	}
@@ -824,7 +843,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 */
 	public function delete($user, $notrigger = 0) {
 		$this->db->begin();
-		
+
 		$error = 0;
 
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_convention_stagiaire";
@@ -1042,7 +1061,6 @@ class Agefodd_session_stagiaire extends CommonObject {
 			$statut = 0;
 
 		$langs->load("agefodd@agefodd");
-
 		if ($mode == 0) {
 
 			return $this->labelstatut[$statut];
@@ -1051,68 +1069,76 @@ class Agefodd_session_stagiaire extends CommonObject {
 			return $this->labelstatut_short[$statut];
 		}
 		if ($mode == 2) {
-			if ($statut == 0)
+			if ($statut == self::STATUS_IN_SESSION_PROSPECT)
 				return img_picto($langs->trans('TraineeSessionStatusProspect'), 'statut0') . ' ' . $this->labelstatut_short[$statut];
-			if ($statut == 1)
+			if ($statut == self::STATUS_IN_SESSION_VERBAL_AGREEMENT)
 				return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'), 'statut3') . ' ' . $this->labelstatut_short[$statut];
-			if ($statut == 2)
+			if ($statut == self::STATUS_IN_SESSION_CONFIRMED)
 				return img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4') . ' ' . $this->labelstatut_short[$statut];
-			if ($statut == 3)
+			if ($statut == self::STATUS_IN_SESSION_TOTALLY_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6') . ' ' . $this->labelstatut_short[$statut];
-			if ($statut == 4)
+			if ($statut == self::STATUS_IN_SESSION_PARTIALLY_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7') . ' ' . $this->labelstatut_short[$statut];
-			if ($statut == 5)
+			if ($statut == self::STATUS_IN_SESSION_NOT_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9') . ' ' . $this->labelstatut_short[$statut];
-			if ($statut == 6)
+			if ($statut == self::STATUS_IN_SESSION_CANCELED)
 				return img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8') . ' ' . $this->labelstatut_short[$statut];
+			if ($statut == self::STATUS_IN_SESSION_EXCUSED)
+				return img_picto($langs->trans('TraineeSessionStatusExcuse'), 'statut9') . ' ' . $this->labelstatut_short[$statut];
 		}
 		if ($mode == 3) {
-			if ($statut == 0)
+			if ($statut == self::STATUS_IN_SESSION_PROSPECT)
 				return img_picto($langs->trans('TraineeSessionStatusProspect'), 'statut0');
-			if ($statut == 1)
+			if ($statut == self::STATUS_IN_SESSION_VERBAL_AGREEMENT)
 				return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'), 'statut3');
-			if ($statut == 2)
+			if ($statut == self::STATUS_IN_SESSION_CONFIRMED)
 				return img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4');
-			if ($statut == 3)
+			if ($statut == self::STATUS_IN_SESSION_TOTALLY_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6');
-			if ($statut == 4)
+			if ($statut == self::STATUS_IN_SESSION_PARTIALLY_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7');
-			if ($statut == 5)
+			if ($statut == self::STATUS_IN_SESSION_NOT_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9');
-			if ($statut == 6)
+			if ($statut == self::STATUS_IN_SESSION_CANCELED)
 				return img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
+			if ($statut == self::STATUS_IN_SESSION_EXCUSED)
+				return img_picto($langs->trans('TraineeSessionStatusExcuse'), 'statut9');
 		}
 		if ($mode == 4) {
-			if ($statut == 0)
+			if ($statut == self::STATUS_IN_SESSION_PROSPECT)
 				return img_picto($langs->trans('TraineeSessionStatusProspect'), 'statut0') . ' ' . $this->labelstatut[$statut];
-			if ($statut == 1)
+			if ($statut == self::STATUS_IN_SESSION_VERBAL_AGREEMENT)
 				return img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'), 'statut3') . ' ' . $this->labelstatut[$statut];
-			if ($statut == 2)
+			if ($statut == self::STATUS_IN_SESSION_CONFIRMED)
 				return img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4') . ' ' . $this->labelstatut[$statut];
-			if ($statut == 3)
+			if ($statut == self::STATUS_IN_SESSION_TOTALLY_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6') . ' ' . $this->labelstatut[$statut];
-			if ($statut == 4)
+			if ($statut == self::STATUS_IN_SESSION_PARTIALLY_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7') . ' ' . $this->labelstatut[$statut];
-			if ($statut == 5)
+			if ($statut == self::STATUS_IN_SESSION_NOT_PRESENT)
 				return img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9') . ' ' . $this->labelstatut[$statut];
-			if ($statut == 6)
+			if ($statut == self::STATUS_IN_SESSION_CANCELED)
 				return img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8') . ' ' . $this->labelstatut[$statut];
+			if ($statut == self::STATUS_IN_SESSION_EXCUSED)
+				return img_picto($langs->trans('TraineeSessionStatusExcuse'), 'statut9') . ' ' . $this->labelstatut[$statut];
 		}
 		if ($mode == 5) {
-			if ($statut == 0)
+			if ($statut == self::STATUS_IN_SESSION_PROSPECT)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusProspect'), 'statut0');
-			if ($statut == 1)
+			if ($statut == self::STATUS_IN_SESSION_VERBAL_AGREEMENT)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusVerbalAgreement'), 'statut3');
-			if ($statut == 2)
+			if ($statut == self::STATUS_IN_SESSION_CONFIRMED)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusConfirm'), 'statut4');
-			if ($statut == 3)
+			if ($statut == self::STATUS_IN_SESSION_TOTALLY_PRESENT)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusPresent'), 'statut6');
-			if ($statut == 4)
+			if ($statut == self::STATUS_IN_SESSION_TOTALLY_PRESENT)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusPartPresent'), 'statut7');
-			if ($statut == 5)
+			if ($statut == self::STATUS_IN_SESSION_NOT_PRESENT)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusNotPresent'), 'statut9');
-			if ($statut == 6)
+			if ($statut == self::STATUS_IN_SESSION_CANCELED)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
+			if ($statut == self::STATUS_IN_SESSION_EXCUSED)
+				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusExcuse'), 'statut9');
 		}
 
 		return '';

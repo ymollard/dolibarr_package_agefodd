@@ -542,9 +542,9 @@ class ActionsAgefodd
 
 										if ($r < 0) $error++;
 										else {
-											// TODO à faire évoluer, mais en l'état cela semble bien compliqué d'automatisé le statut du participant
-											if ($duree > 0 && !in_array($stagiaire->status_in_session, array(Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT, Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT))) {
-												$stagiaires->setValueFrom('status_in_session', Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT, '', $stagiaire->stagerowid, 'int', '', 'none');
+											if ($duree > 0) {
+												$r = $agfssh->setStatusAccordingTime($user,$agsession->id,$stagiaire->id);
+												if ($r < 0) $error++;
 											}
 										}
 									}
@@ -1773,11 +1773,12 @@ class ActionsAgefodd
 
 		require_once(DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
 
+		$formateur = new Agefodd_teacher($this->db);
+		$formateur->fetchByUser($user);
+
 		// copy email to
 		$addr_cc = "";
 		if (!empty($conf->global->AGF_SEND_COPY_EMAIL_TO_TRAINER)) {
-			$formateur = new Agefodd_teacher($this->db);
-			$formateur->fetchByUser($user);
 			if (!empty($formateur->id)) {
 				$addr_cc = $formateur->email;
 			}
@@ -1872,6 +1873,10 @@ class ActionsAgefodd
 
 				$from = getExternalAccessSendEmailFrom($user->email);
 				$replyto = $user->email;
+				if (!empty($formateur->id) && !empty($formateur->email) && filter_var($formateur->email, FILTER_VALIDATE_EMAIL)) {
+                                	$replyto = $formateur->email;
+                        	}
+
 				$errors_to = $conf->global->MAIN_MAIL_ERRORS_TO;
 
 				$cMailFile = new CMailFile($sendTopic, $to, $from, $sendContent, array(), array(), array(), $addr_cc, "", 0, 1, $errors_to, '', '', '', getExternalAccessSendEmailContext(), $replyto);
@@ -1888,6 +1893,13 @@ class ActionsAgefodd
 		return $nbMailSend;
 	}
 
+	/**
+	 * @param $parameters
+	 * @param $object
+	 * @param $action
+	 * @param $hookmanager
+	 * @return int
+	 */
 	function addStatisticLine($parameters, &$object, &$action, $hookmanager)
 	{
 		global $langs;

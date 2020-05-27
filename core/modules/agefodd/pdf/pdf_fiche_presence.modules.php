@@ -97,6 +97,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->emetteur->country_code = substr($langs->defaultlang, -2); // By default, if was not defined
 
 		$this->header_vertical_margin = 3;
+		$this->summaryPaddingBottom = 3;
 
 		$this->formation_widthcol1 = 20;
 		$this->formation_widthcol2 = 80;
@@ -115,7 +116,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->trainee_widthtimeslot = 24.7;
 		}
 
-		$this->height_for_footer = 40;
+		$this->height_for_footer = 20;
 
 		$this->nbtimeslots = 6;
 
@@ -327,6 +328,34 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			{
 				list($posX, $posY) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
 				list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $agf);
+			}
+
+			// Cachet et signature
+			if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES))
+			{
+				$posY += 2;
+				$posX -= 2;
+				$this->pdf->SetXY($posX, $posY);
+				$str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
+				$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+				$this->pdf->SetXY($posX + 55, $posY);
+				$str = $this->outputlangs->transnoentities('AgfPDFFichePres21') . dol_print_date($this->pdf->ref_object->datef);
+				$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+
+				$this->pdf->SetXY($posX + 92, $posY);
+				$str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
+				$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
+			}
+
+			$posY = $this->pdf->GetY();
+
+			// Incrustation image tampon
+			if ($conf->global->AGF_INFO_TAMPON) {
+				$dir = $conf->agefodd->dir_output . '/images/';
+				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
+				if (file_exists($img_tampon))
+					$this->pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
 			}
 
 			// Pied de page
@@ -901,7 +930,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
 		$posY = $posYintitule + $haut_table + 4;
-		$this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table+2);
+		$this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table + $this->summaryPaddingBottom);
 
 		return array($posX, $posY);
 	}
@@ -983,7 +1012,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->MultiCell(70, 4, $this->outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 		$posY = $this->pdf->GetY();
 
-		printRefIntForma($this->db, $this->outputlangs, $agf, $this->default_font_size - 3, $this->pdf, $posX, $posY, 'L');
+		printRefIntForma($this->db, $this->outputlangs, $agf, $this->default_font_size - 3, $this->pdf, $posX, $posY, 'L', true);
 
 		// Affichage du logo commanditaire (optionnel)
 		if ($conf->global->AGF_USE_LOGO_CLIENT) {

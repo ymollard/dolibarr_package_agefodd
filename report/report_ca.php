@@ -18,7 +18,7 @@
  */
 
 /**
- * \file		/agefodd/report/report_by_customer.php
+ * \file		/agefodd/report/report_ca.php
  * \brief		report part
  * (Agefodd).
  */
@@ -171,7 +171,7 @@ if ($action == 'builddoc') {
 
 $report = new ReportCA($db, $langs);
 
-$head = agf_revenue_report_prepare_head(http_build_query($_REQUEST));
+$head = agf_report_revenue_prepare_head(http_build_query($_REQUEST));
 dol_fiche_head($head, 'card', $langs->trans("AgfMenuReportCA"), 0, 'bill');
 
 print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
@@ -251,7 +251,7 @@ print '<td>' . $formAgefodd->multiselect_session_status('search_session_status',
 print '</tr>';*/
 
 print '</table>' . "\n";
-
+dol_fiche_end();
 $liste = array (
 		'excel2007' => 'Excel 2007'
 );

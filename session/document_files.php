@@ -133,7 +133,8 @@ if ($object->id) {
 
 
 	dol_agefodd_banner_tab($object, 'id');
-	print '<div class="underbanner clearboth"></div>';
+
+	dol_fiche_end();
 
 	// Construit liste des fichiers
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);

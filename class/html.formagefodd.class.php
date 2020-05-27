@@ -1988,7 +1988,8 @@ class FormAgefodd extends Form
 
 		return $return;
 	}
-	public function selectMassSessionsAction() {
+	public function selectMassSessionsAction()
+	{
 		global $langs;
 
 		$sql = "SELECT rowid, code FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type WHERE active = 1";
@@ -2014,7 +2015,8 @@ class FormAgefodd extends Form
 	 * @param bool $emptyvalue
 	 * @return string
 	 */
-	public function select_calendrier_type($selected = '', $htmlname = 'code_c_session_calendrier_type', $emptyvalue = true, $moreattr = '', $more_class = '') {
+	public function select_calendrier_type($selected = '', $htmlname = 'code_c_session_calendrier_type', $emptyvalue = true, $moreattr = '', $more_class = '')
+	{
 		global $conf;
 
 		$out = '<select class="flat select_calendrier_type ' . $more_class . '" name="' . $htmlname . '" id="' . $htmlname . '" ' . $moreattr . '>';
@@ -2035,6 +2037,38 @@ class FormAgefodd extends Form
 		$out .= '</select>';
 
 		return $out;
+	}
+
+	/**
+	 * Permet de retourner un select html des formateur d'une session
+	 *
+	 * @param int $sessionId Session Id
+	 * @param int $selectId selected id
+	 * @param string $htmlname html input name
+	 * @param int $showempty show empty value
+	 * @return string
+	 */
+	public function selectSessionTrainer($sessionId = 0, $selectId = 0, $htmlname = 'trainerid', $showempty = 1)
+	{
+		if (!empty($sessionId)) {
+			require_once 'agefodd_session_formateur.class.php';
+
+			$arrayTrainer=array();
+			$sess_trainer = new Agefodd_session_formateur($this->db);
+			$result = $sess_trainer->fetch_formateur_per_session($sessionId);
+			if ($result < 0) {
+				setEventMessage($sess_trainer->error, 'errors');
+			} else {
+				if (is_array($sess_trainer->lines) && count($sess_trainer->lines)>0) {
+					foreach($sess_trainer->lines as $line) {
+						$arrayTrainer[$line->opsid]=$line->firstname.' '.$line->lastname;
+					}
+				}
+			}
+			return $this->selectarray($htmlname, $arrayTrainer, $selectId, $showempty);
+		} else {
+			return'';
+		}
 	}
 
 	/**

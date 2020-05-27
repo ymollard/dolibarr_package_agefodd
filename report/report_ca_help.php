@@ -18,7 +18,7 @@
  */
 
 /**
- * \file		/agefodd/report/report_by_customer.php
+ * \file		/agefodd/report/report_ca_help.php
  * \brief		report part
  * (Agefodd).
  */
@@ -28,14 +28,7 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-require_once ('../class/agsession.class.php');
 require_once ('../lib/agefodd.lib.php');
-require_once ('../class/html.formagefodd.class.php');
-require_once ('../class/agefodd_formateur.class.php');
-require_once ('../class/report_ca.class.php');
-require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
-require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
-require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -46,14 +39,6 @@ $langs->load('agefodd@agefodd');
 $langs->load('bills');
 $langs->load("exports");
 
-$extrajs = array (
-		'/agefodd/includes/multiselect/js/ui.multiselect.js'
-);
-$extracss = array (
-		'/agefodd/includes/multiselect/css/ui.multiselect.css',
-		'/agefodd/css/agefodd.css'
-);
-
 llxHeader('', $langs->trans('AgfMenuReportCA'), '', '', '', '', $extrajs, $extracss);
 
 
@@ -61,7 +46,7 @@ llxHeader('', $langs->trans('AgfMenuReportCA'), '', '', '', '', $extrajs, $extra
  * View
  */
 
-$head = agf_revenue_report_prepare_head(implode('&amp;', $_REQUEST));
+$head = agf_report_revenue_prepare_head(implode('&amp;', $_REQUEST));
 dol_fiche_head($head, 'help', $langs->trans("AgfMenuReportCA"), 0, 'bill');
 
 
