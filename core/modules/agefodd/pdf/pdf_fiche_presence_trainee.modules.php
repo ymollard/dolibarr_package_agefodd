@@ -58,8 +58,8 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 	 * \brief Constructor
 	 * \param db Database handler
 	 */
-	function __construct($db) {
-
+	public function __construct($db)
+	{
 		parent::__construct($db);
 
 		$this->name = "fiche_presence_trainee";
@@ -72,13 +72,15 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 	 * Fonction generant le document sur le disque
 	 *
 	 * @param object $agf document a generer (ou id si ancienne methode)
-	 * @param object $this->outputlangs for output language
+	 * @param object $outputlangs for output language
 	 * @param string $file file to generate
-	 * @param int $socid
+	 * @param int $socid soc id
+	 * @param string $courrier name of models
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function write_file($agf, $outputlangs, $file, $socid, $courrier = '') {
-		global $user, $langs, $conf, $mysoc;
+	public function write_file($agf, $outputlangs, $file, $socid, $courrier)
+	{
+		global $user, $langs, $conf, $mysoc, $hookmanager;
 
 		$this->outputlangs = $outputlangs;
 
@@ -173,14 +175,15 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 
 				if ($nbsta > 0) {
 					// $blocsta=0;
-					foreach ( $agfsta->lines as $line ) {
+					foreach ($agfsta->lines as $line)
+					{
 						if ($line->status_in_session !=6){
 							$this->line = $line;
-							$this->_pagebody($this->ref_object,$this->outputlangs);
+							$this->_pagebody($this->ref_object, $this->outputlangs);
 						}
 					}
 				} else {
-					$this->_pagefoot($this->ref_object,$this->outputlangs);
+					$this->_pagefoot($this->ref_object, $this->outputlangs);
 					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
@@ -366,7 +369,11 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		$posY_trainee = $posY;
 		$this->pdf->SetXY($posX + $this->larg_col1 + $this->larg_col2, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 7);
-		$this->str = $this->line->nom . ' ' . $this->line->prenom . ' - ' . dol_trunc($this->line->socname, 27);
+		if ($this->line->nom . ' ' . $this->line->prenom!==$this->line->socname) {
+			$this->str = $this->line->nom . ' ' . $this->line->prenom . ' - ' . dol_trunc($this->line->socname, 27);
+		} else {
+			$this->str = $this->line->nom . ' ' . $this->line->prenom;
+		}
 
 		if (! empty($this->line->poste)) {
 			$this->str .= "\n".' (' . $this->line->poste . ')';
