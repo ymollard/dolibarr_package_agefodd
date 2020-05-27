@@ -497,11 +497,18 @@ class Agefoddsessionstagiaireheures extends CommonObject
         $sql .= ' WHERE fk_stagiaire = ' . $traineeid;
         $sql .= ' AND fk_session = ' . $sessid;
 
-        dol_syslog(get_class($this) . "::heures_stagiaire", LOG_DEBUG);
+        dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
         $resql = $this->db->query($sql);
         if ($resql) {
             $obj = $this->db->fetch_object($resql);
-            return (float)$obj->total;
+            if (!empty($obj->total))
+            {
+	            return (float) $obj->total;
+            } elseif ($obj->total===0) {
+	            return 0;
+            } else {
+            	return null;
+	        }
         }
 
         return 0;
@@ -634,7 +641,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 				} else {
 					foreach ($cal->lines as $creneauxCal) {
 						//We Compute, if real time trainee is not already input for this trainee we set it
-						if (!array_key_exists($creneauxCal->id, $TCrenauxSta) && in_array($creneauxCal->status,$cal->statusCountTime)) {
+						if (!array_key_exists($creneauxCal->id, $TCrenauxSta) && in_array($creneauxCal->status, $cal->statusCountTime) && $creneauxCal->date_session < dol_now()) {
 							$new_heures = new self($this->db);
 							$new_heures->fk_stagiaire = $stagiaireId;
 							//$new_heures->nom_stagiaire = $creneaux->nom_stagiaire;
@@ -711,21 +718,23 @@ class Agefoddsessionstagiaireheures extends CommonObject
 				}
 				$orginStatut = $stagiaire->status_in_session;
 				$totalheures = $this->heures_stagiaire($sessId, $stagiaireId);
-				if (( float )$dureeCalendrier == ( float )$totalheures) {
-					// stagiaire entièrement présent
-					$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT;
-				} elseif (!empty($totalheures)) {
-					// stagiaire partiellement présent
-					$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT;
-				} elseif (empty($totalheures)) {
-					//Not present
-					$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT;
-				}
-				if ($orginStatut != $stagiaire->status_in_session) {
-					$res = $stagiaire->update($user);
-					if ($res < 0) {
-						$this->errors[] = $stagiaire->error;
-						$error++;
+				if (isset($totalheures)) {
+					if ((float)$dureeCalendrier == (float)$totalheures) {
+						// stagiaire entièrement présent
+						$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT;
+					} elseif (!empty($totalheures)) {
+						// stagiaire partiellement présent
+						$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT;
+					} elseif (empty($totalheures)) {
+						//Not present
+						$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT;
+					}
+					if ($orginStatut != $stagiaire->status_in_session) {
+						$res = $stagiaire->update($user);
+						if ($res < 0) {
+							$this->errors[] = $stagiaire->error;
+							$error++;
+						}
 					}
 				}
 			}
