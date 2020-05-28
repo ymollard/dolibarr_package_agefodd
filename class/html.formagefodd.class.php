@@ -1560,13 +1560,41 @@ class FormAgefodd extends Form
 	 *
 	 * @param string $selectval valeur a selectionner par defaut
 	 * @param string $htmlname nom du control HTML
+	 * @param Agsession $session Object de la session en court
 	 * @return string The HTML control
 	 */
-	public function select_stagiaire_session_status($htmlname, $selectval) {
+	public function select_stagiaire_session_status($htmlname, $selectval, $session = null)
+	{
+		global $conf,$langs;
+
 		require_once 'agefodd_session_stagiaire.class.php';
 		$sess_sta = new Agefodd_session_stagiaire($this->db);
 
-		return $this->selectarray($htmlname, $sess_sta->labelstatut, $selectval, 0);
+		if (! empty($conf->global->AGF_USE_REAL_HOURS) && isset($session)) {
+			require_once 'agefodd_session_calendrier.class.php';
+			$cal = new Agefodd_sesscalendar($this->db);
+			$res = $cal->fetch_all($session->id);
+			if ($res < 0) {
+				setEventMessage($cal->error, 'errors');
+			} else {
+				$optionStatus=array();
+				if (is_array($cal->lines) && count($cal->lines)>0) {
+					$dateToTest = $cal->lines[0]->heured;
+				} else {
+					$dateToTest = $session->dated;
+				}
+				foreach ($sess_sta->labelstatut as $statuskey => $statuslabel) {
+					if($dateToTest >= dol_now() && in_array($statuskey, $sess_sta->statusAvalaibleForFuture)) {
+						$optionStatus[$statuskey]=$statuslabel;
+					} elseif ($dateToTest <= dol_now() && in_array($statuskey, $sess_sta->statusAvalaibleForPast)) {
+						$optionStatus[$statuskey]=$statuslabel;
+					}
+				}
+				return $this->selectarray($htmlname, $optionStatus, $selectval, 0).img_warning($langs->trans('AgfWarnStatusLimited'));
+			}
+		} else {
+			return $this->selectarray($htmlname, $sess_sta->labelstatut, $selectval, 0);
+		}
 	}
 
 	/**

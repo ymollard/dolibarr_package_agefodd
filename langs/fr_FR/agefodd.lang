@@ -1775,6 +1775,7 @@ AgfTimeInfoStatusDraft=L'état du crénaux ne permet pas de saisir un temps
 AgfTimeInfoStatusFuture=Vous ne pouvez saisir un temps de présence dans le future
 AgfStatusRecalculateWithRealTime=Le statut du participant %s à été recalculé/forcé en fonction des temps réels de présence/absence
 AgfWarnTimeWillBeDelete=Attention: les temps déja saisis vont être supprimer
+AgfWarnStatusLimited=La liste des statuts disponibles est limité en fonction de la date début de la session (ou du premier créneaux si il existe)
 
 
 

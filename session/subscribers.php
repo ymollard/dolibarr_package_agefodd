@@ -778,7 +778,7 @@ if (! empty($id)) {
 					print $formAgefodd->select_stagiaire($stagiaires->lines[$i]->id, 'stagiaire', '(s.rowid NOT IN (SELECT fk_stagiaire FROM ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire WHERE fk_session_agefodd=' . $id . ')) OR (s.rowid=' . $stagiaires->lines[$i]->id . ')');
 
 					if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef <= dol_now()) {
-						print '<br>' . $langs->trans('Status') . ' ' . $formAgefodd->select_stagiaire_session_status('stagiaire_session_status', $stagiaires->lines[$i]->status_in_session);
+						print '<br>' . $langs->trans('Status') . ' ' . $formAgefodd->select_stagiaire_session_status('stagiaire_session_status', $stagiaires->lines[$i]->status_in_session, $agf);
 					} else {
 						print $stagiaires->LibStatut($stagiaires->lines[$i]->status_in_session, 4);
 						print '<input type="hidden" name="stagiaire_session_status" value="' . $stagiaires->lines[$i]->status_in_session . '">';
@@ -1059,7 +1059,7 @@ if (! empty($id)) {
 				print '<br>' . $langs->trans('AgfPublicTrainee') . ' ' . $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'stagiaire_type');
 			}
 			if (empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO) || $agf->datef <= dol_now()) {
-				print '<br>' . $langs->trans('Status') . ' ' . $formAgefodd->select_stagiaire_session_status('stagiaire_session_status', 0);
+				print '<br>' . $langs->trans('Status') . ' ' . $formAgefodd->select_stagiaire_session_status('stagiaire_session_status', 0, $agf);
 			}
 
 			print '<br>' . $langs->trans('AgfTraineeSocDocUse') . ' ';
@@ -1122,21 +1122,32 @@ if (! empty($id)) {
 				print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 				print '<input type="hidden" name="action" value="updatetraineestatus">' . "\n";
 				$optionStatus='';
-				foreach ( $stagiaires->labelstatut_short as $statuskey => $statuslabelshort ) {
-
-					if($agf->dated >= dol_now() && in_array($statuskey,$stagiaires->statusAvalaibleForFuture)) {
+				$cal = new Agefodd_sesscalendar($db);
+				$res = $cal->fetch_all($id);
+				if ($res < 0) {
+					setEventMessage($cal->error, 'errors');
+				} else {
+					if (is_array($cal->lines) && count($cal->lines)>0) {
+						$dateToTest = $cal->lines[0]->heured;
+					} else {
+						$dateToTest = $agf->dated;
+					}
+				}
+				foreach ($stagiaires->labelstatut_short as $statuskey => $statuslabelshort)
+				{
+					if($dateToTest >= dol_now() && in_array($statuskey, $stagiaires->statusAvalaibleForFuture)) {
 						$optionStatus.= '<option value="'.$statuskey.'">'. $statuslabelshort.'</option>';
-					} elseif ($agf->dated <= dol_now() && in_array($statuskey,$stagiaires->statusAvalaibleForPast)) {
+					} elseif ($dateToTest <= dol_now() && in_array($statuskey, $stagiaires->statusAvalaibleForPast)) {
 						$optionStatus.= '<option value="'.$statuskey.'">'. $statuslabelshort;
 						$optionStatus.='</option>';
 					}
-
 				}
 				if (!empty($optionStatus)) {
 					print '<input type="submit" class="butAction" name="changestatusinsession" value="'.$langs->trans('AgfSetTrainneStatusTo').'">';
 					print '<select class="flat updatetraineestatus" name="statusinsession" id="statusinsession">';
 					print $optionStatus;
 					print '</select>';
+					print img_warning($langs->trans('AgfWarnStatusLimited'));
 
 					if (!empty($stagiaires->statusDeleteTime) && ! empty($conf->global->AGF_USE_REAL_HOURS)) {
 						print '<div style="display:none" id="warningdelete">'.img_warning($langs->trans('AgfWarnTimeWillBeDelete')).$langs->trans('AgfWarnTimeWillBeDelete').'</div>';
