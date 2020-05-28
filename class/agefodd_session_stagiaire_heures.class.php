@@ -691,7 +691,8 @@ class Agefoddsessionstagiaireheures extends CommonObject
 
 		$error = 0;
 
-		if (!empty($conf->global->AGF_USE_REAL_HOURS)) {
+		if (!empty($conf->global->AGF_USE_REAL_HOURS))
+		{
 
 			$cal = new Agefodd_sesscalendar($this->db);
 			$res = $cal->fetch_all($sessId);
@@ -705,7 +706,7 @@ class Agefoddsessionstagiaireheures extends CommonObject
 				//Total time must have been done
 				$dureeCalendrier=0;
 				foreach ($cal->lines as $creneauxCal) {
-					if (in_array($creneauxCal->status,$cal->statusCountTime)) {
+					if (in_array($creneauxCal->status, $cal->statusCountTime)) {
 						$dureeCalendrier += ($creneauxCal->heuref - $creneauxCal->heured) / 3600;
 					}
 				}
