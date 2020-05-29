@@ -152,8 +152,8 @@ class modAgefodd extends DolibarrModules
 		);
 		$this->requiredby = array();
 		$this->phpmin = array(
-				5,
-				3
+				7,
+				0
 		);
 		$this->need_dolibarr_version = array(
 				9,
