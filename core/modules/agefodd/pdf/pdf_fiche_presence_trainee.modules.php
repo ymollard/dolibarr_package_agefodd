@@ -188,7 +188,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 					$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
 					$this->pdf->AddPage();
-					list($posX, $posY) = $this->_pagehead($this->pdf->ref_object);
+					list($posX, $posY) = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 
 					/**
 					 * *** Bloc formation ****
@@ -244,7 +244,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 
 		// New page
 		$this->pdf->AddPage();
-		list($posX, $posY) = $this->_pagehead($this->pdf->ref_object);
+		list($posX, $posY) = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 
 		/**
 		 * *** Bloc formation ****
@@ -413,6 +413,10 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		}
 		$posY = $this->pdf->GetY();
 
+		// correction de hauteur du bloc
+		$TposX = array($posX-2, $posX + $this->larg_col1, $posX + $this->larg_col1 + $this->larg_col2);
+		$maxY = $posY;
+
 		// Trainer
 		$this->pdf->SetXY($posX + $this->larg_col1 + $this->larg_col2 + $this->larg_col3, $posY_trainee);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
@@ -427,6 +431,8 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 
 		$posY_trainer = $this->pdf->GetY();
 		$posX_trainer = $posX + $this->larg_col1 + $this->larg_col2 + $this->larg_col3;
+		$TposX[] = $posX_trainer;
+
 		if ($this->nbFormateurs > 0)
 		{
 			$nbForm = $this->nbFormateurs;
@@ -436,22 +442,30 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$this->pdf->SetXY($posX_trainer, $posY_trainer);
 				$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 7);
 				$this->str = strtoupper($trainer_line->lastname) . "<br>" . ucfirst($trainer_line->firstname);
-				$hauteur = dol_nboflines_bis($this->str, 50) * 4;
+				$hauteur = dol_nboflines_bis($this->str, 15) * 3;
 				$largeurCell = $this->larg_col4/$nbForm;
 				if ($posX_trainer + $largeurCell > $this->espaceH_dispo) $largeurCell = $this->espaceH_dispo - $posX_trainer + $this->marge_droite;
 
-				$this->pdf->MultiCell($largeurCell, $hauteur, $this->outputlangs->convToOutputCharset($this->str), 'LR', "C", false, 1, $posX_trainer, $posY_trainer, true, 0, true);
+				$this->pdf->MultiCell($largeurCell, $hauteur + 2, $this->outputlangs->convToOutputCharset($this->str), 'LR', "C", false, 1, $posX_trainer, $posY_trainer, true, 0, true);
 				// $w, $h, $txt, $border=0, $align='J', $fill=false, $ln=1, $x='', $y=''
 
 				$posY = $this->pdf->GetY();
-				$posX_trainer += $this->larg_col4/$nbForm;
+				if ($posY > $maxY) $maxY = $posY;
+				$posX_trainer += $largeurCell;
+				$TposX[] = $posX_trainer;
 				$i++;
 
 				if ($i > $nbForm) break;
 			}
 		}
 
-		return array($posX, $posY);
+		foreach ($TposX as $x)
+		{
+			$this->pdf->Line($x, $posY_trainer, $x, $maxY);
+		}
+
+
+		return array($posX, $maxY);
 	}
 
 	function printDateBlockLines($posX, $posY)
@@ -471,7 +485,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
 				$this->pdf->AddPage();
-				list($posX, $posY) = $this->_pagehead($this->pdf->ref_object);
+				list($posX, $posY) = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 
 				/**
 				 * *** Bloc formation ****
