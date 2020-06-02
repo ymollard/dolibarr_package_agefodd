@@ -77,7 +77,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 	 * @param string $courrier name of models
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function write_file($agf, $outputlangs, $file, $socid, $courrier)
+	public function write_file($agf, $outputlangs, $file, $socid, $courrier = '')
 	{
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 

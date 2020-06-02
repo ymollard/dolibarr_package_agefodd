@@ -73,7 +73,7 @@ class pdf_fiche_presence_trainee_trainee extends pdf_fiche_presence_landscape
     /** @var int $dateColMinWidth */
     var $dateColMinWidth = 25;
 
-    /** @var float $signatureRowHeightFactor  By how much a standard row height should be increased in proportion to 
+    /** @var float $signatureRowHeightFactor  By how much a standard row height should be increased in proportion to
 	 *                                        font size. Increase this factor if there is not enough space for
 	 *                                        trainees/trainers to put their signatures in the cells.
      */
@@ -660,7 +660,7 @@ class pdf_fiche_presence_trainee_trainee extends pdf_fiche_presence_landscape
         }
         if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
             if (!empty($agfTrainee->socname)) {
-                $cellContent .= '-' . dol_trunc($agfTrainee->socname, 27);
+            	$cellContent .= '-' . dol_trunc($agfTrainee->socname, 27);
             }
         }
         if (is_object($this->dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {

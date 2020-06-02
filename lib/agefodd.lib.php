@@ -1836,8 +1836,7 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 {
 	global $conf;
 
-	if ($conf->global->AGF_PRINT_INTERNAL_REF_ON_PDF) {
-
+	if ($conf->global->AGF_PRINT_INTERNAL_REF_ON_PDF && is_object($object)) {
 		$forma_ref_int = null;
 		$className = get_class($object);
 
