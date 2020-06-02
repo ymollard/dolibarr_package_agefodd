@@ -721,7 +721,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-3);
 		$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
-		$this->str = $outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' »,' . $outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' », ' . $outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
 		$this->str .= $mysoc->address . ' ';
 		$this->str .= $mysoc->zip . ' ' . $mysoc->town;
 		$this->str .= $outputlangs->transnoentities('AgfPDFFichePres4') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . ",\n";
