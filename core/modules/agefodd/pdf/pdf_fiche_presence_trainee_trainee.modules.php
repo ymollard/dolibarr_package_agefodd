@@ -660,7 +660,9 @@ class pdf_fiche_presence_trainee_trainee extends pdf_fiche_presence_landscape
         }
         if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
             if (!empty($agfTrainee->socname)) {
-            	$cellContent .= '-' . dol_trunc($agfTrainee->socname, 27);
+	            if ($agfTrainee->nom . ' ' . $agfTrainee->prenom!==$agfTrainee->socname) {
+		            $cellContent .= '-' . dol_trunc($agfTrainee->socname, 27);
+	            }
             }
         }
         if (is_object($this->dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {

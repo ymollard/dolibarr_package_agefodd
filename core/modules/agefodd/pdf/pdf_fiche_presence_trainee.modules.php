@@ -483,7 +483,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 
 			if ($posY > $this->page_hauteur - $this->height_for_footer) {
 				$this->pdf = $this->pdf->rollbackTransaction();
-				$this->_pagefoot();
+				$this->_pagefoot($this->pdf->ref_object, 1, $this->outputlangs);
 				$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 				$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 

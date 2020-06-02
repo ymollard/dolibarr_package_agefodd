@@ -695,7 +695,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
 			if (!empty($line->socname)) {
-				$str .= '-' . dol_trunc($line->socname, 27);
+				if ($line->nom . ' ' . $line->prenom!==$line->socname) {
+					$str .= '-' . dol_trunc($line->socname, 27);
+				}
 			}
 		}
 
