@@ -53,7 +53,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 	 * @param int $socid socid
 	 * @return int
 	 */
-	function write_file($agf, $outputlangs, $file, $socid)
+	function write_file($agf, $outputlangs, $file, $socid, $courrier)
 	{
 		global $user, $langs, $conf, $hookmanager;
 
@@ -175,7 +175,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			$this->datesByMonth[$monthYear][$nbChunks-1][] = $dateSlot;
 		}
 
-		$this->_pagebody($this->pdf, $this->session, $this->outputlangs);
+		$this->_pagebody_custom($this->pdf, $this->session, $this->outputlangs);
 
 		$this->pdf->Close();
 		$this->pdf->Output($file, 'F');
@@ -213,7 +213,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 	 * @param Translate $outputlangs Object lang for output
 	 * @return void
 	 */
-	function _pagebody(&$pdf, $agf, $outputlangs)
+	function _pagebody_custom(&$pdf, $agf, $outputlangs)
 	{
 		global $conf, $mysoc;
 
@@ -597,7 +597,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 	 * @param Translate $outputlangs outputlangs
 	 * @return void
 	 */
-	function _pagehead(&$pdf, $outputlangs, $agf, $lines_array, $noTrainer = 0)
+	function _pagehead_custom(&$pdf, $outputlangs, $agf, $lines_array, $noTrainer = 0)
 	{
 		global $conf, $mysoc;
 
@@ -897,14 +897,14 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 
 		if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
-		if ($forceHead || empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead($pdf, $outputlangs, $this->session, $lines_array, 1);
+		if ($forceHead || empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD)) $this->_pagehead_custom($pdf, $outputlangs, $this->session, $lines_array, 1);
 
 		$topY = $pdf->GetY() + 20;
 		$pdf->SetMargins($this->marge_gauche, $topY, $this->marge_droite); // Left, Top, Right
 
 		$pdf->setPageOrientation('', 0, 0);
 		$pdf->SetAutoPageBreak(0, 0); // to prevent footer creating page
-		$footerheight = $this->_pagefoot($pdf,$this->object, $outputlangs);
+		$footerheight = $this->_pagefoot_custom($pdf,$this->object, $outputlangs);
 		$pdf->SetAutoPageBreak(1, $footerheight);
 
 		// The only function to edit the bottom margin of current page to set it.
@@ -921,7 +921,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 	 * @param Translate $outputlangs outputlangs
 	 * @return int int
 	 */
-	function _pagefoot(&$pdf, $object, $outputlangs)
+	function _pagefoot_custom(&$pdf, $object, $outputlangs)
 	{
 		$pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
 		$pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
