@@ -40,7 +40,7 @@ class TCPDFAgefodd extends TCPDF
 
 	// Page footer
 	public function Footer() {
-			$this->model->_pagefoot($this->ref_object, $this->model->outputlangs);
+		$this->model->_pagefoot($this->ref_object, $this->model->outputlangs);
 	}
 
 }
