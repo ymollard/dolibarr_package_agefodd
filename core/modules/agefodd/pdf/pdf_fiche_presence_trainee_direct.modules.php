@@ -397,7 +397,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
-		$this->str = $outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' »,' . $outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' », ' . $outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
 		$this->str .= $mysoc->address . ' ' .$mysoc->zip . ' ' . $mysoc->town;
 		$this->str .= $outputlangs->transnoentities('AgfPDFFichePres4') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . ",\n";
 		$this->str .= $outputlangs->transnoentities('AgfPDFFichePres5');
