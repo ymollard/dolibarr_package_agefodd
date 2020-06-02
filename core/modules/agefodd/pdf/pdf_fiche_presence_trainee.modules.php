@@ -186,8 +186,10 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 					$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 					$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
+					$this->pdf->setPrintHeader(false);
 					$this->pdf->AddPage();
 					list($posX, $posY) = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
+					$this->pdf->setPrintHeader(true);
 
 					/**
 					 * *** Bloc formation ****
@@ -242,12 +244,15 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		global $user, $langs, $conf, $mysoc;
 
 		// New page
+		$this->pdf->setPrintHeader(false);
 		$this->pdf->AddPage();
 		list($posX, $posY) = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
+		$this->pdf->setPrintHeader(true);
 
 		/**
 		 * *** Bloc formation ****
 		 */
+
 		list($posX, $posY) = $this->printSessionSummary($posX, $posY);
 		list($posX, $posY) = $this->printDateBlockHeader($posX, $posY);
 		list($posX, $posY) = $this->printDateBlockLines($posX, $posY);
@@ -465,8 +470,10 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 				$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
+				$this->pdf->setPrintHeader(false);
 				$this->pdf->AddPage();
 				list($posX, $posY) = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
+				$this->pdf->setPrintHeader(true);
 
 				/**
 				 * *** Bloc formation ****
