@@ -1829,7 +1829,7 @@ class ActionsAgefodd
 
 
 				$thisSubstitutionarray['__agfcreneau_heured__'] = date('H:i', $agf_calendrier->heured);
-				$thisSubstitutionarray['__agfcreneau_heuref__'] = date('H:i', $agf_calendrier->heured);
+				$thisSubstitutionarray['__agfcreneau_heuref__'] = date('H:i', $agf_calendrier->heuref);
 				$thisSubstitutionarray['__agfcreneau_datesession__'] = dol_print_date($agf_calendrier->date_session);
 				$thisSubstitutionarray['__agfcreneau_status__'] = $agf_calendrier->getLibStatut();
 
