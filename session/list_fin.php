@@ -1018,7 +1018,7 @@ if (! empty($search_fournorderid)) {
 	}
 
 	// session dont le lieu appartient au tiers
-	$sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne, s.ref as sessionref
+	$sql2 = "SELECT sess.rowid as sessid, sess.dated, c.intitule, c.ref_interne as trainingrefinterne, p.rowid as pid, p.ref_interne, sess.ref as sessionref
         FROM " . MAIN_DB_PREFIX . "agefodd_session as sess
         LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c ON c.rowid = sess.fk_formation_catalogue
         LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p ON p.rowid = sess.fk_session_place
