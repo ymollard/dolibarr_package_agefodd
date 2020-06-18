@@ -106,9 +106,10 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		}
 
 		if (file_exists($dir)) {
-			$this->pdf = pdf_getInstance_agefodd($agf, $this, $this->format, $this->unit, $this->orientation);
+			$this->pdf = pdf_getInstance($this->format, $this->unit, $this->orientation);
 
 			$this->ref_object=$agf;
+			$this->pdf->ref_object=$agf;
 
 			$this->pdf->setPrintHeader(true);
 			$this->pdf->setPrintFooter(true);
