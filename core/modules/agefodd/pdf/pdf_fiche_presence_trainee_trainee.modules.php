@@ -413,7 +413,7 @@ class pdf_fiche_presence_trainee_trainee extends pdf_fiche_presence_landscape
 		$showAdditionalText = empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER);
 		if ($showAdditionalText) {
 			$rightHeaderCellAdditionalContent = $this->outputlangs->transnoentities(
-				$type === 'trainee' ? 'AgfPDFFichePres_meaningOfSignatureTrainee' : 'AgfPDFFichePres13'
+				$type === 'trainee' ? 'AgfPDFFichePres19single' : 'AgfPDFFichePres13'
 			);
 		}
 
