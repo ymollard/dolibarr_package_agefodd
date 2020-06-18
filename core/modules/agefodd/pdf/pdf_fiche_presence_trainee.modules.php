@@ -105,9 +105,10 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		}
 
 		if (file_exists($dir)) {
-			$this->pdf = pdf_getInstance_agefodd($agf, $this, $this->format, $this->unit, $this->orientation);
+			$this->pdf = pdf_getInstance($this->format, $this->unit, $this->orientation);
 
 			$this->ref_object=$agf;
+			$this->pdf->ref_object=$agf;
 
 			$this->pdf->setPrintHeader(true);
 			$this->pdf->setPrintFooter(true);
@@ -185,7 +186,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 					$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
 					$this->pdf->AddPage();
-					list($posX, $posY) = $this->_pagehead($this->pdf->ref_object);
+					list($posX, $posY) = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 
 					/**
 					 * *** Bloc formation ****
@@ -241,7 +242,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 
 		// New page
 		$this->pdf->AddPage();
-		list($posX, $posY) = $this->_pagehead($this->pdf->ref_object);
+		list($posX, $posY) = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 
 		/**
 		 * *** Bloc formation ****
@@ -443,7 +444,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 
 				$this->pdf->AddPage();
-				list($posX, $posY) = $this->_pagehead($this->pdf->ref_object);
+				list($posX, $posY) = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 
 				/**
 				 * *** Bloc formation ****
