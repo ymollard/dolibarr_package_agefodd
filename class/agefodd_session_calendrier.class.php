@@ -201,8 +201,8 @@ class Agefodd_sesscalendar extends CommonObject{
 										{
 											if (!empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY))
 											{
-												$error++;
 												$this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
+												$this->error.= "<br />".$langs->trans('agfscheduleCreatedAnyway');
 											}
 											else
 											{
