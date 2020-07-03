@@ -547,7 +547,7 @@ if ($resql != - 1) {
 			$sortorder, '', $num);
 
 	$i = 0;
-	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+	print '<form method="get" action="' . $_SERVER ['PHP_SELF'] .'" name="search_form">' . "\n";
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 	$arg_url = '&page=' . $page . '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid;
@@ -794,7 +794,7 @@ if (! empty($search_fournorderid)) {
 			INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf ON sf.fk_session = s.rowid
 			INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur
 			INNER JOIN " . MAIN_DB_PREFIX . "socpeople as socpf ON f.fk_socpeople = socpf.rowid AND socpf.fk_soc=" . $object_socid . "
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,1)";
+            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,3)";
 	if (is_array($excludeSessions) && count($excludeSessions) > 0) {
 		$sql .= " AND s.rowid NOT IN (" . implode(",", $excludeSessions) . ")";
 	}
