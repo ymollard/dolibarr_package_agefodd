@@ -283,7 +283,10 @@ if ($action == 'setvarother') {
 	if (! $res > 0)
 		$error ++;
 
-
+	$field = GETPOST('AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE');
+	$res = dolibarr_set_const($db, 'AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE', json_encode($field), 'chaine', 0, '', $conf->entity);
+	if (! $res > 0)
+		$error ++;
 
     if (! $error) {
         setEventMessage($langs->trans("SetupSaved"), 'mesgs');
@@ -1393,6 +1396,22 @@ $var=!$var;
 print '<tr '.$bc[$var].'><td>' . $langs->trans("AGF_FICHEPRES_SHOW_OPCO_NUMBERS") . '</td>';
 print '<td align="right">';
 print ajax_constantonoff('AGF_FICHEPRES_SHOW_OPCO_NUMBERS');
+print '</td>';
+print '<td></td>';
+print '</tr>';
+$var=!$var;
+
+$sql = 'SELECT code, label FROM ' . MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type WHERE active = 1 AND entity IN (0,' . $conf->entity.')';
+$resql = $db->query($sql);
+$TScheduleType = array();
+if ($resql)
+{
+	while ($obj = $db->fetch_object($resql)) $TScheduleType[$obj->code] = $obj->label;
+}
+
+print '<tr '.$bc[$var].'><td>' . $langs->trans("AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE") . '</td>';
+print '<td align="right">';
+print $form->multiselectarray('AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE', $TScheduleType, json_decode($conf->global->AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE));
 print '</td>';
 print '<td></td>';
 print '</tr>';

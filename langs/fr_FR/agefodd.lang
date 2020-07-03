@@ -1776,8 +1776,7 @@ AgfTimeInfoStatusFuture=Vous ne pouvez saisir un temps de présence dans le futu
 AgfStatusRecalculateWithRealTime=Le statut du participant %s à été recalculé/forcé en fonction des temps réels de présence/absence
 AgfWarnTimeWillBeDelete=Attention: les temps déja saisis vont être supprimer
 AgfWarnStatusLimited=La liste des statuts disponibles est limité en fonction de la date début de la session (ou du premier créneaux si il existe)
-
-
+AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE=Type de créneaux de session pour lesquels on ne vérifie pas la disponibilité des formateurs de la session
 
 
 AGF_HIDE_CACHET_FICHEPRES=Masquer la ligne qui précède le tampon sur les feuilles d'émargement

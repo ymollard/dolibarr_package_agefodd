@@ -105,6 +105,8 @@ class Agefodd_sesscalendar extends CommonObject{
 		global $conf, $langs;
 		$error = 0;
 
+		$TExcludedScheduleType = array();
+		if (!empty($conf->global->AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE)) $TExcludedScheduleType = json_decode($conf->global->AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE);
 		// Clean parameters
 		if (!is_numeric($this->status)) $this->status = 0;
 		// Check parameters
@@ -189,25 +191,28 @@ class Agefodd_sesscalendar extends CommonObject{
                         }
                         else
                         {
-                            foreach ($agf_cal->lines as $line)
-                            {
-                                if (!empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6)
-                                {
-                                    if ((($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) && $line->fk_session != $this->sessid)
-                                    {
-                                        if (!empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY))
-                                        {
-                                            $error++;
-                                            $this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
-                                        }
-                                        else
-                                        {
-                                            $error++;
-                                            $this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
-                                        }
-                                    }
-                                }
-                            }
+                        	if (!in_array($this->calendrier_type, $TExcludedScheduleType))
+							{
+								foreach ($agf_cal->lines as $line)
+								{
+									if (!empty($line->trainer_status_in_session) && $line->trainer_status_in_session != 6)
+									{
+										if ((($agf_cal->heured <= $line->heured && $agf_cal->heuref >= $line->heuref) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref <= $line->heuref) || ($agf_cal->heured <= $line->heured && $agf_cal->heuref <= $line->heuref && $agf_cal->heuref > $line->heured) || ($agf_cal->heured >= $line->heured && $agf_cal->heuref >= $line->heuref && $agf_cal->heured < $line->heuref)) && $line->fk_session != $this->sessid)
+										{
+											if (!empty($conf->global->AGF_ONLY_WARNING_ON_TRAINER_AVAILABILITY))
+											{
+												$error++;
+												$this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
+											}
+											else
+											{
+												$error++;
+												$this->error = $langs->trans('AgfTrainerlAreadybookAtThisTime').'(<a href='.dol_buildpath('/agefodd/session/trainer.php', 1).'?id='.$line->fk_session.' target="_blanck">'.$line->fk_session.'</a>)<br>';
+											}
+										}
+									}
+								}
+							}
                         }
                     }
 
