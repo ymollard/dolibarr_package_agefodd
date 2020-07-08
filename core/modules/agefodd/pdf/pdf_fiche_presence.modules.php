@@ -330,34 +330,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $agf);
 			}
 
-			// Cachet et signature
-			if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES))
-			{
-				$posY += 2;
-				$posX -= 2;
-				$this->pdf->SetXY($posX, $posY);
-				$str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
-				$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-				$this->pdf->SetXY($posX + 55, $posY);
-				$str = $this->outputlangs->transnoentities('AgfPDFFichePres21') . dol_print_date($this->pdf->ref_object->datef);
-				$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-				$this->pdf->SetXY($posX + 92, $posY);
-				$str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
-				$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-			}
-
-			$posY = $this->pdf->GetY();
-
-			// Incrustation image tampon
-			if ($conf->global->AGF_INFO_TAMPON) {
-				$dir = $conf->agefodd->dir_output . '/images/';
-				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-				if (file_exists($img_tampon))
-					$this->pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
-			}
-
 			// Pied de page
 			$this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
 			if (method_exists($this->pdf, 'AliasNbPages')) {
