@@ -318,17 +318,20 @@ if($res > 0)
 	        } else {
 		        $heureDoneByModTotal=0;
 		        $TrainerDoneByMod=array();
-	        	foreach($THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']] as $trainerid=>$hrsDone) {
-			        $heureDoneByModTotal += $hrsDone;
-			        $TrainerDoneByMod[]= $TtrainerName[$trainerid];
-		        }
+		        if(is_array($THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']])) {
+			        foreach ($THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']] as $trainerid => $hrsDone) {
+				        $heureDoneByModTotal += $hrsDone;
+				        $TrainerDoneByMod[] = $TtrainerName[$trainerid];
+			        }
 
-	        	if (!empty($heureDoneByModTotal)) {
-			        $heureDone = $heureDoneByModTotal.' ('.implode(',', $TrainerDoneByMod).')';
-			        $heureRest = $line->heurep - $heureDoneByModTotal;
-		        } else {
-			        $heureRest = $line->heurep - $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][0];
-			        $heureDone = $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][0];
+
+			        if (!empty($heureDoneByModTotal)) {
+				        $heureDone = $heureDoneByModTotal . ' (' . implode(',', $TrainerDoneByMod) . ')';
+				        $heureRest = $line->heurep - $heureDoneByModTotal;
+			        } else {
+				        $heureRest = $line->heurep - $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][0];
+				        $heureDone = $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][0];
+			        }
 		        }
 	        }
 
