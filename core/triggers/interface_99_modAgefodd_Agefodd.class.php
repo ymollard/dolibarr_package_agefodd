@@ -486,7 +486,7 @@ class InterfaceAgefodd {
 			$actioncomm->fk_element = $object->id;
 			$actioncomm->elementtype = $object->element;
 			$actioncomm->userownerid=$user->id;
-			
+
 			$ret = method_exists($actioncomm, 'create') ? $actioncomm->create($user) : $actioncomm->add($user); // User qui saisit l'action
 			if ($ret > 0) {
 				return 1;
@@ -959,7 +959,9 @@ class InterfaceAgefodd {
 												$num_OPCA_file_array[$sessionOPCA->num_OPCA_file] = $line->socname;
 											}
 										}
-										$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
+										if ($line->socid==$invoice->socid) {
+											$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
+										}
 									}
 								}
 							}
