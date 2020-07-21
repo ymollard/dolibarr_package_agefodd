@@ -946,6 +946,7 @@ class InterfaceAgefodd {
 							if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
 								$desc_trainee .= "\n";
 								$num_OPCA_file_array = array();
+								$nbtrainee=0;
 								foreach ($session_trainee->lines as $line) {
 
 									// Do not output not present or cancelled trainee
@@ -960,6 +961,7 @@ class InterfaceAgefodd {
 											}
 										}
 										if ($line->socid==$invoice->socid) {
+											$nbtrainee++;
 											$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
 										}
 									}
