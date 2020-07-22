@@ -130,7 +130,7 @@ class Agsession extends CommonObject
 	public $signataire_inter_array_poste = array();
 	public $signataire_inter_array_mail = array();
 	public $signataire_inter_array_phone = array();
-	
+
 	/**
 	 * Constructor
 	 *
@@ -563,7 +563,7 @@ class Agsession extends CommonObject
 
 		// Create clone
 		$result = $object->create($user);
-		
+
 		if ($result < 0) {
 			$this->db->rollback();
 			return -1;
@@ -3416,7 +3416,7 @@ class Agsession extends CommonObject
 		$sql .= " c.intitule, c.ref";
 		$sql .= " ,s.intitule_custo";
 		$sql .= " ,ord_inv.element_type";
-		$sql .= " ,ord_inv.rowid id_element";
+		$sql .= " ,ord_inv.rowid as id_element";
 		$sql .= " ,s.duree_session,";
 		$sql .= " p.ref_interne,";
 		$sql .= " s.ref as refsession";
@@ -3580,11 +3580,13 @@ class Agsession extends CommonObject
 				//Add session link with supplier invoicie lines
 				$sql = "SELECT DISTINCT s.rowid, s.entity, s.fk_soc, s.fk_session_place, s.type_session, s.dated, s.datef,  s.date_res_trainer, s.color, s.force_nb_stagiaire, s.nb_stagiaire,s.notes,";
 				$sql .= " c.intitule, c.ref";
+				$sql .= " ,s.ref as refsession";
 				$sql .= " ,s.intitule_custo";
 				$sql .= " ,s.duree_session,";
 				$sql .= " p.ref_interne";
 				$sql .= " ,fourninvoice.ref as fourninvoiceref";
 				$sql .= " ,ord_inv.rowid as agelemetnid ";
+				$sql .= " ,ord_inv.element_type as element_type ";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 				$sql .= " ON c.rowid = s.fk_formation_catalogue";
@@ -3622,6 +3624,7 @@ class Agsession extends CommonObject
 							$line = new AgfInvoiceOrder();
 
 							$line->rowid = $obj->rowid;
+							$line->refsession = $obj->refsession;
 							$line->entity = $obj->entity;
 							$line->socid = $obj->fk_soc;
 							$line->type_session = $obj->type_session;
@@ -3640,6 +3643,7 @@ class Agsession extends CommonObject
 							$line->notes = $obj->notes;
 							$line->fourninvoiceref = $obj->fourninvoiceref;
 							$line->agelemetnid = $obj->agelemetnid;
+							$line->element_type = $obj->element_type;
 
 							$this->lines[] = $line;
 						}
@@ -4903,7 +4907,7 @@ class Agsession extends CommonObject
 				$vat_src_code = $reg[1];
 				$tva_tx = preg_replace('/\s*\(.*\)/', '', $tva_tx);    // Remove code into vatrate.
 			}
-			
+
 			if (! empty($from_financial_id) && ! empty($from_financial_elementtype)) {
 				if ($from_financial_elementtype == 'propal') {
 					require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
@@ -5177,7 +5181,7 @@ class Agsession extends CommonObject
 				$obj = $this->db->fetch_object($resql);
 				return $this->db->jdate($obj->maxdate);
 			}
-			
+
 			return -1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();

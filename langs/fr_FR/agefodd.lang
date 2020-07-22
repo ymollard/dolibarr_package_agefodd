@@ -1545,6 +1545,7 @@ order_supplier_trainer=Formateurs
 order_supplier_room=Lieu
 order_supplier_missions=Déplacement et mission
 invoice_supplier_trainer=Formateurs
+invoice_supplierline_trainer=Formateurs (ligne de facture)
 invoice_supplier_room=Lieu
 invoice_supplier_missions=Déplacement et mission
 AgfSessionRef=Ref. Session
