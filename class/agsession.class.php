@@ -3583,6 +3583,9 @@ class Agsession extends CommonObject
 				$sql .= " ,s.intitule_custo";
 				$sql .= " ,s.duree_session,";
 				$sql .= " p.ref_interne";
+				$sql .= " ,ord_inv.element_type";
+				$sql .= " , s.ref as refsession";
+				$sql .= " ,sale.fk_user_com";
 				$sql .= " ,fourninvoice.ref as fourninvoiceref";
 				$sql .= " ,ord_inv.rowid as agelemetnid ";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -3600,6 +3603,8 @@ class Agsession extends CommonObject
 				$sql .= " AND ord_inv.element_type LIKE 'invoice_supplierline%'  ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn AS fourninvoice ON fourninvoice.rowid = fourninvoiceline.fk_facture_fourn ";
 				$sql .= " AND fourninvoice.rowid = ".$fourninvoiceid;
+				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
+				$sql .= " ON s.rowid = sale.fk_session_agefodd";
 				$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 				$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
 				$sql .= " ,fourninvoice.ref, ord_inv.rowid ";
@@ -3640,6 +3645,9 @@ class Agsession extends CommonObject
 							$line->notes = $obj->notes;
 							$line->fourninvoiceref = $obj->fourninvoiceref;
 							$line->agelemetnid = $obj->agelemetnid;
+							$line->element_type = $obj->element_type;
+							$line->refsession = $obj->refsession;
+							$line->fk_user_com = $obj->fk_user_com;
 
 							$this->lines[] = $line;
 						}
