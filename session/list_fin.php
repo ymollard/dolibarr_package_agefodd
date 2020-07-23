@@ -758,7 +758,7 @@ if ($resql != - 1) {
 				}
 				$idelement = $agf_fin->lines[0]->id;
 				if (property_exists($line, 'agelemetnid') && ! empty($line->agelemetnid)) {
-					$idelement = $line->agelemetnid;
+					$id_element = $line->agelemetnid;
 				}
 			} else {
 				$type = 'order_supplier';
