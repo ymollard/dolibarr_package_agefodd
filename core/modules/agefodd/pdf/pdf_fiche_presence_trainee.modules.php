@@ -459,7 +459,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$TposX[] = $posX_trainer;
 				$i++;
 
-				if ($i > $nbForm) break;
+				if ($i >= $nbForm) break;
 			}
 		}
 
@@ -562,7 +562,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$posX_trainer += $this->larg_col4/$nbForm;
 				$i++;
 
-				if ($i > $nbForm) break;
+				if ($i >= $nbForm) break;
 			}
 		}
 		$posY = $this->pdf->GetY();
