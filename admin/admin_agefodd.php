@@ -275,7 +275,7 @@ if ($action == 'setvar') {
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT', $default_training_cat, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
-	
+
 	$default_training_cat_bpf = GETPOST('AGF_DEFAULT_TRAINNING_CAT_BPF', 'int');
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_TRAINNING_CAT_BPF', $default_training_cat_bpf, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
@@ -290,13 +290,6 @@ if ($action == 'setvar') {
 	$res = dolibarr_set_const($db, 'AGF_DEFAULT_CALENDAR_STATUS', $defaultstatuscalendartrainer, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
-
-	$TStagiaireStatusToExclude = GETPOST('TStagiaire_session_status');
-	if(is_array($TStagiaireStatusToExclude)) {
-		$TStagiaireStatusToExclude = implode(',', $TStagiaireStatusToExclude);
-		$TStagiaireStatusToExclude = strtr($TStagiaireStatusToExclude, array('prosp'=>'0'));
-	}
-	$res = dolibarr_set_const($db, 'AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES', $TStagiaireStatusToExclude, 'chaine', 0, '', $conf->entity);
 
 	if ($_FILES["imagesup"]["tmp_name"]) {
 		if (preg_match('/([^\\/:]+)$/i', $_FILES["imagesup"]["name"], $reg)) {
@@ -759,7 +752,7 @@ print "</tr>\n";
 
 // Prefecture d\'enregistrement
 print '<tr class="pair"><td>' . $langs->trans("AgfPrefNom") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print '<input type="text"   name="AGF_ORGANISME_PREF" value="' . $conf->global->AGF_ORGANISME_PREF . '" size="20" ></td>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfPrefNomHelp"), 1, 'help');
@@ -768,7 +761,7 @@ print '</tr>';
 
 // Numerot d\'enregistrement a la prefecture
 print '<tr class="impair"><td>' . $langs->trans("AgfPrefNum") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print '<input type="text"   name="AGF_ORGANISME_NUM" value="' . $conf->global->AGF_ORGANISME_NUM . '" size="20" ></td>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfPrefNumHelp"), 1, 'help');
@@ -777,7 +770,7 @@ print '</tr>';
 
 // Representant de la societé de formation
 print '<tr class="pair"><td>' . $langs->trans("AgfRepresant") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print '<input type="text" name="AGF_ORGANISME_REPRESENTANT" value="' . $conf->global->AGF_ORGANISME_REPRESENTANT . '" size="20" ></td>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfRepresantHelp"), 1, 'help');
@@ -786,14 +779,14 @@ print '</tr>';
 
 // PDF Base color
 print '<tr class="pair"><td>' . $langs->trans("AgfPDFTextColor") . '</td>';
-print '<td nowrap="nowrap">';
+print '<td nowrap="nowrap" align="right">';
 print $formother->selectColor($conf->global->AGF_TEXT_COLOR, "AGF_TEXT_COLOR");
 print '</td>';
 print '<td></td>';
 print "</tr>";
 print '<tr class="impair">';
 print '<td>' . $langs->trans("AgfPDFHeadColor") . '</td>';
-print '<td nowrap="nowrap">';
+print '<td nowrap="nowrap" align="right">';
 print $formother->selectColor($conf->global->AGF_HEAD_COLOR, "AGF_HEAD_COLOR");
 print '</td>';
 print '<td></td>';
@@ -801,7 +794,7 @@ print "</tr>";
 // Background color for header
 print '<tr class="pair">';
 print '<td>' . $langs->trans("AgfPDFHeaderColorBg") . '</td>';
-print '<td nowrap="nowrap">';
+print '<td nowrap="nowrap" align="right">';
 print $formother->selectColor($conf->global->AGF_HEADER_COLOR_BG, "AGF_HEADER_COLOR_BG");
 print '</td>';
 print '<td></td>';
@@ -809,7 +802,7 @@ print "</tr>";
 // olor for header
 print '<tr class="pair">';
 print '<td>' . $langs->trans("AgfPDFHeaderColorText") . '</td>';
-print '<td nowrap="nowrap">';
+print '<td nowrap="nowrap" align="right">';
 print $formother->selectColor($conf->global->AGF_HEADER_COLOR_TEXT, "AGF_HEADER_COLOR_TEXT");
 print '</td>';
 print '<td></td>';
@@ -817,14 +810,14 @@ print "</tr>";
 // Color for lines
 print '<tr class="impair">';
 print '<td>' . $langs->trans("AgfPDFColorLines") . '</td>';
-print '<td nowrap="nowrap">';
+print '<td nowrap="nowrap" align="right">';
 print $formother->selectColor($conf->global->AGF_COLOR_LINE, "AGF_COLOR_LINE");
 print '</td>';
 print '<td></td>';
 print "</tr>";
 print '<tr  class="pair">';
 print '<td>' . $langs->trans("AgfPDFFootColor") . '</td>';
-print '<td nowrap="nowrap">';
+print '<td nowrap="nowrap" align="right">';
 print $formother->selectColor($conf->global->AGF_FOOT_COLOR, "AGF_FOOT_COLOR");
 print '</td>';
 print '<td></td>';
@@ -832,7 +825,7 @@ print "</tr>";
 
 // Utilisation d'un type de stagaire
 print '<tr class="impair"><td>' . $langs->trans("AgfUseStagType") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 $arrval = array (
 		'0' => $langs->trans("No"),
 		'1' => $langs->trans("Yes")
@@ -847,7 +840,7 @@ print '</tr>';
 if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
 	// Type de stagaire par defaut
 	print '<tr class="impair"><td>' . $langs->trans("AgfUseStagTypeDefault") . '</td>';
-	print '<td align="left">';
+	print '<td align="right">';
 	print $formAgefodd->select_type_stagiaire($conf->global->AGF_DEFAULT_STAGIAIRE_TYPE, 'AGF_DEFAULT_STAGIAIRE_TYPE', ' active=1 ');
 	print '</td>';
 	print '<td align="center">';
@@ -857,7 +850,7 @@ if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
 
 // Utilisation d'un type de formateur
 print '<tr class="impair"><td>' . $langs->trans("AgfUseTrainerType") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 $arrval = array (
 		'0' => $langs->trans("No"),
 		'1' => $langs->trans("Yes")
@@ -872,7 +865,7 @@ print '</tr>';
 if (! empty($conf->global->AGF_USE_FORMATEUR_TYPE)) {
 	// Type de stagaire par defaut
 	print '<tr class="impair"><td>' . $langs->trans("AgfUseTrainerTypeDefault") . '</td>';
-	print '<td align="left">';
+	print '<td align="right">';
 	print $formAgefodd->select_type_formateur($conf->global->AGF_DEFAULT_FORMATEUR_TYPE, 'AGF_DEFAULT_FORMATEUR_TYPE', ' active=1 ');
 	print '</td>';
 	print '<td align="center">';
@@ -957,7 +950,7 @@ if(!empty($conf->global->AGF_DISPLAY_MARGE_CONFIG) || !empty($showHiddenConf)){
 	foreach ($TOrientations as $orientation) {
 		foreach ($TMarges as $marge) {
 			print '<tr class="pair"><td>' . $langs->trans("AgfMarge" . ucfirst(strtolower($marge)) . $orientation) . '</td>';
-			print '<td align="left">';
+			print '<td align="right">';
 			print '<input type="text"   name="' . 'AGF_MARGE_' . $marge . '_' . $orientation . '" value="' . $conf->global->{'AGF_MARGE_' . $marge . '_' . $orientation} . '" size="4" >' . $langs->trans('LengthUnitmm') . '</td>';
 			print '<td align="center">';
 			print $form->textwithpicto('', $langs->trans("AgfPDFMargeLeaveEmptyForDefault"), 1, 'help');
@@ -969,7 +962,7 @@ if(!empty($conf->global->AGF_DISPLAY_MARGE_CONFIG) || !empty($showHiddenConf)){
 
 // Default session status
 print '<tr class="impair"><td>' . $langs->trans("AgfDefaultSessionStatus") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print $formAgefodd->select_session_status($conf->global->AGF_DEFAULT_SESSION_STATUS, "AGF_DEFAULT_SESSION_STATUS", 't.active=1');
 print '</td>';
 print '<td align="center">';
@@ -978,7 +971,7 @@ print '</tr>';
 
 // Default session status
 print '<tr class="impair"><td>' . $langs->trans("AgfDefaultSessionType") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print $formAgefodd->select_type_session("AGF_DEFAULT_SESSION_TYPE",$conf->global->AGF_DEFAULT_SESSION_TYPE);
 print '</td>';
 print '<td align="center">';
@@ -987,7 +980,7 @@ print '</tr>';
 
 // Nb hours in days
 print '<tr class="pair"><td>' . $langs->trans("AgfNbHourInDays") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print '<input type="text"   name="AGF_NB_HOUR_IN_DAYS" value="' . $conf->global->AGF_NB_HOUR_IN_DAYS. '" size="4" ></td>';
 print '<td align="center">';
 print $form->textwithpicto('', $langs->trans("AgfNbHourInDaysHelp"), 1, 'help');
@@ -996,7 +989,7 @@ print '</tr>';
 
 // Default calendar status
 print '<tr class="impair"><td>' . $langs->trans("AgfDefaultCalendarStatus") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print $formAgefodd->select_calendrier_status($conf->global->AGF_DEFAULT_CALENDAR_STATUS, "AGF_DEFAULT_CALENDAR_STATUS");
 print '</td>';
 print '<td align="center">';
@@ -1005,7 +998,7 @@ print '</tr>';
 
 // Default Trainer status
 print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainerCalendarStatus") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print $formAgefodd->select_calendrier_status($conf->global->AGF_DEFAULT_TRAINER_CALENDAR_STATUS, "AGF_DEFAULT_TRAINER_CALENDAR_STATUS");
 print '</td>';
 print '<td align="center">';
@@ -1015,7 +1008,7 @@ print '</tr>';
 
 // Default training cat
 print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainingCat") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print $formAgefodd->select_training_categ($conf->global->AGF_DEFAULT_TRAINNING_CAT, 'AGF_DEFAULT_TRAINNING_CAT', 't.active=1', 1);
 print '<td align="center">';
 print '</td>';
@@ -1023,26 +1016,12 @@ print '</tr>';
 
 // Default training cat BPF
 print '<tr class="pair"><td>' . $langs->trans("AgfDefaultTrainingCatBPF") . '</td>';
-print '<td align="left">';
+print '<td align="right">';
 print $formAgefodd->select_training_categ_bpf($conf->global->AGF_DEFAULT_TRAINNING_CAT_BPF, 'AGF_DEFAULT_TRAINNING_CAT_BPF', 't.active=1', 1);
 print '<td align="center">';
 print '</td>';
 print '</tr>';
 
-// Trainee status to hide on emargement
-$sess_sta = new Agefodd_session_stagiaire($db);
-print '<tr class="pair"><td>' . $langs->trans("AgfTraineeStatusToExcludeToFichePres") . '</td>';
-print '<td align="left">';
-$TStagiaireStatusToExclude = $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES;
-if(strpos($TStagiaireStatusToExclude, '0') !== false) {
-	$TStagiaireStatusToExclude = strtr($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES, array('0'=>'prosp'));
-	$sess_sta->labelstatut['prosp'] = $sess_sta->labelstatut[0];
-	unset($sess_sta->labelstatut[0]);
-}
-print $formAgefodd->multiselectarray('TStagiaire_session_status', $sess_sta->labelstatut, explode(',', $TStagiaireStatusToExclude));
-print '<td align="center">';
-print '</td>';
-print '</tr>';
 
 print '<tr class="impair"><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td>';
 print '</tr>';

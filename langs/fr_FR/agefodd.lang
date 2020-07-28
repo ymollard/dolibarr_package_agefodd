@@ -1453,7 +1453,7 @@ AgfNbHourInDays=Nombre d'heure dans la journée
 AgfNbHourInDaysHelp=Utilisaé pour les PDF de programme pédagogique
 AgfDefaultTrainingCat=Catégorie par defaut des formations à la création
 AgfDefaultTrainingCatBPF=Catégorie Prestation par defaut des formations à la création
-AgfTraineeStatusToExcludeToFichePres=Exclure de la fiche de présence les participants ayant l'un des statuts suivants
+AgfTraineeStatusToExcludeToFichePres=Exclure des fiches de présences les participants ayant l'un des statuts suivants
 ExtraFieldsTrainee=Attributs supplémentaires (Participants)
 ExtraFieldsTrainer=Attributs supplémentaires (Formateurs)
 AgfDefaultSessionType=Type de session par defaut
@@ -1787,3 +1787,5 @@ agfscheduleCreatedAnyway=Le créneaux a tout de même été créé.
 AGF_HIDE_CACHET_FICHEPRES=Masquer la ligne qui précède le tampon sur les feuilles d'émargement
 AGF_FICHEPRES_SHOW_TIME_FOR_PAGE=Afficher le temps total des créneaux de la page dans les feuilles d'émargement
 AGF_FICHEPRES_SHOW_OPCO_NUMBERS=Afficher les numeros de dossier OPCO dans les feuilles d'émargement
+
+AgfStaNotInStatusToOutput=Le stagiaire %s n'est pas dans un status pour être sur la fiche de présence

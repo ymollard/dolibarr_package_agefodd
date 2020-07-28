@@ -68,9 +68,9 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
-        
 
-        
+
+
 
         $usesearch_stagstype = GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT', 'alpha');
         $res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype, 'chaine', 0, '', $conf->entity);
@@ -212,7 +212,7 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
-		
+
 		$usesearch_training = GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT', 'alpha');
 		$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
@@ -287,6 +287,13 @@ if ($action == 'setvarother') {
 	$res = dolibarr_set_const($db, 'AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE', json_encode($field), 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
+
+	$TStagiaireStatusToExclude = GETPOST('TStagiaire_session_status');
+	if(is_array($TStagiaireStatusToExclude)) {
+		$TStagiaireStatusToExclude = implode(',', $TStagiaireStatusToExclude);
+		$TStagiaireStatusToExclude = strtr($TStagiaireStatusToExclude, array('prosp'=>'0'));
+	}
+	$res = dolibarr_set_const($db, 'AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES', $TStagiaireStatusToExclude, 'chaine', 0, '', $conf->entity);
 
     if (! $error) {
         setEventMessage($langs->trans("SetupSaved"), 'mesgs');
@@ -1417,7 +1424,20 @@ print '<td></td>';
 print '</tr>';
 $var=!$var;
 
-
+// Trainee status to hide on emargement
+$sess_sta = new Agefodd_session_stagiaire($db);
+print '<tr class="'.$bc[$var].'"><td>' . $langs->trans("AgfTraineeStatusToExcludeToFichePres") . '</td>';
+print '<td align="right">';
+$TStagiaireStatusToExclude = $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES;
+if(strpos($TStagiaireStatusToExclude, '0') !== false) {
+	$TStagiaireStatusToExclude = strtr($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES, array('0'=>'prosp'));
+	$sess_sta->labelstatut['prosp'] = $sess_sta->labelstatut[0];
+	unset($sess_sta->labelstatut[0]);
+}
+print $formAgefodd->multiselectarray('TStagiaire_session_status', $sess_sta->labelstatut, explode(',', $TStagiaireStatusToExclude));
+print '<td align="center">';
+print '</td>';
+print '</tr>';
 
 
 print '<tr '.$bc[$var].'><td colspan="3" align="right"><input type="submit" class="button" value="' . $langs->trans("Save") . '"></td></tr>';
