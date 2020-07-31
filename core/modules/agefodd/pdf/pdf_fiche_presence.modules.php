@@ -144,6 +144,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$id = $agf;
 			$agf = new Agsession($this->db);
 			$ret = $agf->fetch($id);
+			$this->session=$agf;
 		}
 
 		// Definition of $dir and $file
