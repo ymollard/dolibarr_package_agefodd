@@ -5851,6 +5851,12 @@ class Agsession extends CommonObject
 		    dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 		    $trainee_session = new Agefodd_session_stagiaire($db);
 		    $trainee_session->fetch($id_session_trainee);
+		    // FIX TK11728
+		    $originalTrainee = new Agefodd_stagiaire($db);
+		    if ($trainee_session->fk_stagiaire) $originalTrainee->fetch($trainee_session->fk_stagiaire);
+
+		    $this->stagiaire = $originalTrainee;
+
 		    if (!empty($trainee_session->fk_stagiaire)) {
 
 			    /***************Gestion des heures du participant sur la session (Pour les documents par participant)**************/

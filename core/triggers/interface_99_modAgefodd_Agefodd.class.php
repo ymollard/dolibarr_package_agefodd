@@ -1249,7 +1249,7 @@ class InterfaceAgefodd {
                         $formateur->update($user);
                     }
                     // Cas 2 : utilisateur externe qui passe à interne
-                    else
+                    elseif (empty($object->socid))
                     {
                         $formateur->type_trainer = 'user';
                         $formateur->fk_socpeople = null;
