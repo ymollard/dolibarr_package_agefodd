@@ -5595,6 +5595,7 @@ class Agsession extends CommonObject
 			}
 			if (is_array($obj_agefodd_convention->lines ) && count($obj_agefodd_convention->lines )>0) {
 				foreach($obj_agefodd_convention->lines as $line) {
+
 					if (!empty($obj_agefodd_convention->only_product_session) && $line->fk_product==$this->fk_product) {
 						$this->conv_amount_ht += $line->total_ht;
 						$this->conv_amount_tva += $line->total_tva;
