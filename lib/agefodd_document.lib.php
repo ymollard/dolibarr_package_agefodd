@@ -679,7 +679,7 @@ function show_fac($file, $socid, $mdle)
 			foreach ($order_array as $key => $val) {
 				$commande_static = new Commande($db);
 				$commande_static->fetch($key);
-				if ($commande_static->statut == 1) {
+				if ($commande_static->statut >= 1) {
 					$legende = $langs->trans("AgfFactureAddFacFromOrder") . ' ' . $val;
 					if (DOL_VERSION < 6.0) {
 						$mess .= '<a href="' . DOL_URL_ROOT . '/compta/facture.php?mainmenu=accountancy&action=create&origin=' . $commande_static->element . '&originid=' . $key . '&socid=' . $socid . '"  alt="' . $legende . '" title="' . $legende . '" ' . $target . '>';
