@@ -1558,12 +1558,13 @@ class FormAgefodd extends Form
 	/**
 	 * Display select Trainee status in session
 	 *
-	 * @param string $selectval valeur a selectionner par defaut
-	 * @param string $htmlname nom du control HTML
-	 * @param Agsession $session Object de la session en court
-	 * @return string The HTML control
+     * @param   string          $selectval          valeur a selectionner par defaut
+     * @param   string          $htmlname           nom du control HTML
+     * @param   Agsession       $session            Object de la session en court
+     * @param	int|string		$show_empty			0 no empty value allowed, 1 or string to add an empty value into list (key is -1 and value is '' or '&nbsp;' if 1, key is -1 and value is text if string), <0 to add an empty value with key that is this value.
+     * @return  string          The HTML control
 	 */
-	public function select_stagiaire_session_status($htmlname, $selectval, $session = null)
+	public function select_stagiaire_session_status($htmlname, $selectval, $session = null, $show_empty = 0)
 	{
 		global $conf,$langs;
 
@@ -1590,10 +1591,10 @@ class FormAgefodd extends Form
 						$optionStatus[$statuskey]=$statuslabel;
 					}
 				}
-				return $this->selectarray($htmlname, $optionStatus, $selectval, 0).img_warning($langs->trans('AgfWarnStatusLimited'));
+				return $this->selectarray($htmlname, $optionStatus, $selectval, $show_empty).img_warning($langs->trans('AgfWarnStatusLimited'));
 			}
 		} else {
-			return $this->selectarray($htmlname, $sess_sta->labelstatut, $selectval, 0);
+			return $this->selectarray($htmlname, $sess_sta->labelstatut, $selectval, $show_empty);
 		}
 	}
 

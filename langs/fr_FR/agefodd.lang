@@ -1783,3 +1783,5 @@ AgfWarnStatusLimited=La liste des statuts disponibles est limité en fonction de
 AGF_HIDE_CACHET_FICHEPRES=Masquer la ligne qui précède le tampon sur les feuilles d'émargement
 AGF_FICHEPRES_SHOW_TIME_FOR_PAGE=Afficher le temps total des créneaux de la page dans les feuilles d'émargement
 AGF_FICHEPRES_SHOW_OPCO_NUMBERS=Afficher les numeros de dossier OPCO dans les feuilles d'émargement
+
+AgfTraineeStatus = Statut du participant

@@ -24,8 +24,9 @@
 
 
 function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$object,$parameters) {
-	global $conf;
-	$outputlangs->trans('agefood@agefodd');
+	global $conf, $db;
+
+	$outputlangs->load('agefood@agefodd');
 	$substitutionarray=array_merge($substitutionarray, array(
 			'__FORMINTITULE__' => $outputlangs->trans('AgfFormIntitule').' '.$outputlangs->trans('OnlyOnTrainingMail'),
 			'__FORMDATESESSION__' => $outputlangs->trans('AgfPDFFichePres7bis').' '.$outputlangs->trans('OnlyOnTrainingMail'),
@@ -46,6 +47,28 @@ function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$obj
 		$substitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$object->id;
 		$substitutionarray['__AGENDAICS__'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftraineeid'.$object->id);
 	}
+    elseif(!empty($object) && $object->element == 'contact' && $parameters['needforkey'] == 'SUBSTITUTION_AGFSESSIONLIST')
+    {
+        $nbCollections = 0;
+
+        // count session list
+        $sql  = "SELECT";
+        $sql .= " s.rowid";
+        $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as trainee";
+        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss ON ss.fk_stagiaire = trainee.rowid";
+        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as s ON s.rowid = ss.fk_session_agefodd";
+        $sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
+        $sql .= " AND trainee.fk_socpeople = " . $object->id;
+
+        $resql = $db->query($sql);
+        if ($resql) {
+            $nbCollections = $db->num_rows($resql);
+        } else {
+            dol_print_error($db);
+        }
+
+        $substitutionarray['AGFSESSIONLIST'] = $outputlangs->trans('AgfMenuSess') . ($nbCollections > 0 ? ' <span class="badge">' . ($nbCollections) . '</span>' : '');
+    }
 
 	// show sendCreneauEmailAlertToTrainees for  __AGENDAICS__ external access substitution
 
