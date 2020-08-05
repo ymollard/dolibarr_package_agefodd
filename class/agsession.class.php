@@ -3419,8 +3419,8 @@ class Agsession extends CommonObject
 		$sql .= " ,ord_inv.rowid as id_element";
 		$sql .= " ,s.duree_session,";
 		$sql .= " p.ref_interne,";
-		$sql .= " s.ref as refsession";
-		$sql .= ",sale.fk_user_com";
+		$sql .= " s.ref as refsession,";
+		$sql .= " sale.fk_user_com";
 		if (! empty($invoiceid)) {
             if(floatval(DOL_VERSION) > 9){
                 $sql .= " ,invoice.ref as invoiceref";
@@ -3608,6 +3608,7 @@ class Agsession extends CommonObject
 				$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 				$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
 				$sql .= " ,fourninvoice.ref, ord_inv.rowid ";
+				$sql .= " ,sale.fk_user_com ";
 				if (!empty($sortfield)) {
 					$sql .= " ORDER BY $sortfield $sortorder ";
 				}

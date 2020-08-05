@@ -211,7 +211,6 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				}
 			}
 			if (empty($error)) {
-
 				$create_contact = GETPOST('create_contact', 'int');
 
 				$socid = GETPOST('societe', 'int');
@@ -275,9 +274,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 					$contact->firstname = $firstname;
 					$contact->address = $address;
 					$contact->zip = $zip;
-					$contact->town = $$town;
-					$contact->state_id = $state_id;
-					$contact->country_id = $objectcountry_id;
+					$contact->town = $town;
 					$contact->socid = ($socstatic->id > 0 ? $socstatic->id : $socid); // fk_soc
 					$contact->statut = 1;
 					$contact->email = $mail;
@@ -289,7 +286,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 
 					$result = $contact->create($user);
 					if (! $result >= 0) {
-						setEventMessages($contact->error, $contact->errors,'errors');
+						setEventMessages($contact->error, $contact->errors, 'errors');
 					}
 					$agf->fk_socpeople = $contact->id;
 				}
@@ -298,7 +295,6 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				$result = $agf->create($user);
 			}
 		} elseif ($importfrom == 'contact') {
-
 			// traitement de l'import d'un contact
 			$contact = new Contact($db);
 			$contactid = GETPOST('contact', 'int');
@@ -332,11 +328,11 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 			// Inscrire dans la session
 			if ($session_id > 0) {
 
-				$fk_soc_requester=GETPOST('fk_soc_requester', 'int');
+				$fk_soc_requester = GETPOST('fk_soc_requester', 'int');
 				if ($fk_soc_requester<0) {
 					$fk_soc_requester=0;
 				}
-				$fk_soc_link=GETPOST('fk_soc_link', 'int');
+				$fk_soc_link = GETPOST('fk_soc_link', 'int');
 				if ($fk_soc_link<0) {
 					$fk_soc_link=0;
 				}
