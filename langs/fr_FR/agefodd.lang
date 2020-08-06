@@ -1792,3 +1792,5 @@ AgfStaNotInStatusToOutput=Le stagiaire %s n'est pas dans un status pour être su
 
 AgfDocFin=Documents Financiés (devis/commande/facture)
 AgfTimeManagement=Gestion du temps
+
+AgfTraineeStatus = Statut du participant
