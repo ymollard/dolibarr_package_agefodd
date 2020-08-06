@@ -90,12 +90,44 @@ $arrayfields = array(
     's.status'             => array('label' => 'Status', 'checked' => 1, 'position' => 1000),
 );
 // extra fields
-if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
+// Extra fields
+if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0)
 {
-    foreach($extrafields->attribute_label as $key => $val)
-    {
-        if (! empty($extrafields->attribute_list[$key])) $arrayfields["ef.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>(($extrafields->attribute_list[$key]<0)?0:1), 'position'=>$extrafields->attribute_pos[$key], 'enabled'=>(abs($extrafields->attribute_list[$key])!=3 && $extrafields->attribute_perms[$key]));
-    }
+	foreach ($extrafields->attributes[$object->table_element]['label'] as $key=>$label)
+	{
+		// skip separation
+		if ($extrafields->attributes[$object->table_element]['type'][$key] == 'separate'){
+			continue;
+		}
+		// skip hidden
+		if(!empty($extrafields->attributes[$object->table_element]['hidden'][$key])){
+			continue;
+		}
+
+		$visibility = 1;
+		if ($visibility && isset($extrafields->attributes[$object->table_element]['list'][$key]))
+		{
+			$visibility = dol_eval($extrafields->attributes[$object->table_element]['list'][$key], 1);
+		}
+		if (abs($visibility) != 1 && abs($visibility) != 2 && abs($visibility) != 5) continue; // <> -1 and <> 1 and <> 3 = not visible on forms, only on list
+
+		$perms = 1;
+		if ($perms && isset($extrafields->attributes[$object->table_element]['perms'][$key]))
+		{
+			$perms = dol_eval($extrafields->attributes[$object->table_element]['perms'][$key], 1);
+		}
+		if (empty($perms)) continue;
+
+		// Load language if required
+		if (!empty($extrafields->attributes[$object->table_element]['langfile'][$key]))
+			$langs->load($extrafields->attributes[$object->table_element]['langfile'][$key]);
+
+		$arrayfields["ef." . $key] = array(
+			'label' => $langs->trans($label),
+			'checked' => $extrafields->attributes[$object->table_element]['list'][$key],
+			'position' => $extrafields->attributes[$object->table_element]['pos'][$key]
+		);
+	}
 }
 
 $contact = new Contact($db);
@@ -105,7 +137,6 @@ if ($res < 0) {
     exit();
 }
 $res = $contact->fetch_optionals();
-
 
 /*
  * Actions
@@ -187,7 +218,11 @@ $sql .= ", s.notes";
 $sql .= ", s.status";
 $sql .= ", sst.intitule as session_status_label";
 // add fields from extrafields
-foreach ($extrafields->attribute_label as $key => $val) $sql .= ($extrafields->attribute_type[$key] != 'separate' ? ", ef.".$key.' as options_'.$key : '');
+if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label']) > 0) {
+	foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $label) {
+		$sql .= ($extrafields->attributes[$object->table_element]['type'][$key] != 'separate' ? ", ef." . $key . ' as options_' . $key : '');
+	}
+}
 // add fields from hooks
 $parameters = array();
 $reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters);
@@ -196,7 +231,7 @@ $sql .= $hookmanager->resPrint;
 $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as trainee";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss ON ss.fk_stagiaire = trainee.rowid";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as s ON s.rowid = ss.fk_session_agefodd";
-if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
+if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) {
     $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_extrafields as ef ON ef.fk_object = s.rowid";
 }
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so ON so.rowid = s.fk_soc";

@@ -374,15 +374,48 @@ foreach ( $arrayfields as $colname => $fields ) {
 	}
 }
 // Extra fields
-if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
-	foreach ( $extrafields->attribute_label as $key => $val ) {
+if (is_array($extrafields->attributes[$agf_session->table_element]['label']) && count($extrafields->attributes[$agf_session->table_element]['label']) > 0)
+{
+	foreach ($extrafields->attributes[$agf_session->table_element]['label'] as $key=>$label)
+	{
+		// skip separation
+		if ($extrafields->attributes[$agf_session->table_element]['type'][$key] == 'separate'){
+			continue;
+		}
+		// skip hidden
+		if(!empty($extrafields->attributes[$agf_session->table_element]['hidden'][$key])){
+			continue;
+		}
+
+		$visibility = 1;
+		if ($visibility && isset($extrafields->attributes[$agf_session->table_element]['list'][$key]))
+		{
+			$visibility = dol_eval($extrafields->attributes[$agf_session->table_element]['list'][$key], 1);
+		}
+		if (abs($visibility) != 1 && abs($visibility) != 2 && abs($visibility) != 5) continue; // <> -1 and <> 1 and <> 3 = not visible on forms, only on list
+
+		$perms = 1;
+		if ($perms && isset($extrafields->attributes[$agf_session->table_element]['perms'][$key]))
+		{
+			$perms = dol_eval($extrafields->attributes[$agf_session->table_element]['perms'][$key], 1);
+		}
+		if (empty($perms)) continue;
+
+		// Load language if required
+		if (!empty($extrafields->attributes[$agf_session->table_element]['langfile'][$key]))
+			$langs->load($extrafields->attributes[$agf_session->table_element]['langfile'][$key]);
+
 		$arrayfields["ef." . $key] = array(
-				'label' => $extrafields->attribute_label[$key],
-				'checked' => $extrafields->attribute_list[$key],
-				'position' => $extrafields->attribute_pos[$key]
+				'label' => $langs->trans($label),
+				'checked' => $extrafields->attributes[$agf_session->table_element]['list'][$key],
+				'position' => $extrafields->attributes[$agf_session->table_element]['pos'][$key]
 		);
 	}
 }
+
+
+
+
 
 $filter = array();
 $option = '';
@@ -494,7 +527,7 @@ if (is_array($search_array_options) && count($search_array_options)>0) {
 	foreach ( $search_array_options as $key => $val ) {
 		$crit = $val;
 		$tmpkey = preg_replace('/search_options_/', '', $key);
-		$typ = $extrafields->attribute_type[$tmpkey];
+		$typ = $extrafields->attributes[$agf_session->table_element]['type'][$tmpkey];
 		$mode_search = 0;
 		if (in_array($typ, array('date')) && !empty($crit)) $crit=date('Y-m-d', $crit);
 		if (in_array($typ, array(
@@ -930,18 +963,18 @@ if ($resql != - 1) {
         $extrafieldsobjectkey = 'agefodd_session';
 		include DOL_DOCUMENT_ROOT . '/core/tpl/extrafields_list_search_input.tpl.php';
 	} else {
-		if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
-			foreach ( $extrafields->attribute_label as $key => $val ) {
+		if (is_array($extrafields->attributes[$agf_session->table_element]['label']) && count($extrafields->attributes[$agf_session->table_element]['label']) > 0) {
+			foreach ($extrafields->attributes[$agf_session->table_element]['label'] as $key=>$label) {
 				if (! empty($arrayfields["ef." . $key]['checked'])) {
 					$align = $extrafields->getAlignFlag($key);
-					$typeofextrafield = $extrafields->attribute_type[$key];
+					$typeofextrafield = $extrafields->attributes[$agf_session->table_element]['type'][$key] ;
 					print '<td class="liste_titre' . ($align ? ' ' . $align : '') . '">';
 					if (in_array($typeofextrafield, array(
 							'varchar',
 							'int',
 							'double',
 							'select'
-					)) && empty($extrafields->attribute_computed[$key])) {
+					)) && empty($extrafields->attributes[$agf_session->table_element]['computed'][$key])) {
 						$crit = $val;
 						$tmpkey = preg_replace('/search_options_/', '', $key);
 						$searchclass = '';
@@ -1090,14 +1123,15 @@ if ($resql != - 1) {
 	}
 
 	// Extra fields
-	if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
-		foreach ( $extrafields->attribute_label as $key => $val ) {
+	if (is_array($extrafields->attributes[$agf_session->table_element]['label']) && count($extrafields->attributes[$agf_session->table_element]['label']) > 0) {
+		foreach ($extrafields->attributes[$agf_session->table_element]['label'] as $key=>$label)
+		{
 			if (! empty($arrayfields["ef." . $key]['checked'])) {
 				$align = $extrafields->getAlignFlag($key);
 				$sortonfield = "ef." . $key;
-				if (! empty($extrafields->attribute_computed[$key]))
+				if (! empty($extrafields->attributes[$agf_session->table_element]['computed'][$key]))
 					$sortonfield = '';
-				print getTitleFieldOfList($langs->trans($extralabels[$key]), 0, $_SERVER["PHP_SELF"], $sortonfield, "", $option, ($align ? 'align="' . $align . '"' : ''), $sortfield, $sortorder) . "\n";
+				print getTitleFieldOfList($langs->trans($extrafields->attributes[$agf_session->table_element]['label'][$key]), 0, $_SERVER["PHP_SELF"], $sortonfield, "", $option, ($align ? 'align="' . $align . '"' : ''), $sortfield, $sortorder) . "\n";
 			}
 		}
 	}
@@ -1115,8 +1149,7 @@ if ($resql != - 1) {
 		if ($line->rowid != $oldid) {
 
 			// Affichage tableau des sessions
-			$var = ! $var;
-			print "<tr $bc[$var]>";
+			print '<tr class="oddeven">';
 			// Calcul de la couleur du lien en fonction de la couleur définie sur la session
 			// http://www.w3.org/TR/AERT#color-contrast
 			// SI ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000 < 125 ALORS
@@ -1357,7 +1390,6 @@ if ($resql != - 1) {
 			}
 
 			if (array_key_exists('AgfSheduleBillingState', $arrayfields) && ! empty($arrayfields['AgfSheduleBillingState']['checked'])) {
-
 			    $billed = Agefodd_sesscalendar::countBilledshedule($line->id);
 			    $total = Agefodd_sesscalendar::countTotalshedule($line->id);
 
@@ -1380,8 +1412,8 @@ if ($resql != - 1) {
 			}
 
 			// Extra fields
-			if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
-				foreach ( $extrafields->attribute_label as $key => $val ) {
+			if (is_array($extrafields->attributes[$agf_session->table_element]['label']) && count($extrafields->attributes[$agf_session->table_element]['label']) > 0) {
+				foreach ($extrafields->attributes[$agf_session->table_element]['label'] as $key=>$label) {
 					if (! empty($arrayfields["ef." . $key]['checked'])) {
 						$align = $extrafields->getAlignFlag($key);
 						print '<td';
@@ -1419,7 +1451,7 @@ if ($resql != - 1) {
 			// print '<td>&nbsp;</td>';
 			print "</tr>\n";
 		} else {
-			print "<tr $bc[$var]>";
+			print '<tr class="oddeven">';
 			if (array_key_exists('s.rowid', $arrayfields) && ! empty($arrayfields['s.rowid']['checked'])) {
 				print '<td></td>';
 			}
@@ -1549,8 +1581,8 @@ if ($resql != - 1) {
 			}
 
 			// Extra fields
-			if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
-				foreach ( $extrafields->attribute_label as $key => $val ) {
+			if (is_array($extrafields->attributes[$agf_session->table_element]['label']) && count($extrafields->attributes[$agf_session->table_element]['label']) > 0) {
+				foreach ($extrafields->attributes[$agf_session->table_element]['label'] as $key=>$label) {
 					if (! empty($arrayfields["ef." . $key]['checked'])) {
 						print '<td></td>';
 					}
@@ -1676,8 +1708,8 @@ if ($resql != - 1) {
 	}
 
 	// Extra fields
-	if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) {
-		foreach ( $extrafields->attribute_label as $key => $val ) {
+	if (is_array($extrafields->attributes[$agf_session->table_element]['label']) && count($extrafields->attributes[$agf_session->table_element]['label']) > 0) {
+		foreach ($extrafields->attributes[$agf_session->table_element]['label'] as $key=>$label) {
 			if (! empty($arrayfields["ef." . $key]['checked'])) {
 				print '<td></td>';
 			}
