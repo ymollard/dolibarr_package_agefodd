@@ -1550,7 +1550,8 @@ class modAgefodd extends DolibarrModules
 				'thirdparty:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_soc.php?socid=__ID__',
 				'supplier_invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_fin.php?search_fourninvoiceid=__ID__',
 		        'supplier_order:+tabAgefodd:AgfMenuSess:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/session/list_fin.php?search_fournorderid=__ID__',
-		        'contact:+tabAgefodd:Module103000Name:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/contact/contact_card.php?id=__ID__'
+		        'contact:+tabAgefodd:Module103000Name:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/contact/contact_card.php?id=__ID__',
+                'contact:+tabAgefoddSessionList:SUBSTITUTION_AGFSESSIONLIST:agefodd@agefodd:$user->rights->agefodd->lire:/agefodd/contact/session_list.php?id=__ID__',
 		);
 
 		// Boxes
