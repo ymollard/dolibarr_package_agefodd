@@ -1789,3 +1789,4 @@ AGF_FICHEPRES_SHOW_TIME_FOR_PAGE=Afficher le temps total des créneaux de la pag
 AGF_FICHEPRES_SHOW_OPCO_NUMBERS=Afficher les numeros de dossier OPCO dans les feuilles d'émargement
 
 AgfStaNotInStatusToOutput=Le stagiaire %s n'est pas dans un status pour être sur la fiche de présence
+AgfTraineeStatus = Statut du participant
