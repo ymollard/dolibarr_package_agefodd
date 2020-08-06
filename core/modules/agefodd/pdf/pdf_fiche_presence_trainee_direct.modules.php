@@ -171,6 +171,14 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 				if ($nbsta > 0) {
 					// $blocsta=0;
 					foreach ( $agfsta->lines as $line ) {
+						if ($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
+							$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+							$status_stagiaire = (int) $line->status_in_session;
+							if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
+								setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $line->nom), 'warnings');
+								continue;
+							}
+						}
 						$this->_pagebody($pdf, $agf, 1, $outputlangs, $line);
 					}
 				} else {

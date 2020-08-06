@@ -220,7 +220,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 	 */
 	function _pagebody($agf, $outputlangs)
 	{
-		global $conf, $mysoc;
+		global $conf, $mysoc, $langs;
 
 		$nbsta_index=1;
 
@@ -266,12 +266,13 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 
 		$TStagiaireStatusToExclude = array();
 
-		if (! empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
+		if ($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
 			$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
 		}
 
 		foreach ($this->stagiaires->lines as $line) {
 			if (! empty($TStagiaireStatusToExclude) && in_array($line->status_in_session, $TStagiaireStatusToExclude)) {
+				setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $line->nom), 'warnings');
 				continue;
 			}
 

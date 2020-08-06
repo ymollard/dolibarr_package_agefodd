@@ -640,6 +640,22 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+//Data intégrity stagiaire heures
+$sql = 'SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_stagiaire NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_stagiaire);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_stagiaire.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures référence des stagaire qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_stagiaire NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_stagiaire)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
 //Data intégrity stagiaire heures planification
 $sql = 'SELECT fk_agefodd_session FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_agefodd_session NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session);';
 

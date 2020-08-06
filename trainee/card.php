@@ -53,10 +53,40 @@ $hookmanager->initHooks(array(
 $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
-$arch = GETPOST('arch', 'int');
 $url_back = GETPOST('url_back', 'alpha');
 $session_id = GETPOST('session_id', 'int');
 $importfrom = GETPOST('importfrom', 'alpha');
+
+$name = GETPOST('nom', 'alpha');
+$firstname = GETPOST('prenom', 'alpha');
+$civility_id = GETPOST('civility_id', 'alpha');
+$disable_auto_mail = GETPOST('disable_auto_mail', 'int');
+$date_birth = dol_mktime(0, 0, 0, GETPOST('datebirthmonth', 'int'), GETPOST('datebirthday', 'int'), GETPOST('datebirthyear', 'int'));
+$place_birth = GETPOST('place_birth', 'alpha');
+
+$create_thirdparty = GETPOST('create_thirdparty', 'int');
+if ($create_thirdparty==-1) {
+	$create_thirdparty = 0;
+}
+
+$create_contact = GETPOST('create_contact', 'int');
+
+$socid = GETPOST('societe', 'int');
+$fonction = GETPOST('fonction', 'alpha');
+$tel1 = GETPOST('tel1', 'alpha');
+$tel2 = GETPOST('tel2', 'alpha');
+$mail = GETPOST('mail', 'alpha');
+$note = GETPOST('note', 'alpha');
+$societe_name = GETPOST('societe_name');
+$prospcli = GETPOST('prospcli', 'int');
+$custcats = GETPOST('custcats', 'array');
+$typent_id = GETPOST('typent_id', 'int');
+$address = GETPOST('adresse', 'alpha');
+$zip = GETPOST('zipcode', 'alpha');
+$town = GETPOST('town', 'alpha');
+$country_id = GETPOST('country_id', 'int');
+
+$stagiaire_type = GETPOST('stagiaire_type', 'int');
 
 $agf = new Agefodd_stagiaire($db);
 $extrafields = new ExtraFields($db);
@@ -114,34 +144,32 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 			setEventMessage($agf->error, 'errors');
 		}
 
-		$socid = GETPOST('societe', 'int');
 		if ($socid==-1) {
 			$socid=0;
 		}
 
 		if (empty($socid)) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
-			$error ++;
 		}
 
 		if (empty($error)) {
 			$fk_socpeople = GETPOST('fk_socpeople', 'int');
 
-			$agf->nom = GETPOST('nom', 'alpha');
-			$agf->prenom = GETPOST('prenom', 'alpha');
-			$agf->civilite = GETPOST('civility_id', 'alpha');
-			$agf->socid = GETPOST('societe', 'int');
-			$agf->fonction = GETPOST('fonction', 'alpha');
-			$agf->tel1 = GETPOST('tel1', 'alpha');
-			$agf->tel2 = GETPOST('tel2', 'alpha');
-			$agf->mail = GETPOST('mail', 'alpha');
-			$agf->note = GETPOST('note', 'alpha');
-			$agf->disable_auto_mail = GETPOST('disable_auto_mail', 'int');
+			$agf->nom = $name;
+			$agf->prenom = $firstname;
+			$agf->civilite = $civility_id;
+			$agf->socid = $socid;
+			$agf->fonction = $fonction;
+			$agf->tel1 = $tel1;
+			$agf->tel2 = $tel2;
+			$agf->mail = $mail;
+			$agf->note = $note;
+			$agf->disable_auto_mail = $disable_auto_mail;
 
-			$agf->date_birth = dol_mktime(0, 0, 0, GETPOST('datebirthmonth', 'int'), GETPOST('datebirthday', 'int'), GETPOST('datebirthyear', 'int'));
+			$agf->date_birth = $date_birth;
 			if (! empty($fk_socpeople))
 				$agf->fk_socpeople = $fk_socpeople;
-			$agf->place_birth = GETPOST('place_birth', 'alpha');
+			$agf->place_birth = $place_birth;
 
 			$extrafields->setOptionalsFromPost($extralabels, $agf);
 			$result = $agf->update($user);
@@ -171,14 +199,6 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 		$error = 0;
 
 		if ($importfrom == 'create') {
-
-			$name = GETPOST('nom', 'alpha');
-			$firstname = GETPOST('prenom', 'alpha');
-			$civility_id = GETPOST('civility_id', 'alpha');
-			$socid = GETPOST('societe', 'int');
-
-			$create_thirdparty = GETPOST('create_thirdparty', 'int');
-
 			if ($socid==-1) {
 				unset($socid);
 			}
@@ -201,7 +221,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 
 			// Test trainee already exists or not
 			if (empty($error) && empty($create_thirdparty)) {
-				$result = $agf->searchByLastNameFirstNameSoc($name, $firstname, GETPOST('societe', 'int'));
+				$result = $agf->searchByLastNameFirstNameSoc($name, $firstname, $socid);
 				if ($result > 0) {
 					setEventMessage($langs->trans('AgfTraineeAlreadyExists'), 'errors');
 					$error ++;
@@ -211,25 +231,6 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				}
 			}
 			if (empty($error)) {
-
-				$create_contact = GETPOST('create_contact', 'int');
-
-				$socid = GETPOST('societe', 'int');
-				$fonction = GETPOST('fonction', 'alpha');
-				$tel1 = GETPOST('tel1', 'alpha');
-				$tel2 = GETPOST('tel2', 'alpha');
-				$mail = GETPOST('mail', 'alpha');
-				$note = GETPOST('note', 'alpha');
-				$societe_name = GETPOST('societe_name');
-				$address = GETPOST('adresse', 'alpha');
-				$zip = GETPOST('zipcode', 'alpha');
-				$town = GETPOST('town', 'alpha');
-
-				$stagiaire_type = GETPOST('stagiaire_type', 'int');
-
-				$date_birth = dol_mktime(0, 0, 0, GETPOST('datebirthmonth', 'int'), GETPOST('datebirthday', 'int'), GETPOST('datebirthyear', 'int'));
-				$place_birth = GETPOST('place_birth', 'alpha');
-
 				$agf->nom = $name;
 				$agf->prenom = $firstname;
 				$agf->civilite = $civility_id;
@@ -241,7 +242,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				$agf->note = $note;
 				$agf->date_birth = $date_birth;
 				$agf->place_birth = $place_birth;
-				$agf->disable_auto_mail = GETPOST('disable_auto_mail', 'int');
+				$agf->disable_auto_mail = $disable_auto_mail;
 
 				// Création tiers demandé
 				if ($create_thirdparty > 0) {
@@ -253,13 +254,23 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 					$socstatic->address = $address;
 					$socstatic->zip = $zip;
 					$socstatic->town = $town;
-					$socstatic->client = 1;
+					$socstatic->country_id = $country_id;
+					$socstatic->client = $prospcli;
+					$socstatic->client = $prospcli;
 					$socstatic->code_client = - 1;
+					$socstatic->typent_id = $typent_id;
 
 					$result = $socstatic->create($user);
 
-					if (! $result >= 0) {
-						setEventMessages($socstatic->error, $socstatic->errors,'errors');
+					if ($result <= 0) {
+						setEventMessages($socstatic->error, $socstatic->errors, 'errors');
+					} else {
+						$result = $socstatic->setCategories($custcats, 'customer');
+						if ($result < 0)
+						{
+							$error++;
+							setEventMessages($socstatic->error, $socstatic->errors, 'errors');
+						}
 					}
 
 					$agf->socid = $socstatic->id;
@@ -267,7 +278,6 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 
 				// Création du contact si demandé
 				if ($create_contact > 0) {
-
 					$contact = new Contact($db);
 
 					$contact->civility_id = $civility_id;
@@ -275,9 +285,8 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 					$contact->firstname = $firstname;
 					$contact->address = $address;
 					$contact->zip = $zip;
-					$contact->town = $$town;
-					$contact->state_id = $state_id;
-					$contact->country_id = $objectcountry_id;
+					$contact->town = $town;
+					$contact->country_id = $country_id;
 					$contact->socid = ($socstatic->id > 0 ? $socstatic->id : $socid); // fk_soc
 					$contact->statut = 1;
 					$contact->email = $mail;
@@ -289,7 +298,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 
 					$result = $contact->create($user);
 					if (! $result >= 0) {
-						setEventMessages($contact->error, $contact->errors,'errors');
+						setEventMessages($contact->error, $contact->errors, 'errors');
 					}
 					$agf->fk_socpeople = $contact->id;
 				}
@@ -298,7 +307,6 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				$result = $agf->create($user);
 			}
 		} elseif ($importfrom == 'contact') {
-
 			// traitement de l'import d'un contact
 			$contact = new Contact($db);
 			$contactid = GETPOST('contact', 'int');
@@ -316,7 +324,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				$agf->tel1 = $contact->phone_pro;
 				$agf->tel2 = $contact->phone_mobile;
 				$agf->mail = $contact->email;
-				$agf->note = $contact->note;
+				$agf->note = $contact->note_public;
 				$agf->fk_socpeople = $contact->id;
 				$agf->date_birth = $contact->birthday;
 
@@ -332,19 +340,19 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 			// Inscrire dans la session
 			if ($session_id > 0) {
 
-				$fk_soc_requester=GETPOST('fk_soc_requester', 'int');
+				$fk_soc_requester = GETPOST('fk_soc_requester', 'int');
 				if ($fk_soc_requester<0) {
 					$fk_soc_requester=0;
 				}
-				$fk_soc_link=GETPOST('fk_soc_link', 'int');
+				$fk_soc_link = GETPOST('fk_soc_link', 'int');
 				if ($fk_soc_link<0) {
 					$fk_soc_link=0;
 				}
 
 				$sessionstat = new Agefodd_session_stagiaire($db);
-				$sessionstat->fk_session_agefodd = GETPOST('session_id', 'int');
+				$sessionstat->fk_session_agefodd = $session_id;
 				$sessionstat->fk_stagiaire = $agf->id;
-				$sessionstat->fk_agefodd_stagiaire_type = GETPOST('stagiaire_type', 'int');
+				$sessionstat->fk_agefodd_stagiaire_type = $stagiaire_type;
 				$sessionstat->fk_soc_link = $fk_soc_link;
 				$sessionstat->status_in_session = GETPOST('status_in_session', 'int');
 				$sessionstat->fk_soc_requester = $fk_soc_requester;
@@ -365,9 +373,31 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
                 if (strlen($url_back) > 0) {
                     header("Location: " . $url_back);
                 } else {
-                    header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $agf->id);
+                    header("Location: " . $_SERVER['PHP_SELF'] . "?session_id=" . $session_id.'&societe='.$socid);
                 }
                 exit();
+            } else {
+	            $name = '';
+	            $firstname = '';
+	            $civility_id = '';
+	            $disable_auto_mail = '';
+	            $date_birth = '';
+	            $place_birth = '';
+	            $fonction = '';
+	            $tel1 = '';
+	            $tel2 = '';
+	            $mail = '';
+	            $note = '';
+	            $societe_name = '';
+	            $prospcli = -1;
+	            $custcats = array();
+	            $typent_id = -1;
+	            $address = '';
+	            $zip = '';
+	            $town = '';
+	            $country_id = -1;
+	            $stagiaire_type = 0;
+	            $create_thirdparty=0;
             }
 		} else {
 			setEventMessage($agf->error, 'errors');
@@ -400,7 +430,7 @@ if (!empty($id) && $action == 'send')
  * View
 */
 if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agefodd->modifier)) {
-	llxHeader('', $title);
+	llxHeader('', $langs->trans('AgfMenuActStagiaireNew'));
 	print "\n" . '<script type="text/javascript">
 		$(document).ready(function () {
 			$("input[type=radio][name=create_thirdparty]").change(function() {
@@ -467,7 +497,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</select>';
 
 	print '<div id="fromcontact">';
-	print_fiche_titre($langs->trans("AgfMenuActStagiaireNewFromContact"));
+	print load_fiche_titre($langs->trans("AgfMenuActStagiaireNewFromContact"));
 
 	print '<table class="border" width="100%">';
 
@@ -496,13 +526,13 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</div>';
 
 	print '<div id="fromblanck">';
-	print_fiche_titre($langs->trans("AgfMenuActStagiaireNew"));
+	print load_fiche_titre($langs->trans("AgfMenuActStagiaireNew"));
 
 	print '<table class="border" width="100%">';
 
 	print '<tr class="liste_titre"><td colspan="4"><strong>' . $langs->trans("ThirdParty") . '</strong></td>';
 
-	if (GETPOST('create_thirdparty', 'int') > 0) {
+	if ($create_thirdparty > 0) {
 		$checkedYes = 'checked="checked"';
 		$checkedNo = '';
 	} else {
@@ -519,51 +549,81 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '</td>';
 	print '	</tr>';
 	print '<tr class="select_thirdparty_block"><td class="fieldrequired">' . $langs->trans("Company") . '</td><td colspan="3">';
-	if (!empty($conf->global->AGEFODD_USE_SELECT_WITH_AJAX)) print $form->select_company(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
-	else print $form->select_thirdparty_list(GETPOST('societe', 'int'), 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
+	if (!empty($conf->global->AGEFODD_USE_SELECT_WITH_AJAX)) print $form->select_company($socid, 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
+	else print $form->select_thirdparty_list($socid, 'societe', '(s.client IN (1,3,2))', 'SelectThirdParty', 1);
 	print '</td></tr>';
 
 	print '<tr class="create_thirdparty_block"><td class="fieldrequired">' . $langs->trans("ThirdPartyName") . '</td>';
 	print '<td colspan="3" ><input name="societe_name" class="flat" size="50" value="' . GETPOST('societe_name', 'alpha') . '"></td></tr>';
 
+	// Prospect/Customer
+	print '<tr class="create_thirdparty_block"><td>' . $langs->trans('ProspectCustomer') . '</td><td>';
+	print $formcompany->selectProspectCustomerType($prospcli, 'prospcli', 'prospcli');
+	print '</td></tr>';
+
+	// Categories
+	if (!empty($conf->categorie->enabled) && !empty($user->rights->categorie->lire))
+	{
+		require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
+		$langs->loadLangs(array('company', 'categories'));
+		print '<tr class="create_thirdparty_block"><td>' . $langs->trans('CustomersProspectsCategoriesShort') . '</td><td>';
+		// Customer
+		$cate_arbo = $form->select_all_categories(Categorie::TYPE_CUSTOMER, null, 'parent', null, null, 1);
+		print $form->multiselectarray('custcats', $cate_arbo, $custcats, null, null, null, null, "90%");
+		print '</td></tr>';
+	}
+
+	print '<tr class="create_thirdparty_block"><td>' . $langs->trans('ThirdPartyType') . '</td><td>';
+	$sortparam = (empty($conf->global->SOCIETE_SORT_ON_TYPEENT) ? 'ASC' : $conf->global->SOCIETE_SORT_ON_TYPEENT); // NONE means we keep sort of original array, so we sort on position. ASC, means next function will sort on label.
+	print $form->selectarray("typent_id", $formcompany->typent_array(0), $typent_id, 0, 0, 0, '', 0, 0, 0, $sortparam);
+	print '</td></tr>';
+
 	// Address
 	print '<tr class="create_thirdparty_block"><td valign="top">' . $langs->trans('Address') . '</td><td colspan="3"><textarea name="adresse" cols="40" rows="3" wrap="soft">';
-	print $object->address;
+	print $address;
 	print '</textarea></td></tr>';
 
-	// Zip / Town
+	// Zip
 	print '<tr class="create_thirdparty_block"><td>' . $langs->trans('Zip') . '</td><td>';
-	print $formcompany->select_ziptown($object->zip, 'zipcode', array (
+	print $formcompany->select_ziptown($zip, 'zipcode', array (
 		'town',
 		'selectcountry_id',
 		'departement_id'
 	), 6);
-	print '</td><td>' . $langs->trans('Town') . '</td><td>';
-	print $formcompany->select_ziptown($object->town, 'town', array (
+	print '</td></tr>';
+	// Town
+	print '<tr class="create_thirdparty_block"><td>'. $langs->trans('Town') . '</td><td>';
+	print $formcompany->select_ziptown($town, 'town', array (
 		'zipcode',
 		'selectcountry_id',
 		'departement_id'
 	));
+	print '</td></tr>';
+	// Country
+	print '<tr class="create_thirdparty_block"><td>'. $langs->trans('Country') . '</td><td>';
+	print img_picto('', 'globe-americas', 'class="paddingrightonly"');
+	print $form->select_country($country_id, 'country_id', '', 0, 'minwidth300 widthcentpercentminusx');
+	if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 	print '</td></tr>';
 
 	// Infos participant
 	print '<tr class="liste_titre"><td colspan="4"><strong>' . $langs->trans("AgfMailTypeContactTrainee") . '</strong></td>';
 
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("AgfCivilite") . '</span></td>';
-	print '<td colspan="3">' . $formcompany->select_civility(GETPOST('civility_id')) . '</td>';
+	print '<td colspan="3">' . $formcompany->select_civility($civility_id) . '</td>';
 	print '</tr>';
 
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("Firstname") . '</span></td>';
-	print '<td colspan="3"><input name="prenom" class="flat" size="50" value="' . GETPOST('prenom', 'alpha') . '"></td></tr>';
+	print '<td colspan="3"><input name="prenom" class="flat" size="50" value="' . $firstname . '"></td></tr>';
 
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("Lastname") . '</span></td>';
-	print '<td colspan="3"><input name="nom" class="flat" size="50" value="' . GETPOST('nom', 'alpha') . '"></td></tr>';
+	print '<td colspan="3"><input name="nom" class="flat" size="50" value="' . $name . '"></td></tr>';
 
 	print '<tr id="tr_create_contact"><td>' . $langs->trans('CreateANewContactFromTraineeForm');
 	print img_picto($langs->trans("CreateANewContactFromTraineeFormInfo"), 'help');
 	print '</td>';
 	print '<td colspan="3">';
-	if (GETPOST('create_contact', 'int') > 0 || !empty($conf->global->AGF_NEW_TRAINEE_CREATE_CONTACT_DEFAULT)) {
+	if ($create_contact > 0 || !empty($conf->global->AGF_NEW_TRAINEE_CREATE_CONTACT_DEFAULT)) {
 		$checkedYes = 'checked="checked"';
 		$checkedNo = '';
 	} else {
@@ -576,7 +636,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '	</tr>';
 
 	print '<tr id="tr_fonction"><td>' . $langs->trans("AgfFonction") . '</td>';
-	print '<td colspan="3"><input name="fonction" class="flat" size="50" value="' . GETPOST('fonction', 'alpha') . '"></td></tr>';
+	print '<td colspan="3"><input name="fonction" class="flat" size="50" value="' . $fonction . '"></td></tr>';
 
 	print '<tr><td>' . $langs->trans("Phone") . '</td>';
 	print '<td colspan="3"><input name="tel1" class="flat" size="50" value="' . GETPOST('tel1', 'alpha') . '"></td></tr>';
@@ -651,13 +711,12 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '<tr class="agelfoddline">';
 	print '<td>' . $langs->trans('AgfSelectAgefoddSession') . '</td>';
 	print '<td colspan="3">';
-	print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1);
+	print $form->selectarray('session_id', $sessions, $session_id, 1);
 	print '</td>';
 	print '</tr>';
 
 	if (! empty($conf->global->AGF_USE_STAGIAIRE_TYPE)) {
 		// Public stagiaire
-		$stagiaire_type = GETPOST('stagiaire_type', 'int');
 		if (empty($stagiaire_type)) {
 			$stagiaire_type = $conf->global->AGF_DEFAULT_STAGIAIRE_TYPE;
 		}
@@ -704,7 +763,7 @@ else
 		$head = trainee_prepare_head($agf);
 
 		if ($result > 0) {
-			llxHeader('', $title);
+			llxHeader('', $langs->trans('AgfStagiaireDetail'));
 			dol_fiche_head($head, 'card', $langs->trans("AgfStagiaireDetail"), 0, 'user');
 
 			// Affichage en mode "édition"

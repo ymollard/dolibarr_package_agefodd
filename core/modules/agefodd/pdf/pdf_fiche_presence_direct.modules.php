@@ -249,13 +249,16 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 			$posY = $this->pdf->GetY();
 			$posYstart=$posY;
 
-			foreach ( $agfsta->lines as $line ) {
+			foreach ($agfsta->lines as $line) {
+                if($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
+                        $TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+						$status_stagiaire = (int) $line->status_in_session;
+                        if(in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
+	                        setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $line->nom), 'warnings');
+	                        continue;
+                        }
 
-                                if(!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
-                                        $TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
-					$status_stagiaire = (int)$line->status_in_session;
-                                        if(in_array($status_stagiaire, $TStagiaireStatusToExclude)) continue;
-                                }
+                }
 
 				// Nom
 				$this->pdf->SetXY($posX, $posY);

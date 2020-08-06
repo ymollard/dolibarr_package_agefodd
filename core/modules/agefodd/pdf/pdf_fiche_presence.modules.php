@@ -144,6 +144,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$id = $agf;
 			$agf = new Agsession($this->db);
 			$ret = $agf->fetch($id);
+			$this->session=$agf;
 		}
 
 		// Definition of $dir and $file
@@ -159,6 +160,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		if (file_exists($dir)) {
 			$this->pdf = pdf_getInstance($this->format, $this->unit, $this->orientation);
+			$this->ref_object=$agf;
 			$this->pdf->ref_object = $agf;
 
 			if (class_exists('TCPDF')) {
@@ -172,10 +174,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$realFooterHeight = $this->getRealHeightLine('foot');
 			$this->height_for_footer = max($this->height_for_footer, $realFooterHeight);
 
+			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
+
 			$this->pdf->Open();
 
 			$this->pdf->SetTitle($this->outputlangs->convToOutputCharset($this->outputlangs->transnoentities('AgfPDFFichePres1') . " " . $this->pdf->ref_object->ref));
-			$this->pdf->SetSubject($this->outputlangs->transnoentities("Invoice"));
+			$this->pdf->SetSubject($this->outputlangs->transnoentities("TrainneePresence"));
 			$this->pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Agefodd module)');
 			$this->pdf->SetAuthor($this->outputlangs->convToOutputCharset($user->fullname));
 			$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($this->pdf->ref_object->ref) . " " . $this->outputlangs->transnoentities("Document"));
@@ -328,34 +332,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			{
 				list($posX, $posY) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
 				list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $agf);
-			}
-
-			// Cachet et signature
-			if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES))
-			{
-				$posY += 2;
-				$posX -= 2;
-				$this->pdf->SetXY($posX, $posY);
-				$str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
-				$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-				$this->pdf->SetXY($posX + 55, $posY);
-				$str = $this->outputlangs->transnoentities('AgfPDFFichePres21') . dol_print_date($this->pdf->ref_object->datef);
-				$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-				$this->pdf->SetXY($posX + 92, $posY);
-				$str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
-				$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-			}
-
-			$posY = $this->pdf->GetY();
-
-			// Incrustation image tampon
-			if ($conf->global->AGF_INFO_TAMPON) {
-				$dir = $conf->agefodd->dir_output . '/images/';
-				$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-				if (file_exists($img_tampon))
-					$this->pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
 			}
 
 			// Pied de page
@@ -596,7 +572,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 */
 	function printTraineeBlockLines($posX, $posY, $dates_array, $agf)
 	{
-		global $conf, $dao;
+		global $conf, $dao, $langs;
 
 		$nbsta_index = 1;
 
@@ -609,11 +585,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		foreach ($this->stagiaires->lines as $staline_key => $line) {
 
-			if (!empty($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES)) {
+			if ($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
 				$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
-				$status_stagiaire = (int)$line->status_in_session;
-				if (in_array($status_stagiaire, $TStagiaireStatusToExclude))
+				$status_stagiaire = (int) $line->status_in_session;
+				if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
+					setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $line->nom), 'warnings');
 					continue;
+				}
 			}
 
 			$this->pdf->startTransaction();

@@ -425,10 +425,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			        require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 			        $contact = new Contact($db);
 			        $contact->fetch($agf->spid);
-			        print '<tr><td>'.$langs->trans('AgfSeeTrainer').'</td><td>'.$contact->getNomUrl(1).'</td></tr>';
+			        print '<tr><td>'.$langs->trans('AgfSeeTrainer').'</td><td>'.$contact->getNomUrl(1);
+				    if (!empty($contact->socid)) {
+					    $contact->fetch_thirdparty();
+					    print '<br>'.$contact->thirdparty->getNomUrl(1);
+				    }
+			        print '</td></tr>';
 			    }
 			} elseif ($agf->type_trainer == $agf->type_trainer_def[0]) {
-			    if ($user->rights->user->user->creer) {
+			    if ($user->rights->user->creer) {
 			        require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 			        $u = new User($db);
 			        $u->fetch($agf->fk_user);

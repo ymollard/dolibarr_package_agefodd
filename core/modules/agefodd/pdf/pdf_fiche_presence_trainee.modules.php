@@ -111,42 +111,31 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 			$this->ref_object=$agf;
 			$this->pdf->ref_object=$agf;
 
-			$this->pdf->setPrintHeader(true);
-			$this->pdf->setPrintFooter(true);
+			if (class_exists('TCPDF')) {
+				$this->pdf->setPrintHeader(false);
+				$this->pdf->setPrintFooter(false);
+			}
 
-			// Set calculation of header and footer high line
-			// footer high
 			if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER))
 				$this->height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
 
 			$realFooterHeight = $this->getRealHeightLine('foot');
 			$this->height_for_footer = max($this->height_for_footer, $realFooterHeight);
-			$this->pdf->SetAutoPageBreak(1, $this->height_for_footer);
-
-			$this->pdf->setPrintHeader(true);
-			$this->pdf->setPrintFooter(true);
 
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
 
 			$this->pdf->Open();
-			$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
 
-			$this->pdf->SetTitle($this->outputlangs->convToOutputCharset($this->outputlangs->transnoentities('AgfPDFFichePres1') . " " . $this->ref_object->ref));
-			$this->pdf->SetSubject($this->outputlangs->transnoentities("Invoice"));
+			$this->pdf->SetTitle($this->outputlangs->convToOutputCharset($this->outputlangs->transnoentities('AgfPDFFichePres1') . " " . $this->pdf->ref_object->ref));
+			$this->pdf->SetSubject($this->outputlangs->transnoentities("TrainneePresence"));
 			$this->pdf->SetCreator("Dolibarr " . DOL_VERSION . ' (Agefodd module)');
 			$this->pdf->SetAuthor($this->outputlangs->convToOutputCharset($user->fullname));
-			$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($this->ref_object->ref) . " " . $this->outputlangs->transnoentities("Document"));
-			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION) {
+			$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($this->pdf->ref_object->ref) . " " . $this->outputlangs->transnoentities("Document"));
+			if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION)
 				$this->pdf->SetCompression(false);
-			}
 
-			// Set calculation of header and footer high line
-			// Header high
-			$height = $this->getRealHeightLine('head');
-			// Left, Top, Right
-			$this->pdf->SetMargins($this->marge_gauche, $height + 10, $this->marge_droite, 1);
-
-			$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
+			$this->pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
+			$this->pdf->SetAutoPageBreak(1, 0);
 
 			// On recupere les infos societe
 			$agf_soc = new Societe($this->db);
@@ -174,12 +163,17 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				}
 
 				if ($nbsta > 0) {
-					// $blocsta=0;
 					foreach ($agfsta->lines as $line)
 					{
-						if ($line->status_in_session !=6){
-							$this->line = $line;
-							$this->_pagebody($this->ref_object, $this->outputlangs);
+						if ($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
+							$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+							$status_stagiaire = (int)$line->status_in_session;
+							if (!in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
+								$this->line = $line;
+								$this->_pagebody($this->ref_object, $this->outputlangs);
+							} else {
+								setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $line->nom), 'warnings');
+							}
 						}
 					}
 				} else {
@@ -301,25 +295,11 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 		}
 
 		// Pied de page
-		//$this->_pagefoot();
+		$this->_pagefoot($agf, $this->outputlangs);
 		// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
 		if (method_exists($this->pdf, 'AliasNbPages')) {
 			$this->pdf->AliasNbPages();
 		}
-	}
-
-	/**
-	 * \brief Show footer of page
-	 * \param pdf PDF factory
-	 * \param object Object invoice
-	 * \param outputlang Object lang for output
-	 * \remarks Need this->emetteur object
-	 */
-	function _pagefoot($object, $outputlangs) {
-		$this->pdf->SetTextColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
-		$this->pdf->SetDrawColor($this->colorfooter[0], $this->colorfooter[1], $this->colorfooter[2]);
-		$this->pdf->SetAutoPageBreak(0);
-		return pdf_agfpagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $this->ref_object, 1, $hidefreetext);
 	}
 
 	/**
@@ -459,7 +439,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$TposX[] = $posX_trainer;
 				$i++;
 
-				if ($i > $nbForm) break;
+				if ($i >= $nbForm) break;
 			}
 		}
 
@@ -562,7 +542,7 @@ class pdf_fiche_presence_trainee extends pdf_fiche_presence
 				$posX_trainer += $this->larg_col4/$nbForm;
 				$i++;
 
-				if ($i > $nbForm) break;
+				if ($i >= $nbForm) break;
 			}
 		}
 		$posY = $this->pdf->GetY();

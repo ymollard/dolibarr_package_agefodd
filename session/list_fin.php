@@ -547,7 +547,7 @@ if ($resql != - 1) {
 			$sortorder, '', $num);
 
 	$i = 0;
-	print '<form method="get" action="' . $url_form . '" name="search_form">' . "\n";
+	print '<form method="get" action="' . $_SERVER ['PHP_SELF'] .'" name="search_form">' . "\n";
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 	$arg_url = '&page=' . $page . '&search_propalid=' . $search_propalid . '&search_orderid=' . $search_orderid . '&search_invoiceid=' . $search_invoiceid . '&search_fourninvoiceid=' . $search_fourninvoiceid;
@@ -709,7 +709,7 @@ if ($resql != - 1) {
 			print '<td>' . $line->invoiceref . '</td>';
 		}
 		if (! (empty($search_fourninvoiceref))) {
-			print '<td>' . $line->fourninvoiceref . '</td><td>' . $langs->trans($line->element_type) . '</td>';
+			print '<td>' . $line->fourninvoiceref . '</td><td>'. $langs->trans($line->element_type) . '</td>';
 		}
 		if (! (empty($search_fournorderref))) {
 
@@ -749,7 +749,7 @@ if ($resql != - 1) {
 				$TFournTypes = array(
 						'invoice_supplier_trainer',
 						'invoice_supplier_room',
-						'invoice_supplier_missions'
+						'invoice_supplier_missions',
 				);
 				foreach ( $TFournTypes as $type ) {
 					$agf_fin->fetch_element_by_id($idfin, $type, $line->rowid);
@@ -758,7 +758,7 @@ if ($resql != - 1) {
 				}
 				$idelement = $agf_fin->lines[0]->id;
 				if (property_exists($line, 'agelemetnid') && ! empty($line->agelemetnid)) {
-					$idelement = $line->agelemetnid;
+					$id_element = $line->agelemetnid;
 				}
 			} else {
 				$type = 'order_supplier';
@@ -768,6 +768,9 @@ if ($resql != - 1) {
 		}
 		if (! empty($line->id_element))
 			$id_element = $line->id_element;
+
+		if (! empty($line->agelemetnid))
+			$id_element = $line->agelemetnid;
 
 		print '<td align="right">';
 		if ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer) {
@@ -794,7 +797,7 @@ if (! empty($search_fournorderid)) {
 			INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf ON sf.fk_session = s.rowid
 			INNER JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f ON f.rowid = sf.fk_agefodd_formateur
 			INNER JOIN " . MAIN_DB_PREFIX . "socpeople as socpf ON f.fk_socpeople = socpf.rowid AND socpf.fk_soc=" . $object_socid . "
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,1)";
+            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,3)";
 	if (is_array($excludeSessions) && count($excludeSessions) > 0) {
 		$sql .= " AND s.rowid NOT IN (" . implode(",", $excludeSessions) . ")";
 	}
@@ -805,7 +808,7 @@ if (! empty($search_fournorderid)) {
 	if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			! empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' . $obj->trainingrefinterne . ')' : $training_ref_interne = '';
-			$sessions [$obj->rowid] = $obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+			$sessions [$obj->rowid] = $obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($db->jdate($obj->dated), 'daytext');
 		}
 	}
 
@@ -831,7 +834,7 @@ if (! empty($search_fournorderid)) {
 		if ($resql) {
 			while ( $obj = $db->fetch_object($resql) ) {
 				! empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' . $obj->trainingrefinterne . ')' : $training_ref_interne = '';
-				$sessions [$obj->rowid] = $obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+				$sessions [$obj->rowid] = $obj->rowid.'('.$obj->sessionref.')'.' '. $obj->ref_interne.$training_ref_interne. ' - ' . $obj->intitule . ' - ' . dol_print_date($db->jdate($obj->dated), 'daytext');
 			}
 		}
 	}
@@ -855,7 +858,7 @@ if (! empty($search_fournorderid)) {
 	if ($resql2) {
 		while ( $obj = $db->fetch_object($resql2) ) {
 			! empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' . $obj->trainingrefinterne . ')' : $training_ref_interne = '';
-			$sessionsSite[$obj->sessid] = $obj->sessid . ' ' . $obj->ref_interne . $training_ref_interne . ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+			$sessionsSite[$obj->sessid] = $obj->sessid . ' ' . $obj->ref_interne . $training_ref_interne . ' - ' . $obj->intitule . ' - ' . dol_print_date($db->jdate($obj->dated), 'daytext');
 		}
 	}
 
@@ -969,7 +972,7 @@ if (! empty($search_fournorderid)) {
 		if ($resql) {
 			while ( $obj = $db->fetch_object($resql) ) {
 				! empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' . $obj->trainingrefinterne . ')' : $training_ref_interne = '';
-				$sessions[$obj->rowid] = $obj->rowid . '(' . $obj->sessionref . ')' . ' ' . $obj->ref_interne . $training_ref_interne . ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+				$sessions[$obj->rowid] = $obj->rowid . '(' . $obj->sessionref . ')' . ' ' . $obj->ref_interne . $training_ref_interne . ' - ' . $obj->intitule . ' - ' . dol_print_date($db->jdate($obj->dated), 'daytext');
 			}
 		}
 	}
@@ -1012,7 +1015,7 @@ if (! empty($search_fournorderid)) {
 	if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			! empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' . $obj->trainingrefinterne . ')' : $training_ref_interne = '';
-			$sessionsForm[$obj->sessid] = $obj->sessid . '(' . $obj->sessionref . ')' . ' ' . $obj->ref_interne . $training_ref_interne . ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+			$sessionsForm[$obj->sessid] = $obj->sessid . '(' . $obj->sessionref . ')' . ' ' . $obj->ref_interne . $training_ref_interne . ' - ' . $obj->intitule . ' - ' . dol_print_date($db->jdate($obj->dated), 'daytext');
 			$sessids[$obj->sessid] = $obj->opsid;
 		}
 	}
@@ -1034,7 +1037,7 @@ if (! empty($search_fournorderid)) {
 	if ($resql2) {
 		while ( $obj = $db->fetch_object($resql2) ) {
 			! empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' . $obj->trainingrefinterne . ')' : $training_ref_interne = '';
-			$sessionsSite[$obj->sessid] = $obj->sessid . '(' . $obj->sessionref . ')' . ' ' . $obj->ref_interne . $training_ref_interne . ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+			$sessionsSite[$obj->sessid] = $obj->sessid . '(' . $obj->sessionref . ')' . ' ' . $obj->ref_interne . $training_ref_interne . ' - ' . $obj->intitule . ' - ' . dol_print_date($db->jdate($obj->dated), 'daytext');
 		}
 	}
 
@@ -1058,7 +1061,7 @@ if (! empty($search_fournorderid)) {
 	if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			! empty($obj->trainingrefinterne) ? $training_ref_interne = ' - (' . $obj->trainingrefinterne . ')' : $training_ref_interne = '';
-			$sessionsMissions[$obj->rowid] = $obj->rowid . '(' . $obj->sessionref . ')' . ' ' . $obj->ref_interne . $training_ref_interne . ' - ' . $obj->intitule . ' - ' . dol_print_date($obj->dated, 'daytext');
+			$sessionsMissions[$obj->rowid] = $obj->rowid . '(' . $obj->sessionref . ')' . ' ' . $obj->ref_interne . $training_ref_interne . ' - ' . $obj->intitule . ' - ' . dol_print_date($db->jdate($obj->dated), 'daytext');
 		}
 	}
 
