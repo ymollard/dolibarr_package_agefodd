@@ -99,3 +99,7 @@ AgfSessionSummaryTimeDone=Total des créneaux réalisés
 AgfLinksExternal=Other Links
 HourInvalid=Invalid time
 HourInvalidNoTime=The desired duration exceeds the maximum duration of the entry
+
+AgfEANumberOfElementsInLists=Configuring the number of items displayed on portal lists
+ArchivedSessions=Archived sessions
+AgfEAAddTrainneNameInSessionSelectList=Display the names of the trainees on the list of sessions when creating the time slot
