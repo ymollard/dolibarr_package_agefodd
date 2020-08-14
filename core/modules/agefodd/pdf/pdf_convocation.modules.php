@@ -163,6 +163,14 @@ class pdf_convocation extends ModelePDFAgefodd {
 
 			if (($result && $ret)) {
 				for($i = 0; $i < count($agf2->lines); $i ++) {
+					if ($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
+						$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+						$status_stagiaire = (int) $agf2->lines[$i]->status_in_session;
+						if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
+							setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $agf2->lines[$i]->nom), 'warnings');
+							continue;
+						}
+					}
 					// New page
 					$pdf->AddPage();
 					if (! empty($tplidx)) $pdf->useTemplate($tplidx);
