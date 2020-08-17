@@ -1,10 +1,9 @@
-# IL est temps de séparer les traductions du portail
 
-# PAGES NAMES AND DESC
+#
+# MISSING TRANSLATION FROM fr_FR 2020-08-14
+#
 AgfExternalAccess_PageTitle_TraineeSessions=Mes formations
 AgfExternalAccess_PageDesc_TraineeSessions=Une vue globale de votre planning de formation
-
-# ADMIN PAGE
 AgfEASendEmailFrom=Email affiché comme expéditeur des emails envoyés.
 AgfEASendEmailFromHelp=laisser vide pour utiliser la valeur par défaut si renseignée ou l'adresse email de l'utilisateur courant.
 AgfSendCreateCreneauxToTraineeMailModel=Modèle email utilisé pour envoyer une notification de création créneau
@@ -15,28 +14,24 @@ AgfCheckedCheckboxByDefaultForSendAlertToTrainee=Ne pas précocher par défaut l
 AgfSendCopyOfTraineeEmailToTrainer=Envoyer une copie du mail au formateur
 AgfEATrainerTitle=Configuration des formateurs
 AgfUserForMailSending=Compte utilisateur à utiliser pour envoyer les emails depuis le portail client
-AgfSessionCardTimeDefaultType=Configuration of the default slot type if it contains several participants
-AgfSessionCardTimeDefaultTypeOne=Configuration of the default slot type if it contains one participant
 AgfEAUseUserEmailSmptConf=Lors de l'envoi d'email à partir du portail client, utiliser la configuration email sortant standard au lieu d'utiliser celle des emails de masse
-
+AgfSessionCardTimeDefaultType=Configuration du type de créneau par défaut si il contient plusieurs participants
+AgfSessionCardTimeDefaultTypeOne=Configuration du type de créneau par défaut si il contient un participant
+AgfEANumberOfElementsInLists=Configuration du nombre d'éléments afficher sur les listes du portail
+AgfEACloseModalAfterUpdateSessionSlot=Fermer automatiquement l’encadré (pop-in) de modification de créneau horaire lors de la sauvegarde.
 AgfActivateAccessForTrainees=Activer l'accès externe pour les stagiaires (il est nécessaire d'attribuer des droits utilisateurs au contacts liées aux stagiaires)
 AgfEATraineeTitle=Configurations des stagiaires
-AgfNumberOfHoursBeforeLockingAbsenceRequests=Nombres d'heures avant le blocage des requettes d'absences
+AgfNumberOfHoursBeforeLockingAbsenceRequests=Nombres d'heures avant le blocage des requêtes d'absences
 AgfNumberOfHoursBeforeLockingAbsenceRequestsHelp=Sur le portail client, les stagiares peuvent marquer sur leurs créneaux qu'ils sont absents
-AgfEACloseModalAfterUpdateSessionSlot=Automatically close the session slot edit pop-in upon saving.
-
-# AGENDA
 AGFSendEmailAlertToTrainees=Envoyer une alerte email au(x) stagiaire(s)
 AgfEmailInvalid=Email(s) invalide(s)
 AgfStatus=Statut
 AreYouSureToDelete=Êtes-vous sûre ?
-AgfYouAreUnderDeleteCalendarEvent=Vous êtes sur le point de supprimer un évènement agenda, cette action est irréverssible, souhaites-vous continuer ?
+AgfYouAreUnderDeleteCalendarEvent=Vous êtes sur le point de supprimer un évènement agenda, cette action est irréversible, souhaitez-vous continuer ?
 agfEventDeleted=Evènement supprimé
-agfDeleteEventError=Une erreur c'est produite lors de la suppression
-agfDeleteEventNotAuthorized=Vous n'êtes pas
+agfDeleteEventError=Une erreur s'est produite lors de la suppression
+agfDeleteEventNotAuthorized=Vous n'êtes pas autorisé à supprimer cet évènement
 AgfNoAvailableSessionInDateRange=Aucune session de formation disponible dans la plage selectionnée
-
-# Email
 AgfInvalidAddressEmail=Adresse email invalide %s
 AgfEMailTemplateNotExist=Le model d'email n'existe pas ou plus.
 AgfNbEmailSended=%s email(s) envoyé(s)
@@ -44,16 +39,9 @@ AgfEmailSendError=Erreur lors de l'envoi des mails
 AgfNoEmailSended=Aucun email envoyé
 AgfFetchTrainersError=Erreur lors de la récupération des formateurs
 AgfNoTrainerFoundCallYourContact=Aucun formateur trouvé, contactez directement votre "interlocuteur formation"
-
-
-# Creneaux
 AgfCantDeleteBilledElement=Un créneau facturé ne peut pas être supprimé
-
-# in Email messages
 AgfTraineeMailPlanedPresentStatus=sera présent
 AgfTraineeMailPlanedMissingStatus=sera absent
-
-# Trainee
 AgfErrorAccessTraineeNotActivated=L'accès externe stagiaire doit être activé pour accéder à cette section
 AgfErrorCurrentUserIsntTrainee=L'utilisateur courant n'est pas un stagiaire
 ErrorFechingTrainee=Erreur l'utilisateur courant n'a pas pu être identifié comme un stagiaire lié à une formation
@@ -95,11 +83,12 @@ AgfDownloadDocumentsTrainer=Liste des fichiers déposés pour cette session
 AgfUploadFileTrainer=Déposer un fichier pour cette session
 AgfCrenaux=Créneaux
 AgfRecap=Récapitulatif
-AgfSessionSummaryTimeDone=Total des créneaux réalisés
-AgfLinksExternal=Other Links
-HourInvalid=Invalid time
-HourInvalidNoTime=The desired duration exceeds the maximum duration of the entry
-
-AgfEANumberOfElementsInLists=Configuring the number of items displayed on portal lists
-ArchivedSessions=Archived sessions
-AgfEAAddTrainneNameInSessionSelectList=Display the names of the trainees on the list of sessions when creating the time slot
+AgfSessionSummaryTimeDone=Total des créneaux au statut réalisés
+AgfLinksExternal=Autre(s) lien(s)
+HourInvalid=Heure invalide
+HourInvalidNoTime=La durée souhaitée dépasse la durée maximum de la saisie
+ArchivedSessions=Sessions archivées
+AgfEAAddTrainneNameInSessionSelectList=Afficher les noms des stagiaires sur la liste des sessions lors de la création du créneau horaire
+#
+# NEW TRANSLATIONS HERE
+#
