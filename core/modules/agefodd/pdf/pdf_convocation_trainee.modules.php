@@ -123,6 +123,15 @@ class pdf_convocation_trainee extends ModelePDFAgefodd {
 			}
 		}
 
+		if ($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
+			$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+			$status_stagiaire = (int) $agf_session_trainee->status_in_session;
+			if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
+				setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $agf_trainee->nom), 'warnings');
+				return 1;
+			}
+		}
+
 		// Definition of $dir and $file
 		$dir = $conf->agefodd->dir_output;
 		$file = $dir . '/' . $file;

@@ -160,6 +160,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 			// Recuperation des stagiaires participant à la formation
 			$agf2 = new Agefodd_session_stagiaire($this->db);
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
+			$nbtraineePage= 0;
 
 			if (($result && $ret)) {
 				for($i = 0; $i < count($agf2->lines); $i ++) {
@@ -171,6 +172,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 							continue;
 						}
 					}
+					$nbtraineePage++;
 					// New page
 					$pdf->AddPage();
 					if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -351,7 +353,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 
 					$this->str ='';
 					$old_date='';
-					foreach ( $agf_calendrier->lines as $line ) {
+					foreach ($agf_calendrier->lines as $line) {
 						if ($line->date_session != $old_date) {
 							$this->str .= "\n";
 							$this->str .= dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
@@ -462,9 +464,11 @@ class pdf_convocation extends ModelePDFAgefodd {
 			}
 
 			$pdf->Close();
-			$pdf->Output($file, 'F');
-			if (! empty($conf->global->MAIN_UMASK))
-				@chmod($file, octdec($conf->global->MAIN_UMASK));
+			if ($nbtraineePage>0) {
+				$pdf->Output($file, 'F');
+				if (!empty($conf->global->MAIN_UMASK))
+					@chmod($file, octdec($conf->global->MAIN_UMASK));
+			}
 
 
 			// Add pdfgeneration hook
@@ -476,7 +480,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 			$hookmanager->initHooks(array('pdfgeneration'));
 			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
 			global $action;
-			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+			$reshook=$hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);    // Note that $action and $object may have been modified by some hooks
 
 
 			return 1; // Pas d'erreur
