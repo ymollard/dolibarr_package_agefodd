@@ -197,6 +197,15 @@ class pdf_fiche_presence_trainee_trainee extends pdf_fiche_presence_landscape
 			$this->error = $langs->trans('AgfErrorUnableToFetchCalendar');
 		} elseif (!count($agfTrainer->lines)) {
 			$this->error = $langs->trans('AgfErrorNoTrainersFound');
+		} else {
+			if ($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
+				$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+				$status_stagiaire = (int) $this->agfSessionTrainee->status_in_session;
+				if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
+					setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $this->agfTrainee->nom), 'warnings');
+					return 1;
+				}
+			}
 		}
 		$this->TAgfTrainer = $agfTrainer->lines;
 		if (!empty($this->error)) return 0;
