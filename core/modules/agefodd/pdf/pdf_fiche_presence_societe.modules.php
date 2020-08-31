@@ -113,7 +113,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 		}
 
 		$this->nbtimeslots = 6;
-		$this->height_for_footer = 40;
+		$this->height_for_footer = 20;
 	}
 
 	/**
