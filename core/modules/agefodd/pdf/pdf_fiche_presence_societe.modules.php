@@ -113,7 +113,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 		}
 
 		$this->nbtimeslots = 6;
-		$this->height_for_footer = 20;
+		$this->height_for_footer = isset($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER) ? $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER : 40;
 	}
 
 	/**
