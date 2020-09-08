@@ -2502,9 +2502,10 @@ class Agsession extends CommonObject
 	 * @param array $filter output
 	 * @param user $user current user
 	 * @param array $array_options_keys
+     * @param int $tolist to list session with print_barre_liste, return limit + 1 sessions
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = null, $array_options_keys=array()) {
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array(), $user = null, $array_options_keys=array(), $tolist = 0) {
 		global $langs;
 		if (empty($array_options_keys)) {
 			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
@@ -2713,9 +2714,15 @@ class Agsession extends CommonObject
 			$sql .= $this->db->order($sortfield, $sortorder);
 		}
 
-		if (! empty($limit)) {
-			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
-		}
+		if($tolist){
+            $sql .= ' ' . $this->db->plimit(1000000, $offset);
+        } else
+        {
+            if (!empty($limit))
+            {
+                $sql .= ' '.$this->db->plimit($limit + 1, $offset);
+            }
+        }
 
 		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -2730,7 +2737,7 @@ class Agsession extends CommonObject
 			if ($num) {
 			    $Tsessid = array();
 
-				while ( $i < $num ) {
+				while ( empty($tolist) ? $i < $num : (($num >= $limit) ? count($Tsessid) <= $limit : $i < $num) ) {
 					$obj = $this->db->fetch_object($resql);
 
 					$line = new AgfSessionLine();
