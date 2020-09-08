@@ -5508,7 +5508,21 @@ class Agsession extends CommonObject
 			$stagiaires = new Agefodd_session_stagiaire($this->db);
 			$stagiaires->fetch_stagiaire_per_session($this->id);
 			$this->TStagiairesSession = $stagiaires->lines;
+			if (is_array($this->TStagiairesSession) && count($this->TStagiairesSession)>0) {
+				foreach($this->TStagiairesSession as &$linesta) {
+					$timeSta = $this->_getTimeTraineeSession($this->id,$linesta->id);
+					$linesta->stagiaire_presence_bloc = $timeSta['stagiaire_presence_bloc'];
+					$linesta->stagiaire_presence_total = $timeSta['stagiaire_presence_total'];
+					$linesta->time_stagiaire_temps_realise_total = $timeSta['time_stagiaire_temps_realise_total'];
+					$linesta->stagiaire_temps_realise_total = $timeSta['stagiaire_temps_realise_total'];
+					$linesta->time_stagiaire_temps_att_total = $timeSta['time_stagiaire_temps_att_total'];
+					$linesta->stagiaire_temps_att_total = $timeSta['stagiaire_temps_att_total'];
+					$linesta->time_stagiaire_temps_realise_att_total = $timeSta['time_stagiaire_temps_realise_att_total'];
+					$linesta->stagiaire_temps_realise_att_total = $timeSta['stagiaire_temps_realise_att_total'];
+				}
+			}
 		}
+
 		if(empty($this->TStagiairesSessionPresent)) {
 			$this->TStagiairesSessionPresent = array();
 			if (is_array($this->TStagiairesSession) && count($this->TStagiairesSession)>0) {
@@ -5649,6 +5663,19 @@ class Agsession extends CommonObject
 			$stagiaires = new Agefodd_session_stagiaire($this->db);
 			$stagiaires->fetch_stagiaire_per_session($this->id,$socid);
 			$this->TStagiairesSessionSoc = $stagiaires->lines;
+			if (is_array($this->TStagiairesSessionSoc) && count($this->TStagiairesSessionSoc)>0) {
+				foreach($this->TStagiairesSessionSoc as &$linesta) {
+					$timeSta = $this->_getTimeTraineeSession($this->id,$linesta->id);
+					$linesta->stagiaire_presence_bloc = $timeSta['stagiaire_presence_bloc'];
+					$linesta->stagiaire_presence_total = $timeSta['stagiaire_presence_total'];
+					$linesta->time_stagiaire_temps_realise_total = $timeSta['time_stagiaire_temps_realise_total'];
+					$linesta->stagiaire_temps_realise_total = $timeSta['stagiaire_temps_realise_total'];
+					$linesta->time_stagiaire_temps_att_total = $timeSta['time_stagiaire_temps_att_total'];
+					$linesta->stagiaire_temps_att_total = $timeSta['stagiaire_temps_att_total'];
+					$linesta->time_stagiaire_temps_realise_att_total = $timeSta['time_stagiaire_temps_realise_att_total'];
+					$linesta->stagiaire_temps_realise_att_total = $timeSta['stagiaire_temps_realise_att_total'];
+				}
+			}
 		}
 
 		if(empty($this->TStagiairesSessionSocPresent) && !empty($this->TStagiairesSessionSoc)) {
@@ -5734,6 +5761,19 @@ class Agsession extends CommonObject
 			$stagiaires = new Agefodd_session_stagiaire($this->db);
 			$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
 			$this->TStagiairesSessionSocMore = $stagiaires->lines;
+			if (is_array($this->TStagiairesSessionSocMore) && count($this->TStagiairesSessionSocMore)>0) {
+				foreach($this->TStagiairesSessionSocMore as &$linesta) {
+					$timeSta = $this->_getTimeTraineeSession($this->id,$linesta->id);
+					$linesta->stagiaire_presence_bloc = $timeSta['stagiaire_presence_bloc'];
+					$linesta->stagiaire_presence_total = $timeSta['stagiaire_presence_total'];
+					$linesta->time_stagiaire_temps_realise_total = $timeSta['time_stagiaire_temps_realise_total'];
+					$linesta->stagiaire_temps_realise_total = $timeSta['stagiaire_temps_realise_total'];
+					$linesta->time_stagiaire_temps_att_total = $timeSta['time_stagiaire_temps_att_total'];
+					$linesta->stagiaire_temps_att_total = $timeSta['stagiaire_temps_att_total'];
+					$linesta->time_stagiaire_temps_realise_att_total = $timeSta['time_stagiaire_temps_realise_att_total'];
+					$linesta->stagiaire_temps_realise_att_total = $timeSta['stagiaire_temps_realise_att_total'];
+				}
+			}
 		}
 
 		// Chargement des horaires de la session
@@ -5867,95 +5907,15 @@ class Agsession extends CommonObject
 		    $this->stagiaire = $originalTrainee;
 
 		    if (!empty($trainee_session->fk_stagiaire)) {
-
-			    /***************Gestion des heures du participant sur la session (Pour les documents par participant)**************/
-
-				dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
-				dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
-
-		    	if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar')) {
-
-					$agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
-					$agefoddsessionstagiaireheures->fetch_all_by_session($this->id, $trainee_session->fk_stagiaire);
-
-					if(!empty($agefoddsessionstagiaireheures->lines)) {
-						$hPresenceTotal = 0;
-						foreach ($agefoddsessionstagiaireheures->lines as $heures) {
-
-							$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
-							if($agefodd_sesscalendar->fetch($heures->fk_calendrier)>0) {
-
-								if(!empty($heures->heures)) {
-									// start by converting to seconds
-									$seconds = floor($heures->heures * 3600);
-									// we're given hours, so let's get those the easy way
-									$hours = floor($heures->heures);
-									// since we've "calculated" hours, let's remove them from the seconds variable
-									$seconds -= $hours * 3600;
-									// calculate minutes left
-									$minutes = floor($seconds / 60);
-
-									$hPresenceTotal+= $heures->heures;
-
-									$this->stagiaire_presence_bloc.= (!empty($this->stagiaire_presence_bloc)?', ':'');
-
-									// return the time formatted HH:MM
-									$this->stagiaire_presence_bloc.= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u",$minutes).')';
-								}
-							}
-						}
-
-						// TOTAL DES HEURES PASSEES
-						// start by converting to seconds
-						$seconds = floor($hPresenceTotal * 3600);
-						// we're given hours, so let's get those the easy way
-						$hours = floor($hPresenceTotal);
-						// since we've "calculated" hours, let's remove them from the seconds variable
-						$seconds -= $hours * 3600;
-						// calculate minutes left
-						$minutes = floor($seconds / 60);
-						$this->stagiaire_presence_total= $hours."H".sprintf("%02u",$minutes);
-
-					}
-				}
-
-                $timeRealizeTotal = $timeCanceledToLateTotal = 0;
-
-                $calendrier = new Agefodd_sesscalendar($db);
-                $calendrier->fetch_all($this->id);
-                if (!empty($calendrier->lines))
-                {
-                    foreach ($calendrier->lines as $agSessCalendar)
-                    {
-                        // Si "Réalisé"
-                        if ($agSessCalendar->status == Agefodd_sesscalendar::STATUS_FINISH)
-                        {
-                            $timeRealizeTotal+= $agSessCalendar->heuref - $agSessCalendar->heured;
-                        }
-                        // Si "Annulé trop tard"
-                        elseif ($agSessCalendar->status == Agefodd_sesscalendar::STATUS_MISSING)
-                        {
-                            $timeCanceledToLateTotal+= $agSessCalendar->heuref - $agSessCalendar->heured;
-                        }
-                    }
-                }
-
-                $hours = floor($timeRealizeTotal / 60 / 60);
-                $minutes = $timeRealizeTotal / 60 % 60;
-                $this->time_stagiaire_temps_realise_total = $timeRealizeTotal;
-                $this->stagiaire_temps_realise_total = $hours."H".sprintf("%02u",$minutes);
-
-                $hours = floor($timeCanceledToLateTotal / 60 / 60);
-                $minutes = $timeCanceledToLateTotal / 60 % 60;
-                $this->time_stagiaire_temps_att_total = $timeCanceledToLateTotal; // att = Annulé Trop Tard
-                $this->stagiaire_temps_att_total = $hours."H".sprintf("%02u",$minutes);
-
-                $hours = floor(($timeRealizeTotal + $timeCanceledToLateTotal) / 60 / 60);
-                $minutes = ($timeRealizeTotal + $timeCanceledToLateTotal) / 60 % 60;
-                $this->time_stagiaire_temps_realise_att_total = $timeRealizeTotal + $timeCanceledToLateTotal;
-                $this->stagiaire_temps_realise_att_total = $hours."H".sprintf("%02u",$minutes);
-			 	/******************************************************************************************************************/
-
+		    	$timeSta = $this->_getTimeTraineeSession($this->id,$trainee_session->fk_stagiaire);
+			    $this->stagiaire_presence_bloc = $timeSta['stagiaire_presence_bloc'];
+			    $this->stagiaire_presence_total = $timeSta['stagiaire_presence_total'];
+			    $this->time_stagiaire_temps_realise_total = $timeSta['time_stagiaire_temps_realise_total'];
+			    $this->stagiaire_temps_realise_total = $timeSta['stagiaire_temps_realise_total'];
+			    $this->time_stagiaire_temps_att_total = $timeSta['time_stagiaire_temps_att_total'];
+			    $this->stagiaire_temps_att_total = $timeSta['stagiaire_temps_att_total'];
+			    $this->time_stagiaire_temps_realise_att_total = $timeSta['time_stagiaire_temps_realise_att_total'];
+			    $this->stagiaire_temps_realise_att_total = $timeSta['stagiaire_temps_realise_att_total'];
 		    }
 		}
 
@@ -5978,6 +5938,116 @@ class Agsession extends CommonObject
 			echo '</pre>';
 			exit();
 		}
+	}
+
+	/**
+	 * @param int $idSession
+	 * @param int $idTrainee
+	 * @return string[]
+	 */
+	private function _getTimeTraineeSession($idSession = 0, $idTrainee=0) {
+
+		/***************Gestion des heures du participant sur la session (Pour les documents par participant)**************/
+
+		dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
+		dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
+
+		$resultArray=array('stagiaire_presence_bloc'=>'',
+		                   'stagiaire_presence_total' => '',
+		                   'time_stagiaire_temps_realise_total'=>'',
+		                   'stagiaire_temps_realise_total'=>'',
+		                   'time_stagiaire_temps_att_total'=>'',
+		                   'stagiaire_temps_att_total'=>'',
+		                   'time_stagiaire_temps_realise_att_total'=>'',
+		                   'stagiaire_temps_realise_att_total'=>''
+		);
+
+		if(class_exists('Agefoddsessionstagiaireheures')
+			&& class_exists('Agefodd_sesscalendar')
+			&& !empty($idSession)
+			&& !empty($idTrainee)) {
+
+			$agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($this->db);
+			$agefoddsessionstagiaireheures->fetch_all_by_session($idSession, $idTrainee);
+
+			if(!empty($agefoddsessionstagiaireheures->lines)) {
+				$hPresenceTotal = 0;
+				foreach ($agefoddsessionstagiaireheures->lines as $heures) {
+
+					$agefodd_sesscalendar = new Agefodd_sesscalendar($this->db);
+					if($agefodd_sesscalendar->fetch($heures->fk_calendrier)>0) {
+
+						if(!empty($heures->heures)) {
+							// start by converting to seconds
+							$seconds = floor($heures->heures * 3600);
+							// we're given hours, so let's get those the easy way
+							$hours = floor($heures->heures);
+							// since we've "calculated" hours, let's remove them from the seconds variable
+							$seconds -= $hours * 3600;
+							// calculate minutes left
+							$minutes = floor($seconds / 60);
+
+							$hPresenceTotal+= $heures->heures;
+
+							$resultArray['stagiaire_presence_bloc'].= (!empty($resultArray['stagiaire_presence_bloc'])?', ':'');
+
+							// return the time formatted HH:MM
+							$resultArray['stagiaire_presence_bloc'].= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u",$minutes).')';
+						}
+					}
+				}
+
+				// TOTAL DES HEURES PASSEES
+				// start by converting to seconds
+				$seconds = floor($hPresenceTotal * 3600);
+				// we're given hours, so let's get those the easy way
+				$hours = floor($hPresenceTotal);
+				// since we've "calculated" hours, let's remove them from the seconds variable
+				$seconds -= $hours * 3600;
+				// calculate minutes left
+				$minutes = floor($seconds / 60);
+				$resultArray['stagiaire_presence_total']= $hours."H".sprintf("%02u",$minutes);
+			}
+		}
+
+		$timeRealizeTotal = $timeCanceledToLateTotal = 0;
+
+		$calendrier = new Agefodd_sesscalendar($this->db);
+		$calendrier->fetch_all($this->id);
+		if (!empty($calendrier->lines))
+		{
+			foreach ($calendrier->lines as $agSessCalendar)
+			{
+				// Si "Réalisé"
+				if ($agSessCalendar->status == Agefodd_sesscalendar::STATUS_FINISH)
+				{
+					$timeRealizeTotal+= $agSessCalendar->heuref - $agSessCalendar->heured;
+				}
+				// Si "Annulé trop tard"
+				elseif ($agSessCalendar->status == Agefodd_sesscalendar::STATUS_MISSING)
+				{
+					$timeCanceledToLateTotal+= $agSessCalendar->heuref - $agSessCalendar->heured;
+				}
+			}
+		}
+
+		$hours = floor($timeRealizeTotal / 60 / 60);
+		$minutes = $timeRealizeTotal / 60 % 60;
+		$resultArray['time_stagiaire_temps_realise_total'] = $timeRealizeTotal;
+		$resultArray['stagiaire_temps_realise_total'] = $hours."H".sprintf("%02u",$minutes);
+
+		$hours = floor($timeCanceledToLateTotal / 60 / 60);
+		$minutes = $timeCanceledToLateTotal / 60 % 60;
+		$resultArray['time_stagiaire_temps_att_total'] = $timeCanceledToLateTotal;
+		// att = Annulé Trop Tard
+		$resultArray['stagiaire_temps_att_total'] = $hours."H".sprintf("%02u",$minutes);
+
+		$hours = floor(($timeRealizeTotal + $timeCanceledToLateTotal) / 60 / 60);
+		$minutes = ($timeRealizeTotal + $timeCanceledToLateTotal) / 60 % 60;
+		$resultArray['time_stagiaire_temps_realise_att_total'] = $timeRealizeTotal + $timeCanceledToLateTotal;
+		$resultArray['stagiaire_temps_realise_att_total'] = $hours."H".sprintf("%02u",$minutes);
+
+		return $resultArray;
 	}
 
 	/**
