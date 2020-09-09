@@ -5526,9 +5526,9 @@ class Agsession extends CommonObject
 		if(empty($this->TStagiairesSessionPresent)) {
 			$this->TStagiairesSessionPresent = array();
 			if (is_array($this->TStagiairesSession) && count($this->TStagiairesSession)>0) {
-				foreach($this->TStagiairesSession as $linesta) {
-					if (($linesta->status_in_session == 3 || $linesta->status_in_session == 4)) {
-						$this->TStagiairesSessionPresent[]=$linesta;
+				foreach($this->TStagiairesSession as $linesta2) {
+					if (($linesta2->status_in_session == 3 || $linesta2->status_in_session == 4)) {
+						$this->TStagiairesSessionPresent[]=$linesta2;
 					}
 				}
 			}
