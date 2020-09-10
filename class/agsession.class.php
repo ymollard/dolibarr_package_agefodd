@@ -5509,16 +5509,16 @@ class Agsession extends CommonObject
 			$stagiaires->fetch_stagiaire_per_session($this->id);
 			$this->TStagiairesSession = $stagiaires->lines;
 			if (is_array($this->TStagiairesSession) && count($this->TStagiairesSession)>0) {
-				foreach($this->TStagiairesSession as &$linesta) {
-					$timeSta = $this->_getTimeTraineeSession($this->id,$linesta->id);
-					$linesta->stagiaire_presence_bloc = $timeSta['stagiaire_presence_bloc'];
-					$linesta->stagiaire_presence_total = $timeSta['stagiaire_presence_total'];
-					$linesta->time_stagiaire_temps_realise_total = $timeSta['time_stagiaire_temps_realise_total'];
-					$linesta->stagiaire_temps_realise_total = $timeSta['stagiaire_temps_realise_total'];
-					$linesta->time_stagiaire_temps_att_total = $timeSta['time_stagiaire_temps_att_total'];
-					$linesta->stagiaire_temps_att_total = $timeSta['stagiaire_temps_att_total'];
-					$linesta->time_stagiaire_temps_realise_att_total = $timeSta['time_stagiaire_temps_realise_att_total'];
-					$linesta->stagiaire_temps_realise_att_total = $timeSta['stagiaire_temps_realise_att_total'];
+				foreach($this->TStagiairesSession as &$linesta7) {
+					$timeSta = $this->_getTimeTraineeSession($this->id,$linesta7->id);
+					$linesta7->stagiaire_presence_bloc = $timeSta['stagiaire_presence_bloc'];
+					$linesta7->stagiaire_presence_total = $timeSta['stagiaire_presence_total'];
+					$linesta7->time_stagiaire_temps_realise_total = $timeSta['time_stagiaire_temps_realise_total'];
+					$linesta7->stagiaire_temps_realise_total = $timeSta['stagiaire_temps_realise_total'];
+					$linesta7->time_stagiaire_temps_att_total = $timeSta['time_stagiaire_temps_att_total'];
+					$linesta7->stagiaire_temps_att_total = $timeSta['stagiaire_temps_att_total'];
+					$linesta7->time_stagiaire_temps_realise_att_total = $timeSta['time_stagiaire_temps_realise_att_total'];
+					$linesta7->stagiaire_temps_realise_att_total = $timeSta['stagiaire_temps_realise_att_total'];
 				}
 			}
 		}
@@ -5664,25 +5664,25 @@ class Agsession extends CommonObject
 			$stagiaires->fetch_stagiaire_per_session($this->id,$socid);
 			$this->TStagiairesSessionSoc = $stagiaires->lines;
 			if (is_array($this->TStagiairesSessionSoc) && count($this->TStagiairesSessionSoc)>0) {
-				foreach($this->TStagiairesSessionSoc as &$linesta) {
-					$timeSta = $this->_getTimeTraineeSession($this->id,$linesta->id);
-					$linesta->stagiaire_presence_bloc = $timeSta['stagiaire_presence_bloc'];
-					$linesta->stagiaire_presence_total = $timeSta['stagiaire_presence_total'];
-					$linesta->time_stagiaire_temps_realise_total = $timeSta['time_stagiaire_temps_realise_total'];
-					$linesta->stagiaire_temps_realise_total = $timeSta['stagiaire_temps_realise_total'];
-					$linesta->time_stagiaire_temps_att_total = $timeSta['time_stagiaire_temps_att_total'];
-					$linesta->stagiaire_temps_att_total = $timeSta['stagiaire_temps_att_total'];
-					$linesta->time_stagiaire_temps_realise_att_total = $timeSta['time_stagiaire_temps_realise_att_total'];
-					$linesta->stagiaire_temps_realise_att_total = $timeSta['stagiaire_temps_realise_att_total'];
+				foreach($this->TStagiairesSessionSoc as &$linesta3) {
+					$timeSta = $this->_getTimeTraineeSession($this->id,$linesta3->id);
+					$linesta3->stagiaire_presence_bloc = $timeSta['stagiaire_presence_bloc'];
+					$linesta3->stagiaire_presence_total = $timeSta['stagiaire_presence_total'];
+					$linesta3->time_stagiaire_temps_realise_total = $timeSta['time_stagiaire_temps_realise_total'];
+					$linesta3->stagiaire_temps_realise_total = $timeSta['stagiaire_temps_realise_total'];
+					$linesta3->time_stagiaire_temps_att_total = $timeSta['time_stagiaire_temps_att_total'];
+					$linesta3->stagiaire_temps_att_total = $timeSta['stagiaire_temps_att_total'];
+					$linesta3->time_stagiaire_temps_realise_att_total = $timeSta['time_stagiaire_temps_realise_att_total'];
+					$linesta3->stagiaire_temps_realise_att_total = $timeSta['stagiaire_temps_realise_att_total'];
 				}
 			}
 		}
 
 		if(empty($this->TStagiairesSessionSocPresent) && !empty($this->TStagiairesSessionSoc)) {
 		    if (is_array($this->TStagiairesSessionSoc) && count($this->TStagiairesSessionSoc)>0) {
-		        foreach($this->TStagiairesSessionSoc as $linesta) {
-		            if (($linesta->status_in_session == 3 || $linesta->status_in_session == 4)) {
-		                $this->TStagiairesSessionSocPresent[]=$linesta;
+		        foreach($this->TStagiairesSessionSoc as $linesta4) {
+		            if (($linesta4->status_in_session == 3 || $linesta4->status_in_session == 4)) {
+		                $this->TStagiairesSessionSocPresent[]=$linesta4;
 		            }
 		        }
 		    }
@@ -5690,9 +5690,9 @@ class Agsession extends CommonObject
 
 		if(empty($this->TStagiairesSessionSocConfirm) && !empty($this->TStagiairesSessionSoc)) {
 			if (is_array($this->TStagiairesSessionSoc) && count($this->TStagiairesSessionSoc)>0) {
-				foreach($this->TStagiairesSessionSoc as $linesta) {
-					if ($linesta->status_in_session == 2) {
-						$this->TStagiairesSessionSocConfirm[]=$linesta;
+				foreach($this->TStagiairesSessionSoc as $linesta5) {
+					if ($linesta5->status_in_session == 2) {
+						$this->TStagiairesSessionSocConfirm[]=$linesta5;
 					}
 				}
 			}
@@ -5762,16 +5762,16 @@ class Agsession extends CommonObject
 			$stagiaires->fetch_stagiaire_per_session($this->id,$socid,1);
 			$this->TStagiairesSessionSocMore = $stagiaires->lines;
 			if (is_array($this->TStagiairesSessionSocMore) && count($this->TStagiairesSessionSocMore)>0) {
-				foreach($this->TStagiairesSessionSocMore as &$linesta) {
-					$timeSta = $this->_getTimeTraineeSession($this->id,$linesta->id);
-					$linesta->stagiaire_presence_bloc = $timeSta['stagiaire_presence_bloc'];
-					$linesta->stagiaire_presence_total = $timeSta['stagiaire_presence_total'];
-					$linesta->time_stagiaire_temps_realise_total = $timeSta['time_stagiaire_temps_realise_total'];
-					$linesta->stagiaire_temps_realise_total = $timeSta['stagiaire_temps_realise_total'];
-					$linesta->time_stagiaire_temps_att_total = $timeSta['time_stagiaire_temps_att_total'];
-					$linesta->stagiaire_temps_att_total = $timeSta['stagiaire_temps_att_total'];
-					$linesta->time_stagiaire_temps_realise_att_total = $timeSta['time_stagiaire_temps_realise_att_total'];
-					$linesta->stagiaire_temps_realise_att_total = $timeSta['stagiaire_temps_realise_att_total'];
+				foreach($this->TStagiairesSessionSocMore as &$linesta6) {
+					$timeSta = $this->_getTimeTraineeSession($this->id,$linesta6->id);
+					$linesta6->stagiaire_presence_bloc = $timeSta['stagiaire_presence_bloc'];
+					$linesta6->stagiaire_presence_total = $timeSta['stagiaire_presence_total'];
+					$linesta6->time_stagiaire_temps_realise_total = $timeSta['time_stagiaire_temps_realise_total'];
+					$linesta6->stagiaire_temps_realise_total = $timeSta['stagiaire_temps_realise_total'];
+					$linesta6->time_stagiaire_temps_att_total = $timeSta['time_stagiaire_temps_att_total'];
+					$linesta6->stagiaire_temps_att_total = $timeSta['stagiaire_temps_att_total'];
+					$linesta6->time_stagiaire_temps_realise_att_total = $timeSta['time_stagiaire_temps_realise_att_total'];
+					$linesta6->stagiaire_temps_realise_att_total = $timeSta['stagiaire_temps_realise_att_total'];
 				}
 			}
 		}
