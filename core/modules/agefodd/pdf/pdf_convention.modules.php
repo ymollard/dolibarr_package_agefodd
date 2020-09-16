@@ -272,8 +272,10 @@ class pdf_convention extends ModelePDFAgefodd
 				$pdf->Line($this->marge_gauche + 0.5, $posY, $this->page_largeur - $this->marge_droite, $posY);
 
 				// Mise en page de la baseline
-				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
+				$pdf->SetFont('', '', $this->defaultFontSize - 1);
+				$pdf->SetTextColor($this->colorheaderText[0], $this->colorheaderText[1], $this->colorheaderText[2]);
 				$this->str = $outputlangs->transnoentities($mysoc->url);
+				$pdf->MultiCell(70, 4, $this->str, 0, 'L');
 				$this->width = $pdf->GetStringWidth($this->str);
 
 				// alignement du bord droit du container avec le haut de la page
