@@ -2329,7 +2329,7 @@ function agf_getMailTemplate($id)
  */
 function get_agf_session_mails_infos(Agsession $agsession)
 {
-    global $db;
+    global $db, $langs;
 
     if (empty($agsession->id)) {
         return 0;
@@ -2349,7 +2349,7 @@ function get_agf_session_mails_infos(Agsession $agsession)
             $infos = new stdClass();
             $infos->nom = $sessionLine->nom;
             $infos->prenom = $sessionLine->prenom;
-            $infos->civilite = $sessionLine->civilitel;
+            $infos->civilite = $langs->trans($sessionLine->civilitel);
             $infos->socname = $sessionLine->socname;
             $infos->email = $sessionLine->email;
 

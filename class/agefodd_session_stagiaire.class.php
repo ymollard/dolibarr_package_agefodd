@@ -234,6 +234,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_stagiaire_per_session($id, $socid = null, $searchAsLink = 0, $sortfield='sa.nom', $sortorder='') {
+		global $langs;
 		$linesadded = array ();
 
 		$sql = "SELECT";
@@ -301,7 +302,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				$line->nom = $obj->nom;
 				$line->prenom = $obj->prenom;
 				$line->civilite = $obj->civilite;
-				$line->civilitel = $obj->civilitel;
+				$line->civilitel = $langs->trans($obj->civilitel);
 				$line->socname = $obj->socname;
 				$line->socid = $obj->socid;
 				$line->soccode = $obj->soccode;
@@ -414,7 +415,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 							$line->nom = $obj->nom;
 							$line->prenom = $obj->prenom;
 							$line->civilite = $obj->civilite;
-							$line->civilitel = $obj->civilitel;
+							$line->civilitel = $langs->trans($obj->civilitel);
 							$line->socname = $obj->socname;
 							$line->socid = $obj->socid;
 							$line->soccode = $obj->soccode;
@@ -487,6 +488,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_stagiaire_per_session_per_OPCA($id, $socid = 0, $trainee_seesion_id = 0) {
+		global $langs;
 		$sql = "SELECT";
 		$sql .= " s.rowid as sessid,";
 		$sql .= " ss.rowid, ss.fk_stagiaire, ss.fk_agefodd_stagiaire_type,ss.status_in_session,";
@@ -547,7 +549,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				$line->nom = $obj->nom;
 				$line->prenom = $obj->prenom;
 				$line->civilite = $obj->civilite;
-				$line->civilitel = $obj->civilitel;
+				$line->civilitel = $langs->trans($obj->civilitel);
 				$line->socname = $obj->socname;
 				$line->socid = $obj->socid;
 				$line->soccode = $obj->soccode;
