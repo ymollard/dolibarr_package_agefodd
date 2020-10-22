@@ -58,18 +58,18 @@ $page = GETPOST('page', 'int');
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 
 // Search criteria
-$search_status = GETPOST('search_status');
+$search_status = GETPOST('search_status', 'none');
 $search_month = GETPOST('search_month', 'aplha');
 $search_year = GETPOST('search_year', 'int');
-$search_teacher_id = GETPOST("search_teacher_id");
-$search_teacher_status = GETPOST("search_teacher_status");
-$search_site = GETPOST("search_site");
-$search_room_status = GETPOST("search_room_status");
-$search_id = GETPOST('search_id');
-$search_trainning_name = GETPOST('search_trainning_name');
+$search_teacher_id = GETPOST("search_teacher_id", 'none');
+$search_teacher_status = GETPOST("search_teacher_status", 'none');
+$search_site = GETPOST("search_site", 'none');
+$search_room_status = GETPOST("search_room_status", 'none');
+$search_id = GETPOST('search_id', 'none');
+$search_trainning_name = GETPOST('search_trainning_name', 'none');
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_status = '';
 	$search_month = '';
 	$search_year = '';
@@ -312,9 +312,9 @@ if ($resql != - 1) {
 		print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	}
 	print '</td>';
-	
+
 	print "</tr>\n";
-	
+
 	print '<tr class="liste_titre">';
 	print '<th class="liste_titre"><div class="nowrap">';
 	print '<input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
@@ -327,7 +327,7 @@ if ($resql != - 1) {
 	print '<th class="liste_titre nowrap" style="border: 1px solid black" id="totalamountfact"></th>'; // fact HTHF
 	print '<th class="liste_titre" colspan="6"></th>';
 	print '</tr>';
-	
+
 	print '<tr class="liste_titre">';
 	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "s.status", "", $option, '', $sortfield, $sortorder);
@@ -351,7 +351,7 @@ if ($resql != - 1) {
 	print_liste_field_titre($langs->trans("Fact/L"), $_SERVER ['PHP_SELF'], "invroom", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Comment."), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre(''); // Action
-	
+
 	print "</tr>\n";
 
 	$var = true;

@@ -46,13 +46,13 @@ if (!$user->rights->agefodd->admin && !$user->admin)
 	accessforbidden();
 
 $action = GETPOST('action', 'alpha');
-$updatedaytodate = GETPOST('updatedaytodate');
+$updatedaytodate = GETPOST('updatedaytodate', 'none');
 if (!empty($updatedaytodate)) {
 	$action = 'updatedaytodate';
 }
 
 if ($action == 'updateMaskType') {
-	$masktype = GETPOST('value');
+	$masktype = GETPOST('value', 'none');
 
 	if ($masktype)
 		$res = dolibarr_set_const($db, 'AGF_ADDON', $masktype, 'chaine', 0, '', $conf->entity);
@@ -68,7 +68,7 @@ if ($action == 'updateMaskType') {
 }
 
 if ($action == 'updateMask') {
-	$mask = GETPOST('maskagefodd');
+	$mask = GETPOST('maskagefodd', 'none');
 
 	$res = dolibarr_set_const($db, 'AGF_UNIVERSAL_MASK', $mask, 'chaine', 0, '', $conf->entity);
 
@@ -83,7 +83,7 @@ if ($action == 'updateMask') {
 }
 
 if ($action == 'updateMaskCertifType') {
-	$masktype = GETPOST('value');
+	$masktype = GETPOST('value', 'none');
 
 	if ($masktype)
 		$res = dolibarr_set_const($db, 'AGF_CERTIF_ADDON', $masktype, 'chaine', 0, '', $conf->entity);
@@ -99,7 +99,7 @@ if ($action == 'updateMaskCertifType') {
 }
 
 if ($action == 'updateMaskCertif') {
-	$mask = GETPOST('maskagefoddcertif');
+	$mask = GETPOST('maskagefoddcertif', 'none');
 
 	$res = dolibarr_set_const($db, 'AGF_CERTIF_UNIVERSAL_MASK', $mask, 'chaine', 0, '', $conf->entity);
 
@@ -113,7 +113,7 @@ if ($action == 'updateMaskCertif') {
 	}
 }
 if ($action == 'updateMaskSessionType') {
-	$masktype = GETPOST('value');
+	$masktype = GETPOST('value', 'none');
 
 	if ($masktype)
 		$res = dolibarr_set_const($db, 'AGF_SESSION_ADDON', $masktype, 'chaine', 0, '', $conf->entity);
@@ -129,7 +129,7 @@ if ($action == 'updateMaskSessionType') {
 }
 
 if ($action == 'updateMaskSession') {
-	$mask = GETPOST('maskagefoddsession');
+	$mask = GETPOST('maskagefoddsession', 'none');
 
 	$res = dolibarr_set_const($db, 'AGF_SESSION_UNIVERSAL_MASK', $mask, 'chaine', 0, '', $conf->entity);
 

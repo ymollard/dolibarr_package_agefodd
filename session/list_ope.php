@@ -50,13 +50,13 @@ $page = GETPOST('page', 'int');
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 
 // Search criteria
-$search_trainning_name = GETPOST("search_trainning_name");
-$search_soc = GETPOST("search_soc");
-$search_teacher_id = GETPOST("search_teacher_id");
+$search_trainning_name = GETPOST("search_trainning_name", 'none');
+$search_soc = GETPOST("search_soc", 'none');
+$search_teacher_id = GETPOST("search_teacher_id", 'none');
 $search_training_ref = GETPOST("search_training_ref", 'alpha');
 $search_start_date = dol_mktime(0, 0, 0, GETPOST('search_start_datemonth', 'int'), GETPOST('search_start_dateday', 'int'), GETPOST('search_start_dateyear', 'int'));
 $search_end_date = dol_mktime(0, 0, 0, GETPOST('search_end_datemonth', 'int'), GETPOST('search_end_dateday', 'int'), GETPOST('search_end_dateyear', 'int'));
-$search_site = GETPOST("search_site");
+$search_site = GETPOST("search_site", 'none');
 $search_training_ref_interne = GETPOST('search_training_ref_interne', 'alpha');
 $search_type_session = GETPOST("search_type_session", 'int');
 $training_view = GETPOST("training_view", 'int');
@@ -68,7 +68,7 @@ $search_alert = GETPOST('search_alert', 'alpha');
 $search_session_ref = GETPOST('search_session_ref', 'alpha');
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_trainning_name = '';
 	$search_soc = '';
 	$search_teacher_id = "";

@@ -1047,8 +1047,8 @@ class InterfaceAgefodd {
 			{
 				foreach($agf_fin->lines as $line){
 					$agf_fin->fk_session_agefodd =$line->fk_session_agefodd;
-					$actionPage = GETPOST('action');
-					$lineid = GETPOST('lineid');
+					$actionPage = GETPOST('action', 'none');
+					$lineid = GETPOST('lineid', 'none');
 					$agf_fin->updateSellingPrice($user,$actionPage,$lineid);
 				}
 			}
@@ -1233,7 +1233,7 @@ class InterfaceAgefodd {
 		}
 		elseif ($action == 'USER_MODIFY')
         {
-            if ((empty($object->contactid) && GETPOST('contactid') > 0) || (!empty($object->contactid) && GETPOST('contactid') == 0))
+            if ((empty($object->contactid) && GETPOST('contactid', 'none') > 0) || (!empty($object->contactid) && GETPOST('contactid', 'none') == 0))
             {
                 dol_include_once('agefodd/class/agefodd_formateur.class.php');
                 // Nous avons peut être un formateur de déclaré avec cet utilisateur, puis il est changé en tant que contact externe
@@ -1245,7 +1245,7 @@ class InterfaceAgefodd {
                     if (empty($object->contactid))
                     {
                         $formateur->type_trainer = 'socpeople';
-                        $formateur->fk_socpeople = GETPOST('contactid');
+                        $formateur->fk_socpeople = GETPOST('contactid', 'none');
                         $formateur->update($user);
                     }
                     // Cas 2 : utilisateur externe qui passe à interne

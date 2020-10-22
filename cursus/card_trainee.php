@@ -56,10 +56,10 @@ $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
 
-$search_name = GETPOST("search_name");
-$search_firstname = GETPOST("search_firstname");
-$search_civ = GETPOST("search_civ");
-$search_soc = GETPOST("search_soc");
+$search_name = GETPOST("search_name", 'none');
+$search_firstname = GETPOST("search_firstname", 'none');
+$search_civ = GETPOST("search_civ", 'none');
+$search_soc = GETPOST("search_soc", 'none');
 
 if ($page == - 1 || $page === '') {
 	$page = 0;
@@ -71,7 +71,7 @@ $pageprev = $page - 1;
 $pagenext = $page + 1;
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_name = '';
 	$search_firstname = '';
 	$search_civ = '';

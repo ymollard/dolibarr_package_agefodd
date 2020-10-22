@@ -22,9 +22,9 @@ $data['msg'] = '';
 
 
 // do action from GETPOST ...
-	if(GETPOST('action'))
+	if(GETPOST('action', 'none'))
 	{
-		$action = GETPOST('action');
+		$action = GETPOST('action', 'none');
 
         if($action=='setAgefoddTrainingAdmlevelHierarchy'){
             if (! $user->rights->agefodd->agefodd_formation_catalogue->creer){
@@ -54,7 +54,7 @@ $data['msg'] = '';
 		}
 		if($action == 'get_duration_and_product')
 		{
-			$fk_training= GETPOST('fk_training');
+			$fk_training= GETPOST('fk_training', 'none');
 			if(!empty($fk_training)){
 				$sql="SELECT cat.duree,cat.fk_product,p.ref FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue cat";
 				$sql.=" LEFT JOIN ".MAIN_DB_PREFIX."product p on (p.rowid = cat.fk_product)";
@@ -75,8 +75,8 @@ $data['msg'] = '';
 		/*
 		 * On garde le nb_place le plus petit
 		 */
-		$fk_training = GETPOST('fk_training');
-		$fk_place = GETPOST('fk_place');
+		$fk_training = GETPOST('fk_training', 'none');
+		$fk_place = GETPOST('fk_place', 'none');
 		if ($fk_training>0)
 		{
 			$sql = "SELECT cat.nb_place FROM ".MAIN_DB_PREFIX."agefodd_formation_catalogue cat";

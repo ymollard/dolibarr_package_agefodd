@@ -46,21 +46,21 @@ $action = GETPOST('action', 'alpha');
 // Search filters
 $date_start = dol_mktime(0, 0, 0, GETPOST('date_startmonth', 'int'), GETPOST('date_startday', 'int'), GETPOST('date_startyear', 'int'));;
 $date_end = dol_mktime(23, 59, 59, GETPOST('date_endmonth', 'int'), GETPOST('date_endday', 'int'), GETPOST('date_endyear', 'int'));;
-$search_soc = GETPOST("search_soc"); // client de la session
-$search_soc_requester = GETPOST('search_soc_requester'); // demandeur
-$search_soc_buyer=GETPOST('search_soc_buyer'); // tiers payeur
+$search_soc = GETPOST("search_soc", 'none'); // client de la session
+$search_soc_requester = GETPOST('search_soc_requester', 'none'); // demandeur
+$search_soc_buyer=GETPOST('search_soc_buyer', 'none'); // tiers payeur
 $search_sale = GETPOST('search_sale', 'array');
 $search_parent = GETPOST('search_parent', 'array');
 if ($search_parent == - 1)
 	$search_parent = '';
 
-//$search_invoice_status = GETPOST('search_invoice_status');
+//$search_invoice_status = GETPOST('search_invoice_status', 'none');
 
 //$ts_logistique = GETPOST('options_ts_logistique', 'int');
 //$search_session_status=GETPOST('search_session_status','array');
 
 $modelexport = GETPOST('modelexport', 'alpha');
-$lang_id = GETPOST('lang_id');
+$lang_id = GETPOST('lang_id', 'none');
 
 $langs->load('agefodd@agefodd');
 $langs->load('bills');
@@ -161,12 +161,12 @@ if ($action == 'builddoc') {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 
 	$langs->load("other");
-	$file = $upload_dir . '/' . GETPOST('file');
+	$file = $upload_dir . '/' . GETPOST('file', 'none');
 	$ret = dol_delete_file($file, 0, 0, 0, '');
 	if ($ret)
-		setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile')));
+		setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile', 'none')));
 	else
-		setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile')), 'errors');
+		setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile', 'none')), 'errors');
 	$action = '';
 }
 

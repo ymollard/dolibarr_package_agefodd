@@ -77,7 +77,7 @@ $tel1 = GETPOST('tel1', 'alpha');
 $tel2 = GETPOST('tel2', 'alpha');
 $mail = GETPOST('mail', 'alpha');
 $note = GETPOST('note', 'alpha');
-$societe_name = GETPOST('societe_name');
+$societe_name = GETPOST('societe_name', 'none');
 $prospcli = GETPOST('prospcli', 'int');
 $custcats = GETPOST('custcats', 'array');
 $typent_id = GETPOST('typent_id', 'int');
@@ -99,7 +99,7 @@ if ($reshook < 0)
 
 
 //Select mail models is same action as presend
-if (GETPOST('modelselected')) $action = 'presend';
+if (GETPOST('modelselected', 'none')) $action = 'presend';
 
 // Cancel action
 if (isset($_POST['cancel'])) {
@@ -368,7 +368,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
                 setEventMessage('AgfSuccessCreateStag', 'mesgs');
             }
 
-			$saveandstay = GETPOST('saveandstay');
+			$saveandstay = GETPOST('saveandstay', 'none');
             if (empty($saveandstay)) {
                 if (strlen($url_back) > 0) {
                     header("Location: " . $url_back);
@@ -673,7 +673,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	{
 		print '<tr><td>' . $form->textwithtooltip( $langs->trans("AgfSendAgendaMail") ,$langs->trans("AgfSendAgendaMailHelp"),2,1,img_help(1,'')). '</td>';
 		$statutarray=array('0' => $langs->trans("Yes"), '1' => $langs->trans("No"));
-		$postDisable_auto_mail = GETPOST('disable_auto_mail');
+		$postDisable_auto_mail = GETPOST('disable_auto_mail', 'none');
 		print '<td>' . $form->selectarray('disable_auto_mail',$statutarray,!empty($postDisable_auto_mail)?$postDisable_auto_mail:'') . '</td></tr>';
 	}
 
@@ -892,7 +892,7 @@ else
 				{
 					print '<tr><td>' . $form->textwithtooltip( $langs->trans("AgfSendAgendaMail") ,$langs->trans("AgfSendAgendaMailHelp"),2,1,img_help(1,'')). '</td>';
 					$statutarray=array('0' => $langs->trans("Yes"), '1' => $langs->trans("No"));
-					$postDisable_auto_mail = GETPOST('disable_auto_mail');
+					$postDisable_auto_mail = GETPOST('disable_auto_mail', 'none');
 					print '<td>' . $form->selectarray('disable_auto_mail',$statutarray,!empty($postDisable_auto_mail)?$postDisable_auto_mail:$agf->disable_auto_mail) . '</td></tr>';
 				}
 

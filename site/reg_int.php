@@ -78,12 +78,12 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 		$result = $agf->fetch($idreg);
 		if ($result > 0) {
 			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
-				$agf->reg_int = dol_htmlcleanlastbr(GETPOST('reg_int'));
+				$agf->reg_int = dol_htmlcleanlastbr(GETPOST('reg_int', 'none'));
 			} else {
-				$agf->reg_int = GETPOST('reg_int');
+				$agf->reg_int = GETPOST('reg_int', 'none');
 			}
 
-			$agf->notes = GETPOST('notes');
+			$agf->notes = GETPOST('notes', 'none');
 			$result = $agf->update($user);
 
 			if ($result > 0) {
@@ -110,11 +110,11 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 		$agf = new Agefodd_reg_interieur($db);
 
 		if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
-			$agf->reg_int = dol_htmlcleanlastbr(GETPOST('reg_int'));
+			$agf->reg_int = dol_htmlcleanlastbr(GETPOST('reg_int', 'none'));
 		} else {
-			$agf->reg_int = GETPOST('reg_int');
+			$agf->reg_int = GETPOST('reg_int', 'none');
 		}
-		$agf->notes = GETPOST('notes');
+		$agf->notes = GETPOST('notes', 'none');
 		$result = $agf->create($user);
 
 		if ($result > 0) {
@@ -184,7 +184,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<table class="border" width="100%">'. "\n";
 
 	print '<tr><td valign="top">' . $langs->trans("AgfRegInt") . '</td><td>'. "\n";
-	$doleditor = new DolEditor('reg_int', GETPOST('reg_int'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor = new DolEditor('reg_int', GETPOST('reg_int', 'none'), '', 160, 'dolibarr_notes', 'In', true, false, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>". "\n";
 
@@ -238,7 +238,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 			print '</div>' . "\n";
 		} else {
 			// Card location interal rules View mode
-		    
+
 			/*
 			 * Delete confirm
 			*/

@@ -149,9 +149,9 @@ $sql .= ' ,fc.intitule, fc.rowid';
 dol_include_once('/agefodd/class/html.formagefodd.class.php');
 $formAgefodd = new FormAgefodd($db);
 $inputPrefix = 'Listview_list_trainer_session_search_';
-$selectFormateur = $formAgefodd->select_formateur(GETPOST($inputPrefix.'fk_agefodd_formateur'), $inputPrefix.'fk_agefodd_formateur', '', 1);
+$selectFormateur = $formAgefodd->select_formateur(GETPOST($inputPrefix.'fk_agefodd_formateur', 'none'), $inputPrefix.'fk_agefodd_formateur', '', 1);
 
-$select_session_status = $formAgefodd->select_session_status(GETPOST($inputPrefix.'status'), $inputPrefix."status", '', 1);
+$select_session_status = $formAgefodd->select_session_status(GETPOST($inputPrefix.'status', 'none'), $inputPrefix."status", '', 1);
 
 
 $sessionCardUrl = dol_buildpath('agefodd/session/card.php',1).'?id=@idsession@';

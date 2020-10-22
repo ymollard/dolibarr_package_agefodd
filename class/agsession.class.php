@@ -3698,7 +3698,7 @@ class Agsession extends CommonObject
 		$action=GETPOST('action','alpha');
 
 		if ($action=='setsession_status') {
-			$this->status=GETPOST('session_status');
+			$this->status=GETPOST('session_status', 'none');
 			$result=$this->update($user);
 			if ($result<0) {
 				setEventMessage($this->error,'errors');

@@ -273,23 +273,23 @@ if ($action == 'setvarother') {
         $error ++;
 
 
-    $fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
+    $fieldsOrder = GETPOST('AGF_CUSTOM_ORDER', 'none');
     $res = dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
     if (! $res > 0)
         $error ++;
 
 
-	$fieldsOrder = GETPOST('RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION');
+	$fieldsOrder = GETPOST('RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION', 'none');
 	$res = dolibarr_set_const($db, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION', $fieldsOrder, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 
-	$field = GETPOST('AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE');
+	$field = GETPOST('AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE', 'none');
 	$res = dolibarr_set_const($db, 'AGF_NO_TRAINER_CHECK_SCHEDULE_TYPE', json_encode($field), 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;
 
-	$TStagiaireStatusToExclude = GETPOST('TStagiaire_session_status');
+	$TStagiaireStatusToExclude = GETPOST('TStagiaire_session_status', 'none');
 	if(is_array($TStagiaireStatusToExclude)) {
 		$TStagiaireStatusToExclude = implode(',', $TStagiaireStatusToExclude);
 		$TStagiaireStatusToExclude = strtr($TStagiaireStatusToExclude, array('prosp'=>'0'));
