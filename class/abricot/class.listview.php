@@ -90,14 +90,14 @@ if(!class_exists('Listview')) {
 
 			if (empty($TParam['limit'])) $TParam['limit'] = array();
 
-			$page = GETPOST('page');
+			$page = GETPOST('page', 'none');
 			if (!empty($page)) $TParam['limit']['page'] = $page;
 
 			$TParam['limit'] = array_merge(array('page' => 0, 'nbLine' => $conf->liste_limit, 'global' => 0), $TParam['limit']);
 
-			if (GETPOST('sortfield')) {
-				$TParam['sortfield'] = GETPOST('sortfield');
-				$TParam['sortorder'] = GETPOST('sortorder');
+			if (GETPOST('sortfield', 'none')) {
+				$TParam['sortfield'] = GETPOST('sortfield', 'none');
+				$TParam['sortorder'] = GETPOST('sortorder', 'none');
 			}
 
 			include_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
@@ -232,8 +232,8 @@ if(!class_exists('Listview')) {
 
 					$fieldname = !empty($info['fieldname']) ? $info['fieldname'] : 'Listview_' . $this->id . '_search_' . $field;
 					foreach ($TsKey as $i => &$sKey) {
-						$value = GETPOST($fieldname);
-						$value_null = GETPOST('Listview_' . $this->id . '_search_on_null_' . $field);
+						$value = GETPOST($fieldname, 'none');
+						$value_null = GETPOST('Listview_' . $this->id . '_search_on_null_' . $field, 'none');
 
 						if ($allow_is_null && !empty($value_null)) {
 							$TSQLMore[] = $sKey . ' IS NULL ';
@@ -245,13 +245,13 @@ if(!class_exists('Listview')) {
 							if ($info['search_type'] === 'calendars') {
 								$value = array();
 
-								$timestart = dol_mktime(0, 0, 0, GETPOST($k . '_startmonth'), GETPOST($k . '_startday'), GETPOST($k . '_startyear'));
+								$timestart = dol_mktime(0, 0, 0, GETPOST($k . '_startmonth', 'none'), GETPOST($k . '_startday', 'none'), GETPOST($k . '_startyear', 'none'));
 								if ($timestart) $value['start'] = date('Y-m-d', $timestart);
 
-								$timeend = dol_mktime(23, 59, 59, GETPOST($k . '_endmonth'), GETPOST($k . '_endday'), GETPOST($k . '_endyear'));
+								$timeend = dol_mktime(23, 59, 59, GETPOST($k . '_endmonth', 'none'), GETPOST($k . '_endday', 'none'), GETPOST($k . '_endyear', 'none'));
 								if ($timeend) $value['end'] = date('Y-m-d', $timeend);
 							} else {
-								$time = dol_mktime(12, 0, 0, GETPOST($k . 'month'), GETPOST($k . 'day'), GETPOST($k . 'year'));
+								$time = dol_mktime(12, 0, 0, GETPOST($k . 'month', 'none'), GETPOST($k . 'day', 'none'), GETPOST($k . 'year', 'none'));
 								if ($time) $value = date('Y-m-d', $time);
 							}
 
@@ -331,7 +331,7 @@ if(!class_exists('Listview')) {
 				$typeRecherche = (is_array($param_search) && isset($param_search['search_type'])) ? $param_search['search_type'] : $param_search;
 
 				$fieldname = !empty($param_search['fieldname']) ? $param_search['fieldname'] : 'Listview_' . $this->id . '_search_' . $key;
-				$value = $removeFilter ? '' : GETPOST($fieldname);
+				$value = $removeFilter ? '' : GETPOST($fieldname, 'none');
 
 
 				if (!$removeFilter) {
@@ -348,26 +348,26 @@ if(!class_exists('Listview')) {
 					$fsearch = $form->selectarray($fieldname, $typeRecherche, $value, 1);
 				} else if ($typeRecherche === 'calendar') {
 					if (!$removeFilter) {
-						$this->TSearchValue[$fieldname] = GETPOST($fieldname);
-						$this->TSearchValue[$fieldname . 'month'] = GETPOST($fieldname . 'month');
-						$this->TSearchValue[$fieldname . 'day'] = GETPOST($fieldname . 'day');
-						$this->TSearchValue[$fieldname . 'year'] = GETPOST($fieldname . 'year');
-						$value = GETPOST($fieldname) ? mktime(0, 0, 0, (int)GETPOST($fieldname . 'month'), (int)GETPOST($fieldname . 'day'), (int)GETPOST($fieldname . 'year')) : '';
+						$this->TSearchValue[$fieldname] = GETPOST($fieldname, 'none');
+						$this->TSearchValue[$fieldname . 'month'] = GETPOST($fieldname . 'month', 'none');
+						$this->TSearchValue[$fieldname . 'day'] = GETPOST($fieldname . 'day', 'none');
+						$this->TSearchValue[$fieldname . 'year'] = GETPOST($fieldname . 'year', 'none');
+						$value = GETPOST($fieldname, 'none') ? mktime(0, 0, 0, (int)GETPOST($fieldname . 'month', 'none'), (int)GETPOST($fieldname . 'day', 'none'), (int)GETPOST($fieldname . 'year', 'none')) : '';
 					}
 					$fsearch = $form->select_date($value, $fieldname, 0, 0, 1, "", 1, 0, 1);
 				} else if ($typeRecherche === 'calendars') {
 					$value_start = $value_end = '';
 					if (!$removeFilter) {
-						$this->TSearchValue[$fieldname . '_start'] = GETPOST($fieldname . '_start');
-						$this->TSearchValue[$fieldname . '_startmonth'] = GETPOST($fieldname . '_startmonth');
-						$this->TSearchValue[$fieldname . '_startday'] = GETPOST($fieldname . '_startday');
-						$this->TSearchValue[$fieldname . '_startyear'] = GETPOST($fieldname . '_startyear');
-						$this->TSearchValue[$fieldname . '_end'] = GETPOST($fieldname . '_end');
-						$this->TSearchValue[$fieldname . '_endmonth'] = GETPOST($fieldname . '_endmonth');
-						$this->TSearchValue[$fieldname . '_endday'] = GETPOST($fieldname . '_endday');
-						$this->TSearchValue[$fieldname . '_endyear'] = GETPOST($fieldname . '_endyear');
-						$value_start = GETPOST($fieldname . '_start') ? mktime(0, 0, 0, (int)GETPOST($fieldname . '_startmonth'), (int)GETPOST($fieldname . '_startday'), (int)GETPOST($fieldname . '_startyear')) : '';
-						$value_end = GETPOST($fieldname . '_end') ? mktime(0, 0, 0, (int)GETPOST($fieldname . '_endmonth'), (int)GETPOST($fieldname . '_endday'), (int)GETPOST($fieldname . '_endyear')) : '';
+						$this->TSearchValue[$fieldname . '_start'] = GETPOST($fieldname . '_start', 'none');
+						$this->TSearchValue[$fieldname . '_startmonth'] = GETPOST($fieldname . '_startmonth', 'none');
+						$this->TSearchValue[$fieldname . '_startday'] = GETPOST($fieldname . '_startday', 'none');
+						$this->TSearchValue[$fieldname . '_startyear'] = GETPOST($fieldname . '_startyear', 'none');
+						$this->TSearchValue[$fieldname . '_end'] = GETPOST($fieldname . '_end', 'none');
+						$this->TSearchValue[$fieldname . '_endmonth'] = GETPOST($fieldname . '_endmonth', 'none');
+						$this->TSearchValue[$fieldname . '_endday'] = GETPOST($fieldname . '_endday', 'none');
+						$this->TSearchValue[$fieldname . '_endyear'] = GETPOST($fieldname . '_endyear', 'none');
+						$value_start = GETPOST($fieldname . '_start', 'none') ? mktime(0, 0, 0, (int)GETPOST($fieldname . '_startmonth', 'none'), (int)GETPOST($fieldname . '_startday', 'none'), (int)GETPOST($fieldname . '_startyear', 'none')) : '';
+						$value_end = GETPOST($fieldname . '_end', 'none') ? mktime(0, 0, 0, (int)GETPOST($fieldname . '_endmonth', 'none'), (int)GETPOST($fieldname . '_endday', 'none'), (int)GETPOST($fieldname . '_endyear', 'none')) : '';
 					}
 
 					$fsearch = $form->select_date($value_start, $fieldname . '_start', 0, 0, 1, "", 1, 0, 1)
@@ -383,7 +383,7 @@ if(!class_exists('Listview')) {
 
 				if (!empty($param_search['allow_is_null'])) {
 					if (!$removeFilter) {
-						$valueNull = GETPOST($fieldname . 'search_on_null_' . $key) ? 1 : 0;
+						$valueNull = GETPOST($fieldname . 'search_on_null_' . $key, 'none') ? 1 : 0;
 						$this->TSearchValue[$fieldname . 'search_on_null_' . $key] = $valueNull;
 					} else $valueNull = 0;
 					$fsearch .= ' <input type="checkbox" class="" id="" name="' . $fieldname . 'search_on_null_' . $key . '" value="1" ' . ($valueNull ? 'checked' : '') . ' onclick="if($(this).is(\':checked\')){ $(this).prev().val(\'\'); }" />' . img_help(1, $langs->trans('SearchOnNUllValue'));
@@ -483,7 +483,7 @@ if(!class_exists('Listview')) {
 
 			$Tab = array();
 			if (!empty($TParam['export'])) {
-				$token = GETPOST('token');
+				$token = GETPOST('token', 'none');
 				if (empty($token)) $token = md5($this->id . time() . rand(1, 9999));
 
 				$_SESSION['token_list_' . $token] = gzdeflate(serialize(array(
@@ -778,7 +778,7 @@ if(!class_exists('Listview')) {
 
 			$contextpage = md5($_SERVER['PHP_SELF']);
 			if (!empty($TParam['allow-fields-select'])) {
-				$selectedfields = GETPOST('Listview' . $this->id . '_selectedfields');
+				$selectedfields = GETPOST('Listview' . $this->id . '_selectedfields', 'none');
 
 				if (!empty($selectedfields)) {
 					include_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';

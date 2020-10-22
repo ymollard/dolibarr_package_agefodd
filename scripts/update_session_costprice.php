@@ -41,7 +41,7 @@ dol_include_once('/user/class/user.class.php');
 dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 
-$userlogin = GETPOST('login');
+$userlogin = GETPOST('login', 'none');
 $key = GETPOST('key', 'alpha');
 
 // Security test
@@ -58,7 +58,7 @@ if (empty($user->id)) {
 }
 
 $filter = array (
-		's.status' => 1 
+		's.status' => 1
 );
 
 $agf = new Agsession($db);
@@ -82,7 +82,7 @@ if ($result < 0) {
 }
 
 $filter = array (
-		's.status' => 2 
+		's.status' => 2
 );
 
 $agf = new Agsession($db);
@@ -105,4 +105,4 @@ if ($result < 0) {
 	}
 }
 
-			
+

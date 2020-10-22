@@ -46,16 +46,16 @@ $confirm = GETPOST('confirm', 'alpha');
 
 $search_year = GETPOST('search_year','int');
 $search_nb_years = GETPOST('search_nb_years','int');
-$search_accounting_date = GETPOST('search_accounting_date');
+$search_accounting_date = GETPOST('search_accounting_date', 'none');
 if(empty($search_accounting_date))  $search_accounting_date = 'invoice';
 $search_sale = GETPOST('search_sale', 'int');
 $search_type_session = GETPOST("search_type_session", 'int');
 $search_parent = GETPOST('search_parent', 'int');
 if ($search_parent == - 1)
 	$search_parent = '';
-$search_soc_requester = GETPOST('search_soc_requester');
+$search_soc_requester = GETPOST('search_soc_requester', 'none');
 $search_soc = GETPOST('search_soc', 'array');
-$search_invoice_status = GETPOST('search_invoice_status');
+$search_invoice_status = GETPOST('search_invoice_status', 'none');
 $search_only_active = $action == 'builddoc' ? isset($_REQUEST['search_only_active']) : true;
 $search_created_during_selected_period = isset($_REQUEST['search_created_during_selected_period']);
 $search_client_prospect = GETPOST('search_client_prospect', 'array');
@@ -73,13 +73,13 @@ if($action != 'builddoc' && empty($search_client_prospect))
 		}
 	}
 }
-$search_detail = GETPOST('search_detail');
+$search_detail = GETPOST('search_detail', 'none');
 
 //$ts_logistique = GETPOST('options_ts_logistique', 'int');
 //$search_session_status=GETPOST('search_session_status','array');
 
 $modelexport = GETPOST('modelexport', 'alpha');
-$lang_id = GETPOST('lang_id');
+$lang_id = GETPOST('lang_id', 'none');
 
 $langs->load('agefodd@agefodd');
 $langs->load('bills');
@@ -187,12 +187,12 @@ elseif ($action == 'remove_file')
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 
 	$langs->load("other");
-	$file = $upload_dir . '/' . GETPOST('file');
+	$file = $upload_dir . '/' . GETPOST('file', 'none');
 	$ret = dol_delete_file($file, 0, 0, 0, '');
 	if ($ret)
-		setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile')));
+		setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile', 'none')));
 	else
-		setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile')), 'errors');
+		setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile', 'none')), 'errors');
 	$action = '';
 }
 

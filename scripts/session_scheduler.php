@@ -64,7 +64,7 @@ $put = GETPOST('put', 'alpha');
 
 switch ($get) {
 	case 'getAgefoddSessionCalendrier':
-		_getAgefoddSessionCalendrier(GETPOST('fk_agefodd_session'), GETPOST('dateStart'), GETPOST('dateEnd'));
+		_getAgefoddSessionCalendrier(GETPOST('fk_agefodd_session', 'none'), GETPOST('dateStart', 'none'), GETPOST('dateEnd', 'none'));
 		echo json_encode( $response );
 		break;
 }
@@ -75,13 +75,13 @@ switch ($put) {
 		echo json_encode( $response );
 		break;
 	case 'updateTimeSlotCalendrier':
-		_updateTimeSlotCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('start'), GETPOST('end'), GETPOST('deltaInSecond', 'int'));
+		_updateTimeSlotCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('start', 'none'), GETPOST('end', 'none'), GETPOST('deltaInSecond', 'int'));
 		echo json_encode( $response );
 		break;
 	case 'createOrUpdateCalendrier':
-		$time_start = dol_mktime(GETPOST('date_starthour'), GETPOST('date_startmin'), 0, GETPOST('date_startmonth'), GETPOST('date_startday'), GETPOST('date_startyear'));
-		$time_end = dol_mktime(GETPOST('date_endhour'), GETPOST('date_endmin'), 0, GETPOST('date_endmonth'), GETPOST('date_endday'), GETPOST('date_endyear'));
-		_createOrUpdateCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('fk_agefodd_session', 'int'), GETPOST('TFormateurId', 'array'), GETPOST('TRealHour', 'array'), GETPOST('calendrier_type'), $time_start, $time_end, GETPOST('TFormateurHeured'), GETPOST('TFormateurHeuref'), GETPOST('calendrier_status'));
+		$time_start = dol_mktime(GETPOST('date_starthour', 'none'), GETPOST('date_startmin', 'none'), 0, GETPOST('date_startmonth', 'none'), GETPOST('date_startday', 'none'), GETPOST('date_startyear', 'none'));
+		$time_end = dol_mktime(GETPOST('date_endhour', 'none'), GETPOST('date_endmin', 'none'), 0, GETPOST('date_endmonth', 'none'), GETPOST('date_endday', 'none'), GETPOST('date_endyear', 'none'));
+		_createOrUpdateCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('fk_agefodd_session', 'int'), GETPOST('TFormateurId', 'array'), GETPOST('TRealHour', 'array'), GETPOST('calendrier_type', 'none'), $time_start, $time_end, GETPOST('TFormateurHeured', 'none'), GETPOST('TFormateurHeuref', 'none'), GETPOST('calendrier_status', 'none'));
 		echo json_encode( $response );
 		break;
 }
@@ -359,7 +359,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 		}
 	}
 
-	_getAgefoddSessionCalendrier($fk_agefodd_session, GETPOST('dateStart'), GETPOST('dateEnd'));
+	_getAgefoddSessionCalendrier($fk_agefodd_session, GETPOST('dateStart', 'none'), GETPOST('dateEnd', 'none'));
 }
 
 function _formatEventAsArray(Agefodd_sesscalendar &$agf_calendrier, $now)

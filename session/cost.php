@@ -114,7 +114,7 @@ if ($action == 'invoice_addline') {
 	}
 
 	if (! $error) {
-		$result = $suplier_invoice->addline($prod->ref . ' ' . $prod->description, GETPOST('price'), GETPOST('tva_tx'), 0, 0, GETPOST('qty'), $product_fourn, 0, '', '', 0, '', 'HT', $prod->type);
+		$result = $suplier_invoice->addline($prod->ref . ' ' . $prod->description, GETPOST('price', 'none'), GETPOST('tva_tx', 'none'), 0, 0, GETPOST('qty', 'none'), $product_fourn, 0, '', '', 0, '', 'HT', $prod->type);
 		if ($result < 0) {
 			setEventMessage($suplier_invoice->error, 'errors');
 		}
@@ -239,9 +239,9 @@ if ($action == 'invoice_supplier_trainer_confirm') {
 
 	if (! $error) {
 		$suplier_invoice->lines[0]->description = $prod->ref . ' ' . $prod->description;
-		$suplier_invoice->lines[0]->pu_ht = GETPOST('pricetrainer');
-		$suplier_invoice->lines[0]->tva_tx = GETPOST('tva_tx');
-		$suplier_invoice->lines[0]->qty = GETPOST('qtytrainer');
+		$suplier_invoice->lines[0]->pu_ht = GETPOST('pricetrainer', 'none');
+		$suplier_invoice->lines[0]->tva_tx = GETPOST('tva_tx', 'none');
+		$suplier_invoice->lines[0]->qty = GETPOST('qtytrainer', 'none');
 		$suplier_invoice->lines[0]->fk_product = $prod->id;
 		$suplier_invoice->lines[0]->product_type = $prod->type;
 
@@ -324,9 +324,9 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 
 	if (! $error) {
 		$suplier_invoice->lines[0]->description = $prod->ref . ' ' . $prod->description;
-		$suplier_invoice->lines[0]->pu_ht = GETPOST('pricemission');
-		$suplier_invoice->lines[0]->tva_tx = GETPOST('tva_tx');
-		$suplier_invoice->lines[0]->qty = GETPOST('qtymission');
+		$suplier_invoice->lines[0]->pu_ht = GETPOST('pricemission', 'none');
+		$suplier_invoice->lines[0]->tva_tx = GETPOST('tva_tx', 'none');
+		$suplier_invoice->lines[0]->qty = GETPOST('qtymission', 'none');
 		$suplier_invoice->lines[0]->fk_product = $prod->id;
 		$suplier_invoice->lines[0]->product_type = $prod->type;
 
@@ -408,9 +408,9 @@ elseif ($action == 'invoice_supplier_missions_confirm' && empty($islink)) {
 
 	if (! $error) {
 		$suplier_invoice->lines[0]->description = $prod->ref . ' ' . $prod->description;
-		$suplier_invoice->lines[0]->pu_ht = GETPOST('priceroom');
-		$suplier_invoice->lines[0]->tva_tx = GETPOST('tva_tx');
-		$suplier_invoice->lines[0]->qty = GETPOST('qtyroom');
+		$suplier_invoice->lines[0]->pu_ht = GETPOST('priceroom', 'none');
+		$suplier_invoice->lines[0]->tva_tx = GETPOST('tva_tx', 'none');
+		$suplier_invoice->lines[0]->qty = GETPOST('qtyroom', 'none');
 		$suplier_invoice->lines[0]->fk_product = $prod->id;
 		$suplier_invoice->lines[0]->product_type = $prod->type;
 
@@ -809,11 +809,11 @@ foreach ( $agf_formateurs->lines as $line ) {
 			//Manage trainer with multicompany
 			$soc_trainer_array=array();
 			if ($conf->companycontacts->enabled) {
-				
+
 				$sql_innercontact = "SELECT c.fk_soc_source ";
 				$sql_innercontact .= " FROM " . MAIN_DB_PREFIX . "company_contacts as c";
 				$sql_innercontact .= " WHERE c.fk_contact=" . $contact_static->id;
-				
+
 				$resql_innercontact = $db->query($sql_innercontact);
 				if ($resql_innercontact) {
 					while ( $obj_innercontact = $db->fetch_object($resql_innercontact) ) {
@@ -824,7 +824,7 @@ foreach ( $agf_formateurs->lines as $line ) {
 				}
 			}
 			$soc_trainer_array[$contact_static->thirdparty->id] = $contact_static->thirdparty->id;
-			
+
 			$invoice_trainer_array=array();
 			foreach($soc_trainer_array as $soc_trainer) {
 				// Get all document lines
@@ -852,16 +852,16 @@ foreach ( $agf_formateurs->lines as $line ) {
 						print '</td>';
 
 						print '<td align="left" style="padding-left:10px">';
-						print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST('pricetrainer') . '">' . $langs->getCurrencySymbol($conf->currency);
+						print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST('pricetrainer', 'none') . '">' . $langs->getCurrencySymbol($conf->currency);
 						print '</td>';
 
 						print '<td  align="left" style="padding-left:10px">';
 
-						print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$contact_static->thirdparty,$mysoc);
+						print $form->load_tva('tva_tx', (GETPOST('tva_tx', 'none') ? GETPOST('tva_tx', 'none') : - 1),$contact_static->thirdparty,$mysoc);
 						print '</td>';
 
 						print '<td  align="left" style="padding-left:10px">';
-						print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qty" value="' . GETPOST('qtytrainer') . '">';
+						print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qty" value="' . GETPOST('qtytrainer', 'none') . '">';
 						print '</td>';
 
 						print '<td align="left" style="padding-left:10px">';
@@ -949,13 +949,13 @@ foreach ( $agf_formateurs->lines as $line ) {
 				print '<input type="hidden" name="action" value="invoice_supplier_trainer_confirm">';
 				print '<input type="hidden" name="opsid" value="' . $line->opsid . '">';
 				print '<input type="hidden" name="id" value="' . $id . '">';
-				
+
 				if ($conf->companycontacts->enabled) {
-					
+
 					$sql_innercontact = "SELECT c.fk_soc_source ";
 					$sql_innercontact .= " FROM " . MAIN_DB_PREFIX . "company_contacts as c";
 					$sql_innercontact .= " WHERE c.fk_contact=" . $contact_static->id;
-					
+
 					$resql_innercontact = $db->query($sql_innercontact);
 					if ($resql_innercontact) {
 						while ( $obj_innercontact = $db->fetch_object($resql_innercontact) ) {
@@ -966,13 +966,13 @@ foreach ( $agf_formateurs->lines as $line ) {
 					}
 				}
 				$soc_trainer_array[$contact_static->thirdparty->id] = $contact_static->thirdparty->id;
-				
+
 				if (count($soc_trainer_array)==1) {
 					print '<input type="hidden" name="socid" value="' . $contact_static->thirdparty->id . '">';
 				}
-				
+
 				print '<table class="nobordernopadding"><tr>';
-				
+
 				if ($conf->companycontacts->enabled && count($soc_trainer_array)>1) {
 					print '<td nowrap="nowrap">';
 					// print $langs->trans('AgfSelectFournProduct');
@@ -986,14 +986,14 @@ foreach ( $agf_formateurs->lines as $line ) {
 				print '</td>';
 
 				print '<td align="left" style="padding-left:10px">';
-				print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="pricetrainer" value="' . GETPOST('pricetrainer') . '">' . $langs->getCurrencySymbol($conf->currency);
+				print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="pricetrainer" value="' . GETPOST('pricetrainer', 'none') . '">' . $langs->getCurrencySymbol($conf->currency);
 				print '</td>';
 				print '<td  align="left" style="padding-left:10px">';
-				print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$contact_static->thirdparty,$mysoc);
+				print $form->load_tva('tva_tx', (GETPOST('tva_tx', 'none') ? GETPOST('tva_tx', 'none') : - 1),$contact_static->thirdparty,$mysoc);
 				print '</td>';
 
 				print '<td  align="left" style="padding-left:10px">';
-				print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qtytrainer" value="' . GETPOST('qtytrainer') . '">';
+				print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qtytrainer" value="' . GETPOST('qtytrainer', 'none') . '">';
 				print '</td>';
 
 				print '<td align="left" style="padding-left:10px">';
@@ -1076,16 +1076,16 @@ foreach ( $agf_fin->lines as $line_fin ) {
 				print '</td>';
 
 				print '<td align="left" style="padding-left:10px">';
-				print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST('pricetrainer') . '">' . $langs->getCurrencySymbol($conf->currency);
+				print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST('pricetrainer', 'none') . '">' . $langs->getCurrencySymbol($conf->currency);
 				print '</td>';
 
 
 				print '<td  align="left" style="padding-left:10px">';
-				print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$suplier_invoice->thirdparty,$mysoc);
+				print $form->load_tva('tva_tx', (GETPOST('tva_tx', 'none') ? GETPOST('tva_tx', 'none') : - 1),$suplier_invoice->thirdparty,$mysoc);
 				print '</td>';
 
 				print '<td  align="left" style="padding-left:10px">';
-				print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qty" value="' . GETPOST('qtytrainer') . '">';
+				print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qty" value="' . GETPOST('qtytrainer', 'none') . '">';
 				print '</td>';
 
 				print '<td align="left" style="padding-left:10px">';
@@ -1122,7 +1122,7 @@ foreach ( $agf_fin->lines as $line_fin ) {
 					print $supplier_order->getLibStatut(4) . ' ' . $supplier_order->getNomUrl(1, '', 0) . ' (' . price($supplier_order->total_ht) . $langs->getCurrencySymbol($conf->currency) . ')';
 					print '</td>';
 					print '<td>';
-					
+
 					print '</tr>';
 					print '</table>';
 				}
@@ -1191,15 +1191,15 @@ if ($user->rights->agefodd->modifier && $action == 'new_invoice_supplier_mission
 	print '</td>';
 
 	print '<td align="left" style="padding-left:10px">';
-	print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="pricemission" value="' . GETPOST('pricemission') . '">' . $langs->getCurrencySymbol($conf->currency);
+	print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="pricemission" value="' . GETPOST('pricemission', 'none') . '">' . $langs->getCurrencySymbol($conf->currency);
 	print '</td>';
 
 	print '<td  align="left" style="padding-left:10px">';
-	print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$mysoc,$mysoc);
+	print $form->load_tva('tva_tx', (GETPOST('tva_tx', 'none') ? GETPOST('tva_tx', 'none') : - 1),$mysoc,$mysoc);
 	print '</td>';
 
 	print '<td  align="left" style="padding-left:10px">';
-	print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qtymission" value="' . GETPOST('qtymission') . '">';
+	print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qtymission" value="' . GETPOST('qtymission', 'none') . '">';
 	print '</td>';
 
 	print '<td align="left" style="padding-left:10px">';
@@ -1290,15 +1290,15 @@ if (! empty($place->id)) {
 					print $form->select_produits_fournisseurs($contact_static->thirdparty->id, $product_fourn, 'product_fourn','','',array(),0,1);
 					print '</td>';
 					print '<td align="left" style="padding-left:10px">';
-					print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST('pricetrainer') . '">' . $langs->getCurrencySymbol($conf->currency);
+					print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="price" value="' . GETPOST('pricetrainer', 'none') . '">' . $langs->getCurrencySymbol($conf->currency);
 					print '</td>';
 
 					print '<td  align="left" style="padding-left:10px">';
-					print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$suplier_invoice->thirdparty,$mysoc);
+					print $form->load_tva('tva_tx', (GETPOST('tva_tx', 'none') ? GETPOST('tva_tx', 'none') : - 1),$suplier_invoice->thirdparty,$mysoc);
 					print '</td>';
 
 					print '<td  align="left" style="padding-left:10px">';
-					print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qty" value="' . GETPOST('qtytrainer') . '">';
+					print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qty" value="' . GETPOST('qtytrainer', 'none') . '">';
 					print '</td>';
 
 					print '<td align="left" style="padding-left:10px">';
@@ -1390,15 +1390,15 @@ if (! empty($place->id)) {
 			print '</td>';
 
 			print '<td align="left" style="padding-left:10px">';
-			print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="priceroom" value="' . GETPOST('priceroom') . '">' . $langs->getCurrencySymbol($conf->currency);
+			print $langs->trans('PriceUHT') . '<input type="text" class="flat" size="4" name="priceroom" value="' . GETPOST('priceroom', 'none') . '">' . $langs->getCurrencySymbol($conf->currency);
 			print '</td>';
 
 			print '<td  align="left" style="padding-left:10px">';
-			print $form->load_tva('tva_tx', (GETPOST('tva_tx') ? GETPOST('tva_tx') : - 1),$place->thirdparty,$mysoc);
+			print $form->load_tva('tva_tx', (GETPOST('tva_tx', 'none') ? GETPOST('tva_tx', 'none') : - 1),$place->thirdparty,$mysoc);
 			print '</td>';
 
 			print '<td  align="left" style="padding-left:10px">';
-			print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qtyroom" value="' . GETPOST('qtyroom') . '">';
+			print $langs->trans('Qty') . '<input type="text" class="flat" size="2" name="qtyroom" value="' . GETPOST('qtyroom', 'none') . '">';
 			print '</td>';
 
 			print '<td align="left" style="padding-left:10px">';

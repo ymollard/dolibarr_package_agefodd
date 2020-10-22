@@ -40,7 +40,7 @@ require_once '../class/html.formagefodd.class.php';
 require_once '../class/agefodd_formateur.class.php';
 
 
-$type = GETPOST("type");
+$type = GETPOST("type", 'none');
 
 $filter_commercial = GETPOST('commercial', 'int');
 $filter_customer = GETPOST('fk_soc', 'array');
@@ -53,7 +53,7 @@ $filter_trainee = GETPOST('traineeid', 'int');
 $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
 $filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth','int'), GETPOST('dt_start_filterday','int'), GETPOST('dt_start_filteryear','int'));
 $filter_session_status = GETPOST('search_session_status', 'array');
-$filter_control_occupation = GETPOST('control_occupation');
+$filter_control_occupation = GETPOST('control_occupation', 'none');
 if ($filter_control_occupation === '') {
 	if (!is_null($conf->global->AGF_DEFAULT_AGENDA_LOCATION_FILTER_ROOM)) {
 		$filter_control_occupation = $conf->global->AGF_DEFAULT_AGENDA_LOCATION_FILTER_ROOM;
@@ -112,7 +112,7 @@ if ($filter_trainee == -1) {
 	$filter_trainee=0;
 }
 
-$type = GETPOST('type');
+$type = GETPOST('type', 'none');
 
 if (! $user->rights->agefodd->agendalocation)
 		accessforbidden();
@@ -175,8 +175,8 @@ $listofextcals = array ();
 
 $tmp = empty($conf->global->MAIN_DEFAULT_WORKING_HOURS) ? '9-18' : $conf->global->MAIN_DEFAULT_WORKING_HOURS;
 $tmparray = explode('-', $tmp);
-$begin_h = GETPOST('begin_h') != '' ? GETPOST('begin_h', 'int') : ($tmparray[0] != '' ? $tmparray[0] : 9);
-$end_h = GETPOST('end_h') ? GETPOST('end_h') : ($tmparray[1] != '' ? $tmparray[1] : 18);
+$begin_h = GETPOST('begin_h', 'none') != '' ? GETPOST('begin_h', 'int') : ($tmparray[0] != '' ? $tmparray[0] : 9);
+$end_h = GETPOST('end_h', 'none') ? GETPOST('end_h', 'none') : ($tmparray[1] != '' ? $tmparray[1] : 18);
 if ($begin_h < 0 || $begin_h > 23)
 	$begin_h = 9;
 if ($end_h < 1 || $end_h > 24)
@@ -186,8 +186,8 @@ if ($end_h <= $begin_h)
 
 $tmp = empty($conf->global->MAIN_DEFAULT_WORKING_DAYS) ? '1-5' : $conf->global->MAIN_DEFAULT_WORKING_DAYS;
 $tmparray = explode('-', $tmp);
-$begin_d = GETPOST('begin_d') ? GETPOST('begin_d', 'int') : ($tmparray[0] != '' ? $tmparray[0] : 1);
-$end_d = GETPOST('end_d') ? GETPOST('end_d') : ($tmparray[1] != '' ? $tmparray[1] : 5);
+$begin_d = GETPOST('begin_d', 'none') ? GETPOST('begin_d', 'int') : ($tmparray[0] != '' ? $tmparray[0] : 1);
+$end_d = GETPOST('end_d', 'none') ? GETPOST('end_d', 'none') : ($tmparray[1] != '' ? $tmparray[1] : 5);
 if ($begin_d < 1 || $begin_d > 7)
 	$begin_d = 1;
 if ($end_d < 1 || $end_d > 7)

@@ -49,11 +49,11 @@ $form_update_x = GETPOST('form_update_x', 'alpha');
 $form_add_x = GETPOST('form_add_x', 'alpha');
 $period_add = GETPOST('period_add_x', 'alpha');
 $period_update = GETPOST('period_update_x', 'alpha');
-$newform_var = GETPOST('newform');
-$opsid_var = GETPOST('opsid');
-$form_remove_var = GETPOST('form_remove');
-$period_remove = GETPOST('period_remove');
-$newperiod = GETPOST('newperiod');
+$newform_var = GETPOST('newform', 'none');
+$opsid_var = GETPOST('opsid', 'none');
+$form_remove_var = GETPOST('form_remove', 'none');
+$period_remove = GETPOST('period_remove', 'none');
+$newperiod = GETPOST('newperiod', 'none');
 $formid = GETPOST('formid', 'int');
 if ($formid == - 1) {
 	$formid = 0;
@@ -324,7 +324,7 @@ if ($action == 'edit_calendrier' && $user->rights->agefodd->modifier) {
 		}
 	}
 
-	$copysessioncalendar = GETPOST('copysessioncalendar');
+	$copysessioncalendar = GETPOST('copysessioncalendar', 'none');
 	if (! empty($copysessioncalendar)) {
 
 		$fk_agefodd_session_formateur = GETPOST('fk_agefodd_session_formateur', 'int');
@@ -466,11 +466,11 @@ if (! empty($id)) {
 
 	if (! empty($period_remove)) {
 		// Param url = id de la periode à supprimer - id session
-		print $form->formconfirm($_SERVER['PHP_SELF'] . '?modperiod=' . GETPOST('modperiod') . '&id=' . $id, $langs->trans("AgfDeletePeriod"), $langs->trans("AgfConfirmDeletePeriod"), "confirm_delete_period", '', '', 1);
+		print $form->formconfirm($_SERVER['PHP_SELF'] . '?modperiod=' . GETPOST('modperiod', 'none') . '&id=' . $id, $langs->trans("AgfDeletePeriod"), $langs->trans("AgfConfirmDeletePeriod"), "confirm_delete_period", '', '', 1);
 	}
 
-	$rowf_var = GETPOST('rowf');
-	$trainerid_var = GETPOST('trainerid');
+	$rowf_var = GETPOST('rowf', 'none');
+	$trainerid_var = GETPOST('trainerid', 'none');
 	if ($action == 'edit_calendrier' && (! empty($rowf_var) || ! empty($trainerid_var))) {
 
 		$anchroid = empty($rowf_var) ? $trainerid_var : $rowf_var;
@@ -492,7 +492,7 @@ if (! empty($id)) {
 		if (! empty($newform_var)) {
 			print '				 $(\'html, body\').animate({scrollTop: $("#anchornewform").offset().top}, 500,\'easeInOutCubic\');';
 		} elseif (! empty($opsid_var) && empty($form_remove_var)) {
-			print '				 $(\'html, body\').animate({scrollTop: $("#anchoropsid' . GETPOST('opsid') . '").offset().top}, 500,\'easeInOutCubic\');';
+			print '				 $(\'html, body\').animate({scrollTop: $("#anchoropsid' . GETPOST('opsid', 'none') . '").offset().top}, 500,\'easeInOutCubic\');';
 		}
 		print '			});
 					});
@@ -503,7 +503,7 @@ if (! empty($id)) {
 		 */
 		if (! empty($form_remove_var)) {
 			// Param url = id de la ligne formateur dans session - id session
-			print $form->formconfirm($_SERVER['PHP_SELF'] . "?opsid=" . GETPOST('opsid') . '&id=' . $id, $langs->trans("AgfDeleteForm"), $langs->trans("AgfConfirmDeleteForm"), "confirm_delete_form", '', '', 1);
+			print $form->formconfirm($_SERVER['PHP_SELF'] . "?opsid=" . GETPOST('opsid', 'none') . '&id=' . $id, $langs->trans("AgfDeleteForm"), $langs->trans("AgfConfirmDeleteForm"), "confirm_delete_form", '', '', 1);
 		}
 
 		print '<form name="form_update" action="' . $_SERVER['PHP_SELF'] . '?action=edit&amp;id=' . $id . '"  method="POST">' . "\n";
@@ -538,7 +538,7 @@ if (! empty($id)) {
 		$nbform = $formateurs->fetch_formateur_per_session($agf->id);
 		if ($nbform > 0) {
 			for($i = 0; $i < $nbform; $i ++) {
-				if ($formateurs->lines[$i]->opsid == GETPOST('opsid') && ! empty($form_remove_var))
+				if ($formateurs->lines[$i]->opsid == GETPOST('opsid', 'none') && ! empty($form_remove_var))
 					print '<tr class="oddeven" style="background:#d5baa8">';
 				else
 					print '<tr class="oddeven">' . "\n";
@@ -549,7 +549,7 @@ if (! empty($id)) {
 
 				// Edit line
 
-				if ($formateurs->lines[$i]->opsid == GETPOST('opsid') && empty($form_remove_var)) {
+				if ($formateurs->lines[$i]->opsid == GETPOST('opsid', 'none') && empty($form_remove_var)) {
 					print '<td class="name">' . "\n";
 					print '<input type="hidden" name="opsid" value="' . $formateurs->lines[$i]->opsid . '">' . "\n";
 
@@ -945,12 +945,12 @@ if (! empty($id)) {
 						$old_date = 0;
 						$duree = 0;
 						for($j = 0; $j < $blocNumber; $j ++) {
-							if ($calendrier->lines[$j]->id == GETPOST('modperiod') && ! empty($period_remove))
+							if ($calendrier->lines[$j]->id == GETPOST('modperiod', 'none') && ! empty($period_remove))
 								print '<tr bgcolor="#d5baa8">' . "\n";
 							else
 								print '<tr>' . "\n";
 
-							if ($calendrier->lines[$j]->id == GETPOST('modperiod') && empty($period_remove)) {
+							if ($calendrier->lines[$j]->id == GETPOST('modperiod', 'none') && empty($period_remove)) {
 								// Delete select case not display here
 								print '<td></td>' . "\n";
 
@@ -1029,7 +1029,7 @@ if (! empty($id)) {
 							print '</form>' . "\n";
 							print '</td>' . "\n";
 						} else {
-							if ($action == "edit_calendrier" && GETPOST('rowf') == $formateurs->lines[$i]->formid) {
+							if ($action == "edit_calendrier" && GETPOST('rowf', 'none') == $formateurs->lines[$i]->formid) {
 								print '<tr>';
 								print '<td></td>';
 								print '<td  width="300px">';

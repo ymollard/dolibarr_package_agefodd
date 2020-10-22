@@ -34,7 +34,7 @@ require_once ('../lib/agefodd.lib.php');
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
-$lang_id = GETPOST('lang_id');
+$lang_id = GETPOST('lang_id', 'none');
 
 $langs->load('agefodd@agefodd');
 

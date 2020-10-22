@@ -130,7 +130,7 @@ class Agsession extends CommonObject
 	public $signataire_inter_array_poste = array();
 	public $signataire_inter_array_mail = array();
 	public $signataire_inter_array_phone = array();
-	
+
 	/**
 	 * Constructor
 	 *
@@ -563,7 +563,7 @@ class Agsession extends CommonObject
 
 		// Create clone
 		$result = $object->create($user);
-		
+
 		if ($result < 0) {
 			$this->db->rollback();
 			return -1;
@@ -3690,7 +3690,7 @@ class Agsession extends CommonObject
 		$action=GETPOST('action','alpha');
 
 		if ($action=='setsession_status') {
-			$this->status=GETPOST('session_status');
+			$this->status=GETPOST('session_status', 'none');
 			$result=$this->update($user);
 			if ($result<0) {
 				setEventMessage($this->error,'errors');
@@ -4911,7 +4911,7 @@ class Agsession extends CommonObject
 				$vat_src_code = $reg[1];
 				$tva_tx = preg_replace('/\s*\(.*\)/', '', $tva_tx);    // Remove code into vatrate.
 			}
-			
+
 			if (! empty($from_financial_id) && ! empty($from_financial_elementtype)) {
 				if ($from_financial_elementtype == 'propal') {
 					require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
@@ -5185,7 +5185,7 @@ class Agsession extends CommonObject
 				$obj = $this->db->fetch_object($resql);
 				return $this->db->jdate($obj->maxdate);
 			}
-			
+
 			return -1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();

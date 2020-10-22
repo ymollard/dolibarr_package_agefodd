@@ -119,7 +119,7 @@ if ($action == 'sessionlevel_update') {
 
 	if ($result > 0) {
 		// Up level of action
-		if (GETPOST('sesslevel_up')) {
+		if (GETPOST('sesslevel_up', 'none')) {
 			$result2 = $agf->shift_indice($user, 'less');
 			$updatedRowId = $id;
 			if ($result2 != 1){
@@ -128,7 +128,7 @@ if ($action == 'sessionlevel_update') {
 		}
 
 		// Down level of action
-		if (GETPOST('sesslevel_down')) {
+		if (GETPOST('sesslevel_down', 'none')) {
 			$result1 = $agf->shift_indice($user, 'more');
 			$updatedRowId = $id;
 			if ($result1 != 1) {
@@ -137,7 +137,7 @@ if ($action == 'sessionlevel_update') {
 		}
 
 		// Update action
-		if (GETPOST('sesslevel_update')) {
+		if (GETPOST('sesslevel_update', 'none')) {
 			$agf->intitule = GETPOST('intitule', 'alpha');
 			$agf->delais_alerte = GETPOST('delai', 'int');
 			$agf->delais_alerte_end = GETPOST('delai_end', 'int');
@@ -178,7 +178,7 @@ if ($action == 'sessionlevel_update') {
 		}
 
 		// Delete action
-		if (GETPOST('sesslevel_remove') && GETPOST('confirm') == 'yes') {
+		if (GETPOST('sesslevel_remove', 'none') && GETPOST('confirm', 'none') == 'yes') {
 			$result = $agf->delete($user);
 			if ($result != 1) {
 				setEventMessage($agf_static->error, 'errors');
@@ -237,7 +237,7 @@ if ($result0 > 0) {
 
 print load_fiche_titre($langs->trans("AgfAdminTrainingLevel"), $morehtmlright);
 
-$sesslevel_remove = GETPOST('sesslevel_remove');
+$sesslevel_remove = GETPOST('sesslevel_remove', 'none');
 if ($action == 'sessionlevel_update' && !empty($sesslevel_remove)){
 	$deleteConfirmUrl = $url.'&sesslevel_remove=1&id='. GETPOST('id', 'int').'&sesslevel_remove_confirm=1';
 	print $form->formconfirm($deleteConfirmUrl, $langs->trans('ConfirmDelete'), '', 'sessionlevel_update', '', 0, 1);

@@ -69,18 +69,18 @@ if (! $user->rights->agefodd->agendatrainer) {
 }
 
 
-$type = GETPOST("type");
+$type = GETPOST("type", 'none');
 $canedit = 1;
 
 // $action=GETPOST('action','alpha');
 $action = 'show_peruser'; // We use 'show_week' mode
-                          // $year=GETPOST("year");
+                          // $year=GETPOST("year", 'none');
 $year = GETPOST("year", "int") ? GETPOST("year", "int") : date("Y");
 $month = GETPOST("month", "int") ? GETPOST("month", "int") : date("m");
 $week = GETPOST("week", "int") ? GETPOST("week", "int") : date("W");
 $day = GETPOST("day", "int") ? GETPOST("day", "int") : date("d");
 $pid = GETPOST("projectid", "int", 3);
-$status = GETPOST("status");
+$status = GETPOST("status", 'none');
 
 $filter_commercial = GETPOST('commercial', 'int');
 $filter_customer = GETPOST('fk_soc', 'int');
@@ -146,14 +146,14 @@ if (!empty($issetOnlySession)) {
 
 $filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth', 'int'), GETPOST('dt_start_filterday', 'int'), GETPOST('dt_start_filteryear', 'int'));
 
-$maxprint = (isset($_GET["maxprint"]) ? GETPOST("maxprint") : $conf->global->AGENDA_MAX_EVENTS_DAY_VIEW);
-$actioncode = GETPOST("actioncode", "alpha", 3) ? GETPOST("actioncode", "alpha", 3) : (GETPOST("actioncode") == '0' ? '0' : '');
+$maxprint = (isset($_GET["maxprint"]) ? GETPOST("maxprint", 'none') : $conf->global->AGENDA_MAX_EVENTS_DAY_VIEW);
+$actioncode = GETPOST("actioncode", "alpha", 3) ? GETPOST("actioncode", "alpha", 3) : (GETPOST("actioncode", 'none') == '0' ? '0' : '');
 
-$dateselect = dol_mktime(0, 0, 0, GETPOST('dateselectmonth'), GETPOST('dateselectday'), GETPOST('dateselectyear'));
+$dateselect = dol_mktime(0, 0, 0, GETPOST('dateselectmonth', 'none'), GETPOST('dateselectday', 'none'), GETPOST('dateselectyear', 'none'));
 if ($dateselect > 0) {
-	$day = GETPOST('dateselectday');
-	$month = GETPOST('dateselectmonth');
-	$year = GETPOST('dateselectyear');
+	$day = GETPOST('dateselectday', 'none');
+	$month = GETPOST('dateselectmonth', 'none');
+	$year = GETPOST('dateselectyear', 'none');
 } else {
 	if ($filterdatestart > 0) {
 		$day = GETPOST('dt_start_filterday', 'int');
@@ -164,8 +164,8 @@ if ($dateselect > 0) {
 
 $tmp = empty($conf->global->MAIN_DEFAULT_WORKING_HOURS) ? '9-18' : $conf->global->MAIN_DEFAULT_WORKING_HOURS;
 $tmparray = explode('-', $tmp);
-$begin_h = GETPOST('begin_h') != '' ? GETPOST('begin_h', 'int') : ($tmparray[0] != '' ? $tmparray[0] : 9);
-$end_h = GETPOST('end_h') ? GETPOST('end_h') : ($tmparray[1] != '' ? $tmparray[1] : 18);
+$begin_h = GETPOST('begin_h', 'none') != '' ? GETPOST('begin_h', 'int') : ($tmparray[0] != '' ? $tmparray[0] : 9);
+$end_h = GETPOST('end_h', 'none') ? GETPOST('end_h', 'none') : ($tmparray[1] != '' ? $tmparray[1] : 18);
 if ($begin_h < 0 || $begin_h > 23)
 	$begin_h = 9;
 if ($end_h < 1 || $end_h > 24)
@@ -175,8 +175,8 @@ if ($end_h <= $begin_h)
 
 $tmp = empty($conf->global->MAIN_DEFAULT_WORKING_DAYS) ? '1-5' : $conf->global->MAIN_DEFAULT_WORKING_DAYS;
 $tmparray = explode('-', $tmp);
-$begin_d = GETPOST('begin_d') ? GETPOST('begin_d', 'int') : ($tmparray[0] != '' ? $tmparray[0] : 1);
-$end_d = GETPOST('end_d') ? GETPOST('end_d') : ($tmparray[1] != '' ? $tmparray[1] : 5);
+$begin_d = GETPOST('begin_d', 'none') ? GETPOST('begin_d', 'int') : ($tmparray[0] != '' ? $tmparray[0] : 1);
+$end_d = GETPOST('end_d', 'none') ? GETPOST('end_d', 'none') : ($tmparray[1] != '' ? $tmparray[1] : 5);
 if ($begin_d < 1 || $begin_d > 7)
 	$begin_d = 1;
 if ($end_d < 1 || $end_d > 7)
@@ -191,16 +191,16 @@ if ($status == '' && ! isset($_GET['status']) && ! isset($_POST['status']))
 if (empty($action) && ! isset($_GET['action']) && ! isset($_POST['action']))
 	$action = (empty($conf->global->AGENDA_DEFAULT_VIEW) ? 'show_month' : $conf->global->AGENDA_DEFAULT_VIEW);
 
-if (GETPOST('viewcal') && $action != 'show_day' && $action != 'show_week' && $action != 'show_peruser') {
+if (GETPOST('viewcal', 'none') && $action != 'show_day' && $action != 'show_week' && $action != 'show_peruser') {
 	$action = 'show_month';
 	$day = '';
 } // View by month
-if (GETPOST('viewweek') || $action == 'show_week') {
+if (GETPOST('viewweek', 'none') || $action == 'show_week') {
 	$action = 'show_week';
 	$week = ($week ? $week : date("W"));
 	$day = ($day ? $day : date("d"));
 } // View by week
-if (GETPOST('viewday') || $action == 'show_day') {
+if (GETPOST('viewday', 'none') || $action == 'show_day') {
 	$action = 'show_day';
 	$day = ($day ? $day : date("d"));
 } // View by day

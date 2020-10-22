@@ -66,9 +66,9 @@ $id = GETPOST('id', 'int');
 $idQuestionnaire = GETPOST('idQuestionnaire', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 
-$date_limite_year = GETPOST('date_limiteyear');
-$date_limite_month = GETPOST('date_limitemonth');
-$date_limite_day = GETPOST('date_limiteday');
+$date_limite_year = GETPOST('date_limiteyear', 'none');
+$date_limite_month = GETPOST('date_limitemonth', 'none');
+$date_limite_day = GETPOST('date_limiteday', 'none');
 $massaction = GETPOST('massaction', 'alpha');
 $confirmmassaction = GETPOST('confirmmassaction', 'alpha');
 $toselect = GETPOST('toselect', 'array');
@@ -626,23 +626,23 @@ function _printRenderQuestionnaireGuestsList(Questionnaire $object, Agsession $s
         /* Copy the text inside the text field */
         document.execCommand("copy");
     }
-        
-        
+
+
     $( document ).ready(function() {
-	
+
         var popinId = "jquery-questionnaire-dialog-box";
-        
+
 	    var windowWidth = $(window).width()*0.7; //retrieve current window width
 	    var windowHeight = $(window).height()*0.7; //retrieve current window height
-        
-        
+
+
         $(".ajax-pop-in").click(function (e) {
-            
+
             e.preventDefault();
-           
+
             $dialog = $( "#" + popinId );
             var dialogUrl = $(this).attr("href");
-            
+
             $dialog.dialog({
                 autoOpen: false,
                 modal: true,
@@ -650,7 +650,7 @@ function _printRenderQuestionnaireGuestsList(Questionnaire $object, Agsession $s
                 width: windowWidth,
                 title: "",
                 buttons:{
-                        
+
                         \'openquestionnaire\' : {
                             text: "'.$langs->trans('Card').'",
                             "class": "cancelButtonClass",
@@ -660,15 +660,15 @@ function _printRenderQuestionnaireGuestsList(Questionnaire $object, Agsession $s
                         }
                     },
             });
-            
+
             $dialog.load($(this).attr("href") + " #allQuestions").dialog("open");
         });
-        
+
 	});
-            
-            
-            
-            
+
+
+
+
     </script>';
 
 

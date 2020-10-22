@@ -80,7 +80,7 @@ if ($action == 'updatedaytodate') {
     }
 
     foreach(array(1,2,3,4) as $shiftnum) {
-        $val=GETPOST('AGF_'.$shiftnum.'DAYSHIFT');
+        $val=GETPOST('AGF_'.$shiftnum.'DAYSHIFT', 'none');
         $res = dolibarr_set_const($db, 'AGF_'.$shiftnum.'DAYSHIFT', $val, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
