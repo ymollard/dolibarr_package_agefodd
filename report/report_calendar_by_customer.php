@@ -47,10 +47,10 @@ $confirm = GETPOST('confirm', 'alpha');
 $session_dt_st = dol_mktime(0, 0, 0, GETPOST('session_dt_stmonth', 'int'), GETPOST('session_dt_stday', 'int'), GETPOST('session_dt_styear', 'int'));
 $session_dt_end = dol_mktime(0, 0, 0, GETPOST('session_dt_endmonth', 'int'), GETPOST('session_dt_endday', 'int'), GETPOST('session_dt_endyear', 'int'));
 
-$search_soc = GETPOST("search_soc");
+$search_soc = GETPOST("search_soc", 'none');
 
 $modelexport = GETPOST('modelexport', 'alpha');
-$lang_id = GETPOST('lang_id');
+$lang_id = GETPOST('lang_id', 'none');
 
 $langs->load('agefodd@agefodd');
 $langs->load('bills');
@@ -105,16 +105,16 @@ if ($action == 'builddoc') {
         		$outputlangs = new Translate("", $conf);
         		$outputlangs->setDefaultLang($newlang);
         	}
-        
+
         	$outputlangs->load('agefodd@agefodd');
-        
+
         	$report_calendar_by_cust = new ReportCalendarByCustomer($db, $outputlangs);
-        
+
         	if (empty($session_dt_end)) $filter['sesscal.date_session']['end'] = dol_now();
-        	
+
         	$file_sub_title=$report_calendar_by_cust->getSubTitlFileName($filter);
         	$report_calendar_by_cust->file = $upload_dir . 'reportcalendarbycust-' . $file_sub_title . '.xlsx';
-        
+
         	$result = $report_calendar_by_cust->write_file($filter);
         	if ($result < 0) {
         		setEventMessage($report_calendar_by_cust->error, 'errors');
@@ -132,12 +132,12 @@ if ($action == 'builddoc') {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 
 	$langs->load("other");
-	$file = $upload_dir . '/' . GETPOST('file');
+	$file = $upload_dir . '/' . GETPOST('file', 'none');
 	$ret = dol_delete_file($file, 0, 0, 0, '');
 	if ($ret)
-		setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile')));
+		setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile', 'none')));
 	else
-		setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile')), 'errors');
+		setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile', 'none')), 'errors');
 	$action = '';
 }
 

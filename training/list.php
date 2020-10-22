@@ -71,12 +71,12 @@ if (empty($arch)) {
 }
 
 	// Search criteria
-$search_intitule = GETPOST("search_intitule");
-$search_ref = GETPOST("search_ref");
-$search_ref_interne = GETPOST("search_ref_interne");
+$search_intitule = GETPOST("search_intitule", 'none');
+$search_ref = GETPOST("search_ref", 'none');
+$search_ref_interne = GETPOST("search_ref_interne", 'none');
 $search_datec = dol_mktime(0, 0, 0, GETPOST('search_datecmonth', 'int'), GETPOST('search_datecday', 'int'), GETPOST('search_datecyear', 'int'));
-$search_duree = GETPOST('search_duree');
-$search_nb_place = GETPOST('search_nb_place');
+$search_duree = GETPOST('search_duree', 'none');
+$search_nb_place = GETPOST('search_nb_place', 'none');
 // $search_dated = dol_mktime ( 0, 0, 0, GETPOST ( 'search_datedmonth', 'int' ), GETPOST ( 'search_datedday', 'int' ), GETPOST ( 'search_datedyear',
 // 'int' ) );
 $search_id = GETPOST('search_id', 'int');
@@ -95,7 +95,7 @@ if ($search_fk_product == - 1) {
 }
 
 	// Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_intitule = '';
 	$search_ref = '';
 	$search_ref_interne = "";
