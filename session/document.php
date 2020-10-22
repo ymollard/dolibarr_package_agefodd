@@ -55,7 +55,7 @@ if (! $user->rights->agefodd->lire) {
 
 $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
-$id_external_model = GETPOST('id_external_model');
+$id_external_model = GETPOST('id_external_model', 'none');
 $socid = GETPOST('socid', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $sessiontrainerid = GETPOST('sessiontrainerid', 'int');
@@ -287,7 +287,7 @@ if (($action == 'createinvoice_confirm') && $user->rights->agefodd->creer) {
 		$financial_type = $financialdoc_array[0];
 		$financial_id = $financialdoc_array[1];
 	}
-	$amount = GETPOST('amount');
+	$amount = GETPOST('amount', 'none');
 	$result = $agf->fetch($id);
 	if ($result < 0) {
 		setEventMessage($agf->error, 'errors');

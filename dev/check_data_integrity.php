@@ -43,7 +43,7 @@ if ($resql) {
 		}
 
 		$sql = 'SET FOREIGN_KEY_CHECKS=0; DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur WHERE fk_session NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session)';
-		if(GETPOST('do-it-for-me')=='yesiwantit') {
+		if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
 			$res = $db->query($sql);
 			if($res===false) {
 				var_dump($sql);exit;
@@ -68,7 +68,7 @@ if ($resql) {
 		}
 
 		$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd NOT IN (SELECT rowid FROM llx_agefodd_session)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -93,7 +93,7 @@ if ($resql) {
 		}
 
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur WHERE fk_agefodd_formateur NOT IN (SELECT rowid FROM llx_agefodd_formateur)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -121,7 +121,7 @@ if ($resql) {
 
 
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_adminsitu WHERE fk_agefodd_session NOT IN (SELECT rowid FROM llx_agefodd_session)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -148,7 +148,7 @@ if ($resql) {
 		}
 
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_commercial WHERE fk_session_agefodd NOT IN (SELECT rowid FROM llx_agefodd_session)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -174,7 +174,7 @@ if ($resql) {
 		}
 
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier WHERE fk_agefodd_session NOT IN (SELECT rowid FROM llx_agefodd_session)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -201,7 +201,7 @@ if ($resql) {
 		}
 
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier WHERE fk_actioncomm NOT IN (SELECT id FROM llx_actioncomm)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -273,7 +273,7 @@ if ($resql) {
 			print 'Formation id:'.$obj->fk_formation_catalogue.' n existe pas dans la table  agefodd_formation_catalogue<BR>';
 		}
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_formation_objectifs_peda WHERE fk_formation_catalogue NOT IN (SELECT rowid FROM llx_agefodd_formation_catalogue)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -298,7 +298,7 @@ if ($resql) {
 			print 'Session id:'.$obj->fk_formation_catalogue.' n existe pas dans la table  agefodd_Session<BR>';
 		}
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_contact WHERE fk_session_agefodd NOT IN (SELECT rowid FROM llx_agefodd_session)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -324,7 +324,7 @@ if ($resql) {
 		}
 
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_convention WHERE fk_agefodd_session NOT IN (SELECT rowid FROM llx_agefodd_session)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -381,7 +381,7 @@ if ($resql) {
 		}
 
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_element WHERE fk_session_agefodd NOT IN (SELECT rowid FROM llx_agefodd_session)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -406,7 +406,7 @@ if ($resql) {
 			print 'training id:'.$obj->fk_training.' n existe pas dans la table agefodd_Session<BR>';
 		}
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_training_admlevel WHERE fk_training NOT IN (SELECT rowid FROM llx_agefodd_formation_catalogue)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;
@@ -476,7 +476,7 @@ if ($resql) {
 		}
 
 $sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_contact WHERE fk_socpeople NOT IN (SELECT rowid FROM llx_socpeople)';
-                if(GETPOST('do-it-for-me')=='yesiwantit') {
+                if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
                                 var_dump($sql);exit;

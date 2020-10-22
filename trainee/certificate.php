@@ -83,7 +83,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 
 					if (is_array($certif_type_array) && count($certif_type_array) > 0) {
 						foreach ( $certif_type_array as $certif_type_id => $certif_type_label ) {
-							$certif_state = GETPOST('certifstate_' . $certif_type_id);
+							$certif_state = GETPOST('certifstate_' . $certif_type_id, 'none');
 							$result = $agf_certif->set_certif_state($user, $certif_id, $certif_type_id, $certif_state);
 							if ($result < 0) {
 								setEventMessage($agf_certif->error, 'errors');
@@ -144,13 +144,13 @@ if ($id) {
 		*/
 		if ($_POST ["certif_remove_x"]) {
 			// Param url = id de la ligne stagiaire dans session - id session
-			print $form->formconfirm($_SERVER ['PHP_SELF'] . "?certifrowid=" . GETPOST('certifid') . '&id=' . $id, $langs->trans("AgfDeleteCertif"), $langs->trans("AgfConfirmDeleteCertif"), "confirm_delete_certif", '', '', 1);
+			print $form->formconfirm($_SERVER ['PHP_SELF'] . "?certifrowid=" . GETPOST('certifid', 'none') . '&id=' . $id, $langs->trans("AgfDeleteCertif"), $langs->trans("AgfConfirmDeleteCertif"), "confirm_delete_certif", '', '', 1);
 		}
 
 		$head = trainee_prepare_head($agf);
 
 		dol_fiche_head($head, 'certificate', $langs->trans("AgfStagiaireDetailCertificate"), 0, 'user');
-		
+
 		dol_agefodd_banner_tab($agf, 'id');
 		print '<div class="underbanner clearboth"></div>';
 
@@ -179,7 +179,7 @@ if ($id) {
 					$style = 'class="pair"';
 				}
 
-				if (GETPOST('certif_remove_x') != '' && GETPOST('certifid') == $line->id)
+				if (GETPOST('certif_remove_x', 'none') != '' && GETPOST('certifid', 'none') == $line->id)
 					$style = 'bgcolor="#d5baa8"';
 
 				if ($certifid == $line->id && (! empty($certif_edit_x))) {

@@ -49,14 +49,14 @@ $limit = GETPOST('limit', 'int')?GETPOST('limit', 'int'):$conf->liste_limit;
 $contextpage = 'traineelist';
 
 // Search criteria
-$search_name = GETPOST("search_name");
-$search_firstname = GETPOST("search_firstname");
-$search_civ = GETPOST("search_civ");
-$search_soc = GETPOST("search_soc");
-$search_tel = GETPOST("search_tel");
-$search_tel2 = GETPOST("search_tel2");
-$search_mail = GETPOST("search_mail");
-$search_namefirstname = GETPOST("search_namefirstname");
+$search_name = GETPOST("search_name", 'none');
+$search_firstname = GETPOST("search_firstname", 'none');
+$search_civ = GETPOST("search_civ", 'none');
+$search_soc = GETPOST("search_soc", 'none');
+$search_tel = GETPOST("search_tel", 'none');
+$search_tel2 = GETPOST("search_tel2", 'none');
+$search_mail = GETPOST("search_mail", 'none');
+$search_namefirstname = GETPOST("search_namefirstname", 'none');
 
 //Since 8.0 sall get parameters is sent with rapid search
 $search_by=GETPOST('search_by', 'alpha');
@@ -68,7 +68,7 @@ if (!empty($search_by)) {
 }
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_name = '';
 	$search_firstname = '';
 	$search_civ = '';

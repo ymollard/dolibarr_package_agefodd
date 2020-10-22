@@ -61,9 +61,9 @@ $pre_action = GETPOST('pre_action', 'alpha');
 $id = GETPOST('id', 'int');
 $socid = GETPOST('socid', 'int');
 $sessiontrainerid = GETPOST('sessiontrainerid', 'int');
-$removedfile = GETPOST('removedfile');
-$addfile = GETPOST('addfile');
-$cancel = GETPOST('cancel');
+$removedfile = GETPOST('removedfile', 'none');
+$addfile = GETPOST('addfile', 'none');
+$cancel = GETPOST('cancel', 'none');
 
 $form = new Form($db);
 $formmail = new FormMail($db);
@@ -71,8 +71,8 @@ $formAgefodd = new FormAgefodd($db);
 
 $hookmanager->initHooks(array('agefodd_send_docs'));
 
-if (GETPOST('modelselected')) {
-	$action = GETPOST('pre_action');
+if (GETPOST('modelselected', 'none')) {
+	$action = GETPOST('pre_action', 'none');
 }
 
 if (! empty($id)) {
@@ -94,7 +94,7 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 	$langs->load('mails');
 
 	$send_to = GETPOST('sendto', 'alpha');
-	$receiver = GETPOST('receiver');
+	$receiver = GETPOST('receiver', 'none');
 
 	$action = $pre_action;
 
@@ -137,18 +137,18 @@ if ($action == 'send' && empty($addfile) && empty($removedfile) && empty($cancel
 	if (is_array($sendto) && count($sendto) > 0) {
 		$langs->load("commercial");
 
-		$from = GETPOST('fromname') . ' <' . GETPOST('frommail') . '>';
-		$replyto = GETPOST('replytoname') . ' <' . GETPOST('replytomail') . '>';
-		$message = GETPOST('message');
-		$sendtocc = GETPOST('sendtocc');
-		$deliveryreceipt = GETPOST('deliveryreceipt');
+		$from = GETPOST('fromname', 'none') . ' <' . GETPOST('frommail', 'none') . '>';
+		$replyto = GETPOST('replytoname', 'none') . ' <' . GETPOST('replytomail', 'none') . '>';
+		$message = GETPOST('message', 'none');
+		$sendtocc = GETPOST('sendtocc', 'none');
+		$deliveryreceipt = GETPOST('deliveryreceipt', 'none');
 
 		// Envoi du mail + trigger pour chaque contact
 		foreach ( $sendto as $send_contact_id => $send_email ) {
 
 			$models = GETPOST('models', 'alpha');
 
-			$subject = GETPOST('subject');
+			$subject = GETPOST('subject', 'none');
 			// Initialisation donnees
 			$contactstatic = new Contact($db);
 			if(strpos($send_contact_id, '_third') === false) $contactstatic->fetch($send_contact_id);
@@ -454,7 +454,7 @@ if (! empty($id)) {
 		 */
 		if ($action == 'presend_pedago' || $action == 'presend_presence' || $action == 'presend_presence_direct' || $action == 'presend_presence_empty' || $action == 'presend_presence_landscape_bymonth' || $action == 'presend_convention' || $action == 'presend_attestation' || $action == 'presend_cloture' || $action == 'presend_convocation' || $action == 'presend_conseils' || $action == 'presend_accueil' || $action == 'presend_mission_trainer' || $action == 'presend_trainer_doc' || $action == 'presend_attestationendtraining' || $action == 'presend_attestationpresencetraining' || $action =='presend_presence_landscape_empty') {
 
-			$mode = GETPOST("mode");
+			$mode = GETPOST("mode", 'none');
 
 			if ($action == 'presend_presence') {
 				$filename = 'fiche_presence_' . $agf->id . '.pdf';
@@ -2201,7 +2201,7 @@ if (! empty($id)) {
 
 			// Tableau des parametres complementaires
 			$formmail->param['action'] = 'send';
-			$formmail->param['models_id'] = GETPOST('modelmailselected');
+			$formmail->param['models_id'] = GETPOST('modelmailselected', 'none');
 			$formmail->param['id'] = $agf->id;
 			$formmail->param['returnurl'] = $_SERVER["PHP_SELF"]. '?id=' . $agf->id;
 
