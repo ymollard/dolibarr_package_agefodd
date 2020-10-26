@@ -661,16 +661,17 @@ class InterfaceAgefodd {
 						return - 1;
 					} else {
 						if (is_array($agf_fin->lines) && count($agf_fin->lines)>0) {
-							$elment = reset($agf_fin->lines);
-							$agf_fin->fk_session_agefodd=$elment->fk_session_agefodd;
-							$agf_fin->fk_soc=$elment->socid;
-							$agf_fin->element_type=str_replace('order', 'invoice', $elment->element_type);
-							$agf_fin->fk_element=$object->id;
-							$result=$agf_fin->create($user);
-							if ($result < 0) {
-								$this->error = $agf_fin->error;
-								dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
-								return - 1;
+							foreach($agf_fin->lines as $elment) {
+								$agf_fin->fk_session_agefodd=$elment->fk_session_agefodd;
+								$agf_fin->fk_soc=$elment->socid;
+								$agf_fin->element_type=str_replace('order', 'invoice', $elment->element_type);
+								$agf_fin->fk_element=$object->id;
+								$result=$agf_fin->create($user);
+								if ($result < 0) {
+									$this->error = $agf_fin->error;
+									dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
+									return - 1;
+								}
 							}
 						}
 					}
