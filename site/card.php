@@ -135,14 +135,14 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 			$agf->fk_socpeople = GETPOST('contact', 'int');
 			$agf->timeschedule = GETPOST('timeschedule', 'alpha');
 			$agf->control_occupation = GETPOST('control_occupation', 'int');
-			$agf->notes = GETPOST('notes');
-			$agf->nb_place = GETPOST('nb_place');
+			$agf->notes = GETPOST('notes', 'none');
+			$agf->nb_place = GETPOST('nb_place', 'none');
 			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
-				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site'));
-				$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1'));
+				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site', 'none'));
+				$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1', 'none'));
 			} else {
-				$agf->acces_site = GETPOST('acces_site');
-				$agf->note1 = GETPOST('note1');
+				$agf->acces_site = GETPOST('acces_site', 'none');
+				$agf->note1 = GETPOST('note1', 'none');
 			}
 			$result = $agf->update($user);
 
@@ -207,11 +207,11 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 			$agf->nb_place = GETPOST('nb_place', 'int');
 			$agf->notes = GETPOST('notes', 'alpha');
 			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
-				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site'));
-				$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1'));
+				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site', 'none'));
+				$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1', 'none'));
 			} else {
-				$agf->acces_site = GETPOST('acces_site');
-				$agf->note1 = GETPOST('note1');
+				$agf->acces_site = GETPOST('acces_site', 'none');
+				$agf->note1 = GETPOST('note1', 'none');
 			}
 			if ($same_adress_customer == - 1) {
 				$agf->adresse = GETPOST('adresse', 'alpha');
@@ -374,13 +374,13 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 	print '<tr>';
 	print '<td valign="top">' . $langs->trans("AgfAccesSite") . '</td><td>';
-	$doleditor = new DolEditor('acces_site', GETPOST('acces_site'), '', 160, 'dolibarr_notes', 'In', true, true, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor = new DolEditor('acces_site', GETPOST('acces_site', 'none'), '', 160, 'dolibarr_notes', 'In', true, true, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 
 	print '<tr>';
 	print '<td valign="top">' . $langs->trans("AgfPlaceNote1") . '</td><td>';
-	$doleditor = new DolEditor('note1', GETPOST('note1'), '', 160, 'dolibarr_notes', 'In', true, true, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
+	$doleditor = new DolEditor('note1', GETPOST('note1', 'none'), '', 160, 'dolibarr_notes', 'In', true, true, $conf->global->AGF_FCKEDITOR_ENABLE_TRAINING, 4, 90);
 	$doleditor->Create();
 	print "</td></tr>";
 

@@ -39,7 +39,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
-$lang_id = GETPOST('lang_id');
+$lang_id = GETPOST('lang_id', 'none');
 
 $langs->load('agefodd@agefodd');
 

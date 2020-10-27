@@ -61,11 +61,11 @@ if ($action == "add") {
 
 	$object->entity=$conf->entity;
 	$object->fk_formation_catalogue = $fk_formation_catalogue;
-	$object->title = GETPOST('moduletitle');
-	$object->content_text = GETPOST('content_text');
-	$object->duration = GETPOST('duration');
-	$object->obj_peda = GETPOST('obj_peda');
-	$object->sort_order = GETPOST('sort_order');
+	$object->title = GETPOST('moduletitle', 'none');
+	$object->content_text = GETPOST('content_text', 'none');
+	$object->duration = GETPOST('duration', 'none');
+	$object->obj_peda = GETPOST('obj_peda', 'none');
+	$object->sort_order = GETPOST('sort_order', 'none');
 	$object->status=1;
 
 	$result = $object->create($user);
@@ -82,11 +82,11 @@ if ($action == "add") {
 		setEventMessage($object->error, 'errors');
 	}
 
-	$object->title = GETPOST('moduletitle');
-	$object->content_text = GETPOST('content_text');
-	$object->duration = GETPOST('duration');
-	$object->obj_peda = GETPOST('obj_peda');
-	$object->sort_order = GETPOST('sort_order');
+	$object->title = GETPOST('moduletitle', 'none');
+	$object->content_text = GETPOST('content_text', 'none');
+	$object->duration = GETPOST('duration', 'none');
+	$object->obj_peda = GETPOST('obj_peda', 'none');
+	$object->sort_order = GETPOST('sort_order', 'none');
 
 	$result = $object->update($user);
 	if ($result < 0) {
