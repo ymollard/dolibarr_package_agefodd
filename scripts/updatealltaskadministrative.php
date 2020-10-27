@@ -43,8 +43,8 @@ dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 dol_include_once('/agefodd/class/agefodd_session_admlevel.class.php');
 
-$userlogin = GETPOST('login');
-$id = GETPOST('id');
+$userlogin = GETPOST('login', 'none');
+$id = GETPOST('id', 'none');
 $key = GETPOST('key', 'alpha');
 
 // Security test
@@ -66,7 +66,7 @@ $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as s";
 $sql .= " WHERE s.archive<>1";
 $resql = $db->query($sql);
 if ($resql) {
-	
+
 	while ( $obj = $db->fetch_object($resql) ) {
 		$agf_adminlevel = new Agefodd_training_admlevel($db);
 		$agf_adminlevel->fk_training = $obj->rowid;
@@ -76,7 +76,7 @@ if ($resql) {
 		} else {
 			print ' delete_task training_id =' . $obj->rowid . ' OK <br>';
 		}
-		
+
 		$agf = new Formation($db);
 		$result = $agf->fetch($obj->rowid);
 		$result = $agf->createAdmLevelForTraining($user);
@@ -85,14 +85,14 @@ if ($resql) {
 		} else {
 			print ' create_task training_id =' . $obj->rowid . ' OK <br>';
 		}
-		
+
 		print 'SESSION<BR>';
 		$sqlsession = "SELECT s.rowid";
 		$sqlsession .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
 		$sqlsession .= " WHERE s.status<>4 AND fk_formation_catalogue=" . $obj->rowid;
 		$resqlsession = $db->query($sqlsession);
 		if ($resqlsession) {
-			
+
 			while ( $objsession = $db->fetch_object($resqlsession) ) {
 				$agf_level = new Agefodd_sessadm($db);
 				$result = $agf_level->remove_all($objsession->rowid);
@@ -101,7 +101,7 @@ if ($resql) {
 				} else {
 					print ' remove_all session_id =' . $objsession->rowid . ' OK <br>';
 				}
-				
+
 				$agf_session = new Agsession($db);
 				$res = $agf_session->fetch($objsession->rowid);
 				$result = $agf_session->createAdmLevelForSession($user);
@@ -115,7 +115,7 @@ if ($resql) {
 			print 'Erreur sql=' . $sql . '<br>';
 			print $db->lasterror();
 		}
-		
+
 		ob_flush();
 	}
 } else {
@@ -126,4 +126,3 @@ if ($resql) {
 
 
 
-			

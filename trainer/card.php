@@ -96,7 +96,7 @@ if ($action == 'create_confirm_contact' && $user->rights->agefodd->creer) {
 	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_teacher($db);
 
-		$agf->spid = GETPOST('spid');
+		$agf->spid = GETPOST('spid', 'none');
 		$agf->type_trainer = $agf->type_trainer_def[1];
 		$result = $agf->create($user);
 

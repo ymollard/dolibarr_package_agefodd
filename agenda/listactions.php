@@ -51,11 +51,11 @@ $day = GETPOST("day", 'int');
 $actioncode = GETPOST("actioncode", "alpha", 3);
 $pid = GETPOST("projectid", 'int', 3);
 $status = GETPOST("status", 'alpha');
-$type = GETPOST('type');
-$actioncode = GETPOST("actioncode", "alpha", 3) ? GETPOST("actioncode", "alpha", 3) : (GETPOST("actioncode") == '0' ? '0' : (empty($conf->global->AGENDA_USE_EVENT_TYPE) ? 'AC_OTH' : ''));
-$dateselect = dol_mktime(0, 0, 0, GETPOST('dateselectmonth'), GETPOST('dateselectday'), GETPOST('dateselectyear'));
-$datestart = dol_mktime(0, 0, 0, GETPOST('datestartmonth'), GETPOST('datestartday'), GETPOST('datestartyear'));
-$dateend = dol_mktime(0, 0, 0, GETPOST('dateendmonth'), GETPOST('dateendday'), GETPOST('dateendyear'));
+$type = GETPOST('type', 'none');
+$actioncode = GETPOST("actioncode", "alpha", 3) ? GETPOST("actioncode", "alpha", 3) : (GETPOST("actioncode", 'none') == '0' ? '0' : (empty($conf->global->AGENDA_USE_EVENT_TYPE) ? 'AC_OTH' : ''));
+$dateselect = dol_mktime(0, 0, 0, GETPOST('dateselectmonth', 'none'), GETPOST('dateselectday', 'none'), GETPOST('dateselectyear', 'none'));
+$datestart = dol_mktime(0, 0, 0, GETPOST('datestartmonth', 'none'), GETPOST('datestartday', 'none'), GETPOST('datestartyear', 'none'));
+$dateend = dol_mktime(0, 0, 0, GETPOST('dateendmonth', 'none'), GETPOST('dateendday', 'none'), GETPOST('dateendyear', 'none'));
 
 if ($actioncode == '')
 	$actioncode = (empty($conf->global->AGENDA_DEFAULT_FILTER_TYPE) ? '' : $conf->global->AGENDA_DEFAULT_FILTER_TYPE);
@@ -190,7 +190,7 @@ if ($type == 'trainerext' && ! empty($user->contact_id)) {
  *	Actions
  */
 
-if (GETPOST("viewcal") || GETPOST("viewweek") || GETPOST("viewday")) {
+if (GETPOST("viewcal", 'none') || GETPOST("viewweek", 'none') || GETPOST("viewday", 'none')) {
 	$param = '';
 	foreach ( $_POST as $key => $val ) {
 		$param .= '&' . $key . '=' . urlencode($val);

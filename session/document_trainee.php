@@ -59,13 +59,13 @@ $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
 $session_trainee_id = GETPOST('sessiontraineeid', 'int');
 $confirm = GETPOST('confirm', 'alpha');
-$id_external_model = GETPOST('id_external_model');
-$addfile = GETPOST('addfile');
-$removedfile = GETPOST('removedfile');
+$id_external_model = GETPOST('id_external_model', 'none');
+$addfile = GETPOST('addfile', 'none');
+$removedfile = GETPOST('removedfile', 'none');
 $pre_action = GETPOST('pre_action', 'alpha');
 
-if (GETPOST('modelselected')) {
-	$action = GETPOST('pre_action');
+if (GETPOST('modelselected', 'none')) {
+	$action = GETPOST('pre_action', 'none');
 }
 
 
@@ -149,7 +149,7 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 	$langs->load('mails');
 
 	$send_to = GETPOST('sendto', 'alpha');
-	$receiver = GETPOST('receiver');
+	$receiver = GETPOST('receiver', 'none');
 
 	$action = $pre_action;
 
@@ -189,11 +189,11 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 		if (is_array($sendto) && count($sendto) > 0) {
 			$langs->load("commercial");
 
-			$from = GETPOST('fromname') . ' <' . GETPOST('frommail') . '>';
-			$replyto = GETPOST('replytoname') . ' <' . GETPOST('replytomail') . '>';
-			$message = GETPOST('message');
-			$sendtocc = GETPOST('sendtocc');
-			$deliveryreceipt = GETPOST('deliveryreceipt');
+			$from = GETPOST('fromname', 'none') . ' <' . GETPOST('frommail', 'none') . '>';
+			$replyto = GETPOST('replytoname', 'none') . ' <' . GETPOST('replytomail', 'none') . '>';
+			$message = GETPOST('message', 'none');
+			$sendtocc = GETPOST('sendtocc', 'none');
+			$deliveryreceipt = GETPOST('deliveryreceipt', 'none');
 
 			// Envoi du mail + trigger pour chaque contact
 			$i = 0;
@@ -202,7 +202,7 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 
 				$models = GETPOST('models', 'alpha');
 
-				$subject = GETPOST('subject');
+				$subject = GETPOST('subject', 'none');
 
 				//Usefull for trigger actioncomm
 				if (preg_match ( "/_third/", $send_id )) {
@@ -337,7 +337,7 @@ if ($action == 'send' && ! $_POST ['addfile'] && ! $_POST ['removedfile'] && ! $
 if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 	$langs->load('mails');
 
-	$models = GETPOST('typemodel');
+	$models = GETPOST('typemodel', 'none');
 
 	$from = $user->getFullName($langs) . ' <' . $user->email . '>';
 
@@ -574,7 +574,7 @@ if ($action == 'sendmassmail' && $user->rights->agefodd->creer) {
 if ($action == 'confirm_generateall' && $user->rights->agefodd->creer && $confirm=='yes') {
 	// Define output language
 
-	$typemodel = GETPOST('typemodel');
+	$typemodel = GETPOST('typemodel', 'none');
 	$outputlangs = $langs;
 	$newlang = GETPOST('lang_id', 'alpha');
 	if ($conf->global->MAIN_MULTILANGS && empty($newlang))
@@ -613,7 +613,7 @@ if ($action == 'confirm_generateall' && $user->rights->agefodd->creer && $confir
 				}
 			}
 
-			$id_external_model=GETPOST('id_external_model_confirm');
+			$id_external_model=GETPOST('id_external_model_confirm', 'none');
 			if (!empty($id_external_model) || strpos($typemodel, 'rfltr_agefodd') !== false) {
 				$path_external_model = '/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_agefodd.modules.php';
 				if(strpos($typemodel, 'rfltr_agefodd') !== false) $id_external_model= (int)strtr($typemodel, array('rfltr_agefodd_'=>''));
@@ -710,7 +710,7 @@ if (! empty($id)) {
 			}
 
 			// Init list of files
-			if (GETPOST("mode") == 'init') {
+			if (GETPOST("mode", 'none') == 'init') {
 				$formmail->clear_attached_files();
 				if ($action == 'presend_convocation_trainee') {
 					$formmail->add_attached_files($file, basename($file), dol_mimetype($file));
@@ -884,7 +884,7 @@ if (! empty($id)) {
 			$formmail->param ['action'] = 'send';
 			$formmail->param ['sessiontraineeid'] = $session_trainee_id;
 			$formmail->param ['id'] = $agf->id;
-			$formmail->param ['models_id'] = GETPOST('modelmailselected');
+			$formmail->param ['models_id'] = GETPOST('modelmailselected', 'none');
             $formmail->param ['pre_action'] = $action;
 			$formmail->param ['returnurl'] = $_SERVER ["PHP_SELF"] . '?id=' . $agf->id;
 
@@ -894,7 +894,7 @@ if (! empty($id)) {
 				print_fiche_titre($langs->trans('AgfSendDocuments'), '', dol_buildpath('/agefodd/img/mail_generic.png', 1), 1);
 			}
 
-			if (GETPOST('mode') != 'init') $formmail->param['fileinit'] = $formmail->get_attached_files()['paths'];
+			if (GETPOST('mode', 'none') != 'init') $formmail->param['fileinit'] = $formmail->get_attached_files()['paths'];
 			$formmail->show_form();
 
 			if (! empty($mesg)) {
@@ -912,14 +912,14 @@ if (! empty($id)) {
 
 				if (class_exists('RfltrTools') && method_exists('RfltrTools','getAgefoddModelList')) {
 					$TModels = RfltrTools::getAgefoddModelList();
-					if (array_key_exists('rfltr_agefodd_'.GETPOST('typemodel'), $TModels)) {
-						$model_array=$TModels['rfltr_agefodd_'.GETPOST('typemodel')];
+					if (array_key_exists('rfltr_agefodd_'.GETPOST('typemodel', 'none'), $TModels)) {
+						$model_array=$TModels['rfltr_agefodd_'.GETPOST('typemodel', 'none')];
 					}
 				}
 				$model_array[0]=$langs->trans('AgfDocModelStandard');
 				$formquestion = array(
 						array('type' => 'select','name' => 'id_external_model_confirm','label' => $langs->trans("AgfModels"),'values' => $model_array),
-						array('type' => 'hidden','name' => 'typemodel','value' => GETPOST('typemodel')),
+						array('type' => 'hidden','name' => 'typemodel','value' => GETPOST('typemodel', 'none')),
 				);
 				print $form->formconfirm($_SERVER['PHP_SELF'] . "?id=" . $id, $langs->trans("AgfSelectDocEditModel"), '', "confirm_generateall", $formquestion, '', 1, 210, 600);
 			}

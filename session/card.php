@@ -62,7 +62,7 @@ $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
 $arch = GETPOST('arch', 'int');
-$anchor = GETPOST('anchor');
+$anchor = GETPOST('anchor', 'none');
 $agf = new Agsession($db);
 $extrafields = new ExtraFields($db);
 $extralabels = $extrafields->fetch_name_optionals_label($agf->table_element);
@@ -84,8 +84,8 @@ if (empty($reshook)){
  */
 
 $period_update = GETPOST('period_update', 'int');
-$cancel = GETPOST('cancel');
-$saveandclose = GETPOST('saveandclose');
+$cancel = GETPOST('cancel', 'none');
+$saveandclose = GETPOST('saveandclose', 'none');
 $modperiod = GETPOST('modperiod', 'int');
 $period_remove = GETPOST('period_remove', 'int');
 $period_remove_all = GETPOST('period_remove_all', 'int');
@@ -350,7 +350,7 @@ if ($action == 'update' && ($user->rights->agefodd->creer || $user->rights->agef
 		$agf->commercialid = GETPOST('commercial', 'int');
 		$agf->contactid = GETPOST('contact', 'int');
 
-		$agf->trainer_ext_information = dol_htmlcleanlastbr(GETPOST('trainer_ext_information'));
+		$agf->trainer_ext_information = dol_htmlcleanlastbr(GETPOST('trainer_ext_information', 'none'));
 
 		if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 			$agf->sourcecontactid = $agf->contactid;
@@ -487,7 +487,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 		$agf->type_session = GETPOST('type_session', 'int');
 		$agf->nb_place = GETPOST('nb_place', 'int');
 		$agf->status = GETPOST('session_status', 'int');
-		$agf->color = GETPOST('color');
+		$agf->color = GETPOST('color', 'none');
 		$agf->fk_soc = GETPOST('fk_soc', 'int');
 		$agf->dated = dol_mktime(12, 0, 0, GETPOST('dadmonth', 'int'), GETPOST('dadday', 'int'), GETPOST('dadyear', 'int'));
 		$agf->datef = dol_mktime(12, 0, 0, GETPOST('dafmonth', 'int'), GETPOST('dafday', 'int'), GETPOST('dafyear', 'int'));
@@ -597,7 +597,7 @@ if ($action == 'add_confirm' && $user->rights->agefodd->creer) {
 
 // Action clone object
 if ($action == 'confirm_clone' && $confirm == 'yes') {
-	/*$clone_content = GETPOST ( 'clone_content' );
+	/*$clone_content = GETPOST ( 'clone_content' , 'none');
 	 print 'clone_content='.$clone_content;
 	 if (empty ( $clone_content )) {
 	 setEventMessage ( $langs->trans ( "NoCloneOptionsSpecified" ), 'errors' );
@@ -606,7 +606,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 	if ($agf->fetch($id) > 0) {
 		$result = $agf->createFromClone($id, $hookmanager);
 		if ($result > 0) {
-			if (GETPOST('clone_calendar')) {
+			if (GETPOST('clone_calendar', 'none')) {
 				// clone calendar information
 				$calendrierstat = new Agefodd_sesscalendar($db);
 				$calendrier = new Agefodd_sesscalendar($db);
@@ -625,7 +625,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 					}
 				}
 			}
-			if (GETPOST('clone_trainee')) {
+			if (GETPOST('clone_trainee', 'none')) {
 				// Clone trainee information
 				$traineestat = new Agefodd_session_stagiaire($db);
 				$session_trainee = new Agefodd_session_stagiaire($db);
@@ -642,7 +642,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 				}
 			}
 
-			if (GETPOST('clone_trainer')) {
+			if (GETPOST('clone_trainer', 'none')) {
 				// Clone trainer information
 				$trainerstat = new Agefodd_session_formateur($db);
 				$session_trainer = new Agefodd_session_formateur($db);
@@ -658,7 +658,7 @@ if ($action == 'confirm_clone' && $confirm == 'yes') {
 				}
 			}
 
-			if (GETPOST('clone_linkedFiles'))
+			if (GETPOST('clone_linkedFiles', 'none'))
 			{
 				$upload_dir = $conf->agefodd->dir_output . "/" . $agf->id;
 				$dest_dir = $conf->agefodd->dir_output . "/" . $result;
@@ -860,7 +860,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '<tr class="order_status"><td valign="top">' . $langs->trans("AgfStatusSession") . '</td>';
 	print '<td>';
-	$defstat = GETPOST('AGF_DEFAULT_SESSION_STATUS');
+	$defstat = GETPOST('AGF_DEFAULT_SESSION_STATUS', 'none');
 	if (empty($defstat))
 		$defstat = $conf->global->AGF_DEFAULT_SESSION_STATUS;
 	print $formAgefodd->select_session_status($defstat, "session_status", 't.active=1');

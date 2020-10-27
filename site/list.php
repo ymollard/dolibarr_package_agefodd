@@ -46,11 +46,11 @@ $page = GETPOST('page', 'int');
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $arch = GETPOST('arch', 'int');
 
-$search_soc = GETPOST("search_soc");
-$search_ref_interne = GETPOST("search_ref_interne");
+$search_soc = GETPOST("search_soc", 'none');
+$search_ref_interne = GETPOST("search_ref_interne", 'none');
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_soc = '';
 	$search_ref_interne = '';
 }

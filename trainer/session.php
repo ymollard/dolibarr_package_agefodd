@@ -58,7 +58,7 @@ if ($search_status_in_session == - 1)
 	$search_status_in_session = '';
 $search_archive = GETPOST('search_archive', 'int');
 $search_company = GETPOST('search_company', 'alpha');
-$search_sale = GETPOST('search_sale');
+$search_sale = GETPOST('search_sale', 'none');
 $search_type_session = GETPOST("search_type_session", 'int');
 
 if (empty($sortorder))
@@ -70,7 +70,7 @@ if ($page == - 1) {
 	$page = 0;
 }
 
-$limit = GETPOST('limit');
+$limit = GETPOST('limit', 'none');
 if (empty($limit)) $limit = $conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
@@ -86,7 +86,7 @@ $formother = new FormOther($db);
 $hookmanager->initHooks(array('sessiontrainerlist'));
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_id = '';
 	$search_ref = '';
 	$search_intitule = '';
@@ -175,7 +175,7 @@ if ($id) {
 
 		dol_fiche_end();
 
-		print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&optioncss=' . GETPOST('optioncss') . '" name="searchFormList" id="searchFormList">' . "\n";
+		print '<form method="post" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $id . '&optioncss=' . GETPOST('optioncss', 'none') . '" name="searchFormList" id="searchFormList">' . "\n";
 		print '<input type="hidden" name="optioncss" value="' . $optioncss . '">' . "\n";
 
 		print_barre_liste($langs->trans("AgfSessionDetail"), $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, "", $result, $nbtotalofrecords, 'title_generic.png', 0, '', '', $limit);

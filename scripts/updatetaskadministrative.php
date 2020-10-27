@@ -40,9 +40,9 @@ dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/user/class/user.class.php');
 dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 
-$userlogin = GETPOST('login');
-$id = GETPOST('id');
-$tasktrigger = GETPOST('tasktrigger');
+$userlogin = GETPOST('login', 'none');
+$id = GETPOST('id', 'none');
+$tasktrigger = GETPOST('tasktrigger', 'none');
 $key = GETPOST('key', 'alpha');
 
 // Security test
@@ -61,13 +61,13 @@ if (empty($user->id)) {
 $agf = new Agsession($db);
 $agf->fetch($id);
 if (! empty($agf->id)) {
-	
+
 	$admintask = new Agefodd_sessadm($db);
 	$result = $admintask->updateByTriggerName($user, $agf->id, $tasktrigger);
-	
+
 	if ($result < 0) {
 		print - 1;
 	} else {
 		print 1;
 	}
-}			
+}
