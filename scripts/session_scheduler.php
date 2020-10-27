@@ -64,7 +64,7 @@ $put = GETPOST('put', 'alpha');
 
 switch ($get) {
 	case 'getAgefoddSessionCalendrier':
-		_getAgefoddSessionCalendrier(GETPOST('fk_agefodd_session'), GETPOST('dateStart'), GETPOST('dateEnd'));
+		_getAgefoddSessionCalendrier(GETPOST('fk_agefodd_session', 'none'), GETPOST('dateStart', 'none'), GETPOST('dateEnd', 'none'));
 		echo json_encode( $response );
 		break;
 }
@@ -75,13 +75,13 @@ switch ($put) {
 		echo json_encode( $response );
 		break;
 	case 'updateTimeSlotCalendrier':
-		_updateTimeSlotCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('start'), GETPOST('end'), GETPOST('deltaInSecond', 'int'));
+		_updateTimeSlotCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('start', 'none'), GETPOST('end', 'none'), GETPOST('deltaInSecond', 'int'));
 		echo json_encode( $response );
 		break;
 	case 'createOrUpdateCalendrier':
-		$time_start = dol_mktime(GETPOST('date_starthour'), GETPOST('date_startmin'), 0, GETPOST('date_startmonth'), GETPOST('date_startday'), GETPOST('date_startyear'));
-		$time_end = dol_mktime(GETPOST('date_endhour'), GETPOST('date_endmin'), 0, GETPOST('date_endmonth'), GETPOST('date_endday'), GETPOST('date_endyear'));
-		_createOrUpdateCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('fk_agefodd_session', 'int'), GETPOST('TFormateurId', 'array'), GETPOST('TRealHour', 'array'), GETPOST('calendrier_type'), $time_start, $time_end, GETPOST('TFormateurHeured'), GETPOST('TFormateurHeuref'), GETPOST('calendrier_status'));
+		$time_start = dol_mktime(GETPOST('date_starthour', 'none'), GETPOST('date_startmin', 'none'), 0, GETPOST('date_startmonth', 'none'), GETPOST('date_startday', 'none'), GETPOST('date_startyear', 'none'));
+		$time_end = dol_mktime(GETPOST('date_endhour', 'none'), GETPOST('date_endmin', 'none'), 0, GETPOST('date_endmonth', 'none'), GETPOST('date_endday', 'none'), GETPOST('date_endyear', 'none'));
+		_createOrUpdateCalendrier(GETPOST('fk_agefodd_session_calendrier', 'int'), GETPOST('fk_agefodd_session', 'int'), GETPOST('TFormateurId', 'array'), GETPOST('TRealHour', 'array'), GETPOST('calendrier_type', 'none'), $time_start, $time_end, GETPOST('TFormateurHeured', 'none'), GETPOST('TFormateurHeuref', 'none'), GETPOST('calendrier_status', 'none'));
 		echo json_encode( $response );
 		break;
 }
@@ -96,14 +96,14 @@ switch ($put) {
 function _getAgefoddSessionCalendrier($fk_agefodd_session, $date_s, $date_e)
 {
 	global $db, $response, $conf, $langs;
-	
+
 	$sql = 'SELECT agsc.rowid';
 	$sql.= ' FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier agsc';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session s ON (s.rowid = agsc.fk_agefodd_session)';
 	$sql.= ' WHERE s.entity IN ('.getEntity('agefodd').') AND agsc.fk_agefodd_session = '.$fk_agefodd_session;
 	$sql.= ' AND agsc.heured >= \''.$date_s.'\'';
 	$sql.= ' AND agsc.heuref <= \''.$date_e.'\'';
-	
+
 	dol_syslog("session_scheduler.php::_getAgefoddSessionCalendrier SQL=".$sql, LOG_DEBUG);
 	$resql = $db->query($sql);
 	if ($resql)
@@ -113,9 +113,9 @@ function _getAgefoddSessionCalendrier($fk_agefodd_session, $date_s, $date_e)
 		{
 			$agf_calendrier = new Agefodd_sesscalendar($db);
 			$agf_calendrier->fetch($obj->rowid);
-			
+
 			$response->data->TEvent[] = _formatEventAsArray($agf_calendrier, $now);
-			
+
 		}
 		return count($response->data->TEvent);
 	}
@@ -129,17 +129,17 @@ function _getAgefoddSessionCalendrier($fk_agefodd_session, $date_s, $date_e)
 function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 {
 	global $db, $response;
-	
+
 	$TFormateur = array();
 	$TNomUrl = array();
-	
+
 	$sql = 'SELECT af.rowid, agsf.rowid AS opsid, agsfc.heured, agsfc.heuref FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur agsf';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier agsfc ON (agsf.rowid = agsfc.fk_agefodd_session_formateur)';
 	$sql.= ' INNER JOIN '.MAIN_DB_PREFIX.'agefodd_formateur af ON (af.rowid = agsf.fk_agefodd_formateur)';
 	$sql.= ' WHERE agsf.fk_session = '.$fk_agefodd_session;
 	$sql.= ' AND agsfc.heured < \''.date('Y-m-d H:i:s', $agf_calendrier->heuref).'\'';
 	$sql.= ' AND agsfc.heuref > \''.date('Y-m-d H:i:s', $agf_calendrier->heured).'\'';
-	
+
 	$resql = $db->query($sql);
 	if ($resql)
 	{
@@ -147,7 +147,7 @@ function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 		{
 			$obj->heured = $db->jdate($obj->heured);
 			$obj->heuref = $db->jdate($obj->heuref);
-			
+
 			$formateur = new Agefodd_teacher($db);
 			$formateur->fetch($obj->rowid);
 			$formateur->getnomurl = $formateur->getNomUrl();
@@ -155,10 +155,10 @@ function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 			$formateur->heured_formated = dol_print_date($obj->heured, 'hour');
 			$formateur->heuref_formated = dol_print_date($obj->heuref, 'hour');
 			$TFormateur[] = $formateur;
-			
+
 			$nomUrl = $formateur->getnomurl;
 			if ($agf_calendrier->heured != $obj->heured || $agf_calendrier->heuref != $obj->heuref) $nomUrl.= ' ('.dol_print_date($obj->heured, '%H:%M').' - '.dol_print_date($obj->heuref, '%H:%M').')';
-			
+
 			$TNomUrl[] = $nomUrl;
 		}
 	}
@@ -166,7 +166,7 @@ function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 	{
 		$response->TError[] = $db->lasterror;
 	}
-	
+
 	return array($TFormateur, $TNomUrl);
 }
 
@@ -175,17 +175,17 @@ function _getTFormateur(&$agf_calendrier, $fk_agefodd_session)
 function _deleteCalendrier($fk_agefodd_session_calendrier, $delete_cal_formateur=0)
 {
 	global $db,$response;
-	
+
 	$agf_calendrier = new Agefodd_sesscalendar($db);
 	if ($agf_calendrier->remove($fk_agefodd_session_calendrier) > 0)
 	{
 		$response->TSuccess[] = 'Delete calendrier id = '.$fk_agefodd_session_calendrier.' successful';
-		if ($delete_cal_formateur) 
+		if ($delete_cal_formateur)
 		{
 			$TCalendrierFormateur = _getCalendrierFormateurFromCalendrier($agf_calendrier);
 			_deleteCalendrierFormateur($TCalendrierFormateur);
 		}
-		
+
 	}
 	else $response->TError[] = $agf_calendrier->error;
 }
@@ -193,7 +193,7 @@ function _deleteCalendrier($fk_agefodd_session_calendrier, $delete_cal_formateur
 function _deleteCalendrierFormateur($TCalendrierFormateur)
 {
 	global $response;
-	
+
 	foreach ($TCalendrierFormateur as &$agf_calendrier_formateur)
 	{
 		if ($agf_calendrier_formateur->remove($agf_calendrier_formateur->id) > 0) $response->TSuccess[] = 'Delete calendrier formateur id = '.$agf_calendrier_formateur->id.' successful';
@@ -204,7 +204,7 @@ function _deleteCalendrierFormateur($TCalendrierFormateur)
 function _updateTimeSlotCalendrier($fk_agefodd_session_calendrier, $date_start, $date_end, $deltaInSecond)
 {
 	global $db,$user,$response,$conf;
-	
+
 	$agf_calendrier = new Agefodd_sesscalendar($db);
 	if ($agf_calendrier->fetch($fk_agefodd_session_calendrier) > 0)
 	{
@@ -213,15 +213,15 @@ function _updateTimeSlotCalendrier($fk_agefodd_session_calendrier, $date_start, 
 		$agf_calendrier->heured = strtotime($date_start);
 		if (!empty($date_end)) $agf_calendrier->heuref = strtotime($date_end);
 		else $agf_calendrier->heuref += $deltaInSecond;
-		
+
 		$date_session = strtotime(date('Y-m-d', $agf_calendrier->heured));
 		$agf_calendrier->date_session = $date_session;
-		
+
 		$r = $agf_calendrier->update($user);
 		if ($r > 0)
 		{
 			$response->TSuccess[] = 'Update Agefodd_sesscalendar id '.$fk_agefodd_session_calendrier.' successfully';
-			
+
 			foreach ($TCalendrierFormateur as &$agf_calendrier_formateur)
 			{
 				if (!empty($conf->global->AGF_SCHEDULER_FORMATEUR_FORCE_HOURS_WITH_EVENT))
@@ -234,14 +234,14 @@ function _updateTimeSlotCalendrier($fk_agefodd_session_calendrier, $date_start, 
 					$agf_calendrier_formateur->heured += $deltaInSecond;
 					$agf_calendrier_formateur->heuref += $deltaInSecond;
 				}
-				
+
 				$agf_calendrier_formateur->date_session = $date_session;
 				$r = $agf_calendrier_formateur->update($user);
 				if ($r > 0) $response->TSuccess[] = 'Update Agefoddsessionformateurcalendrier id '.$agf_calendrier_formateur->id.' successfully';
 				else $response->TError[] = $agf_calendrier_formateur->error;
 			}
-			
-			
+
+
 			$response->data->event = _formatEventAsArray($agf_calendrier, dol_now());
 		}
 		else $response->TError[] = $agf_calendrier->error;
@@ -257,10 +257,10 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 	global $db, $user, $response, $conf;
 	$agf_calendrier = new Agefodd_sesscalendar($db);
 	if (!empty($fk_agefodd_session_calendrier) && $fk_agefodd_session_calendrier > 0) $agf_calendrier->fetch($fk_agefodd_session_calendrier);
-	
+
 	$agsession = new Agsession($db);
 	$agsession->fetch($fk_agefodd_session);
-	
+
 	$agf_calendrier->sessid = $fk_agefodd_session;
 	$agf_calendrier->date_session = strtotime(date('Y-m-d', $time_start));
 	$agf_calendrier->heured = $time_start;
@@ -277,7 +277,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 	{
 		if ($agf_calendrier->create($user) <= 0) $response->TError[] = $agf_calendrier->error;
 	}
-	
+
 	// TODO penser à gérer la création des objets Agefoddsessionformateurcalendrier pour les formateurs
 	// Puis de prendre en compte $TRealHour pour faire la saisie de temps de présence
 	//	var_dump($agf_calendrier->id, $TFormateurId, $TRealHour);
@@ -303,12 +303,12 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 				$agfstagiaireheure->heures = $heures;
 				$agfstagiaireheure->create($user);
 			}
-			
+
 			$duree_total_presence = $agsession->getSumDureePresence($fk_stagiaire);
-			
+
 			$stagiaire = new Agefodd_session_stagiaire($db);
 			$stagiaire->fetch_by_trainee($fk_agefodd_session, $fk_stagiaire);
-			
+
 			if ((float) $dureeCalendrier == (float) $heures)
 			{
 				// stagiaire entièrement présent
@@ -323,7 +323,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 			{
 				$stagiaire->status_in_session = $duree_total_presence > 0 ? Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT : Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT;
 			}
-			
+
 			if (!empty($stagiaire->id)) $stagiaire->update($user);
 		}
 	}
@@ -353,7 +353,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 					}
 				}
 			}
-			
+
 			if (empty($is_update))
 			{
 				$agftrainercalendar = new Agefoddsessionformateurcalendrier($db);
@@ -369,7 +369,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 			}
 		}
 	}
-	
+
 	// Suppression des dates des formateurs qui ne sont pas cochés
 	foreach ($calendriers as $calendrier)
 	{
@@ -378,14 +378,14 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 			$calendrier->delete($user);
 		}
 	}
-	
-	_getAgefoddSessionCalendrier($fk_agefodd_session, GETPOST('dateStart'), GETPOST('dateEnd'));
+
+	_getAgefoddSessionCalendrier($fk_agefodd_session, GETPOST('dateStart', 'none'), GETPOST('dateEnd', 'none'));
 }
 
 function _formatEventAsArray(Agefodd_sesscalendar &$agf_calendrier, $now)
 {
 	global $langs,$db;
-	
+
 	$TRealHour = array();
 	$agfssh = new Agefoddsessionstagiaireheures($db);
 	$agfssh->fetchAllBy($agf_calendrier->id, 'fk_calendrier');
@@ -393,10 +393,10 @@ function _formatEventAsArray(Agefodd_sesscalendar &$agf_calendrier, $now)
 	{
 		$TRealHour[$line->fk_stagiaire] = $line->heures;
 	}
-	
-	
+
+
 	list($TFormateur, $TNomUrlFormateur) = _getTFormateur($agf_calendrier, $agf_calendrier->sessid);
-	
+
 	return array(
 		'id' => $agf_calendrier->id
 		,'title' => $langs->transnoentitiesnoconv('AgfCalendarDates')

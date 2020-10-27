@@ -40,8 +40,8 @@ dol_include_once('/user/class/user.class.php');
 dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/core/modules/propale/modules_propale.php');
 
-$userlogin = GETPOST('login');
-$idpropal = GETPOST('idpropal');
+$userlogin = GETPOST('login', 'none');
+$idpropal = GETPOST('idpropal', 'none');
 $key = GETPOST('key', 'alpha');
 
 // Security test
@@ -60,9 +60,9 @@ if (empty($user->id)) {
 $propal = new Propal($db);
 $propal->fetch($idpropal);
 if (! empty($propal->id)) {
-	
+
 	$result = $propal->cloture($user, 2, 'From Extranet RH');
-	
+
 	if ($result < 0) {
 		print - 1;
 	} else {
@@ -70,4 +70,4 @@ if (! empty($propal->id)) {
 	}
 }
 
-			
+

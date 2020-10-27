@@ -68,9 +68,9 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_CONTACT_USE_SEARCH_TO_SELECT', $usesearch_contact, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
-        
 
-        
+
+
 
         $usesearch_stagstype = GETPOST('AGF_STAGTYPE_USE_SEARCH_TO_SELECT', 'alpha');
         $res = dolibarr_set_const($db, 'AGF_STAGTYPE_USE_SEARCH_TO_SELECT', $usesearch_stagstype, 'chaine', 0, '', $conf->entity);
@@ -212,7 +212,7 @@ if ($action == 'setvarother') {
         $res = dolibarr_set_const($db, 'AGF_SITE_USE_SEARCH_TO_SELECT', $usesearch_site, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
             $error ++;
-		
+
 		$usesearch_training = GETPOST('AGF_TRAINING_USE_SEARCH_TO_SELECT', 'alpha');
 		$res = dolibarr_set_const($db, 'AGF_TRAINING_USE_SEARCH_TO_SELECT', $usesearch_training, 'chaine', 0, '', $conf->entity);
         if (! $res > 0)
@@ -272,13 +272,13 @@ if ($action == 'setvarother') {
         $error ++;
 
 
-    $fieldsOrder = GETPOST('AGF_CUSTOM_ORDER');
+    $fieldsOrder = GETPOST('AGF_CUSTOM_ORDER', 'none');
     $res = dolibarr_set_const($db, 'AGF_CUSTOM_ORDER', $fieldsOrder, 'chaine', 0, '', $conf->entity);
     if (! $res > 0)
         $error ++;
 
 
-	$fieldsOrder = GETPOST('RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION');
+	$fieldsOrder = GETPOST('RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION', 'none');
 	$res = dolibarr_set_const($db, 'RELATION_LINK_SELECTED_ON_THIRDPARTY_TRAINING_SESSION', $fieldsOrder, 'chaine', 0, '', $conf->entity);
 	if (! $res > 0)
 		$error ++;

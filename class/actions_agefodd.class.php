@@ -249,7 +249,7 @@ class ActionsAgefodd
 		if (in_array('agendaexport', $TContext)) {
 			$agftraineeid = GETPOST('agftraineeid', "int");
 			$agftrainerid = GETPOST('agftrainerid', "int");
-			$exportkey = GETPOST('exportkey');
+			$exportkey = GETPOST('exportkey', 'none');
 
 			// replace dolibarr security check for ageffod agenda
 			if(!empty($agftraineeid) || !empty($agftrainerid))
@@ -281,9 +281,9 @@ class ActionsAgefodd
 			$langs->load('agfexternalaccess@agefodd');
 
 			if ($context->controller == 'agefodd_session_card') {
-				if ($action == 'deleteCalendrierFormateur' && GETPOST('sessid') > 0 && GETPOST('fk_agefodd_session_formateur_calendrier') > 0) {
+				if ($action == 'deleteCalendrierFormateur' && GETPOST('sessid', 'none') > 0 && GETPOST('fk_agefodd_session_formateur_calendrier', 'none') > 0) {
 					$agsession = new Agsession($this->db);
-					if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
+					if ($agsession->fetch(GETPOST('sessid', 'none')) > 0) // Vérification que la session existe
 					{
 						$trainer = $agsession->getTrainerFromUser($user);
 						if ($trainer) {
@@ -292,7 +292,7 @@ class ActionsAgefodd
 							$error = 0;
 							$this->db->begin();
 							$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($this->db);
-							if ($agf_calendrier_formateur->fetch(GETPOST('fk_agefodd_session_formateur_calendrier')) > 0) {
+							if ($agf_calendrier_formateur->fetch(GETPOST('fk_agefodd_session_formateur_calendrier', 'none')) > 0) {
 								$TCalendrier = _getCalendrierFromCalendrierFormateur($agf_calendrier_formateur, true, true);
 								if (is_string($TCalendrier)) {
 									$error++;
@@ -330,17 +330,17 @@ class ActionsAgefodd
 								$context->setEventMessages($langs->transnoentities('AgfCreneauDeleted'));
 							}
 
-							$url = $context->getRootUrl(GETPOST('controller'), '&sessid=' . $agsession->id . '&fromAction=deleteCalendrierFormateur');
+							$url = $context->getRootUrl(GETPOST('controller', 'none'), '&sessid=' . $agsession->id . '&fromAction=deleteCalendrierFormateur');
 							header('Location: ' . $url);
 							exit;
 						}
 					}
 
-					header('Location: ' . $context->getRootUrl(GETPOST('controller')));
+					header('Location: ' . $context->getRootUrl(GETPOST('controller', 'none')));
 					exit;
-				} elseif ($action == "uploadfile" && GETPOST('sessid') > 0) {
+				} elseif ($action == "uploadfile" && GETPOST('sessid', 'none') > 0) {
 					if (GETPOST('sendit', 'alpha') && !empty($conf->global->MAIN_UPLOAD_DOC)) {
-						$upload_dir = $conf->agefodd->dir_output . "/" . GETPOST('sessid');
+						$upload_dir = $conf->agefodd->dir_output . "/" . GETPOST('sessid', 'none');
 						if (!empty($_FILES)) {
 							if (is_array($_FILES['userfile']['tmp_name'])) $userfiles = $_FILES['userfile']['tmp_name'];
 							else $userfiles = array($_FILES['userfile']['tmp_name']);
@@ -375,7 +375,7 @@ class ActionsAgefodd
 							if(! $error && $createShareLink) {
 								require_once DOL_DOCUMENT_ROOT . '/ecm/class/ecmfiles.class.php';
 								$ecmfile = new ECMFiles($this->db);
-								$result=$ecmfile->fetch(0, '', dol_osencode("agefodd/" .GETPOST('sessid') . "/" .$_FILES['userfile']['name'][0]));
+								$result=$ecmfile->fetch(0, '', dol_osencode("agefodd/" .GETPOST('sessid', 'none') . "/" .$_FILES['userfile']['name'][0]));
 
 								if ($result > 0)
 								{
@@ -400,7 +400,7 @@ class ActionsAgefodd
 				}
 			} else if ($context->controller == 'agefodd_session_card_time_slot' && in_array($action, array('add', 'update')) && GETPOST('sessid', 'int') > 0) {
 				$agsession = new Agsession($this->db);
-				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
+				if ($agsession->fetch(GETPOST('sessid', 'none')) > 0) // Vérification que la session existe
 				{
 					$trainer = $agsession->getTrainerFromUser($user); // Est ce que mon user (formateur) est bien associé à la session ?
 					if ($trainer) {
@@ -411,12 +411,12 @@ class ActionsAgefodd
 
 						// Est ce que mon calendrier appartient bien à ma session ? OU que l'id est vide pour un "add"
 						if (($agf_calendrier_formateur->id > 0 && $agf_calendrier_formateur->sessid == $agsession->id) || empty($agf_calendrier_formateur->id)) {
-							$date_session = GETPOST('date_session');
-							$heured = GETPOST('heured');
-							$heuref = GETPOST('heuref');
-							$status = GETPOST('status');
-							$code_c_session_calendrier_type = GETPOST('code_c_session_calendrier_type');
-                            $note_private = GETPOST('note_private');
+							$date_session = GETPOST('date_session', 'none');
+							$heured = GETPOST('heured', 'none');
+							$heuref = GETPOST('heuref', 'none');
+							$status = GETPOST('status', 'none');
+							$code_c_session_calendrier_type = GETPOST('code_c_session_calendrier_type', 'none');
+                            $note_private = GETPOST('note_private', 'none');
 
 							if (!empty($date_session) && !empty($heured) && !empty($heuref)) {
 								$context->setControllerFound();
@@ -667,7 +667,7 @@ class ActionsAgefodd
 					// Type
 					$TAvailableType = getEnventOtherTAvailableType();
 
-					$type = GETPOST('type');
+					$type = GETPOST('type', 'none');
 					if (!empty($id)) {
 						$type = $event->type_code; // on update, code could not be change
 					}
@@ -693,9 +693,9 @@ class ActionsAgefodd
 					$event->note = GETPOST('note', 'nohtml');
 
 					// Get start date
-					$heured = GETPOST('heured');
-					$heuredDate = GETPOST('heured-date'); // it's a fix for firefox and datetime-local
-					$heuredTime = GETPOST('heured-time'); // it's a fix for firefox and datetime-local
+					$heured = GETPOST('heured', 'none');
+					$heuredDate = GETPOST('heured-date', 'none'); // it's a fix for firefox and datetime-local
+					$heuredTime = GETPOST('heured-time', 'none'); // it's a fix for firefox and datetime-local
 					if(empty($heured) && !empty($heuredDate) && !empty($heuredTime)){
 						$heured = $heuredDate.'T'.$heuredTime;
 					}
@@ -710,9 +710,9 @@ class ActionsAgefodd
 					}
 
 					// Get end date
-					$heuref = GETPOST('heuref');
-					$heurefDate = GETPOST('heuref-date');
-					$heurefTime = GETPOST('heuref-time');
+					$heuref = GETPOST('heuref', 'none');
+					$heurefDate = GETPOST('heuref-date', 'none');
+					$heurefTime = GETPOST('heuref-time', 'none');
 					if(empty($heuref) && !empty($heurefDate) && !empty($heurefTime)){
 						$heuref = $heurefDate.'T'.$heurefTime;
 					}
@@ -799,7 +799,7 @@ class ActionsAgefodd
 							if ($calendrier->fetch($slotid) > 0) {
 								if (traineeCanChangeAbsenceStatus($calendrier->heured)) {
 
-									if (GETPOST('plannedAbsence') == 'missing') {
+									if (GETPOST('plannedAbsence', 'none') == 'missing') {
 										$sessionstagiaireheures->planned_absence = 1;
 										$successMsg = $langs->trans('AgfSetPlannedAbsenceMissing');
 									} else {
@@ -893,7 +893,7 @@ class ActionsAgefodd
 			dol_include_once('/agefodd/class/agefodd_formateur.class.php');
 
 			if ($action == "downloadSessionFile") {
-				$file = GETPOST('file');
+				$file = GETPOST('file', 'none');
 				$filename = $conf->agefodd->dir_output . '/' . $file;
 
 				$this->_downloadSessionFile($filename);
@@ -916,10 +916,10 @@ class ActionsAgefodd
 				// These are assumed to be ISO8601 strings with no time nor timeZone, like "2013-12-29".
 				// Since no timeZone will be present, they will parsed as UTC.
 
-				$timeZone = GETPOST('timeZone');
-				$agendaType = GETPOST('agendaType');
-				$range_start = parseFullCalendarDateTime(GETPOST('start'), $timeZone);
-				$range_end = parseFullCalendarDateTime(GETPOST('end'), $timeZone);
+				$timeZone = GETPOST('timeZone', 'none');
+				$agendaType = GETPOST('agendaType', 'none');
+				$range_start = parseFullCalendarDateTime(GETPOST('start', 'none'), $timeZone);
+				$range_end = parseFullCalendarDateTime(GETPOST('end', 'none'), $timeZone);
 
 				$teacher = new Agefodd_teacher($this->db);
 				$teacher->fetchByUser($user);
@@ -982,7 +982,7 @@ class ActionsAgefodd
 
 				// CLOSE IFRAME
 				if ($context->iframe) {
-					$fromAction = GETPOST('fromAction');
+					$fromAction = GETPOST('fromAction', 'none');
 					if (!empty($fromAction) && $fromAction == 'deleteCalendrierFormateur') {
 						print '<script >window.parent.closeModal();</script>';
 					}
@@ -990,7 +990,7 @@ class ActionsAgefodd
 
 
 				$agsession = new Agsession($this->db);
-				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
+				if ($agsession->fetch(GETPOST('sessid', 'none')) > 0) // Vérification que la session existe
 				{
 					$trainer = $agsession->getTrainerFromUser($user);
 					if ($trainer) {
@@ -1007,7 +1007,7 @@ class ActionsAgefodd
 				print getPageViewTraineeSessionCardExternalAccess();
 			} elseif ($context->controller == 'agefodd_session_card_time_slot' && $sessid > 0) {
 				$agsession = new Agsession($this->db);
-				if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
+				if ($agsession->fetch(GETPOST('sessid', 'none')) > 0) // Vérification que la session existe
 				{
 					$trainer = $agsession->getTrainerFromUser($user); // Est ce que mon user (formateur) est bien associé à la session ?
 					if ($trainer) {
@@ -1015,7 +1015,7 @@ class ActionsAgefodd
 						$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($this->db);
 						$soltid = GETPOST('slotid', 'int'); // Si vide, alors mode create
 						if ($soltid > 0) {
-							$agf_calendrier_formateur->fetch(GETPOST('slotid'));
+							$agf_calendrier_formateur->fetch(GETPOST('slotid', 'none'));
 							// Est ce que mon calendrier appartient bien à ma session
 							if ($agf_calendrier_formateur->sessid != $agsession->id) $ok = false; // Tantative d'édition avec un calendrier qui n'appartient pas au formateur
 						}

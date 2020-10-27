@@ -41,8 +41,8 @@ require_once ('../class/html.formagefodd.class.php');
 $langs->load("companies");
 $langs->load('other');
 
-$action = GETPOST('action');
-$confirm = GETPOST('confirm');
+$action = GETPOST('action', 'none');
+$confirm = GETPOST('confirm', 'none');
 $id = (GETPOST('socid', 'int') ? GETPOST('socid', 'int') : GETPOST('id', 'int'));
 $ref = GETPOST('ref', 'alpha');
 

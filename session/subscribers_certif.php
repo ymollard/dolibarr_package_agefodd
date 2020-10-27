@@ -87,7 +87,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 
 					if (is_array($certif_type_array) && count($certif_type_array) > 0) {
 						foreach ( $certif_type_array as $certif_type_id => $certif_type_label ) {
-							$certif_state = GETPOST('certifstate_' . $certif_type_id);
+							$certif_state = GETPOST('certifstate_' . $certif_type_id, 'none');
 							$result = $agf_certif->set_certif_state($user, $certif_id, $certif_type_id, $certif_state);
 							if ($result < 0) {
 								setEventMessage($agf_certif->error, 'errors');
@@ -115,7 +115,7 @@ if ($action == 'edit' && $user->rights->agefodd->creer) {
 					if (is_array($certif_type_array) && count($certif_type_array) > 0) {
 						foreach ( $certif_type_array as $certif_type_id => $certif_type_label ) {
 							// Case state didn't exists yet
-							$certif_state = GETPOST('certifstate_' . $certif_type_id);
+							$certif_state = GETPOST('certifstate_' . $certif_type_id, 'none');
 							$result = $agf_certif->set_certif_state($user, $resultcertif, $certif_type_id, $certif_state);
 							if ($result < 0) {
 								setEventMessage($agf_certif->error, 'errors');
