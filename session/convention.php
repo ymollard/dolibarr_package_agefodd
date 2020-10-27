@@ -156,19 +156,19 @@ if ($action == 'update' && $user->rights->agefodd->creer) {
 
 		$result = $agf->fetch(0, 0, $id);
 
-		$intro1 = GETPOST('intro1');
-		$intro2 = GETPOST('intro2');
-		$art1 = GETPOST('art1');
-		$art2 = GETPOST('art2');
-		$art3 = GETPOST('art3');
-		$art4 = GETPOST('art4');
-		$art5 = GETPOST('art5');
-		$art6 = GETPOST('art6');
-		$art7 = GETPOST('art7');
-		$art8 = GETPOST('art8');
-		$art9 = GETPOST('art9');
-		$sig = GETPOST('sig');
-		$notes = GETPOST('notes');
+		$intro1 = GETPOST('intro1', 'none');
+		$intro2 = GETPOST('intro2', 'none');
+		$art1 = GETPOST('art1', 'none');
+		$art2 = GETPOST('art2', 'none');
+		$art3 = GETPOST('art3', 'none');
+		$art4 = GETPOST('art4', 'none');
+		$art5 = GETPOST('art5', 'none');
+		$art6 = GETPOST('art6', 'none');
+		$art7 = GETPOST('art7', 'none');
+		$art8 = GETPOST('art8', 'none');
+		$art9 = GETPOST('art9', 'none');
+		$sig = GETPOST('sig', 'none');
+		$notes = GETPOST('notes', 'none');
 		$model_doc = GETPOST('model_doc', 'alpha');
 		$doc_lang = GETPOST('doc_lang', 'alpha');
 		$only_product_session = GETPOST('only_product_session', 'int');
@@ -242,19 +242,19 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_convention($db);
 
-		$intro1 = GETPOST('intro1');
-		$intro2 = GETPOST('intro2');
-		$art1 = GETPOST('art1');
-		$art2 = GETPOST('art2');
-		$art3 = GETPOST('art3');
-		$art4 = GETPOST('art4');
-		$art5 = GETPOST('art5');
-		$art6 = GETPOST('art6');
-		$art7 = GETPOST('art7');
-		$art8 = GETPOST('art8');
-		$art9 = GETPOST('art9');
-		$sig = GETPOST('sig');
-		$notes = GETPOST('notes');
+		$intro1 = GETPOST('intro1', 'none');
+		$intro2 = GETPOST('intro2', 'none');
+		$art1 = GETPOST('art1', 'none');
+		$art2 = GETPOST('art2', 'none');
+		$art3 = GETPOST('art3', 'none');
+		$art4 = GETPOST('art4', 'none');
+		$art5 = GETPOST('art5', 'none');
+		$art6 = GETPOST('art6', 'none');
+		$art7 = GETPOST('art7', 'none');
+		$art8 = GETPOST('art8', 'none');
+		$art9 = GETPOST('art9', 'none');
+		$sig = GETPOST('sig', 'none');
+		$notes = GETPOST('notes', 'none');
 		$model_doc = GETPOST('model_doc', 'alpha');
 		$doc_lang = GETPOST('doc_lang', 'alpha');
 		$traine_list = GETPOST('trainee_id', 'array');

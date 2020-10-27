@@ -60,14 +60,14 @@ $user->rights->agefodd_formation_catalogue->creer = $user->rights->agefodd->agef
 
 if ($action == 'setnote_public' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	$object->fetch($id);
-	$result = $object->update_note(dol_html_entity_decode(GETPOST('note_public'), ENT_QUOTES), '_public');
+	$result = $object->update_note(dol_html_entity_decode(GETPOST('note_public', 'none'), ENT_QUOTES), '_public');
 	if ($result < 0)
 		setEventMessage($object->error, 'errors');
-} 
+}
 
 else if ($action == 'setnote_private' && $user->rights->agefodd->agefodd_formation_catalogue->creer) {
 	$object->fetch($id);
-	$result = $object->update_note(dol_html_entity_decode(GETPOST('note_private'), ENT_QUOTES), '_private');
+	$result = $object->update_note(dol_html_entity_decode(GETPOST('note_private', 'none'), ENT_QUOTES), '_private');
 	if ($result < 0)
 		setEventMessage($object->error, 'errors');
 }
@@ -82,18 +82,18 @@ llxHeader('', $title);
 $form = new Form($db);
 
 if ($id > 0 || ! empty($ref)) {
-	
+
 	$head = training_prepare_head($object);
-	
+
 	dol_fiche_head($head, 'notes', $langs->trans("AgfCatalogNote"), 0, 'label');
-	
+
 	dol_agefodd_banner_tab($object, 'id');
 	print '<div class="underbanner clearboth"></div>';
-	
+
 	print '<br>';
-	
+
 	include DOL_DOCUMENT_ROOT . '/core/tpl/notes.tpl.php';
-	
+
 	print '</div>';
 }
 

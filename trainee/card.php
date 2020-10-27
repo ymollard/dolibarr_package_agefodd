@@ -69,7 +69,7 @@ if ($reshook < 0)
 
 
 //Select mail models is same action as presend
-if (GETPOST('modelselected')) $action = 'presend';
+if (GETPOST('modelselected', 'none')) $action = 'presend';
 
 // Cancel action
 if (isset($_POST['cancel'])) {
@@ -220,7 +220,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				$tel2 = GETPOST('tel2', 'alpha');
 				$mail = GETPOST('mail', 'alpha');
 				$note = GETPOST('note', 'alpha');
-				$societe_name = GETPOST('societe_name');
+				$societe_name = GETPOST('societe_name', 'none');
 				$address = GETPOST('adresse', 'alpha');
 				$zip = GETPOST('zipcode', 'alpha');
 				$town = GETPOST('town', 'alpha');
@@ -360,7 +360,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
                 setEventMessage('AgfSuccessCreateStag', 'mesgs');
             }
 
-			$saveandstay = GETPOST('saveandstay');
+			$saveandstay = GETPOST('saveandstay', 'none');
             if (empty($saveandstay)) {
                 if (strlen($url_back) > 0) {
                     header("Location: " . $url_back);
@@ -550,7 +550,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '<tr class="liste_titre"><td colspan="4"><strong>' . $langs->trans("AgfMailTypeContactTrainee") . '</strong></td>';
 
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("AgfCivilite") . '</span></td>';
-	print '<td colspan="3">' . $formcompany->select_civility(GETPOST('civility_id')) . '</td>';
+	print '<td colspan="3">' . $formcompany->select_civility(GETPOST('civility_id', 'none')) . '</td>';
 	print '</tr>';
 
 	print '<tr><td><span class="fieldrequired">' . $langs->trans("Firstname") . '</span></td>';
@@ -613,7 +613,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	{
 		print '<tr><td>' . $form->textwithtooltip( $langs->trans("AgfSendAgendaMail") ,$langs->trans("AgfSendAgendaMailHelp"),2,1,img_help(1,'')). '</td>';
 		$statutarray=array('0' => $langs->trans("Yes"), '1' => $langs->trans("No"));
-		$postDisable_auto_mail = GETPOST('disable_auto_mail');
+		$postDisable_auto_mail = GETPOST('disable_auto_mail', 'none');
 		print '<td>' . $form->selectarray('disable_auto_mail',$statutarray,!empty($postDisable_auto_mail)?$postDisable_auto_mail:'') . '</td></tr>';
 	}
 
@@ -651,7 +651,7 @@ if ($action == 'create' && ($user->rights->agefodd->creer || $user->rights->agef
 	print '<tr class="agelfoddline">';
 	print '<td>' . $langs->trans('AgfSelectAgefoddSession') . '</td>';
 	print '<td colspan="3">';
-	print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1);
+	print $form->selectarray('session_id', $sessions, GETPOST('session_id', 'none'), 1);
 	print '</td>';
 	print '</tr>';
 
@@ -833,7 +833,7 @@ else
 				{
 					print '<tr><td>' . $form->textwithtooltip( $langs->trans("AgfSendAgendaMail") ,$langs->trans("AgfSendAgendaMailHelp"),2,1,img_help(1,'')). '</td>';
 					$statutarray=array('0' => $langs->trans("Yes"), '1' => $langs->trans("No"));
-					$postDisable_auto_mail = GETPOST('disable_auto_mail');
+					$postDisable_auto_mail = GETPOST('disable_auto_mail', 'none');
 					print '<td>' . $form->selectarray('disable_auto_mail',$statutarray,!empty($postDisable_auto_mail)?$postDisable_auto_mail:$agf->disable_auto_mail) . '</td></tr>';
 				}
 

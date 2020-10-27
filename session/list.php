@@ -92,15 +92,15 @@ if (! empty($massaction) && strpos('set_statut', $massaction) == 0 && ! empty($t
 }
 
 // Search criteria
-$search_trainning_name = GETPOST("search_trainning_name");
-$search_soc = GETPOST("search_soc");
-$search_teacher_id = GETPOST("search_teacher_id");
+$search_trainning_name = GETPOST("search_trainning_name", 'none');
+$search_soc = GETPOST("search_soc", 'none');
+$search_teacher_id = GETPOST("search_teacher_id", 'none');
 $search_training_ref = GETPOST("search_training_ref", 'alpha');
 $search_start_date = dol_mktime(0, 0, 0, GETPOST('search_start_datemonth', 'int'), GETPOST('search_start_dateday', 'int'), GETPOST('search_start_dateyear', 'int'));
 $search_start_date_2 = dol_mktime(23, 59, 59, GETPOST('search_start_date2month', 'int'), GETPOST('search_start_date2day', 'int'), GETPOST('search_start_date2year', 'int'));
 $search_end_date = dol_mktime(0, 0, 0, GETPOST('search_end_datemonth', 'int'), GETPOST('search_end_dateday', 'int'), GETPOST('search_end_dateyear', 'int'));
 $search_end_date_2 = dol_mktime(0, 0, 0, GETPOST('search_end_date2month', 'int'), GETPOST('search_end_date2day', 'int'), GETPOST('search_end_date2year', 'int'));
-$search_site = GETPOST("search_site");
+$search_site = GETPOST("search_site", 'none');
 $search_training_ref_interne = GETPOST('search_training_ref_interne', 'alpha');
 $search_type_session = GETPOST("search_type_session", 'int');
 $training_view = GETPOST("training_view", 'int');
@@ -113,10 +113,10 @@ $search_year = GETPOST('search_year', 'int');
 $search_socpeople_presta = GETPOST('search_socpeople_presta', 'alpha');
 $search_soc_employer = GETPOST('search_soc_employer', 'alpha');
 $search_soc_requester = GETPOST('search_soc_requester', 'alpha');
-$search_session_status = GETPOST('search_session_status');
-$search_session_status_before_archive = GETPOST('search_session_status_before_archive');
-$search_product = GETPOST('search_product');
-$search_intitule_custo = GETPOST('search_intitule_custo');
+$search_session_status = GETPOST('search_session_status', 'none');
+$search_session_status_before_archive = GETPOST('search_session_status_before_archive', 'none');
+$search_product = GETPOST('search_product', 'none');
+$search_intitule_custo = GETPOST('search_intitule_custo', 'none');
 
 $search_sale = GETPOST('search_sale', 'int');
 
@@ -135,8 +135,8 @@ if (! empty($idforma)) {
 
 // prefilter the list if defined
 if (! empty($conf->global->AGF_FILTER_SESSION_LIST_ON_COURANT_MONTH)) {
-	$button_removefilter_x = GETPOST("button_removefilter_x");
-	$button_search = GETPOST("button_search_x");
+	$button_removefilter_x = GETPOST("button_removefilter_x", 'none');
+	$button_search = GETPOST("button_search_x", 'none');
 	if (empty($button_removefilter_x) && empty($button_search)) {
 		$search_month = date("m");
 		$search_year = date("Y");
@@ -159,7 +159,7 @@ if (!empty($search_by)) {
 }
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_trainning_name = '';
 	$search_soc = '';
 	$search_teacher_id = "";

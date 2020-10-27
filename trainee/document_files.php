@@ -41,8 +41,8 @@ require_once '../class/html.formagefodd.class.php';
 $langs->load("companies");
 $langs->load('other');
 
-$action = GETPOST('action');
-$confirm = GETPOST('confirm');
+$action = GETPOST('action', 'none');
+$confirm = GETPOST('confirm', 'none');
 $id = GETPOST('id', 'int');
 $ref = GETPOST('ref', 'alpha');
 
@@ -104,7 +104,7 @@ if ($object->id) {
 	$head = trainee_prepare_head($object);
 
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfStagiaireDetail"), 0, 'bill');
-	
+
 	dol_agefodd_banner_tab($object, 'id');
 	print '<div class="underbanner clearboth"></div>';
 

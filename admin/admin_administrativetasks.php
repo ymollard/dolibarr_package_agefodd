@@ -194,7 +194,7 @@ $result0 = $admlevel->fetch_all();
 $morehtmlright = '';
 print load_fiche_titre($langs->trans("AgfAdminSessionLevel"), $morehtmlright);
 
-$sesslevel_remove = GETPOST('sesslevel_remove');
+$sesslevel_remove = GETPOST('sesslevel_remove', 'none');
 if ($action == 'sessionlevel_update' && !empty($sesslevel_remove) && empty($confirm)){
 	$deleteConfirmUrl = $_SERVER ['PHP_SELF'].'?sesslevel_remove=1&id='. GETPOST('id', 'int');
 	print $form->formconfirm($deleteConfirmUrl, $langs->trans('ConfirmDelete'), '', 'sesslevel_remove', '', 0, 1);

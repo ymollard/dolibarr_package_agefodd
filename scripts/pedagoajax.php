@@ -4,18 +4,18 @@ if (! $res)
     $res = @include ("../../../main.inc.php"); // For "custom" directory
 if (! $res)
     die("Include of main fails");
-    
+
 dol_include_once('/core/lib/functions.lib.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
-$put = GETPOST('put');
-$idTraining = GETPOST('idTraining');
+$put = GETPOST('put', 'none');
+$idTraining = GETPOST('idTraining', 'none');
 
 switch ($put){
     case 'printform':
         printForm($idTraining);
         break;
-       
+
     Default:
         break;
 }
@@ -25,7 +25,7 @@ function printForm($idTraining){
 
     $agf_peda = new Formation($db);
     $result_peda = $agf_peda->fetch_objpeda_per_formation($idTraining);
-    
+
     $form = '<form name="obj_peda" id="obj_peda" action="' . dol_buildpath('/agefodd/training/card.php',1) . "?id=" . $idTraining . '" method="POST">' . "\n";
     $form.= '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">' . "\n";
     $form.= '<input type="hidden" name="action" value="ajax_obj_update">' . "\n";
@@ -46,17 +46,17 @@ function printForm($idTraining){
     }
     $form.= '</td>';
     $form.= '</tr>';
-    
+
     $i = 0;
     foreach ( $agf_peda->lines as $line ) {
         $form.= '<tr><td align="center" width="40">' . "\n";
         $form.= '<input name="pedago[' . $i . '][priorite]" class="flat" size="4" value="' . $line->priorite . '">';
         $form.= '<input type="hidden" name="pedago[' . $i . '][id]" value="' . $line->id . '"></td>';
-        
+
         $form.= '<td ><input name="pedago[' . $i . '][intitule]" class="flat" size="50" value="' . stripslashes($line->intitule) . '"></td>' . "\n";
-        
+
         $form.= '<td><a href="#" class="obj_remove_x">' . img_picto($langs->trans("Delete"), 'delete') . '</a></td>';
-        
+
         $form.= '</tr>' . "\n";
         $priorite = $line->priorite;
         $i++;
@@ -82,7 +82,7 @@ function printForm($idTraining){
     }*/
     $form.= '</table>' . "\n";
     $form.= '</form>' . "\n";
-    
+
     $form.= '<script>
                 $(".obj_remove_x").each(function(){
                     $(this).click(function(e) {
@@ -90,7 +90,7 @@ function printForm($idTraining){
                         $(this).parent().parent().remove();
                     });
                 });
-                
+
                 $("#addOne").click(function(e){
                     var lastPriority = parseInt($(".obj_remove_x").last().parent().parent().find("input").first().val()) + 1;
                     var objLength = $(".obj_remove_x").length;
@@ -101,7 +101,7 @@ function printForm($idTraining){
                             e.preventDefault();
                             $(this).parent().parent().remove();
                     });
-                
+
                 });
 
             </script>';
