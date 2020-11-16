@@ -1274,7 +1274,7 @@ if (! empty($id)) {
 				}
 				print '</td>';
 				$sql = "SELECT fk_stagiaire AS id_stagiaire, fk_session_agefodd AS session, datec, fk_user_author";
-				$sql.= " FROM llx_agefodd_session_stagiaire";
+				$sql.= " FROM ".MAIN_DB_PREFIX."agefodd_session_stagiaire";
 				$sql.= " WHERE fk_stagiaire = ".$stagiaires->lines[$i]->id;
 				$sql.= " AND fk_session_agefodd = ".$stagiaires->lines[$i]->sessid;
 				$resql = $db->query($sql);
