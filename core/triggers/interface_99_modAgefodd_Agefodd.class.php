@@ -28,8 +28,17 @@
 /**
  * Class of triggers Agefodd
  */
+// TODO Les triggers peuvent étendre la classe abstraite DolibarrTriggers disponible depuis la 3.7, à voir quand faire la bascule
 class InterfaceAgefodd {
-	var $db;
+	/** @var DoliDB $db */
+	public $db;
+	public $name;
+	public $family;
+	public $description;
+	public $version;
+	public $picto;
+	public $error;
+	public $errors = array();
 
 	/**
 	 * Constructor
@@ -96,32 +105,49 @@ class InterfaceAgefodd {
 	 * @param conf $conf conf
 	 * @return int <0 if KO, 0 if no triggered ran, >0 if OK
 	 */
+	function runTrigger($action, $object, $user, $langs, $conf) {
+		//For 8.0 remove warning
+		return $this->run_trigger($action, $object, $user, $langs, $conf);
+	}
+
+	/**
+	 * Function called when a Dolibarrr business event is done.
+	 * All functions "run_trigger" are triggered if file is inside directory htdocs/core/triggers
+	 *
+	 * @param string $action code
+	 * @param Object $object
+	 * @param User $user user
+	 * @param Translate $langs langs
+	 * @param conf $conf conf
+	 * @return int <0 if KO, 0 if no triggered ran, >0 if OK
+	 */
 	function run_trigger($action, $object, $user, $langs, $conf) {
 		dol_include_once('/comm/action/class/actioncomm.class.php');
 		dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 		dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 		// Put here code you want to execute when a Dolibarr business events occurs.
 		// Data and type of action are stored into $object and $action
-		
+
 		global $conf, $mc;
+
+		if (empty($conf->agefodd->enabled)) return 0;
 
 		// multicompagny tweak
 		if (is_object($mc))
 		{
-		    
-		    if(!in_array('agefodd', $mc->sharingelements)){
+			/** @var ActionsMulticompany $mc */
+			if(is_array($mc->sharingelements) && !in_array('agefodd', $mc->sharingelements)){
 		        $mc->sharingelements[] = 'agefodd';
 		    }
-		    
+
 		    if(!isset($mc->sharingobjects['agefodd'])){
 		        $mc->sharingobjects['agefodd'] = array('element'=>'agefodd');
 		    }
-			
+
 			$mc->setValues($conf);
 		}
-		
-		
-		
+
+		$ok = 0;
 
 		// Users
 		if ($action == 'ACTION_MODIFY') {
@@ -138,7 +164,7 @@ class InterfaceAgefodd {
 
 						$agf_cal = new Agefodd_sesscalendar($this->db);
 						$result = $agf_cal->fetch_by_action($action->id);
-						if ($result != - 1) {
+						if ($result > 0) {
 
 							$dt_array = getdate($action->datep);
 							$agf_cal->date_session = dol_mktime(0, 0, 0, $dt_array['mon'], $dt_array['mday'], $dt_array['year']);
@@ -152,6 +178,14 @@ class InterfaceAgefodd {
 								return - 1;
 							}
 						}
+						elseif(empty($result))
+                        {
+                            setEventMessage('ActionComAssociatedSessionNotFound', 'warnings');
+                        }
+						else{
+                            dol_syslog(get_class($this) . "::run_trigger " . $agf_cal->error, LOG_ERR);
+                            return - 1;
+                        }
 					}
 				}
 			}
@@ -166,13 +200,12 @@ class InterfaceAgefodd {
 
 						$agf_cal = new Agefoddsessionformateurcalendrier($this->db);
 						$result = $agf_cal->fetch_by_action($action->id);
-						if ($result != - 1) {
+                        if ($result > 0) {
 
 							$dt_array = getdate($action->datep);
 							$agf_cal->date_session = dol_mktime(0, 0, 0, $dt_array['mon'], $dt_array['mday'], $dt_array['year']);
 							$agf_cal->heured = $action->datep;
 							$agf_cal->heuref = $action->datef;
-							$agf_cal->trainer_cost = $agf_cal->trainer_cost;
 
 							$result = $agf_cal->update($user, 1);
 
@@ -181,6 +214,14 @@ class InterfaceAgefodd {
 								return - 1;
 							}
 						}
+                        elseif(empty($result))
+                        {
+                            setEventMessage('ActionComAssociatedSessionNotFound', 'warnings');
+                        }
+                        else{
+                            dol_syslog(get_class($this) . "::run_trigger " . $agf_cal->error, LOG_ERR);
+                            return - 1;
+                        }
 					}
 				}
 			}
@@ -266,6 +307,7 @@ class InterfaceAgefodd {
 					dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 					$admintask = new Agefodd_sessadm($this->db);
 					$result = $admintask->updateByTriggerName($user, $object->id, 'AGF_CONV_SEND');
+					// TODO Gestion d'erreurs
 				}
 			}
 		} 		// Envoi attestation par mail
@@ -305,6 +347,24 @@ class InterfaceAgefodd {
 
 				$ok = 1;
 			}
+		} elseif ($action == 'ATTESTATION_PRESENCE_TRAINING_SENTBYMAIL') {
+                        dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
+
+                        if ($object->actiontypecode == 'AC_AGF_ATTEP') {
+
+                                dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
+                                $langs->load("agefodd@agefodd");
+                                $langs->load("agenda");
+
+                                if (empty($object->actionmsg2))
+                                        $object->actionmsg2 = $langs->transnoentities("AgfConventionSentByEMail", $object->ref);
+                                if (empty($object->actionmsg)) {
+                                        $object->actionmsg = $langs->transnoentities("AgfConventionSentByEMail", $object->ref);
+                                        $object->actionmsg .= "\n" . $langs->transnoentities("Author") . ': ' . $user->login;
+                                }
+
+                                $ok = 1;
+                        }
 		} elseif ($action == 'CONVOCATION_SENTBYMAIL') {
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
 
@@ -391,7 +451,7 @@ class InterfaceAgefodd {
 		            $object->actionmsg2 = $langs->trans('ActionATTESTATION_SENTBYMAIL');
 		        }
 		        if (empty($object->actionmsg)) {
-		            $object->actionmsg = $langs->trans('MailSentBy') . ' ' . $from . ' ' . $langs->trans('To') . ' ' . $send_email . ".\n";
+		            $object->actionmsg = $langs->trans('MailSentBy') . ' ' . $object->from . ' ' . $langs->trans('To') . ' ' . $object->send_email . ".\n";
 
 		        }
 
@@ -426,7 +486,8 @@ class InterfaceAgefodd {
 			$actioncomm->fk_element = $object->id;
 			$actioncomm->elementtype = $object->element;
 			$actioncomm->userownerid=$user->id;
-			$ret = $actioncomm->add($user); // User qui saisit l'action
+
+			$ret = method_exists($actioncomm, 'create') ? $actioncomm->create($user) : $actioncomm->add($user); // User qui saisit l'action
 			if ($ret > 0) {
 				return 1;
 			} else {
@@ -444,7 +505,7 @@ class InterfaceAgefodd {
 			require_once DOL_DOCUMENT_ROOT . '/comm/action/class/actioncomm.class.php';
 
 			$actioncomm = new ActionComm($this->db);
-			$actioncomm->getActions(0, $object->id, 'agefodd_agsession');
+			$actioncomm->getActions($this->db, $object->id, 'agefodd_agsession');
 
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
@@ -492,7 +553,7 @@ class InterfaceAgefodd {
 
 					$sta->nom = $object->lastname;
 					$sta->prenom = $object->firstname;
-					$sta->civilite = $object->civility_id;
+					$sta->civilite = (empty($object->civility_id)?$object->civility_code:$object->civility_id);
 					$sta->socid = $object->socid;
 					$sta->fonction = $object->poste;
 					$sta->tel1 = $object->phone_pro;
@@ -528,9 +589,9 @@ class InterfaceAgefodd {
 
 				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 				$object->fetchObjectLinked();
-
 				foreach ( $object->linkedObjects as $objecttype => $objectslinked ) {
 					$objectlinked=reset($objectslinked);
+
 					if (($objectlinked->element == 'propal' || $objectlinked->element == 'commande') && ($objectlinked->socid==$object->socid)) {
 
 						$agf_fin = new Agefodd_session_element($this->db);
@@ -543,7 +604,7 @@ class InterfaceAgefodd {
 
 							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
 							return - 1;
-						} else  {
+						} elseif($result > 0) {
 							dol_include_once('/agefodd/class/agefodd_sessadm.class.php');
 							$admintask = new Agefodd_sessadm($this->db);
 
@@ -551,10 +612,34 @@ class InterfaceAgefodd {
 						}
 					}
 				}
+
+				//If credit note is created from invoice link to the session, link de credit note to the session also
+				if($object->element == 'facture' && $object->type==$object::TYPE_CREDIT_NOTE && !empty($object->fk_facture_source)) {
+
+					$origin_invoice=new Facture($this->db);
+					$result=$origin_invoice->fetch($object->fk_facture_source);
+					if ($result<0) {
+						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $origin_invoice->error, LOG_ERR);
+						return - 1;
+					}
+					// if ($origin_invoice->fk_soc==$object->fk_soc) {
+					if ($origin_invoice->socid == $object->socid) { // C'était déjà socid et pas fk_soc en 2.8...
+						$agf_fin = new Agefodd_session_element($this->db);
+						$result = $agf_fin->add_invoice($user, $object->fk_facture_source, $object->element, $object->id);
+
+						if ($result < 0) {
+							$error = "Failed to add agefodd invoice link : " . $agf_fin->error . " ";
+							$this->error = $error;
+
+							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
+							return -1;
+						}
+					}
+				}
 			}
 
 			return 1;
-		} elseif ($action == 'ORDER_CREATE') {
+		} elseif ($action == 'BILL_SUPPLIER_CREATE') {
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
 
@@ -564,11 +649,11 @@ class InterfaceAgefodd {
 
 			foreach ( $object->linkedObjects as $objecttype => $objectslinked ) {
 				$objectlinked=reset($objectslinked);
-				if ($objectlinked->element == 'propal') {
+				if ($objectlinked->element == 'order_supplier') {
 
 					$agf_fin = new Agefodd_session_element($this->db);
 					//If propal is link to session
-					$result = $agf_fin->fetch_element_by_id($objectlinked->id, 'propal');
+					$result = $agf_fin->fetch_element_by_id($objectlinked->id, 'order_supplier');
 
 					if ($result < 0) {
 						$this->error = $agf_fin->error;
@@ -579,7 +664,7 @@ class InterfaceAgefodd {
 							$elment = reset($agf_fin->lines);
 							$agf_fin->fk_session_agefodd=$elment->fk_session_agefodd;
 							$agf_fin->fk_soc=$elment->socid;
-							$agf_fin->element_type='order';
+							$agf_fin->element_type=str_replace('order', 'invoice', $elment->element_type);
 							$agf_fin->fk_element=$object->id;
 							$result=$agf_fin->create($user);
 							if ($result < 0) {
@@ -593,62 +678,112 @@ class InterfaceAgefodd {
 			}
 
 			return 1;
+		}elseif ($action == 'ORDER_CREATE') {
+
+			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
+			if (empty($conf->global->AGF_NOT_AUTO_LINK_COMMANDE)) {
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+
+				$object->fetchObjectLinked();
+
+				foreach ( $object->linkedObjects as $objecttype => $objectslinked ) {
+					$objectlinked=reset($objectslinked);
+					if ($objectlinked->element == 'propal') {
+
+						$agf_fin = new Agefodd_session_element($this->db);
+						//If propal is link to session
+						$result = $agf_fin->fetch_element_by_id($objectlinked->id, 'propal');
+
+						if ($result < 0) {
+							$this->error = $agf_fin->error;
+							dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
+							return - 1;
+						} else {
+							if (is_array($agf_fin->lines) && count($agf_fin->lines)>0) {
+								$elment = reset($agf_fin->lines);
+								$agf_fin->fk_session_agefodd=$elment->fk_session_agefodd;
+								$agf_fin->fk_soc=$elment->socid;
+								$agf_fin->element_type='order';
+								$agf_fin->fk_element=$object->id;
+								$result=$agf_fin->create($user);
+								if ($result < 0) {
+									$this->error = $agf_fin->error;
+									dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
+									return - 1;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return 1;
 		} elseif ($action == 'PROPAL_CLOSE_SIGNED') {
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
-			if (!empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
-				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
-				$agf_fin = new Agefodd_session_element($this->db);
-				$agf_fin->fetch_element_by_id($object->id, 'prop');
 
-				if (count($agf_fin->lines) > 0) {
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$agf_fin = new Agefodd_session_element($this->db);
+			$agf_fin->fetch_element_by_id($object->id, 'prop');
+
+			if (count($agf_fin->lines) > 0) {
+
+				if (!empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
 					dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-
 					$session_sta = new Agefodd_session_stagiaire($this->db);
 					$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 					// Set trainee status to confirm
 					$session_sta->update_status_by_soc($user, 0, $object->socid, 2);
-
-					$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
-					// $agf_fin->updateSellingPrice($user,$object->total_ht,'propal');
-					$agf_fin->updateSellingPrice($user);
 				}
+
+				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
+				// $agf_fin->updateSellingPrice($user,$object->total_ht,'propal');
+				$agf_fin->updateSellingPrice($user);
 			}
 
 			return 1;
 		} elseif ($action == 'PROPAL_CLOSE_REFUSED') {
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
-			if (!empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
 				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 				$agf_fin = new Agefodd_session_element($this->db);
 				$agf_fin->fetch_element_by_id($object->id, 'prop');
 
 				if (count($agf_fin->lines) > 0) {
-					dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 
-					$session_sta = new Agefodd_session_stagiaire($this->db);
-					$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
-					$session_sta->update_status_by_soc($user, 0, $object->socid, 6);
+					if (!empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
+						dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+						$session_sta = new Agefodd_session_stagiaire($this->db);
+						$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
+						$session_sta->update_status_by_soc($user, 0, $object->socid, 6);
+					}
+
+					$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
+					// $agf_fin->updateSellingPrice($user,$object->total_ht,'propal');
+					$agf_fin->updateSellingPrice($user);
 				}
-			}
 
 			return 1;
 		} elseif ($action == 'PROPAL_REOPEN') {
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
-			if (!empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
-				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
-				$agf_fin = new Agefodd_session_element($this->db);
-				$agf_fin->fetch_element_by_id($object->id, 'prop');
 
-				if (count($agf_fin->lines) > 0) {
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			$agf_fin = new Agefodd_session_element($this->db);
+			$agf_fin->fetch_element_by_id($object->id, 'prop');
+
+			if (count($agf_fin->lines) > 0) {
+				if (!empty($conf->global->AGF_SESSION_TRAINEE_STATUS_AUTO)) {
 					dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 
 					$session_sta = new Agefodd_session_stagiaire($this->db);
 					$session_sta->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
 					$session_sta->update_status_by_soc($user, 0, $object->socid, 0);
 				}
+
+				$agf_fin->fk_session_agefodd = $agf_fin->lines[0]->fk_session_agefodd;
+				// $agf_fin->updateSellingPrice($user,$object->total_ht,'propal');
+				$agf_fin->updateSellingPrice($user);
 			}
 
 			return 1;
@@ -662,9 +797,9 @@ class InterfaceAgefodd {
 				$agf_fin->fetch_element_by_id($line->id, 'invoice_supplierline');
 
 				if (count($agf_fin->lines) > 0) {
-					foreach($agf_fin->lines as $line){
-						$agf_fin->id = $line->id;
-						$agf_fin->fk_session_agefodd = $line->fk_session_agefodd;
+					foreach($agf_fin->lines as $lineAgf){
+						$agf_fin->id = $lineAgf->id;
+						$agf_fin->fk_session_agefodd = $lineAgf->fk_session_agefodd;
 						$agf_fin->delete($user);
 					}
 				}
@@ -679,7 +814,6 @@ class InterfaceAgefodd {
 					$agf_fin->delete($user);
 				}
 			}
-
 
 			return 1;
 		} elseif ($action == 'PROPAL_DELETE') {
@@ -727,136 +861,143 @@ class InterfaceAgefodd {
 		} elseif ($action == 'LINEBILL_INSERT') {
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . $user->id . ". id=" . $object->id);
+			dol_include_once('/compta/facture/class/facture.class.php');
 
-			// Retrieve all inforamtion form session to update invoice line with current session inforamtion
-			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
-			$agf_fin = new Agefodd_session_element($this->db);
-			$agf_fin->fetch_element_by_id($object->fk_facture, 'fac');
-			if (is_array($agf_fin->lines) && count($agf_fin->lines) > 0) {
-				dol_include_once('/agefodd/class/agsession.class.php');
-				dol_include_once('/agefodd/class/agefodd_opca.class.php');
-				dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
-				$agfsession = new Agsession($this->db);
-				$agfsession->fetch($agf_fin->lines[0]->fk_session_agefodd);
+			if ($object->type!=Facture::TYPE_DEPOSIT && empty($conf->global->AGF_GET_ORIGIN_LINE_INFO)) {
+				// Retrieve all inforamtion form session to update invoice line with current session inforamtion
+				dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+				$agf_fin = new Agefodd_session_element($this->db);
+				$agf_fin->fetch_element_by_id($object->fk_facture, 'fac');
+				if (is_array($agf_fin->lines) && count($agf_fin->lines) > 0) {
+					dol_include_once('/agefodd/class/agsession.class.php');
+					dol_include_once('/agefodd/class/agefodd_opca.class.php');
+					dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+					$agfsession = new Agsession($this->db);
+					$agfsession->fetch($agf_fin->lines[0]->fk_session_agefodd);
 
-				if ($object->fk_product == $agfsession->fk_product && (! empty($agfsession->id)) && !empty($agfsession->fk_product)) {
-					$desc = '';
-					if (! empty($agfsession->intitule_custo)) {
-						$desc = $agfsession->intitule_custo . "\n";
-					} else {
-						$desc = $agfsession->formintitule . "\n";
-					}
-
-					if (empty($conf->global->AGF_HIDE_REF_INVOICE_DT_INFO)) {
-						$desc .= "\n" . dol_print_date($agfsession->dated, 'day');
-						if ($agfsession->datef != $agfsession->dated) {
-							$desc .= '-' . dol_print_date($agfsession->datef, 'day');
-						}
-					}
-					if (! empty($agfsession->duree_session)) {
-						$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $agfsession->duree_session . ' ' . $langs->trans('Hour') . '(s)';
-					}
-					if (! empty($agfsession->placecode)) {
-						$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $agfsession->placecode;
-					}
-					$session_trainee = new Agefodd_session_stagiaire($this->db);
-
-					//Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
-					// For Intra entreprise you take all trainne
-					$sessionOPCA = new Agefodd_opca($this->db);
-					if (empty($conf->global->AGF_MANAGE_OPCA) || $agfsession->type_session == 0) {
-						// For Intra entreprise you take all trainne
-						$find_trainee_by_OPCA=false;
-						$sessionOPCA->num_OPCA_file = $agfsession->num_OPCA_file;
-
-					} elseif ($agfsession->type_session == 1) {
-						// For inter entreprise you tkae only trainee link with this OPCA
-						dol_include_once('/compta/facture/class/facture.class.php');
-						$invoice= new Facture($this->db);
-						$result=$invoice->fetch($object->fk_facture);
-						if ($result<0) {
-							$this->error = $invoice->error;
-							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
-							return - 1;
-						}
-
-						$result = $sessionOPCA->getOpcaSession($agf_fin->lines[0]->fk_session_agefodd);
-						if ($result<0) {
-							$this->error = $sessionOPCA->error;
-							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
-							return - 1;
-						}
-						if (is_array($sessionOPCA->lines) && count($sessionOPCA->lines)>0) {
-							foreach($sessionOPCA->lines as $line) {
-								if ($line->fk_soc_OPCA==$invoice->socid) {
-									$find_trainee_by_OPCA=true;
-									break;
-								}
-							}
-						}
-					}
-
-					if ($find_trainee_by_OPCA) {
-						$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $invoice->socid);
-					} else {
-						$session_trainee->fetch_stagiaire_per_session($agfsession->id, $invoice->socid, 1);
-					}
-
-					if (count($session_trainee->lines) > 0) {
-
-						if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
-							$desc_trainee = "\n";
-							$nbtrainee = 0;
-							$num_OPCA_file_array=array();
-							foreach ( $session_trainee->lines as $line ) {
-
-								// Do not output not present or cancelled trainee
-								if ($line->status_in_session != 5 && $line->status_in_session != 6) {
-									if ($find_trainee_by_OPCA) {
-										$sessionOPCA->getOpcaForTraineeInSession($line->socid, $this->id,$line->stagerowid);
-									}
-									if (! empty($sessionOPCA->num_OPCA_file)) {
-										if (!array_key_exists($sessionOPCA->num_OPCA_file, $num_OPCA_file_array)) {
-											$desc_OPCA .= "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $line->socname;
-											$num_OPCA_file_array[$sessionOPCA->num_OPCA_file]=$line->socname;
-										}
-									}
-									$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
-									$nbtrainee ++;
-								}
-							}
-						}
-
-						$desc_trainee_head = "\n" . $nbtrainee . ' ';
-						if ($nbtrainee > 1) {
-							$desc_trainee_head .= $langs->trans('AgfParticipants');
+					if ($object->fk_product == $agfsession->fk_product && (!empty($agfsession->id)) && !empty($agfsession->fk_product)) {
+						if (!empty($agfsession->intitule_custo)) {
+							$desc = $agfsession->intitule_custo . "\n";
 						} else {
-							$desc_trainee_head .= $langs->trans('AgfParticipant');
+							$desc = $agfsession->formintitule . "\n";
 						}
 
-						$desc .= ' ' . $desc_OPCA . $desc_trainee_head . $desc_trainee;
-					}
+						if (empty($conf->global->AGF_HIDE_REF_INVOICE_DT_INFO)) {
+							$desc .= "\n" . dol_print_date($agfsession->dated, 'day');
+							if ($agfsession->datef != $agfsession->dated) {
+								$desc .= '-' . dol_print_date($agfsession->datef, 'day');
+							}
+						}
+						if (!empty($agfsession->duree_session)) {
+							$desc .= "\n" . $langs->transnoentities('AgfPDFFichePeda1') . ': ' . $agfsession->duree_session . ' ' . $langs->trans('Hour') . '(s)';
+						}
+						if (!empty($agfsession->placecode)) {
+							$desc .= "\n" . $langs->trans('AgfLieu') . ': ' . $agfsession->placecode;
+						}
+						$session_trainee = new Agefodd_session_stagiaire($this->db);
+
+						//Determine if we are doing update invoice line for thridparty as OPCA in session or just customer
+						// For Intra entreprise you take all trainne
+						$sessionOPCA = new Agefodd_opca($this->db);
+						$find_trainee_by_OPCA = false;
+						if (empty($conf->global->AGF_MANAGE_OPCA) || $agfsession->type_session == 0) {
+							// For Intra entreprise you take all trainne
+							$sessionOPCA->num_OPCA_file = $agfsession->num_OPCA_file;
+
+						} elseif ($agfsession->type_session == 1) {
+							// For inter entreprise you tkae only trainee link with this OPCA
+
+							$invoice = new Facture($this->db);
+							$result = $invoice->fetch($object->fk_facture);
+							if ($result < 0) {
+								$this->error = $invoice->error;
+								dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
+								return -1;
+							}
+
+							$result = $sessionOPCA->getOpcaSession($agf_fin->lines[0]->fk_session_agefodd);
+							if ($result < 0) {
+								$this->error = $sessionOPCA->error;
+								dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $this->error, LOG_ERR);
+								return -1;
+							}
+							if (is_array($sessionOPCA->lines) && count($sessionOPCA->lines) > 0) {
+								foreach ($sessionOPCA->lines as $line) {
+									if ($line->fk_soc_OPCA == $invoice->socid) {
+										$find_trainee_by_OPCA = true;
+										break;
+									}
+								}
+							}
+						}
+
+						if ($find_trainee_by_OPCA) {
+							$session_trainee->fetch_stagiaire_per_session_per_OPCA($agfsession->id, $invoice->socid);
+						} else {
+							$session_trainee->fetch_stagiaire_per_session($agfsession->id, 0, 1);
+						}
+
+						$nbtrainee = count($session_trainee->lines);
+
+						if ($nbtrainee > 0) {
+							$desc_OPCA = '';
+							$desc_trainee = '';
+
+							if ($conf->global->AGF_ADD_TRAINEE_NAME_INTO_DOCPROPODR) {
+								$desc_trainee .= "\n";
+								$num_OPCA_file_array = array();
+								//$nbtrainee=0;
+								foreach ($session_trainee->lines as $line) {
+
+									// Do not output not present or cancelled trainee
+									if ($line->status_in_session != 5 && $line->status_in_session != 6) {
+										if ($find_trainee_by_OPCA) {
+											$sessionOPCA->getOpcaForTraineeInSession($line->socid, $agfsession->id, $line->stagerowid);
+										}
+										if (!empty($sessionOPCA->num_OPCA_file)) {
+											if (!array_key_exists($sessionOPCA->num_OPCA_file, $num_OPCA_file_array)) {
+												$desc_OPCA .= "\n" . $langs->trans('AgfNumDossier') . ' : ' . $sessionOPCA->num_OPCA_file . ' ' . $langs->trans('AgfInTheNameOf') . ' ' . $line->socname;
+												$num_OPCA_file_array[$sessionOPCA->num_OPCA_file] = $line->socname;
+											}
+										}
+										//if ($line->socid==$invoice->socid) {
+											//$nbtrainee++;
+											$desc_trainee .= dol_strtoupper($line->nom) . ' ' . $line->prenom . "\n";
+										//}
+									}
+								}
+							}
+
+							$desc_trainee_head = "\n" . $nbtrainee . ' ';
+							if ($nbtrainee > 1) {
+								$desc_trainee_head .= $langs->trans('AgfParticipants');
+							} else {
+								$desc_trainee_head .= $langs->trans('AgfParticipant');
+							}
+
+							$desc .= ' ' . $desc_OPCA . $desc_trainee_head . $desc_trainee;
+						}
 
 
-					// Add average price on all line concern by session training product
-					if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
-						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
+						// Add average price on all line concern by session training product
+						if ($conf->global->AGF_ADD_AVGPRICE_DOCPROPODR) {
+							$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
+							if ($result > 0) {
+								$desc .= $agfsession->avgpricedesc;
+							}
+						}
+
+
+						$object->desc = $desc;
+
+						$result = $object->update($user, 1);
 						if ($result < 0) {
-							$error ++;
+							$error = "Failed to update invoice line : " . $object->error . " ";
+							$this->error = $error;
+
+							dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $object->error, LOG_ERR);
+							return -1;
 						}
-						$desc .= $agfsession->avgpricedesc;
-					}
-
-
-					$object->desc = $desc;
-
-					$result = $object->update($user, 1);
-					if ($result < 0) {
-						$error = "Failed to update invoice line : " . $object->error . " ";
-						$this->error = $error;
-
-						dol_syslog("interface_modAgefodd_Agefodd.class.php: " . $object->error, LOG_ERR);
-						return - 1;
 					}
 				}
 			}
@@ -1007,11 +1148,10 @@ class InterfaceAgefodd {
 
 					if ($object->oldline->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
 						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
-						if ($result < 0) {
-							$error ++;
+						if ($result > 0) {
+							$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
+							$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 						}
-						$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
-						$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 					}
 
 					$result = $object->update($user, 1);
@@ -1039,11 +1179,10 @@ class InterfaceAgefodd {
 
 					if ($object->oldline->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
 						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
-						if ($result < 0) {
-							$error ++;
+						if ($result > 0) {
+							$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
+							$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 						}
-						$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
-						$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 					}
 
 					$result = $object->update($user, 1);
@@ -1073,11 +1212,10 @@ class InterfaceAgefodd {
 
 					if ($object->oldline->fk_product == $agfsession->fk_product && (! empty($agfsession->id))) {
 						$result = $agfsession->getAvgPrice($object->total_ht, $object->total_ttc);
-						if ($result < 0) {
-							$error ++;
+						if ($result > 0) {
+							$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
+							$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 						}
-						$pattern='/\n'.$langs->trans('AgfTaxHourHT').'.*\n'.$langs->trans('AgfTaxHourTTC').'.*'.$langs->getCurrencySymbol($conf->currency).'/';
-						$object->desc = preg_replace($pattern, $agfsession->avgpricedesc, $object->desc);
 					}
 
 					$result = $object->update($user, 1);
@@ -1090,8 +1228,38 @@ class InterfaceAgefodd {
 					}
 				}
 			}
+		}elseif($action == 'CONTACT_DELETE') {
+			$this->db->query('UPDATE '.MAIN_DB_PREFIX.'agefodd_stagiaire SET fk_socpeople = NULL WHERE fk_socpeople NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'socpeople)');
 		}
+		elseif ($action == 'USER_MODIFY')
+        {
+            if ((empty($object->contactid) && GETPOST('contactid') > 0) || (!empty($object->contactid) && GETPOST('contactid') == 0))
+            {
+                dol_include_once('agefodd/class/agefodd_formateur.class.php');
+                // Nous avons peut être un formateur de déclaré avec cet utilisateur, puis il est changé en tant que contact externe
+                $formateur = new Agefodd_teacher($this->db);
+                $formateur->fetchByUser($object);
+                if (!empty($formateur->id))
+                {
+                    // Cas 1 : utilisateur interne qui passe à externe
+                    if (empty($object->contactid))
+                    {
+                        $formateur->type_trainer = 'socpeople';
+                        $formateur->fk_socpeople = GETPOST('contactid');
+                        $formateur->update($user);
+                    }
+                    // Cas 2 : utilisateur externe qui passe à interne
+                    elseif (empty($object->socid))
+                    {
+                        $formateur->type_trainer = 'user';
+                        $formateur->fk_socpeople = null;
+                        $formateur->fk_user = $object->id;
+                        $formateur->update($user);
+                    }
+                }
+            }
+        }
 
 		return 0;
-	}
+    }
 }

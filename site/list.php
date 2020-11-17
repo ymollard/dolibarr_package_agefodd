@@ -150,7 +150,7 @@ print '</td>';
 print '<td class="liste_titre">';
 print '<input type="text" class="flat" name="search_soc" value="' . $search_soc . '" size="20">';
 print '</td>';
-
+print '<td></td>';
 // Search lens
 print '<td class="liste_titre" align="right">';
 if(method_exists($form, 'showFilterButtons')) {
@@ -172,6 +172,7 @@ print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "p.rowid", '
 print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "p.ref_interne", '',  $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "s.nom", '',  $option, '', $sortfield, $sortorder);
 print_liste_field_titre($langs->trans("Phone"), $_SERVER ['PHP_SELF'], "p.tel", "",  $option, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("AgfNbPlace"), $_SERVER ['PHP_SELF'], "p.nb_place", "",  $option, '', $sortfield, $sortorder);
 print "</tr>\n";
 
 
@@ -194,6 +195,7 @@ if ($result > 0) {
 		if (!empty($agf->lines [$i]->socid)) print $soc->getNomUrl(1);
 		print '</td>' . "\n";
 		print '<td' . $style . '>' . dol_print_phone($agf->lines [$i]->tel) . '</td>' . "\n";
+		print '<td' . $style . '>' . ($agf->lines[$i]->nb_place) . '</td>' . "\n";
 		print '</tr>' . "\n";
 
 		$i ++;

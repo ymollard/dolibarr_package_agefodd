@@ -173,7 +173,6 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id = 0, $id_trainee = 0, $id_session = 0, $id_sess_trainee = 0) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 
@@ -209,7 +208,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$sqlwhere[] = " t.fk_session_stagiaire = " . $id_sess_trainee;
 			}
 
-			if (count($sqlwhere > 0)) {
+			if (count($sqlwhere) > 0) {
 				$sql .= " WHERE " . implode(' AND ', $sqlwhere);
 			}
 		}
@@ -262,8 +261,6 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_certif_customer($socid, $sortorder, $sortfield, $limit, $offset, $filter = array()) {
-		global $langs;
-
 		$sql = "SELECT ";
 		$sql .= " DISTINCT ";
 		$sql .= "certif.fk_stagiaire,";
@@ -280,6 +277,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= "sta.nom as trainee_name,";
 		$sql .= "sta.prenom as trainee_firstname,";
 		$sql .= "sta.civilite,";
+		$sql .= "sta.mail as trainee_mail,";
 		$sql .= "soc.nom as customer_name,";
 		$sql .= "soc.rowid as customer_id,";
 		$sql .= "s.dated,";
@@ -315,8 +313,8 @@ class Agefodd_stagiaire_certif extends CommonObject {
                         if(!empty($filter['certif.certif_dt_end2'])) $sql .= ' AND ' . $key .' BETWEEN \'' . $value . '\' AND \'' . $filter['certif.certif_dt_end2'] . '\'';
                         else $sql .= ' AND ' . $key . ' = \'' . $value . '\'';
                     }
-                    
-					
+
+
 				} elseif (($key == 's.fk_session_place') || ($key == 'f.rowid') || ($key == 's.type_session') || ($key == 's.status')) {
 					$sql .= ' AND ' . $key . ' = ' . $value;
 				} else {
@@ -351,6 +349,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$line->trainee_id = $obj->fk_stagiaire;
 				$line->trainee_name = $obj->trainee_name;
 				$line->trainee_firstname = $obj->trainee_firstname;
+				$line->trainee_mail = $obj->trainee_mail;
 				$line->certif_code = $obj->certif_code;
 				$line->certif_label = $obj->certif_label;
 				$line->certif_dt_end = $this->db->jdate($obj->certif_dt_end);
@@ -379,11 +378,9 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * Load Certificateion state
 	 *
 	 * @param int $id object
-	 * @return array State Array
+	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_certif_state($id) {
-		global $langs;
-
 		$certif_type_array = $this->get_certif_type();
 
 		if (is_array($certif_type_array) && count($certif_type_array) > 0) {
@@ -415,6 +412,8 @@ class Agefodd_stagiaire_certif extends CommonObject {
 
 						$line->id = $objinner->rowid;
 					}
+
+					$this->db->free($resqlinner);
 				} else {
 					$this->error = "Error " . $this->db->lasterror();
 					dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
@@ -426,24 +425,22 @@ class Agefodd_stagiaire_certif extends CommonObject {
 				$i ++;
 			}
 
-			$this->db->free($resql);
-
 			return 1;
 		} elseif ($certif_type_array == - 1) {
 			dol_syslog(get_class($this) . "::fetch_certif_state " . $this->error, LOG_ERR);
 			return - 1;
 		}
+
+		return 0;
 	}
 
 	/**
 	 * Load object Certificate type
 	 *
-	 * @return array Array of certificate type
+	 * @return array|int Array of certificate type, or <0 if KO
 	 *
 	 */
 	public function get_certif_type() {
-		global $langs;
-
 		$return_array = array ();
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -473,11 +470,12 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	/**
 	 * Set Certificate State
 	 *
+	 * @param User $user User making the call
 	 * @param int $certif_id Id object
 	 * @param int $certif_type_id type Id object
 	 * @param int $certif_state to set
 	 *
-	 * @return array Array of certificate type
+	 * @return int <0 if KO, >0 if OK
 	 *
 	 */
 	public function set_certif_state($user, $certif_id, $certif_type_id, $certif_state) {
@@ -513,6 +511,8 @@ class Agefodd_stagiaire_certif extends CommonObject {
 					dol_syslog(get_class($this) . "::set_certif_state " . $this->error, LOG_ERR);
 					return - 1;
 				}
+				
+				return 1;
 			} else {
 				// Certificate state do not exist yet => we create it
 				$sqlop = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_certif_state (fk_user_author,fk_user_mod,datec,fk_certif,fk_certif_type,certif_state) ";
@@ -531,6 +531,8 @@ class Agefodd_stagiaire_certif extends CommonObject {
 					dol_syslog(get_class($this) . "::set_certif_state " . $this->error, LOG_ERR);
 					return - 1;
 				}
+				
+				return 1;
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -542,15 +544,10 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param string $sortorder Sort Order
-	 * @param string $sortfield Sort field
-	 * @param int $limit offset limit
-	 * @param int $offset offset limit
+	 * @param int $idtrainee Id of trainee
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all_by_trainee($idtrainee) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 
@@ -627,11 +624,10 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param string $sortfield Sort field
 	 * @param int $limit offset limit
 	 * @param int $offset offset limit
+	 * @param array $filter array of filters
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, array $filter = array()) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 
@@ -652,25 +648,25 @@ class Agefodd_stagiaire_certif extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as t";
 
 		$sql .= " WHERE t.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
-		
+
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
 		    foreach ($filter as $key => $value) {
-		        if (strpos('t.fk', $key) == 0) { 
+		        if (strpos('t.fk', $key) == 0) {
 		            $sqlwhere [] = $key . ' =' . $this->db->escape($value);
 		        } else {
 		            $sqlwhere [] = $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 		        }
-		        
+
 		    }
 		}
 		if (count($sqlwhere) > 0) {
 		    $sql .= ' AND ' . implode(' AND ', $sqlwhere);
 		}
-		
+
         if (!empty($sortfield)) $sql .= ' ORDER BY ' . $sortfield . ' ' . $sortorder . ' ';
-        
+
 		if (!empty($limit)) {
 		    $sql .= $this->db->plimit($limit + 1, $offset);
 		}
@@ -724,7 +720,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function update($user = 0, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -869,10 +865,8 @@ class Agefodd_stagiaire_certif extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function info($id) {
-		global $langs;
-
 		$sql = "SELECT";
-		$sql .= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
+		$sql .= " p.rowid, p.entity, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire_certif as p";
 		$sql .= " WHERE p.rowid = " . $id;
 
@@ -882,6 +876,7 @@ class Agefodd_stagiaire_certif extends CommonObject {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->entity = $obj->entity;
 				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->user_modification = $obj->fk_user_mod;
@@ -938,6 +933,10 @@ class AgfStagiaireCertifLine {
 	public $certif_dt_end = '';
 	public $certif_dt_warning = '';
 	public $lines_state = array ();
+	public $fk_user_author;
+	public $fk_user_mod;
+	public $datec;
+	public $tms;
 	public function __construct() {
 		return 1;
 	}
@@ -964,9 +963,11 @@ class Agefodd_CertifExpire_line {
 	public $id_session;
 	public $fromintitule;
 	public $fromref;
+	public $fromrefinterne;
 	public $trainee_id;
 	public $trainee_name;
 	public $trainee_firstname;
+	public $trainee_mail;
 	public $certif_dt_end;
 	public $certif_dt_start;
 	public $certif_dt_warning;

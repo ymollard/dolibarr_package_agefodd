@@ -36,6 +36,8 @@ require_once ('../lib/agefodd.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php');
 require_once (DOL_DOCUMENT_ROOT . "/core/class/html.formother.class.php");
 
+$hookmanager->initHooks(array('agfarchiveyear'));
+
 // Security check
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
@@ -45,34 +47,40 @@ if ($user->societe_id)
 $action = GETPOST("action", "alpha");
 $year = GETPOST("year", "int");
 
+$parameters=array('year'=>$year);
+$reshook=$hookmanager->executeHooks('doActions',$parameters,$agf,$action);     // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
 /*
  * Actions archive
 */
+if (empty($reshook)){
 
-if ($action == 'confirm_archive' && $user->rights->agefodd->creer) {
-	
-	$agf = new Agsession($db);
-	
-	$result = $agf->updateArchiveByYear($year, $user);
-	
-	if ($result > 0) {
-		
-		/* Si la mise a jour s'est bien passée, on effectue le nettoyage des templates pdf
-		 foreach (glob($conf->agefodd->dir_output."/*_".$id."_*.pdf") as $filename) {
-		//echo "$filename effacé <br>";
-		if(is_file($filename)) unlink("$filename");
+	if ($action == 'confirm_archive' && $user->rights->agefodd->creer) {
+
+		$agf = new Agsession($db);
+
+		$result = $agf->updateArchiveByYear($year, $user);
+
+		if ($result > 0) {
+
+			/* Si la mise a jour s'est bien passée, on effectue le nettoyage des templates pdf
+			 foreach (glob($conf->agefodd->dir_output."/*_".$id."_*.pdf") as $filename) {
+			//echo "$filename effacé <br>";
+			if(is_file($filename)) unlink("$filename");
+			}
+			*/
+			setEventMessage($langs->trans('AgfArchiveByYearComplete'), 'mesgs');
+
+			Header("Location: " . $_SERVER ['PHP_SELF']);
+			exit();
+		} else {
+			dol_syslog("agefodd:session:archive_year error=" . $agf->error, LOG_ERR);
+			setEventMessage($agf->error);
 		}
-		*/
-		setEventMessage($langs->trans('AgfArchiveByYearComplete'), 'mesgs');
-		
-		Header("Location: " . $_SERVER ['PHP_SELF']);
-		exit();
-	} else {
-		dol_syslog("agefodd:session:archive_year error=" . $agf->error, LOG_ERR);
-		setEventMessage($agf->error);
 	}
-}
 
+}
 /*
  * View
 */
@@ -92,7 +100,7 @@ print '<input type="hidden" name="id" value="' . $object->id . '" />';
 print '<input type="hidden" name="action" value="search_year" />';
 // Year
 print '<tr><td align="left" width="30%">' . $langs->trans("AgfSelectYearForArchive") . '</td><td align="left">';
-print $formother->select_year($year, 'year', 1, 3, - 1);
+print $formother->select_year($year, 'year', 1, 4, - 2);
 print '</td>';
 
 print '<td colspan="6">';
@@ -111,31 +119,31 @@ if ($action == 'search_year') {
 		$sortfield = "s.dated";
 	if (empty($arch))
 		$arch = 0;
-	
+
 	if ($page == - 1) {
 		$page = 0;
 	}
-	
+
 	$filter ['YEAR(s.dated)'] = $year;
 	$filter ['!s.status'] = 4;
-	
+
 	$agf = new Agsession($db);
 	$resql = $agf->fetch_all($sortorder, $sortfield, 0, 0, $filter);
-	
+
 	print_fiche_titre($langs->trans('AgfSearchResults'));
-	
+
 	if ($resql != - 1) {
 		$num = $resql;
 		if ($num > 0) {
-			
+
 			print $langs->trans('AgfNumSessionToArchiveForSelectedYear', $num);
-			
+
 			print '<ul>';
 			foreach ( $agf->lines as $session ) {
 				print '<li>' . $session->ref . ' ' . $session->intitule . ' ' . dol_print_date($session->dated, 'day') . '</li>';
 			}
 			print '</ul>';
-			
+
 			print '<div class="tabsAction">';
 			print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=confirm_archive&year=' . $year . '">' . $langs->trans('AgfArchiveConfirm') . '</a>';
 			print '</div>';

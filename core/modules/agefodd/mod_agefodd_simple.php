@@ -141,4 +141,3 @@ class mod_agefodd_simple extends ModeleNumRefAgefodd {
 	}
 }
 
-?>

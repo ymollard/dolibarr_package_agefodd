@@ -46,6 +46,12 @@ require_once ('../class/agefodd_session_element.class.php');
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
+$hookmanager->initHooks(array('agefoddsessionlistopeinter'));
+
+$parameters=array('from'=>'original');
+$reshook=$hookmanager->executeHooks('doActions',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
@@ -111,11 +117,11 @@ if (! empty($search_site) && $search_site != - 1) {
 if (! empty($search_room_status) && $search_room_status != - 1) {
 	$option .= '&search_room_status=' . $search_room_status;
 	if ($search_room_status == 'option') {
-		$filter ['s.is_date_res_site'] = 1;
-		$filter ['s.is_date_res_confirm_site'] = 0;
+		$filter ['s.date_res_site'] = 'IS NOT NULL';
+		$filter ['s.date_res_confirm_site'] = 'IS NULL';
 	}
 	if ($search_room_status == 'confirm') {
-		$filter ['s.is_date_res_confirm_site'] = 1;
+		$filter ['s.date_res_confirm_site'] = 'IS NOT NULL';
 	}
 }
 if (! empty($search_trainning_name)) {
@@ -132,6 +138,10 @@ if (empty($sortorder)) {
 if (empty($sortfield)) {
 	$sortfield = "s.dated";
 }
+
+$parameters=array('from'=>'original', 'filter' => &$filter, 'option' => &$option, 'sortorder' => &$sortorder, 'sortfield' => &$sortfield);
+$reshook=$hookmanager->executeHooks('overrideFilter',$parameters,$object,$action);    // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if (empty($page) || $page == -1) { $page = 0; }
 
@@ -174,7 +184,7 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 
 	$moreforfilter = '<div class="divsearchfield">';
 	$moreforfilter .= $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
@@ -319,27 +329,27 @@ if ($resql != - 1) {
 	print '</tr>';
 	
 	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], "s.status", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Date Début"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "s.status", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Date Début"), $_SERVER ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Montant HT"), $_SERVER ['PHP_SELF'], "s.sell_price", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Formateur RN"), $_SERVER ['PHP_SELF'], "trainerrn", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Status"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Part /Soc /Sub"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Prosp./ Ann."), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Convoc"), $_SERVEUR ['PHP_SELF'], 'convoc', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Support"), $_SERVEUR ['PHP_SELF'], 'support', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("FEE Edit"), $_SERVEUR ['PHP_SELF'], 'ffeedit', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Fact/C"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Att RN"), $_SERVEUR ['PHP_SELF'], "attrn", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("FEE Env."), $_SERVEUR ['PHP_SELF'], "ffeenv", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Fact/F"), $_SERVEUR ['PHP_SELF'], "invtrainer", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Fact/L"), $_SERVEUR ['PHP_SELF'], "invroom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Comment."), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVER ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Part /Soc /Sub"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Prosp./ Ann."), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Convoc"), $_SERVER ['PHP_SELF'], 'convoc', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Support"), $_SERVER ['PHP_SELF'], 'support', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("FEE Edit"), $_SERVER ['PHP_SELF'], 'ffeedit', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Fact/C"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Att RN"), $_SERVER ['PHP_SELF'], "attrn", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("FEE Env."), $_SERVER ['PHP_SELF'], "ffeenv", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Fact/F"), $_SERVER ['PHP_SELF'], "invtrainer", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Fact/L"), $_SERVER ['PHP_SELF'], "invroom", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Comment."), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
 	print_liste_field_titre(''); // Action
 	
 	print "</tr>\n";
@@ -362,7 +372,7 @@ if ($resql != - 1) {
 
 			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="card.php?id=' . $line->id . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->id . '</a></td>';
 
-			print '<td>' . $line->status_lib . '</td>';
+			print '<td>' . $line->statuslib . '</td>';
 			print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
 			print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
 
@@ -398,16 +408,16 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->trainerrn.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// Lieu
 			print '<td>' . stripslashes($line->ref_interne) . '</td>';
 
 			// Lieu status
 			print '<td>';
-			if ($line->is_date_res_confirm_site) {
+			if (!empty($line->date_res_confirm_site)) {
 				print 'Confirmé';
-			} elseif ($line->is_date_res_site) {
+			} elseif (!empty($line->date_res_site)) {
 				print 'Option';
 			}
 			print '</td>';
@@ -452,7 +462,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->convoc.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// Support
 			if ($line->support) {
@@ -462,7 +472,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->support.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// FEE Edit
 			if ($line->support) {
@@ -472,7 +482,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->support.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// Fact Clients
 			print '<td nowrap="nowrap"	>';
@@ -490,7 +500,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->attrn.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// FEE Env.
 			if ($line->ffeenv) {
@@ -500,7 +510,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->ffeenv.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// Fact Formateur
 			if ($line->invtrainer) {
@@ -510,7 +520,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->invtrainer.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			// Fact lieu
 			if ($line->invroom) {
@@ -520,7 +530,7 @@ if ($resql != - 1) {
 				$src_state = dol_buildpath('/agefodd/img/no.png', 1);
 				$txtalt = $langs->trans("AgfTerminatedPoint");
 			}
-			print '<td align="center"><img alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
+			print '<td align="center"><img title="'.$line->invroom.'" alt="' . $txtalt . '" src="' . $src_state . '"/></td>';
 
 			print '<td title="' . stripslashes($line->notes) . '">' . stripslashes(dol_trunc($line->notes, 30)) . '</td>';
 

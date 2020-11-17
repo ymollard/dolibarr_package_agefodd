@@ -259,7 +259,7 @@ class pdf_attestation_trainee extends ModelePDFAgefodd {
 			if (! empty($conf->global->AGF_USE_REAL_HOURS)) {
 				dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
 				$agfssh = new Agefoddsessionstagiaireheures($this->db);
-				$duree_session=$agfssh->heures_stagiaire($agf->id, $agf_session_trainee->id);
+				$duree_session=$agfssh->heures_stagiaire($agf->id, $agf_session_trainee->fk_stagiaire);
 			} else {
 				$duree_session=$agf->duree_session;
 			}
@@ -335,7 +335,7 @@ class pdf_attestation_trainee extends ModelePDFAgefodd {
 			// alignement du bord droit du container avec le haut de la page
 			$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
 			$baseline_angle = (M_PI / 2); // angle droit
-			$baseline_x = $this->page_largeur - $this->marge - gauche - 12;
+			$baseline_x = $this->page_largeur - $this->marge_gauche - 12;
 			$baseline_y = $baseline_ecart + 30;
 			$baseline_width = $this->width;
 

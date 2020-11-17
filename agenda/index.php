@@ -98,13 +98,23 @@ if ($user->rights->agefodd->agendatrainer && ! $user->rights->agefodd->agenda) {
 	exit;
 }
 
-if ($type == 'trainer' || $type == 'trainerext') {
+if ($user->rights->agefodd->session->trainer) {
+	$type = 'trainer';
+}
+if ($type == 'trainer') {
 	$canedit = 0;
 
-	$filter_trainer = $user->id;
-
-	if (! $user->rights->agefodd->agendatrainer)
-		accessforbidden();
+	$agf_trainer = new Agefodd_teacher($db);
+	$result=$agf_trainer->fetch_all('', '', '', '', 0, array('f.fk_user'=>$user->id));
+	if ($result<0) {
+		setEventMessages(null,$agf_trainer->errors,'errors');
+	} else {
+		if (is_array($agf_trainer->lines)&& count($agf_trainer->lines)>0) {
+			$filter_trainer=$agf_trainer->lines[0]->id;
+		} else {
+			accessforbidden();
+		}
+	}
 } else {
 	if (! $user->rights->agefodd->agenda)
 		accessforbidden();
@@ -495,12 +505,7 @@ if (! empty($filter_contact)) {
 	}
 }
 if (! empty($filter_trainer)) {
-
-	if ($type == 'trainer') {
-		$sql .= " AND trainer.fk_user=" . $filter_trainer;
-	} else {
-		$sql .= " AND trainer_session.fk_agefodd_formateur=" . $filter_trainer;
-	}
+	$sql .= " AND trainer_session.fk_agefodd_formateur=" . $filter_trainer;
 } else {
 	$sql .= " AND ca.code<>'AC_AGF_SESST'";
 }
@@ -870,7 +875,7 @@ function show_day_events($db, $day, $month, $year, $monthshown, $style, &$eventa
     global $cachethirdparties, $cachecontacts, $cacheusers, $colorindexused;
 
 	if (is_null($colorindexused)) $colorindexused = array();
-	
+
     if (DOL_VERSION < 6.0) {
     	print "\n".'<div id="dayevent_'.sprintf("%04d",$year).sprintf("%02d",$month).sprintf("%02d",$day).'" class="dayevent">';
     } else {

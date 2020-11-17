@@ -58,7 +58,42 @@ class FormAgefodd extends Form
 	 */
 	public function select_formation($selectid, $htmlname = 'formation', $sort = 'intitule', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array()) {
 		global $conf, $user, $langs;
+		if (! empty($conf->use_javascript_ajax) && ! empty($conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT)) {
+			$placeholder = '';
 
+			if ($selectid) {
+
+				$formationtmpselect = new Formation($this->db);
+				$formationtmpselect->fetch($selectid);
+				$selected_input_value = $formationtmpselect->intitule;
+
+				unset($formationtmpselect);
+			}
+			// mode=1 means customers products
+			$filter=json_encode($filters);
+			$urloption = 'htmlname=' . $htmlname . '&outjson=1&filter=' . $filter;
+			print ajax_autocompleter($selectid, $htmlname, dol_buildpath('/agefodd/ajax/formation.php', 1), $urloption, $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT, 0, '');
+
+			return img_picto($langs->trans("Search"), 'search', 'style="vertical-align: middle;"').' <input type="text" class="minwidth100" name="search_' . $htmlname . '" id="search_' . $htmlname . '" value="' . $selected_input_value . '" placeholder="'.$langs->trans("Label").'" />';
+		} else {
+			return $this->select_formation_liste($selectid, $htmlname, $sort, $showempty, $forcecombo, $event, $filters);
+		}
+	}
+
+	/**
+	 * Affiche un champs select contenant la liste des formations disponibles.
+	 *
+	 * @param int $selectid à preselectionner
+	 * @param string $htmlname select field
+	 * @param string $sort Value to show/edit (not used in this function )
+	 * @param int $showempty empty field
+	 * @param int $forcecombo use combo box
+	 * @param array $event
+	 * @return string select field
+	 */
+	public function select_formation_liste($selectid, $htmlname = 'formation', $sort = 'intitule', $showempty = 0, $forcecombo = 0, $event = array(), $filters = array(), $mode = 0) {
+		global $conf, $user, $langs;
+		$arrayout = array();
 		$out = '';
 
 		if ($sort == 'code')
@@ -69,7 +104,7 @@ class FormAgefodd extends Form
 		$sql = "SELECT c.rowid, c.intitule, c.ref, c.ref_interne";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " WHERE archive = 0";
-		$sql .= " AND entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+		$sql .= " AND entity IN (" . getEntity('agefodd') . ")";
 		if (count($filters) > 0) {
 			foreach ( $filters as $filter )
 				$sql .= $filter;
@@ -79,7 +114,8 @@ class FormAgefodd extends Form
 		dol_syslog(get_class($this) . "::select_formation", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINING_USE_SEARCH_TO_SELECT && ! $forcecombo) {
+			if ($conf->use_javascript_ajax && ! $forcecombo) {
+				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
 				$out .= ajax_combobox($htmlname, $event);
 			}
 
@@ -92,10 +128,14 @@ class FormAgefodd extends Form
 			if ($num) {
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
-					$label = $obj->intitule;
+					$label = dol_html_entity_decode(stripslashes($obj->intitule), ENT_QUOTES);
 					if (! empty($obj->ref_interne)) {
 						$label .= ' (' . $obj->ref_interne . ')';
 					}
+					$arrayout[] = array(
+							'key' => $obj->rowid,
+							'label' => $label
+					);
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 					} else {
@@ -109,7 +149,10 @@ class FormAgefodd extends Form
 			dol_print_error($this->db);
 		}
 		$this->db->free($resql);
-		return $out;
+		if (empty($mode))
+			return $out;
+		else
+			return $arrayout;
 	}
 
 	/**
@@ -131,7 +174,7 @@ class FormAgefodd extends Form
 		$sql = "SELECT c.rowid, c.intitule, c.ref_interne";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as c";
 		$sql .= " WHERE archive = 0";
-		$sql .= " AND entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+		$sql .= " AND entity IN (" . getEntity('agefodd') . ")";
 		if (count($filters) > 0) {
 			foreach ( $filters as $filter )
 				$sql .= $filter;
@@ -180,7 +223,8 @@ class FormAgefodd extends Form
 	 * @param string $excludeid est necessaire d'exclure une valeur de sortie
 	 * @return string select field
 	 */
-	public function select_action_session_adm($selectid = '', $htmlname = 'action_level', $excludeid = '') {
+	public function select_action_session_adm($selectid = '', $htmlname = 'action_level', $excludeid = '')
+	{
 		global $conf, $langs;
 
 		$sql = "SELECT";
@@ -193,7 +237,7 @@ class FormAgefodd extends Form
 		}
 		$sql .= " ORDER BY t.indice";
 
-		dol_syslog(get_class($this) . "::select_action_session_adm", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
 			$var = True;
@@ -216,7 +260,7 @@ class FormAgefodd extends Form
 			return '<select class="flat" style="width:300px" name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::select_action_session_adm " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__. ' Error' . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -230,7 +274,8 @@ class FormAgefodd extends Form
 	 * @param string $fk_training
 	 * @return string select field
 	 */
-	public function select_action_training_adm($selectid = '', $htmlname = 'action_level', $excludeid = '', $fk_training = 0) {
+	public function select_action_training_adm($selectid = '', $htmlname = 'action_level', $excludeid = '', $fk_training = 0)
+	{
 		global $conf, $langs;
 
 		$sqlwhere = array();
@@ -251,10 +296,10 @@ class FormAgefodd extends Form
 		}
 		$sql .= " ORDER BY t.indice";
 
-		dol_syslog(get_class($this) . "::select_action_training_adm", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
-			$var = True;
+			$var = true;
 			$num = $this->db->num_rows($result);
 			$i = 0;
 			$options = '<option value=""></option>' . "\n";
@@ -274,7 +319,7 @@ class FormAgefodd extends Form
 			return '<select class="flat" style="width:300px" name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::select_action_training_adm " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__. ' ' . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -336,23 +381,61 @@ class FormAgefodd extends Form
 	 * @param array $event
 	 * @return string The HTML control
 	 */
-	public function select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array(), $class='') {
+	public function select_site_forma($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array(), $class = '') {
 		global $conf, $langs;
+		if (! empty($conf->use_javascript_ajax) && ! empty($conf->global->AGF_SITE_USE_SEARCH_TO_SELECT)) {
+			$placeholder = '';
+
+			if ($selectid) {
+				dol_include_once('/agefodd/class/agefodd_place.class.php');
+				$placetmpselect = new Agefodd_place($this->db);
+				$placetmpselect->fetch($selectid);
+				$selected_input_value = $placetmpselect->ref_interne;
+				unset($placetmpselect);
+			}
+			// mode=1 means customers products
+			$urloption = 'htmlname=' . $htmlname . '&outjson=1&filter=';
+
+			print ajax_autocompleter($selectid, $htmlname, '../ajax/lieu.php', $urloption, $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT, 0, '');
+
+			print img_picto($langs->trans("Search"), 'search', 'style="vertical-align: middle;"').' <input type="text" class="minwidth100" name="search_' . $htmlname . '" id="search_' . $htmlname . '" value="' . $selected_input_value . '" placeholder="'.$langs->trans("Label").'" />';
+		} else {
+			return $this->select_site_forma_liste($selectid, $htmlname, $showempty, $forcecombo, $event, $class);
+		}
+	}
+
+	/**
+	 * affiche un champs select contenant la liste des sites de formation déjà référéencés.
+	 *
+	 * @param int $selectid Id de la session selectionner
+	 * @param string $htmlname Name of HTML control
+	 * @param int $showempty empty field
+	 * @param int $forcecombo use combo box
+	 * @param array $event
+	 * @return string The HTML control
+	 */
+	public function select_site_forma_liste($selectid, $htmlname = 'place', $showempty = 0, $forcecombo = 0, $event = array(), $class = '', $mode = 0, $filter = '') {
+		global $conf, $langs;
+		$arrayout = array();
 
 		$sql = "SELECT p.rowid, p.ref_interne";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 		$sql .= " WHERE archive = 0";
-		$sql .= " AND p.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+		if (! empty($filter))
+			$sql .= ' AND ' . $filter;
+
+		$sql .= " AND p.entity IN (" . getEntity('agefodd') . ")";
 		$sql .= " ORDER BY p.ref_interne";
 
 		dol_syslog(get_class($this) . "::select_site_forma", LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
-			if ($conf->use_javascript_ajax && $conf->global->AGF_SITE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
+			if ($conf->use_javascript_ajax && ! $forcecombo) {
+				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
 				$out .= ajax_combobox($htmlname, $event);
 			}
 
-			$out .= '<select id="' . $htmlname . '" class="flat '.$class.'" name="' . $htmlname . '">';
+			$out .= '<select id="' . $htmlname . '" class="flat ' . $class . '" name="' . $htmlname . '">';
 			if ($showempty) {
 				$out .= '<option value="-1"></option>';
 			}
@@ -362,7 +445,10 @@ class FormAgefodd extends Form
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($result);
 					$label = $obj->ref_interne;
-
+					$arrayout[] = array(
+							'key' => $obj->rowid,
+							'label' => $label
+					);
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 					} else {
@@ -373,11 +459,18 @@ class FormAgefodd extends Form
 			}
 			$out .= '</select>';
 			$this->db->free($result);
-			return $out;
+			if (empty($mode))
+				return $out;
+			else
+				return $arrayout;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::select_site_forma " . $this->error, LOG_ERR);
-			return - 1;
+
+			if (empty($mode))
+				return - 1;
+			else
+				return $arrayout;
 		}
 	}
 
@@ -394,7 +487,28 @@ class FormAgefodd extends Form
 	 */
 	public function select_stagiaire($selectid = '', $htmlname = 'stagiaire', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
 		global $conf, $langs;
+		if (! empty($conf->use_javascript_ajax) && ! empty($conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT)) {
+			$placeholder = '';
 
+			if ($selectid) {
+				dol_include_once('/agefodd/class/agefodd_stagiaire.class.php');
+				$traineetmpselect = new Agefodd_stagiaire($this->db);
+				$traineetmpselect->fetch($selectid);
+				$selected_input_value = $traineetmpselect->nom . ' ' . $traineetmpselect->prenom;
+				unset($traineetmpselect);
+			}
+			$filter = str_replace('FROM', 'TOREPLACE', $filter);
+			$urloption = 'htmlname=' . $htmlname . '&outjson=1&filter=' . $filter;
+
+			print ajax_autocompleter($selectid, $htmlname, '../ajax/stagiaire.php', $urloption, $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT, 0, '');
+
+			print '<input type="text" class="minwidth100" name="search_' . $htmlname . '" id="search_' . $htmlname . '" value="' . $selected_input_value . '" />';
+		} else {
+			return $this->select_stagiaire_list($selectid, $htmlname, $filter, $showempty, $forcecombo, $event);
+		}
+	}
+	public function select_stagiaire_list($selectid = '', $htmlname = 'stagiaire', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(), $mode = 0) {
+		$arrayout = array();
 		$sql = "SELECT";
 		$sql .= " s.rowid, CONCAT(s.nom,' ',s.prenom) as fullname,";
 		$sql .= " so.nom as socname, so.rowid as socid";
@@ -402,18 +516,20 @@ class FormAgefodd extends Form
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
 
 		$sql .= " ON so.rowid = s.fk_soc";
+
 		if (! empty($filter)) {
 			$sql .= ' WHERE ' . $filter;
-			$sql .= " AND s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+			$sql .= " AND s.entity IN (" . getEntity('agefodd') . ")";
 		} else {
-			$sql .= " WHERE s.entity IN (" . getEntity('agefodd'/*agsession*/) . ")";
+			$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 		}
 		$sql .= " ORDER BY fullname";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$result = $this->db->query($sql);
 		if ($result) {
-			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINEE_USE_SEARCH_TO_SELECT && ! $forcecombo) {
+			if ($conf->use_javascript_ajax && ! $forcecombo) {
+				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
 				$out .= ajax_combobox($htmlname, $event, 1);
 			}
 
@@ -426,10 +542,14 @@ class FormAgefodd extends Form
 			if ($num) {
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($result);
+
 					$label = $obj->fullname;
 					if ($obj->socname)
 						$label .= ' (' . $obj->socname . ')';
-
+					$arrayout[] = array(
+							'key' => $obj->rowid,
+							'label' => $label
+					);
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 					} else {
@@ -440,11 +560,17 @@ class FormAgefodd extends Form
 			}
 			$out .= '</select>';
 			$this->db->free($result);
-			return $out;
+			if (empty($mode))
+				return $out;
+			else
+				return $arrayout;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::select_stagiaire " . $this->error, LOG_ERR);
-			return - 1;
+			if (empty($mode))
+				return - 1;
+			else
+				return array();
 		}
 	}
 
@@ -690,6 +816,44 @@ class FormAgefodd extends Form
 	 */
 	public function select_formateur($selectid = '', $htmlname = 'formateur', $filter = '', $showempty = 0, $forcecombo = 0, $event = array()) {
 		global $conf, $langs;
+		if (! empty($conf->use_javascript_ajax) && ! empty($conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT)) {
+			$placeholder = '';
+
+			if ($selectid) {
+				dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+				$traineetmpselect = new Agefodd_teacher($this->db);
+				$traineetmpselect->fetch($selectid);
+				$selected_input_value = $traineetmpselect->name . ' ' . $traineetmpselect->firstname;
+				unset($traineetmpselect);
+			}
+			// mode=1 means customers products
+			$filter = str_replace('FROM', 'TOREPLACE', $filter);
+			$urloption = 'htmlname=' . $htmlname . '&outjson=1&filter=' . $filter;
+
+			$return = ajax_autocompleter($selectid, $htmlname, dol_buildpath('/agefodd/ajax/formateur.php', 1), $urloption, $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT, 0, '');
+
+			$return.= '<input type="text" class="minwidth100" name="search_' . $htmlname . '" id="search_' . $htmlname . '" value="' . $selected_input_value . '" />';
+			return $return;
+		} else {
+			return $this->select_formateur_liste($selectid, $htmlname, $filter, $showempty, $forcecombo, $event);
+		}
+	}
+
+	/**
+	 * affiche un champs select contenant la liste des formateurs déjà référéencés.
+	 *
+	 * @param int $selectid Id de la session selectionner
+	 * @param string $htmlname Name of HTML control
+	 * @param string $filter SQL part for filter
+	 * @param int $showempty empty field
+	 * @param int $forcecombo use combo box
+	 * @param array $event
+	 * @return string The HTML control
+	 */
+	public function select_formateur_liste($selectid = '', $htmlname = 'formateur', $filter = '', $showempty = 0, $forcecombo = 0, $event = array(), $mode = 0) {
+		global $conf, $langs;
+
+		$arrayout = array();
 
 		$sql = "SELECT";
 		$sql .= " s.rowid, s.fk_socpeople, s.fk_user,";
@@ -711,7 +875,8 @@ class FormAgefodd extends Form
 		$result = $this->db->query($sql);
 		if ($result) {
 
-			if ($conf->use_javascript_ajax && $conf->global->AGF_TRAINER_USE_SEARCH_TO_SELECT && ! $forcecombo) {
+			if ($conf->use_javascript_ajax && ! $forcecombo) {
+				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
 				$out .= ajax_combobox($htmlname, $event);
 			}
 
@@ -730,7 +895,10 @@ class FormAgefodd extends Form
 					if (! empty($obj->fk_user)) {
 						$label = $obj->fullname_user;
 					}
-
+					$arrayout[] = array(
+							'key' => $obj->rowid,
+							'label' => $label
+					);
 					if ($selectid > 0 && $selectid == $obj->rowid) {
 						$out .= '<option value="' . $obj->rowid . '" selected="selected">' . $label . '</option>';
 					} else {
@@ -741,11 +909,17 @@ class FormAgefodd extends Form
 			}
 			$out .= '</select>';
 			$this->db->free($result);
-			return $out;
+			if (empty($mode))
+				return $out;
+			else
+				return $arrayout;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::select_formateur " . $this->error, LOG_ERR);
-			return - 1;
+			if (empty($mode))
+				return - 1;
+			else
+				return array();
 		}
 	}
 
@@ -1138,11 +1312,14 @@ class FormAgefodd extends Form
 	 * @param string $htmlname nom du control HTML
 	 * @return string The HTML control
 	 */
-	public function select_time($selectval = '', $htmlname = 'period', $enabled = 1) {
-		$time = 5;
+	public function select_time($selectval = '', $htmlname = 'period', $enabled = 1, $with_empty = true, $more_class = '') {
+		global $conf;
+		$time = (isset($conf->global->AGF_MIN_HOUR_SCHEDULE) && $conf->global->AGF_MIN_HOUR_SCHEDULE >= 0) ? $conf->global->AGF_MIN_HOUR_SCHEDULE : 5;
 		$heuref = 23;
 		$min = 0;
-		$options = '<option value=""></option>' . "\n";
+		if ($with_empty) {
+			$options = '<option value=""></option>' . "\n";
+		}
 		while ( $time < $heuref ) {
 			if ($min == 60) {
 				$min = 0;
@@ -1164,7 +1341,7 @@ class FormAgefodd extends Form
 			$disabled = '';
 		}
 
-		return '<select class="flat" ' . $disabled . ' name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
+		return '<select class="flat ' . $more_class . '" ' . $disabled . ' name="' . $htmlname . '">' . "\n" . $options . "\n" . '</select>' . "\n";
 	}
 
 	/**
@@ -1232,9 +1409,10 @@ class FormAgefodd extends Form
 	 * @param Object $object
 	 * @param string $typeelement
 	 * @param int $socid user
+	 * @param int $with_calendar with_calendar
 	 * @return int if KO, >=0 if OK
 	 */
-	public function showactions($object, $typeelement = 'agefodd_agsession', $socid = 0) {
+	public function showactions($object, $typeelement = 'agefodd_agsession', $socid = 0, $with_calendar='withcalendar') {
 		global $langs, $conf, $user;
 		global $bc;
 
@@ -1244,9 +1422,18 @@ class FormAgefodd extends Form
 		$formactions = new FormActions($this->db);
 		$form = new Form($this->db);
 
-		$actioncode= GETPOST('actioncode','array');
+		$actioncode = GETPOST('actioncode', 'array');
 
 		$action_arr = ActionComm::getActions($this->db, $socid, $object->id, $typeelement);
+
+		if ($with_calendar=='nocalendar') {
+			foreach ( $action_arr as $key=>$action ) {
+				if ($action->type_code=='AC_AGF_SESS' || $action->type_code=='AC_AGF_SESST') {
+					unset($action_arr[$key]);
+				}
+			}
+			$action_arr=array_values($action_arr);
+		}
 
 		// On récupère les événements liés aux factures elles mêmes liées à la session de formation
 		$agf = new Agefodd_session_element($this->db);
@@ -1273,18 +1460,17 @@ class FormAgefodd extends Form
 			}
 		}
 
-		if (is_array($actioncode) && count($actioncode)>0) {
-			foreach ( $action_arr as $key=>$action ) {
+		if (is_array($actioncode) && count($actioncode) > 0) {
+			foreach ( $action_arr as $key => $action ) {
 
-				if (!in_array($action->type_code,$actioncode)) {
+				if (! in_array($action->type_code, $actioncode)) {
 					unset($action_arr[$key]);
 				}
 			}
-			$action_arr=array_values($action_arr);
+			$action_arr = array_values($action_arr);
 		}
 
 		$num = count($action_arr);
-
 
 		if ($typeelement == 'agefodd_agsession') {
 			$title = $langs->trans('AgfActionsOnTraining');
@@ -1295,9 +1481,16 @@ class FormAgefodd extends Form
 		print '<div class="div-table-responsive">';
 		print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="searchFormList" id="searchFormList">' . "\n";
 		print '<input type="hidden" name="action" value="view_actioncomm"/>';
+		print '<input type="hidden" name="id" value="' . $object->id . '"/>';
 		print '<input type="hidden" name="id" value="'.$object->id.'"/>';
+		print '<input type="hidden" name="with_calendar" value="'.$with_calendar.'"/>';
 
-		print_barre_liste($title, 0, $_SERVER['PHP_SELF'], $option . "&arch=" . $arch, '', '', "", $num, $num, 'title_generic.png', 0, '', '', -1,1,1);
+		print_barre_liste($title, 0, $_SERVER['PHP_SELF'], '', '', '', "", $num, $num, 'title_generic.png', 0, '', '', -1,1,1);
+		if ($with_calendar=='withcalendar') {
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?id='.$object->id.'&with_calendar=nocalendar">'.$langs->trans('AgfHideCalendarEventsType').'</a>';
+		} else {
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?id='.$object->id.'&with_calendar=withcalendar">'.$langs->trans('AgfDisplayCalendarEventsType').'</a>';
+		}
 
 		$total = 0;
 		$var = true;
@@ -1365,15 +1558,44 @@ class FormAgefodd extends Form
 	/**
 	 * Display select Trainee status in session
 	 *
-	 * @param string $selectval valeur a selectionner par defaut
-	 * @param string $htmlname nom du control HTML
-	 * @return string The HTML control
+     * @param   string          $selectval          valeur a selectionner par defaut
+     * @param   string          $htmlname           nom du control HTML
+     * @param   Agsession       $session            Object de la session en court
+     * @param	int|string		$show_empty			0 no empty value allowed, 1 or string to add an empty value into list (key is -1 and value is '' or '&nbsp;' if 1, key is -1 and value is text if string), <0 to add an empty value with key that is this value.
+     * @return  string          The HTML control
 	 */
-	public function select_stagiaire_session_status($htmlname, $selectval) {
+	public function select_stagiaire_session_status($htmlname, $selectval, $session = null, $show_empty = 0)
+	{
+		global $conf,$langs;
+
 		require_once 'agefodd_session_stagiaire.class.php';
 		$sess_sta = new Agefodd_session_stagiaire($this->db);
 
-		return $this->selectarray($htmlname, $sess_sta->labelstatut, $selectval, 0);
+		if (! empty($conf->global->AGF_USE_REAL_HOURS) && isset($session)) {
+			require_once 'agefodd_session_calendrier.class.php';
+			$cal = new Agefodd_sesscalendar($this->db);
+			$res = $cal->fetch_all($session->id);
+			if ($res < 0) {
+				setEventMessage($cal->error, 'errors');
+			} else {
+				$optionStatus=array();
+				if (is_array($cal->lines) && count($cal->lines)>0) {
+					$dateToTest = $cal->lines[0]->heured;
+				} else {
+					$dateToTest = $session->dated;
+				}
+				foreach ($sess_sta->labelstatut as $statuskey => $statuslabel) {
+					if($dateToTest >= dol_now() && in_array($statuskey, $sess_sta->statusAvalaibleForFuture)) {
+						$optionStatus[$statuskey]=$statuslabel;
+					} elseif ($dateToTest <= dol_now() && in_array($statuskey, $sess_sta->statusAvalaibleForPast)) {
+						$optionStatus[$statuskey]=$statuslabel;
+					}
+				}
+				return $this->selectarray($htmlname, $optionStatus, $selectval, $show_empty).img_warning($langs->trans('AgfWarnStatusLimited'));
+			}
+		} else {
+			return $this->selectarray($htmlname, $sess_sta->labelstatut, $selectval, $show_empty);
+		}
 	}
 
 	/**
@@ -1410,9 +1632,10 @@ class FormAgefodd extends Form
 	 * @param int $filter_trainer Trainer
 	 * @param int $canedit edit filter
 	 * @param bool $set_select_thirdparty_multiple transforme le select thirdparty en multiselect
+	 * @param string $filter_customer Customer
 	 * @return void
 	 */
-	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action = '', $filter_session_status = '', $filter_trainee = 0, $filter_control_occupation=false, $set_select_thirdparty_multiple=false) {
+	public function agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit = 1, $filterdatestart = '', $filterdatesend = '', $onlysession = 0, $filter_type_session = '', $display_only_trainer_filter = 0, $filter_location = '', $action = '', $filter_session_status = '', $filter_trainee = 0, $filter_control_occupation = false, $set_select_thirdparty_multiple = false, $filter_customer_place = array()) {
 		global $conf, $langs;
 
 		print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
@@ -1455,13 +1678,12 @@ class FormAgefodd extends Form
 				print '<td class="nowrap">';
 				print $langs->trans("or") . ' ' . $langs->trans("Customer");
 				print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
-				
+
 				$moreparam = '';
-				if ($set_select_thirdparty_multiple && (float) DOL_VERSION <= 8.0)
-				{
-					$moreparam = ' name="fk_soc[]" multiple >'.";//"; // OMG j'ose vraiment le faire ? .. oui je l'ai fait :'( [@see => https://github.com/Dolibarr/dolibarr/pull/9028]
+				if ($set_select_thirdparty_multiple && ( float ) DOL_VERSION <= 8.0) {
+					$moreparam = ' name="fk_soc[]" multiple >' . ";//"; // OMG j'ose vraiment le faire ? .. oui je l'ai fait :'( [@see => https://github.com/Dolibarr/dolibarr/pull/9028]
 				}
-				
+
 				if ($conf->global->AGF_CONTACT_DOL_SESSION) {
 					$events = array();
 					$events[] = array(
@@ -1472,30 +1694,28 @@ class FormAgefodd extends Form
 									'add-customer-contact' => 'disabled'
 							)
 					);
-					
+
 					$html_select_thirdparty_list = $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1, 0, $events, '', 0, 0, 'minwidth100', $moreparam, $set_select_thirdparty_multiple);
 				} else {
 					$html_select_thirdparty_list = $form->select_thirdparty_list($filter_customer, 'fk_soc', '', 'SelectThirdParty', 1, 0, array(), '', 0, 0, 'minwidth100', $moreparam, $set_select_thirdparty_multiple);
 				}
-				
+
 				// MOUAHAHAHAH, comme je peux pas hack le 1er param de la méthode select_thirdparty_list() pour réécrire le test, je fist le contenu html qui est retourné par cette même méthode (je suis diabolique, oui je le sais...)
-				if ($set_select_thirdparty_multiple && (float) DOL_VERSION <= 8.0)
-				{
-					foreach ($filter_customer as $fk_soc)
-					{
-						 $html_select_thirdparty_list = preg_replace('/<option value="'.$fk_soc.'">/', '<option value="'.$fk_soc.'" selected>', $html_select_thirdparty_list);
+				if ($set_select_thirdparty_multiple && ( float ) DOL_VERSION <= 8.0) {
+					foreach ( $filter_customer as $fk_soc ) {
+						$html_select_thirdparty_list = preg_replace('/<option value="' . $fk_soc . '">/', '<option value="' . $fk_soc . '" selected>', $html_select_thirdparty_list);
 					}
 				}
-				
+
 				print $html_select_thirdparty_list;
-					
+
 				print '</td></tr>';
 				print '<tr>';
 				print '<td class="nowrap maxwidthonsmartphone">';
 				print $langs->trans("or") . ' ' . $langs->trans("AgfSessionContact");
 				print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
 				if ($conf->global->AGF_CONTACT_DOL_SESSION) {
-					if (! empty($filter_customer) && !is_array($filter_customer)) {
+					if (! empty($filter_customer) && ! is_array($filter_customer)) {
 						$form->select_contacts($filter_customer, $filter_contact, 'contact', 1, '', '', 1, '', 1);
 					} else {
 						$form->select_contacts(0, $filter_contact, 'contact', 1, '', '', 1, '', 1);
@@ -1505,6 +1725,27 @@ class FormAgefodd extends Form
 				}
 				print '</td></tr>';
 			}
+
+			print '<tr>';
+			print '<td class="nowrap">';
+			print $langs->trans("or") . ' ' . $langs->trans("AgfLieu") . ' ' . $langs->trans("Customer");
+			print ' &nbsp;</td><td class="nowrap maxwidthonsmartphone">';
+
+			$moreparam = '';
+			if ($set_select_thirdparty_multiple && ( float ) DOL_VERSION <= 8.0) {
+				$moreparam = ' name="fk_soc_place[]" multiple >' . ";//"; // OMG j'ose vraiment le faire ? .. oui je l'ai fait :'( [@see => https://github.com/Dolibarr/dolibarr/pull/9028]
+			}
+			$html_select_thirdparty_place_list = $form->select_thirdparty_list($filter_customer_place, 'fk_soc_place', '', 'SelectThirdParty', 1, 0, array(), '', 0, 0, 'minwidth100', $moreparam, $set_select_thirdparty_multiple);
+
+			if ($set_select_thirdparty_multiple && ( float ) DOL_VERSION <= 8.0) {
+				foreach ( $filter_customer_place as $fk_soc ) {
+					$html_select_thirdparty_place_list = preg_replace('/<option value="' . $fk_soc . '">/', '<option value="' . $fk_soc . '" selected>', $html_select_thirdparty_place_list);
+				}
+			}
+
+			print $html_select_thirdparty_place_list;
+			print '</td></tr>';
+
 			print '<tr>';
 			print '<td class="nowrap">';
 			print $langs->trans("or") . ' ' . $langs->trans("AgfFormateur");
@@ -1543,7 +1784,7 @@ class FormAgefodd extends Form
 				print "</tr>\n";
 			}
 
-			if (strpos($_SERVER["PHP_SELF"], 'pertrainer.php') !== false) {
+			if (strpos($_SERVER["PHP_SELF"], 'pertrainer.php') !== false || strpos($_SERVER["PHP_SELF"], 'perlocation.php') !== false) {
 				print '<tr>';
 				print '<td class="nowrap">' . $langs->trans("DateStart") . '</td>';
 				print '<td>';
@@ -1594,12 +1835,15 @@ class FormAgefodd extends Form
 			}
 			print $form->multiselectarray('search_session_status', $data_status, $filter_session_status, '', 0, '', 0, '100%');
 			print '</td></tr>';
-			
-			if ($filter_control_occupation !== false)
-			{
+
+			if ($filter_control_occupation !== false) {
 				print '<tr>';
-				print '<td class="nowrap">'.$langs->trans("AgfOccupationControlSearch").'</td>';
-				print '<td>'.$form->selectarray('control_occupation', array(-1=>$langs->trans('All'), 0=>$langs->trans('ControlOccupationUncheck'), 1=>$langs->trans('ControlOccupationCheck')), $filter_control_occupation).'</td>';
+				print '<td class="nowrap">' . $langs->trans("AgfOccupationControlSearch") . '</td>';
+				print '<td>' . $form->selectarray('control_occupation', array(
+						- 1 => $langs->trans('All'),
+						0 => $langs->trans('ControlOccupationUncheck'),
+						1 => $langs->trans('ControlOccupationCheck')
+				), $filter_control_occupation) . '</td>';
 				print '</tr>';
 			}
 		}
@@ -1628,7 +1872,7 @@ class FormAgefodd extends Form
 		else
 			print '</td></tr></table>';
 
-//		print '</div>'; // Close fichecenter
+		// print '</div>'; // Close fichecenter
 		print '<div style="clear:both"></div>';
 
 		print '</form>';
@@ -1648,8 +1892,7 @@ class FormAgefodd extends Form
 		$TDir[] = dol_buildpath("/agefodd/core/modules/agefodd/pdf/");
 		$TDir[] = dol_buildpath('/agefodd/core/modules/agefodd/pdf/override/');
 
-		foreach ($TDir as $dir)
-		{
+		foreach ( $TDir as $dir ) {
 			if (is_dir($dir)) {
 				$handle = opendir($dir);
 				if (is_resource($handle)) {
@@ -1657,7 +1900,8 @@ class FormAgefodd extends Form
 
 					// TODO PH faire la lecture du sous dossier "override"
 					while ( ($file = readdir($handle)) !== false ) {
-						if ($file === 'override') continue;
+						if ($file === 'override')
+							continue;
 						if (preg_match('/^(pdf_convention.*)\.modules.php$/i', $file, $reg)) {
 							$file = $reg[1];
 
@@ -1676,7 +1920,6 @@ class FormAgefodd extends Form
 			}
 		}
 
-
 		if (! empty($conf->referenceletters->enabled))
 			$this->addReferenceLettersModelsToSelect($outselect, $model);
 
@@ -1684,16 +1927,28 @@ class FormAgefodd extends Form
 
 		return $outselect;
 	}
+
+	/**
+	 *
+	 * @param string $outselect
+	 * @param string $model
+	 */
 	function addReferenceLettersModelsToSelect(&$outselect, $model = '') {
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-		if (class_exists('RfltrTools') && method_exists('RfltrTools', 'getAgefoddModelList')) {
-			$TModelAgefodd = RfltrTools::getAgefoddModelList();
-			if (! empty($TModelAgefodd['rfltr_agefodd_convention'])) {
-				foreach ( $TModelAgefodd['rfltr_agefodd_convention'] as $id_model => $model_name ) {
-					$selected = '';
-					if ($model === 'rfltr_agefodd_' . $id_model)
-						$selected = 'selected="selected"';
-					$outselect .= '<option value="rfltr_agefodd_' . $id_model . '" ' . $selected . '>' . $model_name . '</option>';
+		if (class_exists('RfltrTools') && method_exists('RfltrTools', 'getAgefoddModelListDefault')) {
+			$TModelAgefodd = RfltrTools::getAgefoddModelListDefault();
+			if (is_array($TModelAgefodd) && count($TModelAgefodd) > 0) {
+				foreach ( $TModelAgefodd as $line ) {
+					if ($line->element_type == 'rfltr_agefodd_convention') {
+
+						$selected = '';
+						$defaultaffect = false;
+						if (($model === 'rfltr_agefodd_' . $line->rowid || ! empty($line->default_doc)) && ! $defaultaffect) {
+							$selected = 'selected="selected"';
+							$defaultaffect = true;
+						}
+						$outselect .= '<option value="rfltr_agefodd_' . $line->rowid . '" ' . $selected . '>' . $line->title . '</option>';
+					}
 				}
 			}
 		}
@@ -1711,7 +1966,8 @@ class FormAgefodd extends Form
 	public function agfmultiselectarray($htmlname, $options_array = array(), $selected_array = array(), $showempty = 0) {
 		global $conf, $langs;
 
-		$return = '<script type="text/javascript" language="javascript">
+		if (! method_exists($this, 'multiselectarray')) {
+			$return = '<script type="text/javascript" language="javascript">
 						$(document).ready(function () {
 							$.extend($.ui.multiselect.locale, {
 								addAll:\'' . $langs->transnoentities("AddAll") . '\',
@@ -1726,38 +1982,43 @@ class FormAgefodd extends Form
 						});
 					</script>';
 
-		$return .= '<select id="' . $htmlname . '" class="multiselect" multiple="multiple" name="' . $htmlname . '[]" style="display: none;">';
-		if ($showempty) {
-			$return .= '<option value="">&nbsp;</option>';
-		}
-
-		// Find if keys is in selected array value
-		if (is_array($selected_array) && count($selected_array) > 0) {
-			$intersect_array = array_intersect_key($options_array, array_flip($selected_array));
-		} else {
-			$intersect_array = array();
-		}
-
-		if (count($options_array) > 0) {
-			foreach ( $options_array as $keyoption => $valoption ) {
-				// If key is in intersect table then it have to e selected
-				if (count($intersect_array) > 0) {
-					if (array_key_exists($keyoption, $intersect_array)) {
-						$selected = ' selected="selected" ';
-					} else {
-						$selected = '';
-					}
-				}
-
-				$return .= '<option ' . $selected . ' value="' . $keyoption . '">' . $valoption . '</option>';
+			$return .= '<select id="' . $htmlname . '" class="multiselect" multiple="multiple" name="' . $htmlname . '[]" style="display: none;">';
+			if ($showempty) {
+				$return .= '<option value="">&nbsp;</option>';
 			}
-		}
 
-		$return .= '</select>';
+			// Find if keys is in selected array value
+			if (is_array($selected_array) && count($selected_array) > 0) {
+				$intersect_array = array_intersect_key($options_array, array_flip($selected_array));
+			} else {
+				$intersect_array = array();
+			}
+
+			if (count($options_array) > 0) {
+				foreach ( $options_array as $keyoption => $valoption ) {
+					// If key is in intersect table then it have to e selected
+					if (count($intersect_array) > 0) {
+						if (array_key_exists($keyoption, $intersect_array)) {
+							$selected = ' selected="selected" ';
+						} else {
+							$selected = '';
+						}
+					}
+
+					$return .= '<option ' . $selected . ' value="' . $keyoption . '">' . $valoption . '</option>';
+				}
+			}
+
+			$return .= '</select>';
+		} else {
+
+			$return = $this->multiselectarray($htmlname, $options_array, $selected_array, '', 0, '', 0, '40%');
+		}
 
 		return $return;
 	}
-	public function selectMassSessionsAction() {
+	public function selectMassSessionsAction()
+	{
 		global $langs;
 
 		$sql = "SELECT rowid, code FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type WHERE active = 1";
@@ -1772,5 +2033,132 @@ class FormAgefodd extends Form
 		}
 
 		return $this->selectMassAction('', $TStatut);
+	}
+
+	/**
+	 * Permet de retourner un select html du dictionnaire llx_c_session_calendrier_type
+	 *
+	 * @global type $conf
+	 * @param string $selected
+	 * @param string $htmlname
+	 * @param bool $emptyvalue
+	 * @return string
+	 */
+	public function select_calendrier_type($selected = '', $htmlname = 'code_c_session_calendrier_type', $emptyvalue = true, $moreattr = '', $more_class = '')
+	{
+		global $conf;
+
+		$out = '<select class="flat select_calendrier_type ' . $more_class . '" name="' . $htmlname . '" id="' . $htmlname . '" ' . $moreattr . '>';
+		if ($emptyvalue)
+			$out .= '<option value=""></options>';
+
+		// TODO optimisation possible en stockant dans un attribut les codes lors d'un premier passage
+		$sql = 'SELECT code, label FROM ' . MAIN_DB_PREFIX . 'c_agefodd_session_calendrier_type WHERE active = 1 AND entity IN (0,' . $conf->entity.')';
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			while ( $obj = $this->db->fetch_object($resql) ) {
+				$out .= '<option value="' . $obj->code . '" ' . ($selected == $obj->code ? 'selected' : '') . '>' . $obj->label . '</options>';
+			}
+		} else {
+			dol_print_error($this->db);
+		}
+
+		$out .= '</select>';
+
+		return $out;
+	}
+
+	/**
+	 * Permet de retourner un select html des formateur d'une session
+	 *
+	 * @param int $sessionId Session Id
+	 * @param int $selectId selected id
+	 * @param string $htmlname html input name
+	 * @param int $showempty show empty value
+	 * @return string
+	 */
+	public function selectSessionTrainer($sessionId = 0, $selectId = 0, $htmlname = 'trainerid', $showempty = 1)
+	{
+		if (!empty($sessionId)) {
+			require_once 'agefodd_session_formateur.class.php';
+
+			$arrayTrainer=array();
+			$sess_trainer = new Agefodd_session_formateur($this->db);
+			$result = $sess_trainer->fetch_formateur_per_session($sessionId);
+			if ($result < 0) {
+				setEventMessage($sess_trainer->error, 'errors');
+			} else {
+				if (is_array($sess_trainer->lines) && count($sess_trainer->lines)>0) {
+					foreach($sess_trainer->lines as $line) {
+						$arrayTrainer[$line->opsid]=$line->firstname.' '.$line->lastname;
+					}
+				}
+			}
+			return $this->selectarray($htmlname, $arrayTrainer, $selectId, $showempty);
+		} else {
+			return'';
+		}
+	}
+
+	/**
+	 *
+	 * @global type $conf
+	 * @param string $selected
+	 * @param string $htmlname
+	 * @param bool $emptyvalue
+	 * @return string
+	 */
+	public function select_calendrier_status($selected = '', $htmlname = 'calendar_status') {
+		global $conf, $langs;
+		dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
+		$TStatus = Agefodd_sesscalendar::getListStatus();
+		return $this->selectarray($htmlname, $TStatus, $selected);
+	}
+
+	/**
+	 * Display multiselect of session status from dictionnary
+	 *
+	 * @param string $selected value
+	 * @param string $htmlname of combo list (example: 'search_sale')
+	 * @param string $filter filter
+	 * @return string combo list code
+	 */
+	function multiselect_session_status($htmlname = 'search_session_status', $selected_array = array(), $filter = array()) {
+		global $conf, $langs;
+
+		$options_array = array();
+
+		$sql = "SELECT t.rowid, t.code ,t.intitule ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type as t";
+		if (! empty($filter)) {
+			$sql .= ' WHERE ' . $filter;
+		}
+		$sql .= " ORDER BY t.sort";
+
+		dol_syslog(get_class($this) . "::multiselect_session_status sql=" . $sql, LOG_DEBUG);
+		$result = $this->db->query($sql);
+		if ($result) {
+
+			$num = $this->db->num_rows($result);
+			$i = 0;
+			if ($num) {
+				while ( $obj = $this->db->fetch_object($result) ) {
+					if ($obj->intitule == $langs->trans('AgfStatusSession_' . $obj->code)) {
+						$label = stripslashes($obj->intitule);
+					} else {
+						$label = $langs->trans('AgfStatusSession_' . $obj->code);
+					}
+
+					$options_array[$obj->rowid] = $label;
+
+					$i ++;
+				}
+			}
+			$this->db->free($result);
+		} else {
+			dol_print_error($this->db);
+		}
+
+		return $this->multiselectarray($htmlname, $options_array, $selected_array);
 	}
 }

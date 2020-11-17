@@ -563,7 +563,7 @@ if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			print 'Session '.$obj->rowid.' dans '.MAIN_DB_PREFIX.'agefodd_session qui non une formation qui n existe plus<BR>';
 		}
-		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_stagiaire WHERE (fk_soc NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'societe) OR fk_soc IS NULL);<BR><BR><BR>';
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session WHERE fk_formation_catalogue NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formation_catalogue;<BR><BR><BR>';
 
 
 
@@ -572,38 +572,219 @@ if ($resql) {
 	dol_print_error($db);
 }
 
+//Agefoddsessioncontact
 
-//Collation, PS: il existe aussi un script dans abricot pour ça.
-$sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;\') AS    mySQL
-        FROM INFORMATION_SCHEMA.TABLES
-        WHERE TABLE_SCHEMA= "'.$dolibarr_main_db_name.'"
-                AND TABLE_TYPE="BASE TABLE"
-                AND TABLE_COLLATION != \''.$dolibarr_main_db_collation.'\'
-                AND TABLE_NAME LIKE \''.MAIN_DB_PREFIX.'agefodd%\' ';
-//echo $sql;
+
+$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session_contact WHERE fk_agefodd_contact NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_contact)';
+
 $resql = $db->query($sql);
 if ($resql) {
-    if ($db->num_rows($resql)) {
-
-        print 'Certaines tables ne sont pas en collation utf8';
-        print '<BR><BR><BR>Suggestion de correction<BR><BR>';
-
-        print '<BR>SET foreign_key_checks = 0;';
-        while ( $obj = $db->fetch_object($resql) ) {
-            print $obj->mySQL.'<BR>';
-        }
-        print '<BR>SET foreign_key_checks = 1;<BR><BR><BR>';
-
-
-    }
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session contact'.$obj->rowid.' dans '.MAIN_DB_PREFIX.'agefodd_session_contact qui non un contact agefodd qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_contact WHERE fk_agefodd_contact NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_contact)<BR><BR><BR>';
+	}
 }else {
-    dol_print_error($db);
+	dol_print_error($db);
+}
+
+//Data intégrity on session element
+
+$sql = 'SELECT fk_element FROM '.MAIN_DB_PREFIX.'agefodd_session_element WHERE element_type=\'propal\' AND fk_element NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'propal);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Propal id '.$obj->fk_element.' dans '.MAIN_DB_PREFIX.'agefodd_session_element who is not in llx_propal <BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_element WHERE element_type=\'propal\' AND fk_element NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'propal)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
 }
 
 
-_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur');
-_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier');
-_datec_check(MAIN_DB_PREFIX.'agefodd_formateur_category');
+//Data intégrity stagiaire heures
+$sql = 'SELECT fk_session FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_session NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_session.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures qui ont une session qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_session NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+//Data intégrity stagiaire heures
+$sql = 'SELECT fk_calendrier FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_calendrier NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session_calendrier);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_calendrier.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures référence des haures qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_calendrier NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session_calendrier)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+//Data intégrity stagiaire heures
+$sql = 'SELECT fk_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_stagiaire NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_stagiaire);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_stagiaire.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures référence des stagaire qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures WHERE fk_stagiaire NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_stagiaire)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+//Data intégrity stagiaire heures planification
+$sql = 'SELECT fk_agefodd_session FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_agefodd_session NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_agefodd_session.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification qui ont une session n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_agefodd_session NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+//Data intégrity stagiaire heures planification
+$sql = 'SELECT fk_agefodd_session_stagiaire FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_agefodd_session_stagiaire NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session_stagiaire);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_agefodd_session_stagiaire.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification qui ont un stagiaire qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_agefodd_session_stagiaire NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'agefodd_session_stagiaire)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+//Data intégrity stagiaire heures planification
+$sql = 'SELECT fk_calendrier_type FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_calendrier_type NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type);';
+
+$resql = $db->query($sql);
+if ($resql) {
+	if ($db->num_rows($resql)) {
+		print '<BR><BR>';
+		while ( $obj = $db->fetch_object($resql) ) {
+			print 'Session '.$obj->fk_calendrier_type.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification qui ont un type de modalité qui n existe plus<BR>';
+		}
+		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_planification WHERE fk_calendrier_type NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'c_agefodd_session_calendrier_type)<BR><BR><BR>';
+	}
+}else {
+	dol_print_error($db);
+}
+
+if($dolibarr_main_db_type != 'pgsql')
+{
+	//Collation, PS: il existe aussi un script dans abricot pour ça.
+	$sql = 'SELECT CONCAT(\'ALTER TABLE \', TABLE_NAME,\' CONVERT TO CHARACTER SET utf8 COLLATE '.$dolibarr_main_db_collation.';\') AS    mySQL
+	        FROM INFORMATION_SCHEMA.TABLES
+	        WHERE TABLE_SCHEMA= "'.$dolibarr_main_db_name.'"
+	                AND TABLE_TYPE="BASE TABLE"
+	                AND TABLE_COLLATION != \''.$dolibarr_main_db_collation.'\'' ;
+	$sql .= '                AND (TABLE_NAME LIKE \''.MAIN_DB_PREFIX.'agefodd%\' OR TABLE_NAME = \''.MAIN_DB_PREFIX.'c_civility\')';
+	//echo $sql;
+	$resql = $db->query($sql);
+	if ($resql) {
+	    if ($db->num_rows($resql)) {
+
+	        print 'Certaines tables ne sont pas en collation utf8';
+	        print '<BR><BR><BR>Suggestion de correction<BR><BR>';
+
+	        print '<BR>SET foreign_key_checks = 0;';
+	        while ( $obj = $db->fetch_object($resql) ) {
+	            print $obj->mySQL.'<BR>';
+	        }
+	        print '<BR>SET foreign_key_checks = 1;<BR><BR><BR>';
+
+
+	    }
+	}else {
+	    dol_print_error($db);
+	}
+}
+
+if (!empty($conf->global->AGF_USE_REAL_HOURS)){
+	dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+
+	$statusToTest[]=Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT;
+	$statusToTest[]=Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT;
+
+	$sql = 'SELECT DISTINCT s.rowid,s.ref FROM '.MAIN_DB_PREFIX.'agefodd_session as s
+			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire as sesssta ON sesssta.fk_session_agefodd=s.rowid
+			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier as secal ON secal.fk_agefodd_session=s.rowid
+			LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures as sth ON sth.fk_stagiaire=sesssta.fk_stagiaire AND sth.fk_calendrier=secal.rowid
+			WHERE sesssta.status_in_session IN ('.implode(',',$statusToTest).')
+				AND sth.rowid IS NULL';
+
+	$resql = $db->query($sql);
+	if ($resql) {
+		if ($db->num_rows($resql)) {
+			print '<BR><BR>Vous utiliser la gestion du temps réél des participants<BR>';
+			while ( $obj = $db->fetch_object($resql) ) {
+				print 'Pour la session '.$obj->id.'#'.$obj->ref.' , mais il semble que des heures stagiaires n est pas été saisie alors qu ils sont notés présents<BR>';
+			}
+			print '<BR><BR><BR>Suggestion de correction : INSERT INTO llx_agefodd_session_stagiaire_heures(entity, fk_stagiaire, fk_session, fk_calendrier, heures, fk_user_author, datec, tms, import_key, mail_sended, planned_absence)
+			SELECT '.$conf->entity.',sesssta.fk_stagiaire,s.rowid,secal.rowid,';
+			if ($db->type == 'pgsql') {
+				print "TIME_TO_SEC(TIMEDIFF('second',secal.heuref, secal.heured))/(3600),";
+			} else {
+				print "TIME_TO_SEC(TIMEDIFF(secal.heuref, secal.heured))/(3600),";
+			}
+
+			print '1,NOW(),NOW(),\'Fixtime\',0,0 FROM '.MAIN_DB_PREFIX.'agefodd_session as s
+			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire as sesssta ON sesssta.fk_session_agefodd=s.rowid
+			INNER JOIN '.MAIN_DB_PREFIX.'agefodd_session_calendrier as secal ON secal.fk_agefodd_session=s.rowid AND secal.date_session
+			LEFT JOIN '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures as sth ON sth.fk_stagiaire=sesssta.fk_stagiaire AND sth.fk_calendrier=secal.rowid
+			WHERE sesssta.status_in_session IN ('.implode(',',$statusToTest).')
+			AND sth.rowid IS NULL;
+
+			<BR><BR><BR>';
+		}
+	}else {
+		dol_print_error($db);
+	}
+
+}
+
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'date_session' ,'DATE');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_formateur_calendrier', 'date_session', 'DATE');
+_datec_check(MAIN_DB_PREFIX.'agefodd_formateur_category', 'datec');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_adminsitu', 'dated');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_adminsitu', 'datea');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'heured');
+_datec_check(MAIN_DB_PREFIX.'agefodd_session_calendrier', 'heuref');
 
 print 'Si pas de message, normalement tout est bon, sinon appliquer les recommendations en conscience ;-)';
 
@@ -611,11 +792,18 @@ llxFooter();
 $db->close();
 
 
-function _datec_check($table){
+function _datec_check($table, $datefield, $type='DATETIME'){
 
     global $db;
+
+    if ($type=='DATETIME') {
+    	$hesh='0000-00-00 00:00:00';
+    } elseif($type=='DATE') {
+    	$hesh='0000-00-00';
+    }
+
     // datec agefodd_session_formateur calendrier
-    $sql = 'SELECT COUNT(*) as nb FROM '.$table.' WHERE CAST(datec AS CHAR(20)) = \'0000-00-00 00:00:00\';';
+    $sql = 'SELECT COUNT(*) as nb FROM '.$table.' WHERE CAST('.$datefield.' AS CHAR('.(strlen($hesh)+1).')) = \''.$hesh.'\';';
     //echo $sql;
     $resql = $db->query($sql);
     if ($resql) {
@@ -626,8 +814,8 @@ function _datec_check($table){
 
                 print 'Certaines lignes de la table '.$table.' utilisent une valeur de date incompatible ';
                 print '<BR>Suggestion de correction';
-                print '<BR>ALTER TABLE '.$table.' CHANGE datec datec DATETIME NULL DEFAULT NULL;';
-                print '<BR>UPDATE '.$table.' SET datec = NULL   WHERE CAST(datec AS CHAR(20)) = \'0000-00-00 00:00:00\'; <BR><BR><BR>';
+                print '<BR>ALTER TABLE '.$table.' CHANGE '.$datefield.' '.$datefield.' '.$type.' NULL DEFAULT NULL;';
+                print '<BR>UPDATE '.$table.' SET '.$datefield.' = NULL   WHERE CAST('.$datefield.' AS CHAR('.(strlen($hesh)+1).')) = \''.$hesh.'\'; <BR><BR><BR>';
 
             }
 

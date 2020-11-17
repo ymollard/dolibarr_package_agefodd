@@ -38,10 +38,10 @@ class Agefodd_opca extends CommonObject {
 	public $element = 'agefodd_opca'; // !< Id that identify managed objects
 	public $table_element = 'agefodd_opca'; // !< Name of table without prefix where object is stored
 	public $id;
+	public $fk_session_trainee;
 	public $fk_soc_trainee;
 	public $fk_session_agefodd;
 	public $date_ask_OPCA = '';
-	public $is_date_ask_OPCA;
 	public $is_OPCA;
 	public $fk_soc_OPCA;
 	public $fk_socpeople_OPCA;
@@ -81,8 +81,6 @@ class Agefodd_opca extends CommonObject {
 			$this->fk_soc_trainee = trim($this->fk_soc_trainee);
 		if (isset($this->fk_session_agefodd))
 			$this->fk_session_agefodd = trim($this->fk_session_agefodd);
-		if (isset($this->is_date_ask_OPCA))
-			$this->is_date_ask_OPCA = trim($this->is_date_ask_OPCA);
 		if (isset($this->is_OPCA))
 			$this->is_OPCA = trim($this->is_OPCA);
 		if (isset($this->fk_soc_OPCA))
@@ -93,10 +91,6 @@ class Agefodd_opca extends CommonObject {
 			$this->num_OPCA_soc = trim($this->num_OPCA_soc);
 		if (isset($this->num_OPCA_file))
 			$this->num_OPCA_file = trim($this->num_OPCA_file);
-		if (isset($this->fk_user_author))
-			$this->fk_user_author = trim($this->fk_user_author);
-		if (isset($this->fk_user_mod))
-			$this->fk_user_mod = trim($this->fk_user_mod);
 
 			// Check parameters
 			// Put here code to add control on parameters values
@@ -108,7 +102,6 @@ class Agefodd_opca extends CommonObject {
 		$sql .= "fk_soc_trainee,";
 		$sql .= "fk_session_agefodd,";
 		$sql .= "date_ask_OPCA,";
-		$sql .= "is_date_ask_OPCA,";
 		$sql .= "is_OPCA,";
 		$sql .= "fk_soc_OPCA,";
 		$sql .= "fk_socpeople_OPCA,";
@@ -124,7 +117,6 @@ class Agefodd_opca extends CommonObject {
 		$sql .= " " . (empty($this->fk_soc_trainee) ? 'NULL' : $this->fk_soc_trainee) . ",";
 		$sql .= " " . (empty($this->fk_session_agefodd) ? 'NULL' : $this->fk_session_agefodd) . ",";
 		$sql .= " " . (empty($this->date_ask_OPCA) || dol_strlen($this->date_ask_OPCA) == 0 ? 'NULL' : "'" . $this->db->idate($this->date_ask_OPCA) . "'") . ",";
-		$sql .= " " . (empty($this->is_date_ask_OPCA) ? '0' : $this->is_date_ask_OPCA) . ",";
 		$sql .= " " . (empty($this->is_OPCA) ? '0' : $this->is_OPCA) . ",";
 		$sql .= " " . (empty($this->fk_soc_OPCA) ? 'NULL' : $this->fk_soc_OPCA) . ",";
 		$sql .= " " . (empty($this->fk_socpeople_OPCA) ? 'NULL' : $this->fk_socpeople_OPCA) . ",";
@@ -182,14 +174,12 @@ class Agefodd_opca extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 		$sql .= " t.fk_session_trainee,";
 		$sql .= " t.fk_soc_trainee,";
 		$sql .= " t.fk_session_agefodd,";
 		$sql .= " t.date_ask_OPCA,";
-		$sql .= " t.is_date_ask_OPCA,";
 		$sql .= " t.is_OPCA,";
 		$sql .= " t.fk_soc_OPCA,";
 		$sql .= " t.fk_socpeople_OPCA,";
@@ -214,7 +204,6 @@ class Agefodd_opca extends CommonObject {
 				$this->fk_soc_trainee = $obj->fk_soc_trainee;
 				$this->fk_session_agefodd = $obj->fk_session_agefodd;
 				$this->date_ask_OPCA = $this->db->jdate($obj->date_ask_OPCA);
-				$this->is_date_ask_OPCA = $obj->is_date_ask_OPCA;
 				$this->is_OPCA = $obj->is_OPCA;
 				$this->fk_soc_OPCA = $obj->fk_soc_OPCA;
 				$this->fk_socpeople_OPCA = $obj->fk_socpeople_OPCA;
@@ -242,7 +231,7 @@ class Agefodd_opca extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function update($user = 0, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -254,8 +243,6 @@ class Agefodd_opca extends CommonObject {
 			$this->fk_soc_trainee = trim($this->fk_soc_trainee);
 		if (isset($this->fk_session_agefodd))
 			$this->fk_session_agefodd = trim($this->fk_session_agefodd);
-		if (isset($this->is_date_ask_OPCA))
-			$this->is_date_ask_OPCA = trim($this->is_date_ask_OPCA);
 		if (isset($this->is_OPCA))
 			$this->is_OPCA = trim($this->is_OPCA);
 		if (isset($this->fk_soc_OPCA))
@@ -266,10 +253,6 @@ class Agefodd_opca extends CommonObject {
 			$this->num_OPCA_soc = trim($this->num_OPCA_soc);
 		if (isset($this->num_OPCA_file))
 			$this->num_OPCA_file = trim($this->num_OPCA_file);
-		if (isset($this->fk_user_author))
-			$this->fk_user_author = trim($this->fk_user_author);
-		if (isset($this->fk_user_mod))
-			$this->fk_user_mod = trim($this->fk_user_mod);
 
 			// Check parameters
 			// Put here code to add control on parameters values
@@ -281,15 +264,13 @@ class Agefodd_opca extends CommonObject {
 		$sql .= " fk_soc_trainee=" . (isset($this->fk_soc_trainee) ? $this->fk_soc_trainee : "null") . ",";
 		$sql .= " fk_session_agefodd=" . (isset($this->fk_session_agefodd) ? $this->fk_session_agefodd : "null") . ",";
 		$sql .= " date_ask_OPCA=" . (dol_strlen($this->date_ask_OPCA) != 0 ? "'" . $this->db->idate($this->date_ask_OPCA) . "'" : 'null') . ",";
-		$sql .= " is_date_ask_OPCA=" . (! empty($this->is_date_ask_OPCA) ? $this->is_date_ask_OPCA : "0") . ",";
 		$sql .= " is_OPCA=" . (! empty($this->is_OPCA) ? $this->is_OPCA : "0") . ",";
 		$sql .= " fk_soc_OPCA=" . (! empty($this->fk_soc_OPCA) ? $this->fk_soc_OPCA : "null") . ",";
 		$sql .= " fk_socpeople_OPCA=" . (! empty($this->fk_socpeople_OPCA) ? $this->fk_socpeople_OPCA : "null") . ",";
 		$sql .= " num_OPCA_soc=" . (isset($this->num_OPCA_soc) ? "'" . $this->db->escape($this->num_OPCA_soc) . "'" : "null") . ",";
 		$sql .= " num_OPCA_file=" . (isset($this->num_OPCA_file) ? "'" . $this->db->escape($this->num_OPCA_file) . "'" : "null") . ",";
-		$sql .= " fk_user_author=" . (isset($this->fk_user_author) ? $this->fk_user_author : "null") . ",";
 		$sql .= " datec=" . (dol_strlen($this->datec) != 0 ? "'" . $this->db->idate($this->datec) . "'" : 'null') . ",";
-		$sql .= " fk_user_mod=" . (isset($this->fk_user_mod) ? $this->fk_user_mod : "null") . ",";
+		$sql .= " fk_user_mod=" . $user->id . ",";
 		$sql .= " tms=" . (dol_strlen($this->tms) != 0 ? "'" . $this->db->idate($this->tms) . "'" : 'null') . "";
 
 		$sql .= " WHERE rowid=" . $this->id;
@@ -391,7 +372,7 @@ class Agefodd_opca extends CommonObject {
 	 * @return int id of clone
 	 */
 	public function createFromClone($fromid) {
-		global $user, $langs;
+		global $user;
 
 		$error = 0;
 
@@ -441,7 +422,6 @@ class Agefodd_opca extends CommonObject {
 		$this->fk_soc_trainee = '';
 		$this->fk_session_agefodd = '';
 		$this->date_ask_OPCA = '';
-		$this->is_date_ask_OPCA = '';
 		$this->is_OPCA = '';
 		$this->fk_soc_OPCA = '';
 		$this->fk_socpeople_OPCA = '';
@@ -456,21 +436,18 @@ class Agefodd_opca extends CommonObject {
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $id_trainee soc trainee in session
+	 * @param int $fk_soc_trainee soc trainee in session
 	 * @param int $id_session session
-	 *        * @param int $fk_trainee_session trainee in session
+	 * @param int $fk_trainee_session trainee in session
 	 * @return int <0 if KO, >0 if OK (rowid)
 	 */
 	public function getOpcaForTraineeInSession($fk_soc_trainee, $id_session, $fk_trainee_session = 0) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 		$sql .= " t.fk_session_trainee,";
 		$sql .= " t.fk_soc_trainee,";
 		$sql .= " t.fk_session_agefodd,";
 		$sql .= " t.date_ask_OPCA as date_ask_opca,";
-		$sql .= " t.is_date_ask_OPCA as is_date_ask_opca,";
 		$sql .= " t.is_OPCA as is_opca,";
 		$sql .= " t.fk_soc_OPCA as fk_soc_opca,";
 		$sql .= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
@@ -504,7 +481,6 @@ class Agefodd_opca extends CommonObject {
 				$this->fk_soc_trainee = $obj->fk_soc_trainee;
 				$this->fk_session_agefodd = $obj->fk_session_agefodd;
 				$this->date_ask_OPCA = $this->db->jdate($obj->date_ask_opca);
-				$this->is_date_ask_OPCA = $obj->is_date_ask_opca;
 				$this->is_OPCA = $obj->is_opca;
 				$this->fk_soc_OPCA = $obj->fk_soc_opca;
 				$this->fk_socpeople_OPCA = $obj->fk_socpeople_opca;
@@ -522,7 +498,6 @@ class Agefodd_opca extends CommonObject {
 				$this->fk_soc_trainee = '';
 				$this->fk_session_agefodd = '';
 				$this->date_ask_OPCA = '';
-				$this->is_date_ask_OPCA = 0;
 				$this->is_OPCA = 0;
 				$this->fk_soc_OPCA = '';
 				$this->fk_socpeople_OPCA = '';
@@ -548,21 +523,16 @@ class Agefodd_opca extends CommonObject {
 	/**
 	 * Load object in memory from database
 	 *
-	 * @param int $id_trainee soc trainee in session
 	 * @param int $id_session session
-	 *        * @param int $fk_trainee_session trainee in session
 	 * @return int <0 if KO, >0 if OK (rowid)
 	 */
 	public function getOpcaSession($id_session) {
-		global $langs;
-
-		$sql = "SELECT";
+		$sql = "SELECT DISTINCT";
 		$sql .= " t.rowid,";
 		$sql .= " t.fk_session_trainee,";
 		$sql .= " t.fk_soc_trainee,";
 		$sql .= " t.fk_session_agefodd,";
 		$sql .= " t.date_ask_OPCA as date_ask_opca,";
-		$sql .= " t.is_date_ask_OPCA as is_date_ask_opca,";
 		$sql .= " t.is_OPCA as is_opca,";
 		$sql .= " t.fk_soc_OPCA as fk_soc_opca,";
 		$sql .= " t.fk_socpeople_OPCA as fk_socpeople_opca,";
@@ -577,6 +547,8 @@ class Agefodd_opca extends CommonObject {
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_opca as t";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as concactOPCA ";
 		$sql .= " ON t.fk_socpeople_OPCA = concactOPCA.rowid";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as sessta ON sessta.rowid=t.fk_session_trainee";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire as sta ON sta.rowid=sessta.fk_stagiaire AND sta.fk_soc=t.fk_soc_trainee";
 
 		$sql .= " WHERE t.fk_session_agefodd = " . $id_session;
 		dol_syslog(get_class($this) . "::getOpcaSession", LOG_DEBUG);
@@ -592,7 +564,6 @@ class Agefodd_opca extends CommonObject {
 					$line->fk_soc_trainee = $obj->fk_soc_trainee;
 					$line->fk_session_agefodd = $obj->fk_session_agefodd;
 					$line->date_ask_OPCA = $this->db->jdate($obj->date_ask_opca);
-					$line->is_date_ask_OPCA = $obj->is_date_ask_opca;
 					$line->is_OPCA = $obj->is_opca;
 					$line->fk_soc_OPCA = $obj->fk_soc_opca;
 					$line->fk_socpeople_OPCA = $obj->fk_socpeople_opca;
@@ -621,10 +592,11 @@ class Agefodd_opca extends CommonObject {
 }
 class AgefoddOpcaLine {
 	public $id;
+	public $opca_rowid;
+	public $fk_session_trainee;
 	public $fk_soc_trainee;
 	public $fk_session_agefodd;
 	public $date_ask_OPCA = '';
-	public $is_date_ask_OPCA;
 	public $is_OPCA;
 	public $fk_soc_OPCA;
 	public $fk_socpeople_OPCA;
@@ -634,5 +606,6 @@ class AgefoddOpcaLine {
 	public $datec = '';
 	public $fk_user_mod;
 	public $tms = '';
+	public $soc_OPCA_name;
+	public $contact_name_OPCA;
 }
-?>

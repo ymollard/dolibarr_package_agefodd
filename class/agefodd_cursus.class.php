@@ -34,7 +34,7 @@ class Agefodd_cursus extends CommonObject {
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd_cursus'; // !< Id that identify managed objects
 	public $table_element = 'agefodd_cursus'; // !< Name of table without prefix where object is stored
-	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $id;
 	public $ref_interne;
 	public $entity;
@@ -177,7 +177,6 @@ class Agefodd_cursus extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 
@@ -242,7 +241,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function update($user = 0, $notrigger = 0) {
+	public function update($user = null, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -403,7 +402,7 @@ class Agefodd_cursus extends CommonObject {
 	 * @return int id of clone
 	 */
 	public function createFromClone($fromid) {
-		global $user, $langs;
+		global $user;
 
 		$error = 0;
 
@@ -441,12 +440,10 @@ class Agefodd_cursus extends CommonObject {
 		}
 	}
 	public function info($id) {
-		global $langs;
-
 		$sql = "SELECT";
-		$sql .= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as p";
-		$sql .= " WHERE p.rowid = " . $id;
+		$sql .= " c.rowid, c.entity, c.datec, c.tms, c.fk_user_mod, c.fk_user_author";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_cursus as c";
+		$sql .= " WHERE c.rowid = " . $id;
 
 		dol_syslog(get_class($this) . "::info ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -454,6 +451,7 @@ class Agefodd_cursus extends CommonObject {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->entity = $obj->entity;
 				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->user_modification = $obj->fk_user_mod;
@@ -499,8 +497,6 @@ class Agefodd_cursus extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 

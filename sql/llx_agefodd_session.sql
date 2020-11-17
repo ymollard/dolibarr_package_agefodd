@@ -45,17 +45,18 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   cost_site double(24,8) DEFAULT 0,
   cost_trip double(24,8) NULL,    
   sell_price double(24,8) DEFAULT 0, 
+  cost_trainer_planned double(24,8) DEFAULT 0,         
+  cost_site_planned double(24,8) DEFAULT 0,
+  cost_trip_planned double(24,8) NULL,    
+  sell_price_planned double(24,8) DEFAULT 0,
+  status_before_archive integer NULL,
   invoice_amount double(24,8) DEFAULT 0, 
   cost_buy_charges double(24,8) DEFAULT 0, 
   cost_sell_charges double(24,8) DEFAULT 0, 
-  is_date_res_site smallint NOT NULL DEFAULT 0,
   date_res_site datetime DEFAULT NULL,
-  is_date_res_confirm_site smallint NOT NULL DEFAULT 0,
   date_res_confirm_site datetime DEFAULT NULL,
-  is_date_res_trainer smallint NOT NULL DEFAULT 0,
   date_res_trainer datetime DEFAULT NULL,
   date_ask_OPCA datetime DEFAULT NULL,
-  is_date_ask_OPCA smallint NOT NULL DEFAULT 0,
   is_OPCA smallint NOT NULL DEFAULT 0,
   fk_soc_OPCA integer DEFAULT NULL,
   fk_socpeople_OPCA integer DEFAULT NULL,
@@ -70,8 +71,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session (
   status integer DEFAULT NULL,
   duree_session real NOT NULL DEFAULT 0,
   intitule_custo varchar(100) DEFAULT NULL,
+  trainer_ext_information text DEFAULT NULL,
   import_key varchar(36) DEFAULT NULL,
   ref_ext varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB;
-
-ALTER TABLE llx_agefodd_session ADD COLUMN fk_soc_employer integer DEFAULT NULL AFTER fk_socpeople_presta;

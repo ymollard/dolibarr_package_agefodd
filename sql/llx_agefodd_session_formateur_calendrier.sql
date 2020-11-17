@@ -28,8 +28,11 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_formateur_calendrier (
   trainer_cost real NULL,
   trainer_status integer NULL,
   fk_actioncomm integer DEFAULT NULL,
+  status integer DEFAULT 0,
   fk_user_author integer NOT NULL,
+  note_private text NULL,
   datec datetime NOT NULL,
   fk_user_mod integer NOT NULL,
   tms timestamp NOT NULL
 )ENGINE=InnoDB;
+

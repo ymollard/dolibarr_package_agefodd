@@ -55,13 +55,6 @@ if (! $user->rights->agefodd->agefodd_formation_catalogue->lire) {
 	// Get parameters
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
-$page = GETPOST("page", 'int');
-if ($page == - 1) {
-	$page = 0;
-}
-$offset = $conf->liste_limit * $page;
-$pageprev = $page - 1;
-$pagenext = $page + 1;
 if (! $sortorder)
 	$sortorder = "ASC";
 if (! $sortfield)
@@ -80,7 +73,20 @@ if ($result < 0) {
 /*
  * Actions
  */
-
+//Rename training program file with trim whitespace to be enable to move it as training program pdf
+// do_move user rename php function thaht do not work with white space in name
+if (GETPOST('sendit','alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC) && !empty($asfichepedago))
+{
+	if (! empty($_FILES))
+	{
+		if (is_array($_FILES['userfile']['name'])) $userfiles=$_FILES['userfile']['name'];
+		else $userfiles=array($_FILES['userfile']['name']);
+		foreach($userfiles as $key => $userfile)
+		{
+			$_FILES['userfile']['name'][$key]=preg_replace('/\s+/', '_', dol_sanitizeFileName($userfile));;
+		}
+	}
+}
 include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 //Copy file uploaded as a training program file
 if (!empty($asfichepedago)) {
@@ -101,7 +107,7 @@ if(!empty($_REQUEST['label']) && !empty($_REQUEST['link']) && $_REQUEST['label']
 
 	$fopen = fopen($_REQUEST['link'], 'r');
 	file_put_contents($conf->agefodd->dir_output.'/'.'fiche_pedago_'.$object->id.'.pdf', $fopen);
-	
+
 }
 /*
  * View
@@ -148,8 +154,11 @@ if ($object->id) {
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->agefodd_formation_catalogue->creer);
+    $permtoedit = $user->rights->agefodd->agefodd_formation_catalogue->creer;
 	$param = '&id=' . $object->id;
 
+	//Avoid bug with Jquery multiselect form
+	$conf->global->MAIN_USE_JQUERY_FILEUPLOAD=0;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 
 

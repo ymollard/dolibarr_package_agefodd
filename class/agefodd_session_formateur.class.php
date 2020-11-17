@@ -28,7 +28,8 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 /**
  * Manage traner session object
  */
-class Agefodd_session_formateur {
+class Agefodd_session_formateur
+{
 	protected $db;
 	public $error;
 	public $errors = array ();
@@ -43,19 +44,21 @@ class Agefodd_session_formateur {
 	public $trainer_type;
 	public $trainer_type_label;
 	public $lines = array ();
-	public $labelstatut;
-	public $labelstatut_short;
-	
+	public $labelstatut = array();
+	public $labelstatut_short = array();
+	public $socpeopleid;
+
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function __construct($db) {
+	public function __construct($db)
+	{
 		global $langs;
-		
+
 		$this->db = $db;
-		
+
 		$this->labelstatut[0] = $langs->trans("TraineeSessionStatusProspect");
 		$this->labelstatut[1] = $langs->trans("TraineeSessionStatusVerbalAgreement");
 		$this->labelstatut[2] = $langs->trans("TraineeSessionStatusConfirm");
@@ -63,7 +66,7 @@ class Agefodd_session_formateur {
 		$this->labelstatut[4] = $langs->trans("TraineeSessionStatusPartPresent");
 		$this->labelstatut[5] = $langs->trans("TraineeSessionStatusNotPresent");
 		$this->labelstatut[6] = $langs->trans("TraineeSessionStatusCancelled");
-		
+
 		$this->labelstatut_short[0] = $langs->trans("TraineeSessionStatusProspectShort");
 		$this->labelstatut_short[1] = $langs->trans("TraineeSessionStatusVerbalAgreementShort");
 		$this->labelstatut_short[2] = $langs->trans("TraineeSessionStatusConfirmShort");
@@ -71,10 +74,10 @@ class Agefodd_session_formateur {
 		$this->labelstatut_short[4] = $langs->trans("TraineeSessionStatusPartPresentShort");
 		$this->labelstatut_short[5] = $langs->trans("TraineeSessionStatusNotPresentShort");
 		$this->labelstatut_short[6] = $langs->trans("TraineeSessionStatusCancelledShort");
-		
+
 		return 1;
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -82,20 +85,21 @@ class Agefodd_session_formateur {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0)
+	{
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
 		$this->sessid = trim($this->sessid);
 		$this->formid = trim($this->formid);
-		if (isset($this->trainer_type))
+		if (!empty($this->trainer_type))
 			$this->trainer_type = trim($this->trainer_type);
-		if (isset($this->trainer_status))
+		if (!empty($this->trainer_status))
 			$this->trainer_status = trim($this->trainer_status);
-			
+
 			// Check parameters
-			
+
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_session_formateur(";
 		$sql .= "fk_session,fk_agefodd_formateur, fk_user_author,fk_user_mod, datec";
@@ -107,12 +111,12 @@ class Agefodd_session_formateur {
 		$sql .= " " . $user->id . ', ';
 		$sql .= " " . $user->id . ', ';
 		$sql .= "'" . $this->db->idate(dol_now()) . "',";
-		$sql .= " " . (! isset($this->trainer_status) ? '0' : $this->db->escape($this->trainer_status)) . ",";
+		$sql .= " " . (empty($this->trainer_status) ? '0' : $this->db->escape($this->trainer_status)) . ",";
 		$sql .= " " . (empty($this->trainer_type) ? 'NULL' : $this->db->escape($this->trainer_type));
 		$sql .= ")";
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::create", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -124,7 +128,7 @@ class Agefodd_session_formateur {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				
+
 				// // Call triggers
 				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				// $interface=new Interfaces($this->db);
@@ -133,7 +137,7 @@ class Agefodd_session_formateur {
 				// // End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -147,33 +151,36 @@ class Agefodd_session_formateur {
 			return $this->id;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch($id) {
-		global $langs;
-		
+	public function fetch($id)
+	{
 		$sql = "SELECT";
 		$sql .= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql .= " f.fk_socpeople,";
-		$sql .= " sp.lastname, sp.firstname";
+		$sql .= " sp.lastname, sp.firstname, sp.address, sp.zip, sp.town";
+		$sql .= " ,u.lastname as ulastname, u.firstname as ufirstname";
 		$sql .= " ,sf.trainer_status";
 		$sql .= " ,sf.fk_agefodd_formateur_type as trainer_type";
 		$sql .= " ,st.intitule as trainertypelabel";
+		$sql .= " ,f.type_trainer";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur as f";
 		$sql .= " ON sf.fk_agefodd_formateur = f.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as sp";
 		$sql .= " ON f.fk_socpeople = sp.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "user as u";
+		$sql .= " ON f.fk_user = u.rowid";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formateur_type as st";
 		$sql .= " ON st.rowid = sf.fk_agefodd_formateur_type";
 		$sql .= " WHERE sf.rowid = " . $id;
-		
-		dol_syslog(get_class($this) . "::fetch", LOG_DEBUG);
+
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -181,36 +188,46 @@ class Agefodd_session_formateur {
 				$this->id = $obj->rowid;
 				$this->sessid = $obj->fk_session;
 				$this->formid = $obj->fk_agefodd_formateur;
-				$this->lastname = $obj->lastname;
-				$this->firstname = $obj->firstname;
+				if ($obj->type_trainer=='socpeople') {
+					$this->lastname = $obj->lastname;
+					$this->firstname = $obj->firstname;
+					$this->address = $obj->address;
+					$this->zip = $obj->zip;
+					$this->town = $obj->town;
+				} elseif ($obj->type_trainer=='user') {
+					$this->lastname = $obj->ulastname;
+					$this->firstname = $obj->ufirstname;
+				}
 				$this->trainer_status = $obj->trainer_status;
 				$this->trainer_type = $obj->trainer_type;
 				$this->trainer_type_label = $obj->trainertypelabel;
+				$this->socpeopleid = $obj->fk_socpeople;
 			}
 			$this->db->free($resql);
-			
+
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__ . $this->error, LOG_ERR);
 			return - 1;
 		}
+
+		return 0;
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
 	 * @param int $id session object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function fetch_formateur_per_session($id) {
-		global $langs;
-		
+	public function fetch_formateur_per_session($id)
+	{
 		$sql = "SELECT";
 		$sql .= " sf.rowid, sf.fk_session, sf.fk_agefodd_formateur,";
 		$sql .= " f.rowid as formid, f.fk_socpeople, f.fk_user,";
-		$sql .= " sp.lastname as name_socp, sp.firstname as firstname_socp, sp.email as email_socp,";
-		$sql .= " u.lastname as name_user, u.firstname as firstname_user, u.email as email_user";
+		$sql .= " sp.lastname as name_socp, sp.firstname as firstname_socp, sp.email as email_socp, sp.phone as phone_socp,";
+		$sql .= " u.lastname as name_user, u.firstname as firstname_user, u.email as email_user, u.office_phone as phone_user";
 		$sql .= " ,sf.trainer_status";
 		$sql .= " ,st.rowid as trainertype, st.intitule as trainertypelabel";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur as sf";
@@ -224,32 +241,34 @@ class Agefodd_session_formateur {
 		$sql .= " ON st.rowid = sf.fk_agefodd_formateur_type";
 		$sql .= " WHERE sf.fk_session = " . $id;
 		$sql .= " ORDER BY sf.rowid ASC";
-		
+
 		dol_syslog(get_class($this) . "::fetch_formateur_per_session", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
-			
+
 			if ($num) {
 				while ( $i < $num ) {
 					$obj = $this->db->fetch_object($resql);
-					
+
 					$line = new AgfSessionTrainer();
-					
+
 					$line->opsid = $obj->rowid;
 					if (! empty($obj->fk_socpeople)) {
 						$line->lastname = $obj->name_socp;
 						$line->firstname = $obj->firstname_socp;
+						$line->phone = $obj->phone_socp;
 						$line->email = $obj->email_socp;
 					}
 					if (! empty($obj->fk_user)) {
 						$line->lastname = $obj->name_user;
 						$line->firstname = $obj->firstname_user;
 						$line->email = $obj->email_user;
+						$line->phone = $obj->phone_user;
 					}
-					
+
 					$line->socpeopleid = $obj->fk_socpeople;
 					$line->userid = $obj->fk_user;
 					$line->formid = $obj->formid;
@@ -257,9 +276,10 @@ class Agefodd_session_formateur {
 					$line->trainer_status = $obj->trainer_status;
 					$line->trainer_type = $obj->trainertype;
 					$line->trainer_type_label = $obj->trainertypelabel;
-					
+					$this->socpeopleid = $obj->fk_socpeople;
+
 					$this->lines[$i] = $line;
-					
+
 					$i ++;
 				}
 			}
@@ -267,11 +287,11 @@ class Agefodd_session_formateur {
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_formateur_per_session " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__ . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Update object into database
 	 *
@@ -279,29 +299,30 @@ class Agefodd_session_formateur {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function update($user, $notrigger = 0) {
+	public function update($user, $notrigger = 0)
+	{
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
 		$this->opsid = trim($this->opsid);
 		$this->formid = trim($this->formid);
-		if (isset($this->trainer_type))
+		if (empty($this->trainer_type))
 			$this->trainer_type = trim($this->trainer_type);
-			
+
 			// Check parameters
 			// Put here code to add control on parameters values
-			
+
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "agefodd_session_formateur SET";
 		$sql .= " fk_agefodd_formateur=" . $this->formid . ",";
-		$sql .= " trainer_status=" . (isset($this->trainer_status) ? $this->trainer_status : "null") . ",";
+		$sql .= " trainer_status=" . (!empty($this->trainer_status) ? $this->trainer_status : "0") . ",";
 		$sql .= " fk_agefodd_formateur_type=" . (! empty($this->trainer_type) ? $this->trainer_type : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id . " ";
 		$sql .= " WHERE rowid = " . $this->opsid;
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::update", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -312,7 +333,7 @@ class Agefodd_session_formateur {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				
+
 				// // Call triggers
 				// include_once(DOL_DOCUMENT_ROOT . "/interfaces.class.php");
 				// $interface=new Interfaces($this->db);
@@ -321,10 +342,10 @@ class Agefodd_session_formateur {
 				// // End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
+			foreach ($this->errors as $errmsg) {
 				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
@@ -335,50 +356,74 @@ class Agefodd_session_formateur {
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
 	 * @param int $id of object to delete
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function remove($id) {
+	public function remove($id)
+	{
 		global $conf;
-		
+
+		$error = 0;
+
 		$this->db->begin();
-		
+
 		if ($conf->global->AGF_DOL_TRAINER_AGENDA) {
 			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'actioncomm WHERE id IN ';
 			$sql .= '(SELECT fk_actioncomm FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier ';
 			$sql .= 'WHERE fk_agefodd_session_formateur=' . $id . ')';
-			
-			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
+
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
-			
+
 			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'agefodd_session_formateur_calendrier ';
 			$sql .= 'WHERE fk_agefodd_session_formateur=' . $id;
-			
-			dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
+
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
-		
-		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur";
-		$sql .= " WHERE rowid = " . $id;
-		
-		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
-		$resql = $this->db->query($sql);
+
+		if (! $error) {
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire_planification";
+			$sql .= " WHERE fk_agefodd_session_formateur = " . $id;
+
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+
+			if (! $resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			}
+		}
+
+		if (! $error) {
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_session_formateur";
+			$sql .= " WHERE rowid = " . $id;
+
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+
+			if (! $resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			}
+		}
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__ . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -388,17 +433,18 @@ class Agefodd_session_formateur {
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Return label of status of trainer in session (on going, subcribe, confirm, present, patially present,not present,canceled)
 	 *
 	 * @param int $mode label, 1=short label, 2=Picto + short label, 3=Picto, 4=Picto + long label, 5=Short label + Picto
 	 * @return string
 	 */
-	public function getLibStatut($mode = 0) {
+	public function getLibStatut($mode = 0)
+	{
 		return $this->LibStatut($this->trainer_status, $mode);
 	}
-	
+
 	/**
 	 * Return label of a status (draft, validated, .
 	 *
@@ -412,14 +458,14 @@ class Agefodd_session_formateur {
 	 */
 	public function LibStatut($statut, $mode = 1) {
 		global $langs;
-		
+
 		if (empty($statut))
 			$statut = 0;
-		
+
 		$langs->load("agefodd@agefodd");
-		
+
 		if ($mode == 0) {
-			
+
 			return $this->labelstatut[$statut];
 		}
 		if ($mode == 1) {
@@ -489,6 +535,8 @@ class Agefodd_session_formateur {
 			if ($statut == 6)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
 		}
+
+		return '';
 	}
 }
 
@@ -507,7 +555,10 @@ class AgfSessionTrainer {
 	public $trainer_status;
 	public $trainer_type;
 	public $trainer_type_label;
-	
+	public $phone;
+	public $labelstatut = array();
+	public $labelstatut_short = array();
+
 	/**
 	 * Return label of status of trainer in session (on going, subcribe, confirm, present, patially present,not present,canceled)
 	 *
@@ -517,7 +568,7 @@ class AgfSessionTrainer {
 	public function getLibStatut($mode = 0) {
 		return $this->LibStatut($this->trainer_status, $mode);
 	}
-	
+
 	/**
 	 * Return label of a status (draft, validated, .
 	 *
@@ -531,14 +582,14 @@ class AgfSessionTrainer {
 	 */
 	public function LibStatut($statut, $mode = 1) {
 		global $langs;
-		
+
 		if (empty($statut))
 			$statut = 0;
-		
+
 		$langs->load("agefodd@agefodd");
-		
+
 		if ($mode == 0) {
-			
+
 			return $this->labelstatut[$statut];
 		}
 		if ($mode == 1) {
@@ -608,10 +659,14 @@ class AgfSessionTrainer {
 			if ($statut == 6)
 				return '<span class="hideonsmartphone">' . $this->labelstatut_short[$statut] . ' </span>' . img_picto($langs->trans('TraineeSessionStatusCancelled'), 'statut8');
 		}
+
+		return '';
 	}
+
+
 	public function __construct() {
 		global $langs;
-		
+
 		$this->labelstatut[0] = $langs->trans("TraineeSessionStatusProspect");
 		$this->labelstatut[1] = $langs->trans("TraineeSessionStatusVerbalAgreement");
 		$this->labelstatut[2] = $langs->trans("TraineeSessionStatusConfirm");
@@ -619,7 +674,7 @@ class AgfSessionTrainer {
 		$this->labelstatut[4] = $langs->trans("TraineeSessionStatusPartPresent");
 		$this->labelstatut[5] = $langs->trans("TraineeSessionStatusNotPresent");
 		$this->labelstatut[6] = $langs->trans("TraineeSessionStatusCancelled");
-		
+
 		$this->labelstatut_short[0] = $langs->trans("TraineeSessionStatusProspectShort");
 		$this->labelstatut_short[1] = $langs->trans("TraineeSessionStatusVerbalAgreementShort");
 		$this->labelstatut_short[2] = $langs->trans("TraineeSessionStatusConfirmShort");
@@ -627,7 +682,7 @@ class AgfSessionTrainer {
 		$this->labelstatut_short[4] = $langs->trans("TraineeSessionStatusPartPresentShort");
 		$this->labelstatut_short[5] = $langs->trans("TraineeSessionStatusNotPresentShort");
 		$this->labelstatut_short[6] = $langs->trans("TraineeSessionStatusCancelledShort");
-		
+
 		return 1;
 	}
 }

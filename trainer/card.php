@@ -44,7 +44,16 @@ $arch = GETPOST('arch', 'int');
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
-	/*
+$hookmanager->initHooks(array(
+	'agefoddsessiontrainer'
+));
+
+$parameters = array('id'=>$id);
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $agf, $action); // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+
+
+/*
  * Actions delete
  */
 if ($action == 'confirm_delete' && $confirm == "yes" && $user->rights->agefodd->creer) {
@@ -77,6 +86,7 @@ if ($action == 'arch_confirm_delete' && $user->rights->agefodd->creer && $confir
 		setEventMessage($agf->error, 'errors');
 	}
 }
+
 
 /*
  * Action create from contact (card trainer : CARREFULL, Dolibarr contact must exists)
@@ -152,6 +162,22 @@ if ($action == 'updatetraining' && $user->rights->agefodd->creer) {
 	}
 }
 
+if (!empty($id) && $action == 'send')
+{
+	$object = new Agefodd_teacher($db);
+	$result = $object->fetch($id);
+
+	if($result>0){
+		// Actions to send emails
+		$actiontypecode = 'AC_OTH_AUTO';
+		$trigger_name = 'AGFTRAINER_SENTBYMAIL';
+		$autocopy = 'MAIN_MAIL_AUTOCOPY_AGFTRAINER_TO';
+		$trackid = 'agftrainer' . $object->id;
+		include __DIR__.'/../actions_sendmails.inc.php';
+	}
+
+}
+
 /*
  * View
  */
@@ -203,8 +229,8 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 
 	print '</table>';
 
-	print '<table style=noborder align="right">';
-	print '<tr><td align="center" colspan=2>';
+	print '<table class="noborder" style="text-align: right;">';
+	print '<tr><td style="text-align: right;" colspan=2>';
 	print '<input type="submit" class="butAction" value="' . $langs->trans("Save") . '"> &nbsp; ';
 	print '<input type="submit" name="cancel" class="butActionDelete" value="' . $langs->trans("Cancel") . '">';
 	print '</td></tr>';
@@ -266,7 +292,7 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			$head = trainer_prepare_head($agf);
 
 			dol_fiche_head($head, 'card', $langs->trans("AgfTeacher"), 0, 'user');
-			
+
 			dol_agefodd_banner_tab($agf, 'id');
 			print '<div class="underbanner clearboth"></div>';
 
@@ -399,10 +425,15 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 			        require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 			        $contact = new Contact($db);
 			        $contact->fetch($agf->spid);
-			        print '<tr><td>'.$langs->trans('AgfSeeTrainer').'</td><td>'.$contact->getNomUrl(1).'</td></tr>';
+			        print '<tr><td>'.$langs->trans('AgfSeeTrainer').'</td><td>'.$contact->getNomUrl(1);
+				    if (!empty($contact->socid)) {
+					    $contact->fetch_thirdparty();
+					    print '<br>'.$contact->thirdparty->getNomUrl(1);
+				    }
+			        print '</td></tr>';
 			    }
 			} elseif ($agf->type_trainer == $agf->type_trainer_def[0]) {
-			    if ($user->rights->user->user->creer) {
+			    if ($user->rights->user->creer) {
 			        require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 			        $u = new User($db);
 			        $u->fetch($agf->fk_user);
@@ -428,21 +459,36 @@ if ($action == 'create' && $user->rights->agefodd->creer) {
 print '<div class="tabsAction">';
 if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $action != 'editcategory' && $action != 'edittraining') {
 
+	// Send
+	if (($user->rights->agefodd->creer || $user->rights->agefodd->modifier) && floatval(DOL_VERSION) > 8) {
+		print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $agf->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a></div>';
+	} else {
+		$class = "";
+		$title = "";
+		if(floatval(DOL_VERSION) < 9){
+			$class = "classfortooltip";
+			$title = $langs->trans("AGF_ForDoliVersionXMinOnly", 9);
+		}
+
+		print '<div class="inline-block divButAction"><a class="butActionRefused '.$class.'" href="#" title="'.$title.'">' . $langs->trans('SendMail') . '</a></div>';
+	}
+
+
     $href = '';
     if ($agf->type_trainer == 'socpeople'){
         if(DOL_VERSION > 3.6){
-            $href = dol_buildpath('/contact/card.php?id='.$agf->spid, 2).'&action=edit';
+            $href = dol_buildpath('/contact/card.php?id='.$agf->spid, 1).'&action=edit';
         } else {
-            $href = dol_buildpath('/contact/fiche.php?id='.$agf->spid, 2).'&action=edit';
+            $href = dol_buildpath('/contact/fiche.php?id='.$agf->spid, 1).'&action=edit';
         }
     } else {
         if(DOL_VERSION > 3.6){
-            $href = dol_buildpath('/user/card.php?id='.$agf->fk_user, 2).'&action=edit';
+            $href = dol_buildpath('/user/card.php?id='.$agf->fk_user, 1).'&action=edit';
         } else {
-            $href = dol_buildpath('/user/fiche.php?id='.$agf->fk_user, 2).'&action=edit';
+            $href = dol_buildpath('/user/fiche.php?id='.$agf->fk_user, 1).'&action=edit';
         }
     }
-    
+
 	if ($user->rights->agefodd->creer) {
 	    print '<a class="butAction" href="' . $href . '">' . $langs->trans('Modify') . '</a>';
 		print '<a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '">' . $langs->trans('Delete') . '</a>';
@@ -451,7 +497,7 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $actio
 		print '<a class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotAllowed")) . '">' . $langs->trans('Delete') . '</a>';
 	}
 
-	if ($user->rights->agefodd->modifier) {
+	if ($user->rights->agefodd->modifier && ! $user->rights->agefodd->session->trainer) {
 		if ($agf->archive == 0) {
 			print '<a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?action=archive&id=' . $id . '">' . $langs->trans('AgfArchiver') . '</a>';
 		} else {
@@ -462,7 +508,27 @@ if ($action != 'create' && $action != 'edit' && $action != 'nfcontact' && $actio
 	}
 }
 
+/*
+ * Action create
+*/
+
+$parameters = array();
+$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $agf, $action); // Note that $action and $object may have been modified by hook
+print $hookmanager->resPrint;
+
+
 print '</div>';
+
+if ($id) {
+
+	// Presend form
+	$modelmail = 'agf_trainer';
+	$defaulttopic = 'AgfSendEmailTrainer';
+	$diroutput = $conf->agefodd->multidir_output[$agf->entity];
+	$trackid = 'agftrainer' . $agf->id;
+
+	include __DIR__ . '/../tpl/card_presend.tpl.php';
+}
 
 llxFooter();
 $db->close();

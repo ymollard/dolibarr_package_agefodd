@@ -64,6 +64,8 @@ $site_view = GETPOST('site_view', 'int');
 $search_sale = GETPOST('search_sale', 'int');
 $search_id = GETPOST('search_id', 'int');
 $search_soc_requester = GETPOST('search_soc_requester', 'alpha');
+$search_alert = GETPOST('search_alert', 'alpha');
+$search_session_ref = GETPOST('search_session_ref', 'alpha');
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
@@ -78,12 +80,17 @@ if (GETPOST("button_removefilter_x")) {
 	$search_type_session = "";
 	$search_id = '';
 	$search_soc_requester = '';
+	$search_alert='';
 }
 
 $filter = array ();
 if (! empty($search_trainning_name)) {
 	$filter ['c.intitule'] = $search_trainning_name;
 	$option .= '&search_trainning_name=' . $search_trainning_name;
+}
+if (! empty($search_session_ref)) {
+	$filter['s.ref'] = $search_session_ref;
+	$option .= '&search_session_ref=' . $search_session_ref;
 }
 if (! empty($search_sale)) {
 	$filter ['sale.fk_user_com'] = $search_sale;
@@ -128,6 +135,10 @@ if ($search_type_session != '' && $search_type_session != - 1) {
 if (! empty($search_id)) {
 	$filter ['s.rowid'] = $search_id;
 	$option .= '&search_id=' . $search_id;
+}
+if (! empty($search_alert)) {
+	$filter ['alert'] = $search_alert;
+	$option .= '&search_alert=' . $search_alert;
 }
 if (!empty($limit)) {
 	$option .= '&limit=' . $limit;
@@ -209,7 +220,7 @@ if ($resql != - 1) {
 		print '<input type="hidden" name="limit" value="' . $limit . '"/>';
 	}
 
-	print_barre_liste($title, $page, $_SERVEUR ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVER ['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png', 0, '', '', $limit);
 
 	// If the user can view prospects other than his'
 	if ($user->rights->societe->client->voir || $socid) {
@@ -227,26 +238,32 @@ if ($resql != - 1) {
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 
-	print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVEUR ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVEUR ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "s.rowid", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("SessionRef"), $_SERVER['PHP_SELF'], "s.ref", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateDebut"), $_SERVER ['PHP_SELF'], "s.dated", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfDateFin"), $_SERVER ['PHP_SELF'], "s.datef", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfFormateur"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVEUR ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfLieu"), $_SERVER ['PHP_SELF'], "p.ref_interne", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVER ['PHP_SELF'], "so.nom", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("AgfTypeRequester"), $_SERVER ['PHP_SELF'], "sorequester.nom", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfAlertLevel0Short"), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfAlertLevel1Short"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfAlertLevel2Short"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfAlertLevel3Short"), $_SERVEUR ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVEUR ['PHP_SELF'], "s.nb_stagiaire", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVEUR ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Comment."), $_SERVEUR ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfAlertDay"), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfYDaysBeforeAlert"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfXDaysBeforeAlert"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfZDaysBeforeAlert"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfAlertLevel3Short"), $_SERVER ['PHP_SELF'], '', '', $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfNbreParticipants"), $_SERVER ['PHP_SELF'], "s.nb_stagiaire", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("AgfFormTypeSession"), $_SERVER ['PHP_SELF'], "s.type_session", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Comment."), $_SERVER ['PHP_SELF'], "", '', $option, '', $sortfield, $sortorder);
 	print "</tr>\n";
 
 	print '<tr class="liste_titre">';
 
-	print '<td><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
+	print '<td class="liste_titre"><input type="text" class="flat" name="search_id" value="' . $search_id . '" size="2"></td>';
+
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat" name="search_session_ref" id="search_session_ref" value="' . $search_session_ref . '" size="15">';
+	print '</td>';
 
 	print '<td class="liste_titre">';
 	print $form->select_date($search_start_date, 'search_start_date', 0, 0, 1, 'search_form');
@@ -285,6 +302,8 @@ if ($resql != - 1) {
 	print '</td>';
 	print '<td class="liste_titre">';
 	print '</td>';
+	print '<td class="liste_titre">';
+	print '</td>';
 	// NbParticipant
 	print '<td class="liste_titre">';
 	print '</td>';
@@ -303,6 +322,7 @@ if ($resql != - 1) {
 
 
 	$var = true;
+    $oldid = null;
 	foreach ( $agf->lines as $line ) {
 
 		if ($line->rowid != $oldid) {
@@ -318,7 +338,8 @@ if ($resql != - 1) {
 			if ($line->color && ((($couleur_rgb [0] * 299) + ($couleur_rgb [1] * 587) + ($couleur_rgb [2] * 114)) / 1000) < 125)
 				$color_a = ' style="color: #FFFFFF;"';
 
-			print '<td  style="background: #' . $line->color . '"><a' . $color_a . ' href="administrative.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+			print '<td  style="background:#' . $line->color . '"><a' . $color_a . ' href="administrative.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->rowid . '</a></td>';
+			print '<td  style="background:#' . $line->color . '"><a' . $color_a . ' href="administrative.php?id=' . $line->rowid . '">' . img_object($langs->trans("AgfShowDetails"), "service") . ' ' . $line->sessionref . '</a></td>';
 			print '<td>' . dol_print_date($line->dated, 'daytext') . '</td>';
 			print '<td>' . dol_print_date($line->datef, 'daytext') . '</td>';
 			print '<td>' . stripslashes(dol_trunc($line->intitule, 60)) . '</td>';
@@ -335,7 +356,7 @@ if ($resql != - 1) {
 			}
 			print '</td>';
 
-			print '<td><a href="'. dol_buildpath('/agefodd/site/card.php?id=', 2) . $line->fk_session_place . '">' . stripslashes($line->ref_interne) . '</a></td>';
+			print '<td><a href="'. dol_buildpath('/agefodd/site/card.php?id=', 1) . $line->fk_session_place . '">' . stripslashes($line->ref_interne) . '</a></td>';
 
 			print '<td>';
 			if (! empty($line->socid) && $line->socid != - 1) {
@@ -360,16 +381,20 @@ if ($resql != - 1) {
 			print '<td>' . $line->task0 . '</td>';
 			print '<td>' . $line->task1 . '</td>';
 			print '<td>' . $line->task2 . '</td>';
+			print '<td>' . $line->morethanzday . '</td>';
 			print '<td>' . $line->task3 . '</td>';
 
+            $line->type_session = intval($line->type_session);
+
 			print '<td>' . $line->nb_stagiaire . '</td>';
-			print '<td>' . (empty($line->type_session) ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td>';
+			print '<td>' . (!empty($line->type_session) ? $langs->trans('AgfFormTypeSessionInter') : $langs->trans('AgfFormTypeSessionIntra')) . '</td>';
 			print '<td title="' . stripslashes($line->notes) . '">' . stripslashes(dol_trunc($line->notes, 60)) . '</td>';
 
 			print "</tr>\n";
 		} else {
 			print "<tr $bc[$var]>";
 			print '<td></td>'; // id
+			print '<td></td>'; // ref
 			print '<td></td>'; // dates
 			print '<td></td>'; // datef
 			print '<td></td>'; // intitule

@@ -44,6 +44,7 @@ $type = GETPOST("type");
 
 $filter_commercial = GETPOST('commercial', 'int');
 $filter_customer = GETPOST('fk_soc', 'array');
+$filter_customer_place = GETPOST('fk_soc_place', 'array');
 $filter_contact = GETPOST('contact', 'int');
 $filter_trainer = GETPOST('trainerid', 'int');
 $filter_type_session = GETPOST('type_session', 'int');
@@ -53,8 +54,14 @@ $display_only_trainer_filter = GETPOST('displayonlytrainerfilter', 'int');
 $filterdatestart = dol_mktime(0, 0, 0, GETPOST('dt_start_filtermonth','int'), GETPOST('dt_start_filterday','int'), GETPOST('dt_start_filteryear','int'));
 $filter_session_status = GETPOST('search_session_status', 'array');
 $filter_control_occupation = GETPOST('control_occupation');
-if ($filter_control_occupation === '') $filter_control_occupation = -1; // -1 = tous; 0 = Non cochée; 1 = Cochée
-	
+if ($filter_control_occupation === '') {
+	if (!is_null($conf->global->AGF_DEFAULT_AGENDA_LOCATION_FILTER_ROOM)) {
+		$filter_control_occupation = $conf->global->AGF_DEFAULT_AGENDA_LOCATION_FILTER_ROOM;
+	} else {
+		$filter_control_occupation = -1; // -1 = tous; 0 = Non cochée; 1 = Cochée
+	}
+}
+
 if ($type == 'trainer' || $type == 'trainerext') {
 	$canedit = 0;
 	$filter_trainer=$user->id;
@@ -85,6 +92,9 @@ if ($filter_commercial == - 1) {
 }
 if ($filter_customer == - 1) {
 	$filter_customer = 0;
+}
+if ($filter_customer_place == - 1) {
+	$filter_customer_place = 0;
 }
 if ($filter_contact == - 1) {
 	$filter_contact = 0;
@@ -219,6 +229,9 @@ if (!empty($filter_commercial)) {
 if (!empty($filter_customer)) {
 	foreach ($filter_customer as $fk_soc) $param .= "&amp;fk_soc[]=" . $fk_soc;
 }
+if (!empty($filter_customer_place)) {
+	foreach ($filter_customer_place as $fk_soc) $param .= "&amp;fk_soc_place[]=" . $fk_soc;
+}
 if (!empty($filter_contact)) {
 	$param .= "&amp;contact=" . $filter_contact;
 }
@@ -298,8 +311,8 @@ $canedit = 1;
 // TODO agf_calendars_prepare_head($paramnoaction); pour la version master
 $head = agf_calendars_prepare_head($paramnoaction);
 
-dol_fiche_head($head, $tabactive, $langs->trans('Agenda'), 0, 'action');
-$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action, $filter_session_status, $filter_trainee, $filter_control_occupation, true);
+dol_fiche_head($head, $tabactive, $langs->trans('AgfMenuAgenda'), 0, 'action');
+$formagefodd->agenda_filter($form, $year, $month, $day, $filter_commercial, $filter_customer, $filter_contact, $filter_trainer, $canedit, $filterdatestart, '', $onlysession, $filter_type_session, $display_only_trainer_filter, $filter_location, $action, $filter_session_status, $filter_trainee, $filter_control_occupation, true, $filter_customer_place);
 
 // TODO remove si intégration dans master
 ?>
@@ -380,6 +393,9 @@ if (! empty($filter_commercial)) {
 if (! empty($filter_customer)) {
 	$sql .= " AND agf.fk_soc IN (" .implode(',', $filter_customer).")";
 }
+if (! empty($filter_customer_place)) {
+	$sql .= " AND agf_place.fk_societe IN (" .implode(',', $filter_customer_place).")";
+}
 if (! empty($filter_contact)) {
 
 	if ($conf->global->AGF_CONTACT_DOL_SESSION) {
@@ -441,38 +457,6 @@ $reshook=$hookmanager->executeHooks('printFieldListWhere',$parameters);    // No
 if (!empty($hookmanager->resPrint)) $sql.=$hookmanager->resPrint;
 
 //$sql.= ' ORDER BY agf_place.ref_interne ASC';
-
-
-/*
- *
- * SELECT DISTINCT a.id, a.label, a.datep, a.datep2, a.percent, a.fk_user_author, a.fk_user_action, a.transparency, a.priority, a.fulldayevent, a.location, a.fk_soc, a.fk_contact, a.fk_contact, ca.code, agf.rowid AS sessionid, agf.type_session AS sessiontype, agf_status.code AS sessionstatus, agf_place.ref_interne AS lieu, trainer_session.trainer_status, trainer.rowid as trainerid
-FROM llx_actioncomm a
-INNER JOIN llx_c_actioncomm as ca ON (a.fk_action = ca.id)
-INNER JOIN llx_agefodd_session as agf ON (agf.rowid = a.fk_element)
-INNER JOIN llx_agefodd_session_status_type as agf_status ON (agf.status = agf_status.rowid)
-INNER JOIN llx_agefodd_place as agf_place ON (agf.fk_session_place = agf_place.rowid AND ref_interne LIKE 'Akteos%')
-INNER JOIN llx_agefodd_session_formateur as trainer_session ON (agf.rowid = trainer_session.fk_session)
-INNER JOIN llx_agefodd_formateur as trainer ON (trainer_session.fk_agefodd_formateur = trainer.rowid)
-WHERE a.entity IN (1)
-AND a.elementtype="agefodd_agsession"
-AND ca.code<>'AC_AGF_SESST'
-AND ca.code='AC_AGF_SESS'
-AND ( (a.datep BETWEEN '20160725000000' AND '20160907235959') OR (a.datep2 BETWEEN '20160725000000' AND '20160907235959') OR (a.datep < '20160725000000' AND a.datep2 > '20160907235959'))
-
-UNION
-
-SELECT DISTINCT a.id, a.label, a.datep, a.datep2, a.percent, a.fk_user_author, a.fk_user_action, a.transparency, a.priority, a.fulldayevent, a.location, a.fk_soc, a.fk_contact, a.fk_contact, ca.code, ae.act_sess AS sessionid, null AS sessiontype, null AS sessionstatus, agf_place.ref_interne AS lieu, null, null
-FROM llx_actioncomm a
-INNER JOIN llx_c_actioncomm as ca ON (a.fk_action = ca.id)
-INNER JOIN llx_actioncomm_extrafields as ae ON (a.id = ae.fk_object)
-INNER JOIN llx_agefodd_place as agf_place ON (ae.location = agf_place.rowid AND ref_interne LIKE 'Akteos%')
-WHERE a.entity IN (1)
-AND (a.elementtype<>"agefodd_agsession" OR a.elementtype IS NULL)
-AND ca.code<>'AC_AGF_SESST'
-AND ca.code<>'AC_AGF_SESS'
-AND ( (a.datep BETWEEN '20160725000000' AND '20160907235959') OR (a.datep2 BETWEEN '20160725000000' AND '20160907235959') OR (a.datep < '20160725000000' AND a.datep2 > '20160907235959'))
- *
- */
 
 // TODO remove echo
 //echo $sql.'<br />';
@@ -588,6 +572,154 @@ if ($resql) {
 	}
 } else {
 	dol_print_error($db);
+}
+
+if (!empty($conf->global->AGF_USE_SITE_IN_AGENDA)) {
+	$sqlagenda = 'SELECT DISTINCT a.id, a.label, a.datep, a.datep2, a.percent, a.fk_user_author, a.fk_user_action, a.transparency, a.priority, a.fulldayevent,
+	a.location, a.fk_soc, a.fk_contact, a.fk_contact,
+	ca.code,
+	\'\' AS sessionid, \'\' AS sessiontype,
+	\'\' AS sessionstatus,
+	agf_place.ref_interne AS lieu,
+	\'\' as trainer_status,
+	\'\' as trainerid
+
+	FROM '.MAIN_DB_PREFIX.'actioncomm a
+	INNER JOIN ' . MAIN_DB_PREFIX . 'c_actioncomm as ca ON (a.fk_action = ca.id)
+	INNER JOIN ' . MAIN_DB_PREFIX . 'actioncomm_extrafields as extra ON (extra.fk_object=a.id)
+	INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_place as agf_place ON (extra.agf_site = agf_place.rowid)';
+	if ($action == 'show_day') {
+		$sqlagenda .= " AND (";
+		$sqlagenda .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
+		$sqlagenda .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
+		$sqlagenda .= " OR ";
+		$sqlagenda .= " (a.datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
+		$sqlagenda .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
+		$sqlagenda .= " OR ";
+		$sqlagenda .= " (a.datep < '" . $db->idate(dol_mktime(0, 0, 0, $month, $day, $year)) . "'";
+		$sqlagenda .= " AND a.datep2 > '" . $db->idate(dol_mktime(23, 59, 59, $month, $day, $year)) . "')";
+		$sqlagenda .= ')';
+	} else {
+		// To limit array
+		$sqlagenda .= " AND (";
+		$sqlagenda .= " (a.datep BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'"; // Start 7 days before
+		$sqlagenda .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')"; // End 7 days after + 3 to go from 28 to 31
+		$sqlagenda .= " OR ";
+		$sqlagenda .= " (a.datep2 BETWEEN '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
+		$sqlagenda .= " AND '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
+		$sqlagenda .= " OR ";
+		$sqlagenda .= " (a.datep < '" . $db->idate(dol_mktime(0, 0, 0, $month, 1, $year) - (60 * 60 * 24 * 7)) . "'";
+		$sqlagenda .= " AND a.datep2 > '" . $db->idate(dol_mktime(23, 59, 59, $month, 28, $year) + (60 * 60 * 24 * 10)) . "')";
+		$sqlagenda .= ')';
+	}
+	$resql = $db->query($sqlagenda);
+	if ($resql) {
+		$num = $db->num_rows($resql);
+		$i = 0;
+		while ( $i < $num ) {
+			$obj = $db->fetch_object($resql);
+
+			// Discard auto action if option is on
+			if (! empty($conf->global->AGENDA_ALWAYS_HIDE_AUTO) && $obj->code == 'AC_OTH_AUTO') {
+				$i ++;
+				continue;
+			}
+
+			$TLieu[$obj->lieu]++;
+
+			// Create a new object action
+			$event = new ActionComm($db);
+			$event->id = $obj->id;
+
+			$event->lieu = $obj->lieu;
+
+			$event->datep = $db->jdate($obj->datep); // datep and datef are GMT date
+			$event->datef = $db->jdate($obj->datep2);
+			$event->type_code = $obj->code;
+			$event->type_color = $obj->color;
+			// $event->libelle=$obj->label; // deprecated
+			$event->label = $obj->label;
+			$event->percentage = $obj->percent;
+			// $event->author->id=$obj->fk_user_author; // user id of creator
+			$event->authorid = $obj->fk_user_author; // user id of creator
+			$event->userownerid = $obj->fk_user_action; // user id of owner
+			// TODO à utiliser pour la version master
+			//$event->fetch_userassigned(); // This load $event->userassigned
+			$event->priority = $obj->priority;
+			$event->fulldayevent = $obj->fulldayevent;
+			$event->location = $obj->location;
+			$event->transparency = $obj->transparency;
+
+			$event->sessionid = $obj->sessionid;
+			$event->sessiontype = $obj->sessiontype;
+			$event->sessionstatus = $obj->sessionstatus;
+			$event->trainer_status = $obj->trainer_status;
+			$event->trainerid = $obj->trainerid;
+
+			$event->socid = $obj->fk_soc;
+			$event->contactid = $obj->fk_contact;
+			// $event->societe->id=$obj->fk_soc; // deprecated
+			// $event->contact->id=$obj->fk_contact; // deprecated
+
+			$event->fk_element = $obj->fk_element;
+			$event->elementtype = $obj->elementtype;
+
+			// Defined date_start_in_calendar and date_end_in_calendar property
+			// They are date start and end of action but modified to not be outside calendar view.
+			if ($event->percentage <= 0) {
+				$event->date_start_in_calendar = $event->datep;
+				if ($event->datef != '' && $event->datef >= $event->datep)
+					$event->date_end_in_calendar = $event->datef;
+					else
+						$event->date_end_in_calendar = $event->datep;
+			} else {
+				$event->date_start_in_calendar = $event->datep;
+				if ($event->datef != '' && $event->datef >= $event->datep)
+					$event->date_end_in_calendar = $event->datef;
+					else
+						$event->date_end_in_calendar = $event->datep;
+			}
+			// Define ponctual property
+			if ($event->date_start_in_calendar == $event->date_end_in_calendar) {
+				$event->ponctuel = 1;
+			}
+
+			// Check values
+			if ($event->date_end_in_calendar < $firstdaytoshow || $event->date_start_in_calendar >= $lastdaytoshow) {
+				// This record is out of visible range
+			} else {
+				if ($event->date_start_in_calendar < $firstdaytoshow)
+					$event->date_start_in_calendar = $firstdaytoshow;
+					if ($event->date_end_in_calendar >= $lastdaytoshow)
+						$event->date_end_in_calendar = ($lastdaytoshow - 1);
+
+						// Add an entry in actionarray for each day
+						$daycursor = $event->date_start_in_calendar;
+						$annee = date('Y', $daycursor);
+						$mois = date('m', $daycursor);
+						$jour = date('d', $daycursor);
+
+						// Loop on each day covered by action to prepare an index to show on calendar
+						$loop = true;
+						$j = 0;
+						$daykey = dol_mktime(0, 0, 0, $mois, $jour, $annee);
+						do {
+							// if ($event->id==408) print 'daykey='.$daykey.' '.$event->datep.' '.$event->datef.'<br>';
+
+							$eventarray[$daykey][] = $event;
+							$j ++;
+
+							$daykey += 60 * 60 * 24;
+							if ($daykey > $event->date_end_in_calendar)
+								$loop = false;
+						} while ( $loop );
+
+						// print 'Event '.$i.' id='.$event->id.' (start='.dol_print_date($event->datep).'-end='.dol_print_date($event->datef);
+						// print ' startincalendar='.dol_print_date($event->date_start_in_calendar).'-endincalendar='.dol_print_date($event->date_end_in_calendar).') was added in '.$j.' different index key of array<br>';
+			}
+			$i ++;
+		}
+	}
 }
 //var_dump($eventarray);exit;
 $maxnbofchar = 18;
@@ -852,7 +984,6 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 
 	$nextindextouse = is_array($colorindexused) ? count($colorindexused) : 0; // At first run, this is 0, so fist user has 0, next 1, ...
 	                                          // if ($username->id && $day==1) var_dump($eventarray);
-
 	// We are in a particular day for $username, now we scan all events
 	foreach ( $eventarray as $daykey => $notused ) {
 		$annee = date('Y', $daykey);
@@ -866,12 +997,12 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 			foreach ( $eventarray[$daykey] as $index => $event ) {
 				// $keysofuserassigned=array_keys($event->userassigned);
 
-				if ($lieu != $event->lieu)
-					continue; // We discard record if event is from another user than user we want to show
-						          // if ($username->id != $event->userownerid) continue; // We discard record if event is from another user than user we want to show
+				if ($lieu != $event->lieu) {
+					continue;
+				}
 
 				// Define $color (Hex string like '0088FF') and $cssclass of event
-				if (isset($event->sessionstatus)) {
+				if (!empty($event->sessionstatus)) {
 					if (isset($event->sessionstatus)) {
 						if ($event->sessionstatus == 'ENV')
 							$color = '6666ff';
@@ -900,10 +1031,8 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 				if ($event->trainer_status == 6)
 					$color = 'cc0000';
 				}
-					// $cssclass=$cssclass.' '.$cssclass.'_day_'.$ymd;
 
 				// Define all rects with event (cases1 is first half hour, cases2 is second half hour)
-					// var_dump($event);
 				for($h = $begin_h; $h < $end_h; $h ++) {
 					// if ($username->id == 1 && $day==1) print 'h='.$h;
 					$newcolor = ''; // init
@@ -936,7 +1065,8 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 								// $cases1[$h][$event->id]['string'].='xxx';
 							}
 							$cases1[$h][$event->id]['color'] = $color;
-						}
+                            $cases1[$h][$event->id]['sessionid'] = $event->sessionid;
+                        }
 						if ($event->date_start_in_calendar < $c && $dateendtouse > $b) {
 							$busy = $event->transparency;
 							$cases2[$h][$event->id]['busy'] = $busy;
@@ -955,7 +1085,8 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 								// $cases2[$h][$event->id]['string'].='xxx';
 							}
 							$cases2[$h][$event->id]['color'] = $color;
-						}
+                            $cases2[$h][$event->id]['sessionid'] = $event->sessionid;
+                        }
 					} else {
 						$busy = $event->transparency;
 						$cases1[$h][$event->id]['busy'] = $busy;
@@ -1020,10 +1151,12 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 
 		if (!empty($cases1[$h])) {
 			$output = array_slice($cases1[$h], 0, 1);
-			if ($output[0]['string'])
+            if ($output[0]['string'])
 				$title1 .= ($title1 ? ' - ' : '') . $output[0]['string'];
 			if ($output[0]['color'])
 				$color1 = $output[0]['color'];
+			if($output[0]['sessionid'])
+			    $sessionid1 = $output[0]['sessionid'];
 		}
 
 			// 1 seul evenement
@@ -1033,6 +1166,8 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 				$title2 .= ($title2 ? ' - ' : '') . $output[0]['string'];
 			if ($output[0]['color'])
 				$color2 = $output[0]['color'];
+            if($output[0]['sessionid'])
+                $sessionid2 = $output[0]['sessionid'];
 		}
 
 		$ids1 = '';
@@ -1042,11 +1177,11 @@ function show_day_events2($lieu, $day, $month, $year, $monthshown, $style, &$eve
 			$ids1 = join(',', array_keys($cases1[$h]));
 		if (!empty($cases2[$h]) && count($cases2[$h]) && array_keys($cases2[$h]))
 			$ids2 = join(',', array_keys($cases2[$h]));
-			// var_dump($cases1[$h]);
-		print '<table class="nobordernopadding" width="100%">';
-		print '<tr><td ' . ($color1 ? 'style="background: #' . $color1 . ';"' : '') . 'class="' . ($style1 ? $style1 . ' ' : '') . 'onclickopenref' . ($title1 ? ' cursorpointer' : '') . '" data-sessionid="'.$event->sessionid.'" data-trainerid="'.$event->trainerid.'" data-year="'.sprintf("%04d", $year).'" data-month="'.sprintf("%02d", $month).'" data-day="'.sprintf("%02d", $day).'" data-hour="'.sprintf("%02d", $h).'" data-min="00" data-ids-event="'.($ids1 ? $ids1 : 'none').'" ' . ($title1 ? ' title="' . $title1 . '"' : '') . '>';
+
+        print '<table class="nobordernopadding" width="100%">';
+		print '<tr><td ' . ($color1 ? 'style="background: #' . $color1 . ';"' : '') . 'class="' . ($style1 ? $style1 . ' ' : '') . (!empty($sessionid1)?'onclickopenref':'') . ($title1 ? ' cursorpointer' : '') . '" data-sessionid="'.$sessionid1.'" data-trainerid="'.$event->trainerid.'" data-year="'.sprintf("%04d", $year).'" data-month="'.sprintf("%02d", $month).'" data-day="'.sprintf("%02d", $day).'" data-hour="'.sprintf("%02d", $h).'" data-min="00" data-ids-event="'.($ids1 ? $ids1 : 'none').'" ' . ($title1 ? ' title="' . $title1 . '"' : '') . '>';
 		print $string1;
-		print '</td><td ' . ($color2 ? 'style="background: #' . $color2 . ';"' : '') . 'class="' . ($style2 ? $style2 . ' ' : '') . 'onclickopenref' . ($title1 ? ' cursorpointer' : '') . '" data-sessionid="'.$event->sessionid.'" data-trainerid="'.$event->trainerid.'" data-year="'.sprintf("%04d", $year).'" data-month="'.sprintf("%02d", $month).'" data-day="'.sprintf("%02d", $day).'" data-hour="'.sprintf("%02d", $h).'" data-min="00" data-ids-event="'.($ids1 ? $ids1 : 'none').'" ' . ($title2 ? ' title="' . $title2 . '"' : '') . '>';
+		print '</td><td ' . ($color2 ? 'style="background: #' . $color2 . ';"' : '') . 'class="' . ($style2 ? $style2 . ' ' : '') . (!empty($sessionid2)?'onclickopenref':'') . ($title1 ? ' cursorpointer' : '') . '" data-sessionid="'.$sessionid2.'" data-trainerid="'.$event->trainerid.'" data-year="'.sprintf("%04d", $year).'" data-month="'.sprintf("%02d", $month).'" data-day="'.sprintf("%02d", $day).'" data-hour="'.sprintf("%02d", $h).'" data-min="00" data-ids-event="'.($ids1 ? $ids1 : 'none').'" ' . ($title2 ? ' title="' . $title2 . '"' : '') . '>';
 		print $string2;
 		print '</td></tr>';
 		print '</table>';

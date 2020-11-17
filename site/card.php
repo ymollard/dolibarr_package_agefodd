@@ -106,11 +106,11 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 		$agf = new Agefodd_place($db);
 
 		// thirdparty is not required (uncomment if needed)
-		/*
+
 		if ($societe < 1) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
 			$error ++;
-		}*/
+		}
 
 		$label = GETPOST('ref_interne', 'alpha');
 		if (empty($label)) {
@@ -136,6 +136,7 @@ if ($action == 'update' && $user->rights->agefodd->agefodd_place->creer) {
 			$agf->timeschedule = GETPOST('timeschedule', 'alpha');
 			$agf->control_occupation = GETPOST('control_occupation', 'int');
 			$agf->notes = GETPOST('notes');
+			$agf->nb_place = GETPOST('nb_place');
 			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site'));
 				$agf->note1 = dol_htmlcleanlastbr(GETPOST('note1'));
@@ -185,12 +186,10 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 
 	if (! $_POST["cancel"]) {
 		$agf = new Agefodd_place($db);
-		// thirdparty is not required (uncomment if needed)
-		/*
 		if ($societe < 1) {
 			setEventMessage($langs->trans('ErrorFieldRequired', $langs->transnoentities('Company')), 'errors');
 			$error ++;
-		}*/
+		}
 
 		$label = GETPOST('ref_interne', 'alpha');
 		if (empty($label)) {
@@ -205,6 +204,7 @@ if ($action == 'create_confirm' && $user->rights->agefodd->agefodd_place->creer)
 			$agf->fk_socpeople = GETPOST('contact', 'int');
 			$agf->timeschedule = GETPOST('timeschedule', 'alpha');
 			$agf->control_occupation = GETPOST('control_occupation', 'int');
+			$agf->nb_place = GETPOST('nb_place', 'int');
 			$agf->notes = GETPOST('notes', 'alpha');
 			if (! empty($conf->global->AGF_FCKEDITOR_ENABLE_TRAINING)) {
 				$agf->acces_site = dol_htmlcleanlastbr(GETPOST('acces_site'));
@@ -307,7 +307,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	print '<tr><td width="20%"><span class="fieldrequired">' . $langs->trans("AgfSessPlaceCode") . '</span></td>';
 	print '<td><input name="ref_interne" class="flat" size="50" value=""></td></tr>';
 
-	print '<tr><td>' . $langs->trans("Company") . '</td>';
+	print '<tr><td><span class="fieldrequired">' . $langs->trans("Company") . '</span></td>';
 	$events = array ();
 	$events[] = array (
 			'method' => 'getContacts',
@@ -356,6 +356,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 	print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 	print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;"></textarea></td></tr>';
+	print '<tr><td valign="top">' . $langs->trans("AgfNbPlace") . '</td>';
+	print '<td><input name="nb_place"  class="flat" style="width:360px;"></input></td></tr>';
 
 	print '<tr><td valign="top">' . $langs->trans("AgfTimeSchedule") . '</td>';
 	print '<td><input name="timeschedule" class="flat" size="50" value="' . GETPOST('timeschedule', 'alpha') . '"></td></tr>';
@@ -397,6 +399,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 	if ($id) {
 		$agf = new Agefodd_place($db);
 		$result = $agf->fetch($id);
+		$result2 = $agf->fetch_thirdparty();
 
 		if ($result > 0) {
 			$head = site_prepare_head($agf);
@@ -453,13 +456,15 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				)) . '</tr>';
 
 				print '<tr><td>' . $langs->trans("Country") . '</td>';
-				print '<td>' . $form->select_country($agf->country, 'country_id') . '</td></tr>';
+				print '<td>' . $form->select_country($agf->fk_pays, 'country_id') . '</td></tr>';
 
 				print '<tr><td>' . $langs->trans("Phone") . '</td>';
 				print '<td><input name="phone" class="flat" size="50" value="' . $agf->tel . '"></td></tr>';
 
 				print '<tr><td valign="top">' . $langs->trans("AgfNote") . '</td>';
 				print '<td><textarea name="notes" rows="3" cols="0" class="flat" style="width:360px;">' . $agf->notes . '</textarea></td></tr>';
+				print '<tr><td valign="top">' . $langs->trans("AgfNbPlace") . '</td>';
+				print '<td><input name="nb_place"  class="flat" style="width:360px;" value="'. $agf->nb_place .'"></input></td></tr>';
 
 				print '<tr><td valign="top">' . $langs->trans("AgfTimeSchedule") . '</td>';
 				print '<td><input name="timeschedule" class="flat" size="50" value="' . $agf->timeschedule . '"></td></tr>';
@@ -498,7 +503,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				print '</div>' . "\n";
 			} else {
 				// Display View mode
-				
+
 			    dol_agefodd_banner_tab($agf, 'id');
 			    print '<div class="underbanner clearboth"></div>';
 
@@ -548,7 +553,7 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 				print '<tr>';
 				print '<td>';
 				$img = picto_from_langcode($agf->country_code);
-				if ($agf->isInEEC())
+				if (method_exists($agf->thirdparty, 'isInEEC') && $agf->thirdparty->isInEEC())
 					print $form->textwithpicto(($img ? $img . ' ' : '') . $agf->country, $langs->trans("CountryIsInEEC"), 1, 0);
 				else
 					print ($img ? $img . ' ' : '') . $agf->country;
@@ -561,6 +566,8 @@ if ($action == 'create' && $user->rights->agefodd->agefodd_place->creer) {
 
 				print '<tr><td valign="top">' . $langs->trans("AgfNotes") . '</td>';
 				print '<td>' . nl2br($agf->notes) . '</td></tr>';
+				print '<tr><td valign="top">' . $langs->trans("AgfNbPlace") . '</td>';
+				print '<td>' . ($agf->nb_place) . '</td></tr>';
 
 				print '<tr><td valign="top">' . $langs->trans("AgfTimeSchedule") . '</td>';
 				print '<td>' . $agf->timeschedule . '</td></tr>';

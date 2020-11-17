@@ -33,7 +33,7 @@ if (! $res)
 
 require_once (NUSOAP_PATH . '/nusoap.php'); // Include SOAP
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/ws.lib.php");
-require_once (DOL_DOCUMENT_ROOT . "/agefodd/class/agefodd.class.php");
+dol_include_once("/agefodd/class/agefodd.class.php");
 
 dol_syslog("Call Agefodd webservices interfaces");
 
@@ -58,165 +58,165 @@ $server->wsdl->schemaTargetNamespace = $ns;
 $server->wsdl->addComplexType('authentication', 'complexType', 'struct', 'all', '', array (
 		'dolibarrkey' => array (
 				'name' => 'dolibarrkey',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'sourceapplication' => array (
 				'name' => 'sourceapplication',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'login' => array (
 				'name' => 'login',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'password' => array (
 				'name' => 'password',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'entity' => array (
 				'name' => 'entity',
-				'type' => 'xsd:string' 
-		) 
+				'type' => 'xsd:string'
+		)
 ));
 
 // Define WSDL Return object
 $server->wsdl->addComplexType('result', 'complexType', 'struct', 'all', '', array (
 		'result_code' => array (
 				'name' => 'result_code',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'result_label' => array (
 				'name' => 'result_label',
-				'type' => 'xsd:string' 
-		) 
+				'type' => 'xsd:string'
+		)
 ));
 
 // Define other specific objects
 $server->wsdl->addComplexType('agefodd', 'complexType', 'struct', 'all', '', array (
-		
+
 		'id' => array (
 				'name' => 'id',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'entity' => array (
 				'name' => 'entity',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'ref' => array (
 				'name' => 'ref',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'ref_obj' => array (
 				'name' => 'ref_obj',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'ref_interne' => array (
 				'name' => 'ref_interne',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'intitule' => array (
 				'name' => 'intitule',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'duree' => array (
 				'name' => 'duree',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'public' => array (
 				'name' => 'public',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'methode' => array (
 				'name' => 'methode',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'prerequis' => array (
 				'name' => 'prerequis',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'but' => array (
 				'name' => 'but',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'programme' => array (
 				'name' => 'programme',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'note1' => array (
 				'name' => 'note1',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'note2' => array (
 				'name' => 'note2',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'archive' => array (
 				'name' => 'archive',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'note_private' => array (
 				'name' => 'note_private',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'note_public' => array (
 				'name' => 'note_public',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'fk_product' => array (
 				'name' => 'fk_product',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'nb_subscribe_min' => array (
 				'name' => 'nb_subscribe_min',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'fk_formation_catalogue' => array (
 				'name' => 'fk_formation_catalogue',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'priorite' => array (
 				'name' => 'priorite',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'lines' => array (
 				'name' => 'lines',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'canvas' => array (
 				'name' => 'canvas',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'lastname' => array (
 				'name' => 'lastname',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'firstname' => array (
 				'name' => 'firstname',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'name' => array (
 				'name' => 'name',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'nom' => array (
 				'name' => 'nom',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'civility_id' => array (
 				'name' => 'civility_id',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'array_options' => array (
 				'name' => 'array_options',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'linkedObjectsIds' => array (
 				'name' => 'linkedObjectsIds',
-				'type' => 'xsd:string' 
+				'type' => 'xsd:string'
 		),
 		'linkedObjects' => array (
 				'name' => 'linkedObjects',
-				'type' => 'xsd:string' 
-		) 
+				'type' => 'xsd:string'
+		)
 
 // ...
 ));
@@ -227,33 +227,33 @@ $server->wsdl->addComplexType('agefodd', 'complexType', 'struct', 'all', '', arr
 $styledoc = 'rpc'; // rpc/document (document is an extend into SOAP 1.0 to support unstructured messages)
 $styleuse = 'encoded'; // encoded/literal/literal wrapped
                        // Better choice is document/literal wrapped but literal wrapped not supported by nusoap.
-                       
+
 // Register WSDL
-$server->register('getAgefodd', 
+$server->register('getAgefodd',
 		// Entry values
 		array (
 				'authentication' => 'tns:authentication',
 				'id' => 'xsd:string',
 				'ref' => 'xsd:string',
-				'ref_ext' => 'xsd:string' 
-		), 
+				'ref_ext' => 'xsd:string'
+		),
 		// Exit values
 		array (
 				'result' => 'tns:result',
-				'agefodd' => 'tns:agefodd' 
+				'agefodd' => 'tns:agefodd'
 		), $ns, $ns . '#getAgefodd', $styledoc, $styleuse, 'WS to get agefodd');
 
 // Register WSDL
-$server->register('createAgefodd', 
+$server->register('createAgefodd',
 		// Entry values
 		array (
 				'authentication' => 'tns:authentication',
-				'agefodd' => 'tns:agefodd' 
-		), 
+				'agefodd' => 'tns:agefodd'
+		),
 		// Exit values
 		array (
 				'result' => 'tns:result',
-				'id' => 'xsd:string' 
+				'id' => 'xsd:string'
 		), $ns, $ns . '#createAgefodd', $styledoc, $styleuse, 'WS to create a agefodd');
 
 /**
@@ -267,12 +267,12 @@ $server->register('createAgefodd',
  */
 function getAgefodd($authentication, $id, $ref = '', $ref_ext = '') {
 	global $db, $conf, $langs;
-	
+
 	dol_syslog("Function: getAgefodd login=" . $authentication ['login'] . " id=" . $id . " ref=" . $ref . " ref_ext=" . $ref_ext);
-	
+
 	if ($authentication ['entity'])
 		$conf->entity = $authentication ['entity'];
-		
+
 		// Init and check authentication
 	$objectresp = array ();
 	$errorcode = '';
@@ -285,10 +285,10 @@ function getAgefodd($authentication, $id, $ref = '', $ref_ext = '') {
 		$errorcode = 'BAD_PARAMETERS';
 		$errorlabel = "Parameter id, ref and ref_ext can't be both provided. You must choose one or other but not both.";
 	}
-	
+
 	if (! $error) {
 		$fuser->getrights();
-		
+
 		if ($fuser->rights->agefodd->read) {
 			$agefodd = new Formation($db);
 			$result = $agefodd->fetch($id, $ref, $ref_ext);
@@ -297,10 +297,10 @@ function getAgefodd($authentication, $id, $ref = '', $ref_ext = '') {
 				$objectresp = array (
 						'result' => array (
 								'result_code' => 'OK',
-								'result_label' => '' 
+								'result_label' => ''
 						),
 						'agefodd' => array (
-								
+
 								'id' => $agefodd->id,
 								'entity' => $agefodd->entity,
 								'ref' => $agefodd->ref,
@@ -331,10 +331,10 @@ function getAgefodd($authentication, $id, $ref = '', $ref_ext = '') {
 								'civility_id' => $agefodd->civility_id,
 								'array_options' => $agefodd->array_options,
 								'linkedObjectsIds' => $agefodd->linkedObjectsIds,
-								'linkedObjects' => $agefodd->linkedObjects 
-						
+								'linkedObjects' => $agefodd->linkedObjects
+
 						// ...
-												) 
+												)
 				);
 			} else {
 				$error ++;
@@ -347,16 +347,16 @@ function getAgefodd($authentication, $id, $ref = '', $ref_ext = '') {
 			$errorlabel = 'User does not have permission for this request';
 		}
 	}
-	
+
 	if ($error) {
 		$objectresp = array (
 				'result' => array (
 						'result_code' => $errorcode,
-						'result_label' => $errorlabel 
-				) 
+						'result_label' => $errorlabel
+				)
 		);
 	}
-	
+
 	return $objectresp;
 }
 
@@ -369,14 +369,14 @@ function getAgefodd($authentication, $id, $ref = '', $ref_ext = '') {
  */
 function createAgefodd($authentication, $agefodd) {
 	global $db, $conf, $langs;
-	
+
 	$now = dol_now();
-	
+
 	dol_syslog("Function: createAgefodd login=" . $authentication ['login']);
-	
+
 	if ($authentication ['entity'])
 		$conf->entity = $authentication ['entity'];
-		
+
 		// Init and check authentication
 	$objectresp = array ();
 	$errorcode = '';
@@ -384,10 +384,10 @@ function createAgefodd($authentication, $agefodd) {
 	$error = 0;
 	$fuser = check_authentication($authentication, $error, $errorcode, $errorlabel);
 	// Check parameters
-	
+
 	if (! $error) {
 		$newobject = new Formation($db);
-		
+
 		$newobject->id = $agefodd->id;
 		$newobject->entity = $agefodd->entity;
 		$newobject->ref = $agefodd->ref;
@@ -419,25 +419,25 @@ function createAgefodd($authentication, $agefodd) {
 		$newobject->array_options = $agefodd->array_options;
 		$newobject->linkedObjectsIds = $agefodd->linkedObjectsIds;
 		$newobject->linkedObjects = $agefodd->linkedObjects;
-		
+
 		// ...
-		
+
 		$db->begin();
-		
+
 		$result = $newobject->create($fuser);
 		if ($result <= 0) {
 			$error ++;
 		}
-		
+
 		if (! $error) {
 			$db->commit();
 			$objectresp = array (
 					'result' => array (
 							'result_code' => 'OK',
-							'result_label' => '' 
+							'result_label' => ''
 					),
 					'id' => $newobject->id,
-					'ref' => $newobject->ref 
+					'ref' => $newobject->ref
 			);
 		} else {
 			$db->rollback();
@@ -446,16 +446,16 @@ function createAgefodd($authentication, $agefodd) {
 			$errorlabel = $newobject->error;
 		}
 	}
-	
+
 	if ($error) {
 		$objectresp = array (
 				'result' => array (
 						'result_code' => $errorcode,
-						'result_label' => $errorlabel 
-				) 
+						'result_label' => $errorlabel
+				)
 		);
 	}
-	
+
 	return $objectresp;
 }
 

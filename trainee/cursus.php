@@ -55,7 +55,7 @@ if (empty($sortfield))
 if (empty($arch))
 	$arch = 0;
 
-if ($page == - 1) {
+if ($page == - 1 || empty($page)) {
 	$page = 0;
 }
 
@@ -87,29 +87,29 @@ llxHeader('', $langs->trans("AgfStagiaireCursus"));
 if ($id) {
 	$agf = new Agefodd_stagiaire($db);
 	$result = $agf->fetch($id);
-	
+
 	if ($result > 0) {
-		
+
 		$form = new Form($db);
 		$formAgefodd = new FormAgefodd($db);
-		
+
 		$head = trainee_prepare_head($agf);
-		
+
 		dol_fiche_head($head, 'cursus', $langs->trans("AgfStagiaireDetail"), 0, 'user');
-		
+
 		dol_agefodd_banner_tab($agf, 'id');
 		print '<div class="underbanner clearboth"></div>';
-		
+
 		$agf_cursus = new Agefodd_stagiaire_cursus($db);
 		$agf_cursus->fk_stagiaire = $id;
 		$result = $agf_cursus->fetch_cursus_per_trainee($sortorder, $sortfield, $limit, $offset);
-		
+
 		if ($result < 0) {
 			setEventMessage($agf_cursus->error, 'errors');
 		}
-		
+
 		print_barre_liste($langs->trans("AgfMenuCursus"), $page, $_SERVER ['PHP_SELF'], "&arch=" . $arch, $sortfield, $sortorder, "", count($agf_cursus->lines));
-		
+
 		if (count($agf_cursus->lines) > 0) {
 			print '<table class="noborder"  width="100%">';
 			print '<tr class="liste_titre">';
@@ -119,7 +119,7 @@ if ($id) {
 			print '<td></td>';
 			print "</tr>\n";
 			print '</tr>';
-			
+
 			$style = 'pair';
 			foreach ( $agf_cursus->lines as $line ) {
 				if ($style == 'pair') {
@@ -127,15 +127,15 @@ if ($id) {
 				} else {
 					$style = 'pair';
 				}
-				
+
 				if ($line->archive == 1) {
 					$styletext = ' style="color:gray;"';
 				} else {
 					$styletext = '';
 				}
-				
+
 				print '<tr class="' . $style . '">';
-				
+
 				print '<td ' . $styletext . '><a ' . $styletext . ' href="' . dol_buildpath('/agefodd/cursus/card.php', 1) . '?id=' . $line->id . '">' . $line->id . '</a></td>';
 				print '<td ' . $styletext . '><a ' . $styletext . ' href="' . dol_buildpath('/agefodd/cursus/card.php', 1) . '?id=' . $line->id . '">' . $line->ref_interne . '</a></td>';
 				print '<td ' . $styletext . '>' . $line->intitule . '</td>';
@@ -146,17 +146,17 @@ if ($id) {
 		} else {
 		    print '<div style="text-align:center">' .$langs->trans('AgfNoCursus') . '</div>';
 		}
-		
+
 		if ($user->rights->agefodd->modifier) {
 			print '<form name="update" action="' . $_SERVER ['PHP_SELF'] . '?id=' . $agf->id . '" method="post">' . "\n";
 			print '<input type="hidden" name="token" value="' . $_SESSION ['newtoken'] . '">' . "\n";
 			print '<input type="hidden" name="action" value="addcursus">' . "\n";
-			
+
 			print '<table class="noborder" width="100%">';
 			print '<tr>';
 			print '<td>' . $langs->trans('AgfCursusAdd') . ' ';
 			print $formAgefodd->select_cursus('', 'cursus_id', 'c.ref_interne', 1, 0, array (), array (
-					' AND c.rowid NOT IN (SELECT fk_cursus FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_cursus WHERE fk_stagiaire=' . $id . ')' 
+					' AND c.rowid NOT IN (SELECT fk_cursus FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire_cursus WHERE fk_stagiaire=' . $id . ')'
 			));
 			print '<input type="submit" class="butAction" value="' . $langs->trans("Add") . '"></td>';
 			print '</tr>';

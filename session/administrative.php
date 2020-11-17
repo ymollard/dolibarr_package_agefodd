@@ -102,7 +102,7 @@ if ($action == 'confirm_replicateconftraining' && $confirm == 'yes') {
 	$res = $agf_session->fetch($id);
 	$result = $agf_session->createAdmLevelForSession($user);
 	if ($result < 0) {
-		setEventMessage($agf_session->error, 'errors');
+		setEventMessages(null,$agf_session->errors, 'errors');
 	}
 }
 
@@ -126,6 +126,18 @@ if ($action == 'update_archive' && $user->rights->agefodd->creer) {
 	}
 }
 
+if ($action == 'validall' && $user->rights->agefodd->creer) {
+	$agf = new Agefodd_sessadm($db);
+
+	$result = $agf->setAllStatus($user,$id,1);
+	if ($result > 0) {
+		Header("Location: " . $_SERVER ['PHP_SELF'] . "?id=" . $id);
+		exit();
+	} else {
+		setEventMessage($agf->error, 'errors');
+	}
+}
+
 /*
  * Action create
 */
@@ -135,14 +147,14 @@ if ($action == 'create_confirm' && $user->rights->agefodd->creer) {
 
 		$parent_level = GETPOST('action_level', 'int');
 		$agf->fk_agefodd_session_admlevel = 0;
-		
+
 		$sql = 'SELECT MAX(fk_agefodd_session_admlevel) as max FROM '.MAIN_DB_PREFIX.'agefodd_session_adminsitu WHERE `fk_agefodd_session` = ' . $id;
 		$res = $db->query($sql);
 		if($res){
 		    $obj = $db->fetch_object($res);
 		    if ($obj->max !== NULL) $agf->fk_agefodd_session_admlevel = ((int)$obj->max) + 1;
 		}
-		
+
 		$agf->fk_agefodd_session = $id;
 		$agf->delais_alerte = 0;
 		$agf->archive = 0;
@@ -200,7 +212,7 @@ llxHeader('', $langs->trans("AgfSessionDetail"));
 $form = new Form($db);
 $formAgefodd = new FormAgefodd($db);
 
-if ($user->rights->agefodd->creer) {
+if ($user->rights->agefodd->lire) {
 	// Display administrative task
 	if ($id) {
 		// View mode
@@ -212,13 +224,13 @@ if ($user->rights->agefodd->creer) {
 		dol_fiche_head($head, 'administrative', $langs->trans("AgfSessionDetail"), 0, 'bill');
 
 		$agf = new Agefodd_sessadm($db);
-		
+
 		if ($action == 'replicateconftraining' ) {
 		    require_once DOL_DOCUMENT_ROOT.'/core/class/html.formadmin.class.php';
 		    $form = new Form($db);
 		    print $form->formconfirm($_SERVER["PHP_SELF"]."?id=".$id, $langs->trans('AgfReplaceByTrainingLevel'), $langs->trans('AgfReplaceByTrainingLevelHelp'), "confirm_replicateconftraining", '', '', 1);
 		}
-		
+
 		// Creation card
 		if ($action == 'create') {
 			print '<form name="create_confirm" action="administrative.php" method="post">' . "\n";
@@ -387,7 +399,7 @@ if ($user->rights->agefodd->creer) {
 					} else {
 					    print '<td></td>';
 					}
-						
+
 					if (! $sess_adm->has_child($line->id)) {
 						// Affichage des différentes dates
 						print '<td width="150px" align="center" valign="top">';
@@ -409,7 +421,11 @@ if ($user->rights->agefodd->creer) {
 							$src_state = dol_buildpath('/agefodd/img/next.png', 1);
 						}
 
-						print '<td align="center" valign="top"><a href="' . $_SERVER ['PHP_SELF'] . '?action=update_archive&id=' . $id . '&actid=' . $line->id . '"><img alt="' . $txtalt . '" src="' . $src_state . '"/></a></td>';
+						print '<td align="center" valign="top">';
+						if ($user->rights->agefodd->modifier) {
+							print '<a href="' . $_SERVER ['PHP_SELF'] . '?action=update_archive&id=' . $id . '&actid=' . $line->id . '"><img alt="' . $txtalt . '" src="' . $src_state . '"/></a>';
+						}
+						print '</td>';
 					} else {
 						print '<td colspan="4"></td>';
 					}
@@ -421,6 +437,7 @@ if ($user->rights->agefodd->creer) {
 			    print '<tr><td style="text-align:center">'.$langs->trans('AgfErrNoAdminTasksFound').'</td></tr>';
 			} else {
 			    print '<tr><td style="text-align:center">'.$langs->trans('AgfErrFetchAdminTasks').'</td></tr>';
+			    setEventMessage($sess_adm->error,'errors');
 			}
 
 			print '</table>';
@@ -447,6 +464,7 @@ print '<div class="tabsAction">';
 
 if ($action != 'create' && $action != 'edit' && $action != 'update') {
 	if ($user->rights->agefodd->creer) {
+		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=validall&id=' . $id . '">' . $langs->trans('AgfAllValide') . '</a>';
 		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=create&id=' . $id . '">' . $langs->trans('Create') . '</a>';
 		print '<a class="butAction" href="' . $_SERVER ['PHP_SELF'] . '?action=replicateconftraining&id=' . $id . '" title="' . $langs->trans('AgfReplaceByTrainingLevelHelp') . '">' . $langs->trans('AgfReplaceByTrainingLevel') . '</a>';
 	} else {

@@ -76,6 +76,7 @@ $search_ref = GETPOST("search_ref");
 $search_ref_interne = GETPOST("search_ref_interne");
 $search_datec = dol_mktime(0, 0, 0, GETPOST('search_datecmonth', 'int'), GETPOST('search_datecday', 'int'), GETPOST('search_datecyear', 'int'));
 $search_duree = GETPOST('search_duree');
+$search_nb_place = GETPOST('search_nb_place');
 // $search_dated = dol_mktime ( 0, 0, 0, GETPOST ( 'search_datedmonth', 'int' ), GETPOST ( 'search_datedday', 'int' ), GETPOST ( 'search_datedyear',
 // 'int' ) );
 $search_id = GETPOST('search_id', 'int');
@@ -100,6 +101,7 @@ if (GETPOST("button_removefilter_x")) {
 	$search_ref_interne = "";
 	$search_datec = '';
 	$search_duree = "";
+	$search_nb_place = "";
 	// $search_dated = "";
 	$search_id = '';
 	$search_categ = '';
@@ -120,6 +122,7 @@ $arrayfields=array(
     'c.datec'	=>array('label'=>"AgfDateC", 'checked'=>1),
 
     'c.duree'		=>array('label'=>"AgfDuree", 'checked'=>1),
+    'c.nb_place'		=>array('label'=>"AgfNbPlace", 'checked'=>1),
     'a.dated'	=>array('label'=>"AgfDateLastAction", 'checked'=>1),
 	'AgfNbreAction'		=>array('label'=>"AgfNbreAction", 'checked'=>1),
 	'c.fk_product'	=>array('label'=>'AgfProductServiceLinked', 'checked'=>1),
@@ -147,7 +150,7 @@ if (is_array($extrafields->attribute_label) && count($extrafields->attribute_lab
 {
    foreach($extrafields->attribute_label as $key => $val)
    {
-       $arrayfields["ef.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>$extrafields->attribute_list[$key], 'position'=>$extrafields->attribute_pos[$key]);
+       $arrayfields["ef.".$key]=array('label'=>$extrafields->attribute_label[$key], 'checked'=>($extrafields->attribute_list[$key]!==3)?0:1, 'position'=>$extrafields->attribute_pos[$key]);
    }
 }
 
@@ -171,6 +174,10 @@ if (! empty($search_datec)) {
 if (! empty($search_duree)) {
 	$filter ['c.duree'] = $search_duree;
 	$option .= '&search_duree=' . $search_duree;
+}
+if (! empty($search_nb_place)) {
+	$filter ['c.nb_place'] = $search_nb_place;
+	$option .= '&search_nb_place=' . $search_nb_place;
 }
 if (! empty($search_id)) {
 	$filter ['c.rowid'] = $search_id;
@@ -248,17 +255,17 @@ if (! empty($arrayfields['c.rowid']['checked']))print '<td><input type="text" cl
 
 if (! empty($arrayfields['c.intitule']['checked'])){
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_intitule" value="' . $search_intitule . '" size="20">';
+	print '<input type="text" class="flat maxwidth100" name="search_intitule" value="' . $search_intitule . '">';
 	print '</td>';
 }
 if (! empty($arrayfields['c.ref']['checked'])){
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_ref" value="' . $search_ref . '" size="20">';
+	print '<input type="text" class="flat maxwidth75" name="search_ref" value="' . $search_ref . '">';
 	print '</td>';
 }
 if (! empty($arrayfields['c.ref_interne']['checked'])){
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_ref_interne" value="' . $search_ref_interne . '" size="20">';
+	print '<input type="text" class="flat maxwidth75" name="search_ref_interne" value="' . $search_ref_interne . '">';
 	print '</td>';
 }
 if (! empty($arrayfields['dictcat.code']['checked'])){
@@ -273,13 +280,18 @@ if (! empty($arrayfields['dictcatbpf.code']['checked'])){
 }
 if (! empty($arrayfields['c.datec']['checked'])){
 
-	print '<td class="liste_titre">';
+	print '<td class="liste_titre nowraponall">';
 	print $form->select_date($search_datec, 'search_datec', 0, 0, 1, 'search_form');
 	print '</td>';
 }
 if (! empty($arrayfields['c.duree']['checked'])){
 	print '<td class="liste_titre">';
-	print '<input type="text" class="flat" name="search_duree" value="' . $search_duree . '" size="5">';
+	print '<input type="text" class="flat maxwidth50" name="search_duree" value="' . $search_duree . '">';
+	print '</td>';
+}
+if (! empty($arrayfields['c.nb_place']['checked'])){
+	print '<td class="liste_titre">';
+	print '<input type="text" class="flat maxwidth50" name="search_nb_place" value="' . $search_nb_place . '">';
 	print '</td>';
 }
 if (! empty($arrayfields['a.dated']['checked'])){
@@ -347,17 +359,18 @@ print "</tr>\n";
 
 print '<tr class="liste_titre">';
 
-if (! empty($arrayfields['c.rowid']['checked']))			print_liste_field_titre($langs->trans("Id"), $_SERVEUR ['PHP_SELF'], "c.rowid", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.intitule']['checked']))			print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVEUR ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.ref']['checked']))				print_liste_field_titre($langs->trans("Ref"), $_SERVEUR ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.ref_interne']['checked']))		print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVEUR ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['dictcat.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCateg"), $_SERVEUR ['PHP_SELF'], "dictcat.code", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['dictcatbpf.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCategBPF"), $_SERVEUR ['PHP_SELF'], "dictcatbpf.code", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.datec']['checked']))		print_liste_field_titre($langs->trans("AgfDateC"), $_SERVEUR ['PHP_SELF'], "c.datec", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.duree']['checked']))		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVEUR ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['a.dated']['checked']))		print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVEUR ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['AgfNbreAction']['checked']))		print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVEUR ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-if (! empty($arrayfields['c.fk_product']['checked'])) print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVEUR ['PHP_SELF'], 'c.fk_product', '', $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.rowid']['checked']))			print_liste_field_titre($langs->trans("Id"), $_SERVER ['PHP_SELF'], "c.rowid", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.intitule']['checked']))			print_liste_field_titre($langs->trans("AgfIntitule"), $_SERVER ['PHP_SELF'], "c.intitule", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.ref']['checked']))				print_liste_field_titre($langs->trans("Ref"), $_SERVER ['PHP_SELF'], "c.ref", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.ref_interne']['checked']))		print_liste_field_titre($langs->trans("AgfRefInterne"), $_SERVER ['PHP_SELF'], "c.ref_interne", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['dictcat.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCateg"), $_SERVER ['PHP_SELF'], "dictcat.code", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['dictcatbpf.code']['checked']))		print_liste_field_titre($langs->trans("AgfTrainingCategBPF"), $_SERVER ['PHP_SELF'], "dictcatbpf.code", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.datec']['checked']))		print_liste_field_titre($langs->trans("AgfDateC"), $_SERVER ['PHP_SELF'], "c.datec", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.duree']['checked']))		print_liste_field_titre($langs->trans("AgfDuree"), $_SERVER ['PHP_SELF'], "c.duree", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.nb_place']['checked']))		print_liste_field_titre($langs->trans("AgfNbPlace"), $_SERVER ['PHP_SELF'], "c.nb_place", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['a.dated']['checked']))		print_liste_field_titre($langs->trans("AgfDateLastAction"), $_SERVER ['PHP_SELF'], "a.dated", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['AgfNbreAction']['checked']))		print_liste_field_titre($langs->trans("AgfNbreAction"), $_SERVER ['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
+if (! empty($arrayfields['c.fk_product']['checked'])) print_liste_field_titre($langs->trans("AgfProductServiceLinked"), $_SERVER ['PHP_SELF'], 'c.fk_product', '', $option, '', $sortfield, $sortorder);
 // Extra fields
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 {
@@ -426,6 +439,7 @@ if ($resql > 0) {
 		if (! empty($arrayfields['dictcatbpf.code']['checked']))print '<td>' . dol_trunc($line->category_lib_bpf). '</td>';
 		if (! empty($arrayfields['c.datec']['checked']))print '<td>' . dol_print_date($line->datec, 'daytext') . '</td>';
 		if (! empty($arrayfields['c.duree']['checked']))print '<td>' . $line->duree . '</td>';
+		if (! empty($arrayfields['c.nb_place']['checked']))print '<td>' . $line->nb_place . '</td>';
 		if (! empty($arrayfields['a.dated']['checked']))print '<td>' . dol_print_date($line->lastsession, 'daytext') . '</td>';
 		if (! empty($arrayfields['AgfNbreAction']['checked']))print '<td>' . $line->nbsession . '</td>';
 		if (! empty($arrayfields['c.fk_product']['checked'])) {

@@ -28,7 +28,7 @@
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 
 /**
- * Put here description of your class
+ * Administrative task related to a training object.
  */
 class Agefodd_training_admlevel extends CommonObject {
 	public $error; // !< To return error code (or message)
@@ -88,10 +88,6 @@ class Agefodd_training_admlevel extends CommonObject {
 			$this->delais_alerte = trim($this->delais_alerte);
 		if (isset($this->delais_alerte_end))
 			$this->delais_alerte_end = trim($this->delais_alerte_end);
-		if (isset($this->fk_user_author))
-			$this->fk_user_author = trim($this->fk_user_author);
-		if (isset($this->fk_user_mod))
-			$this->fk_user_mod = trim($this->fk_user_mod);
 		if (isset($this->trigger_name))
 			$this->trigger_name = trim($this->trigger_name);
 
@@ -176,7 +172,6 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 
@@ -233,11 +228,9 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * Load object in memory from database
 	 *
 	 * @param int $training_id object
-	 * @return array array of object
+	 * @return int int <0 if KO, >0 if OK
 	 */
 	public function fetch_all($training_id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
 		$sql .= " t.fk_training,";
@@ -261,7 +254,7 @@ class Agefodd_training_admlevel extends CommonObject {
 		$resql = $this->db->query($sql);
 
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -301,7 +294,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function update($user = 0, $notrigger = 0) {
+	public function update($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -321,8 +314,6 @@ class Agefodd_training_admlevel extends CommonObject {
 			$this->delais_alerte = trim($this->delais_alerte);
 		if (isset($this->delais_alerte_end))
 			$this->delais_alerte_end = trim($this->delais_alerte_end);
-		if (isset($this->fk_user_mod))
-			$this->fk_user_mod = trim($this->fk_user_mod);
 		if (isset($this->trigger_name))
 			$this->trigger_name = trim($this->trigger_name);
 
@@ -383,60 +374,18 @@ class Agefodd_training_admlevel extends CommonObject {
 	}
 
 	/**
-	 * Delete object in database
+	 * Delete object in database including all its descendants
 	 *
 	 * @param User $user that deletes
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function delete($user, $notrigger = 0) {
-		global $conf, $langs;
-		$error = 0;
-
-		$this->db->begin();
-
-		if (! $error) {
-			if (! $notrigger) {
-				// Uncomment this and change MYOBJECT to your own tag if you
-				// want this action calls a trigger.
-
-				// // Call triggers
-				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
-				// $interface=new Interfaces($this->db);
-				// $result=$interface->run_triggers('MYOBJECT_DELETE',$this,$user,$langs,$conf);
-				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
-				// // End call triggers
-			}
-		}
-
-		if (! $error) {
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel";
-			$sql .= " WHERE rowid=" . $this->id;
-
-			dol_syslog(get_class($this) . "::delete");
-			$resql = $this->db->query($sql);
-			if (! $resql) {
-				$error ++;
-				$this->errors[] = "Error " . $this->db->lasterror();
-			}
-		}
-
-		// Commit or rollback
-		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
-				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
-			}
-			$this->db->rollback();
-			return - 1 * $error;
-		} else {
-			$this->db->commit();
-			return 1;
-		}
+		return $this->delete_with_descendants();
 	}
 
 	/**
-	 * Delete object in database
+	 * Deletes all admin tasks with the same fk_training as the current object’s
 	 *
 	 * @param User $user that deletes
 	 * @param int $notrigger triggers after, 1=disable triggers
@@ -495,7 +444,7 @@ class Agefodd_training_admlevel extends CommonObject {
 	 * @return int id of clone
 	 */
 	public function createFromClone($fromid) {
-		global $user, $langs;
+		global $user;
 
 		$error = 0;
 
@@ -760,25 +709,25 @@ class Agefodd_training_admlevel extends CommonObject {
 	/**
 	 * After a creation set the good parent id for action session
 	 *
-	 * @param $user int id that modify
+	 * @param $user User id that modify
 	 * @param $training_id int to update
-	 * @param $notrigger int 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function setParentActionId($user, $training_id) {
-		global $conf, $langs;
 		$error = 0;
 
 		// Update request
 		if ($this->db->type == 'pgsql') {
 			$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_training_admlevel as upd';
-			$sql .= ' SET fk_parent_level=ori.rowid ';
+			$sql .= ' SET fk_parent_level=ori.rowid,';
+			$sql .= ' fk_user_mod=' . $user->id;
 			$sql .= ' FROM  ' . MAIN_DB_PREFIX . 'agefodd_training_admlevel as ori';
 			$sql .= ' WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training';
 			$sql .= ' AND upd.fk_training=' . $training_id;
 		} else {
 			$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_training_admlevel as ori, ' . MAIN_DB_PREFIX . 'agefodd_training_admlevel as upd ';
-			$sql .= ' SET upd.fk_parent_level=ori.rowid ';
+			$sql .= ' SET upd.fk_parent_level=ori.rowid,';
+			$sql .= ' upd.fk_user_mod=' . $user->id;
 			$sql .= ' WHERE upd.fk_parent_level=ori.fk_agefodd_training_admlevel AND upd.level_rank<>0 AND upd.fk_training=ori.fk_training';
 			$sql .= ' AND upd.fk_training=' . $training_id;
 		}
@@ -807,6 +756,138 @@ class Agefodd_training_admlevel extends CommonObject {
 			return 1;
 		}
 	}
+
+
+
+	/**
+	 * Load object in memory from database
+	 *
+	 * @param int $training_id object
+	 * @param int $fk_parent_level id of parent
+	 * @return array|int array of object, or <0 if KO
+	 */
+	public function fetch_all_children_nested($training_id, $fk_parent_level = 0) {
+
+		$TNested = array();
+
+		$sql = "SELECT";
+		$sql .= " t.rowid,";
+		$sql .= " t.fk_training,";
+		$sql .= " t.level_rank,";
+		$sql .= " t.fk_parent_level,";
+		$sql .= " t.indice,";
+		$sql .= " t.intitule,";
+		$sql .= " t.delais_alerte,";
+		$sql .= " t.delais_alerte_end,";
+		$sql .= " t.fk_user_author,";
+		$sql .= " t.datec,";
+		$sql .= " t.fk_user_mod,";
+		$sql .= " t.tms,";
+		$sql .= " t.trigger_name,";
+		$sql .= " t.fk_agefodd_training_admlevel";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_training_admlevel as t";
+		$sql .= " WHERE t.fk_training=" . intval($training_id);
+        $sql .= " AND t.fk_parent_level=" . intval($fk_parent_level);
+
+		$sql .= " ORDER BY t.indice ASC";
+
+		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
+		$resql = $this->db->query($sql);
+
+		if ($resql) {
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+
+			while ( $i < $num ) {
+				$obj = $this->db->fetch_object($resql);
+
+				$line = new AgfTrainingAdmlvlLine();
+
+				$line->rowid = $obj->rowid;
+				$line->fk_training = $obj->fk_training;
+				$line->level_rank = $obj->level_rank;
+				$line->fk_parent_level = $obj->fk_parent_level;
+				$line->indice = $obj->indice;
+				$line->intitule = $obj->intitule;
+				$line->alerte = $obj->delais_alerte;
+				$line->alerte_end = $obj->delais_alerte_end;
+				$line->fk_agefodd_training_admlevel = $obj->fk_agefodd_training_admlevel;
+				$line->trigger_name = $obj->trigger_name;
+
+				$TNested[$i] = array(
+					'object' => $line,
+					'children' => $this->fetch_all_children_nested($training_id, $line->rowid)
+				);
+				$i ++;
+			}
+			$this->db->free($resql);
+
+			return $TNested;
+		} else {
+			$this->error = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+			return - 1;
+		}
+	}
+
+	/**
+	 * Recursively deletes the specified admin task and all its descendants.
+	 * This may be done more cleanly using ON DELETE CASCADE
+	 *
+	 * @param int $id ID of the admin task; default to current object's ID
+	 * @return int <0 if KO, >0 if OK
+	 */
+	public function delete_with_descendants($id = null)
+	{
+		if ($id === null) $id = $this->id;
+		$id = intval($id);
+
+		$error = 0;
+
+		if (empty($id)) {
+			// setEventMessages($langs->trans('EmptyID'), array(), 'errors');
+			return -1;
+		}
+
+		$this->db->begin();
+
+		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $this->table_element . ' WHERE fk_parent_level = ' . $id;
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$error++;
+			$this->errors[] = "Error " . $this->db->lasterror();
+		} else {
+			$num_rows = $this->db->num_rows($resql);
+			for ($i = 0; $i < $num_rows; $i++) {
+				$obj = $this->db->fetch_object($resql);
+				if (!$obj) break;
+				$this->delete_with_descendants($obj->rowid);
+			}
+		}
+
+		if (!$error) {
+			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . $this->table_element . ' WHERE rowid = ' . $id;
+
+			dol_syslog(get_class($this) . "::delete");
+			$resql = $this->db->query($sql);
+			if (!$resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			}
+		}
+
+		// Commit or rollback
+		if ($error) {
+			foreach ($this->errors as $errmsg) {
+				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
+			$this->db->rollback();
+			return -1 * $error;
+		}
+		$this->db->commit();
+		return 1;
+	}
 }
 
 /**
@@ -820,6 +901,7 @@ class AgfTrainingAdmlvlLine {
 	public $indice;
 	public $intitule;
 	public $alerte;
+	public $alerte_end;
 	public $fk_agefodd_training_admlevel;
 	public $trigger_name;
 	public function __construct() {

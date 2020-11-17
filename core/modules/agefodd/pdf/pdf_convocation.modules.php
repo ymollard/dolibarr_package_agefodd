@@ -160,9 +160,19 @@ class pdf_convocation extends ModelePDFAgefodd {
 			// Recuperation des stagiaires participant à la formation
 			$agf2 = new Agefodd_session_stagiaire($this->db);
 			$result = $agf2->fetch_stagiaire_per_session($id, $socid);
+			$nbtraineePage= 0;
 
 			if (($result && $ret)) {
 				for($i = 0; $i < count($agf2->lines); $i ++) {
+					if ($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
+						$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+						$status_stagiaire = (int) $agf2->lines[$i]->status_in_session;
+						if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
+							setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $agf2->lines[$i]->nom), 'warnings');
+							continue;
+						}
+					}
+					$nbtraineePage++;
 					// New page
 					$pdf->AddPage();
 					if (! empty($tplidx)) $pdf->useTemplate($tplidx);
@@ -343,7 +353,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 
 					$this->str ='';
 					$old_date='';
-					foreach ( $agf_calendrier->lines as $line ) {
+					foreach ($agf_calendrier->lines as $line) {
 						if ($line->date_session != $old_date) {
 							$this->str .= "\n";
 							$this->str .= dol_print_date($line->date_session, 'daytext') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour') . ' ' . $outputlangs->transnoentities('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour');
@@ -381,13 +391,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 
 					$pdf->SetXY($posX + 10, $posY);
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-					$this->str = $agf_place->cp;
-					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
-					$posY = $pdf->GetY() + 2;
-
-					$pdf->SetXY($posX + 10, $posY);
-					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->defaultFontSize);
-					$this->str = $agf_place->ville;
+					$this->str = $agf_place->cp . ' ' . $agf_place->ville;
 					$pdf->MultiCell(0, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
 					$posY = $pdf->GetY() + 10;
 
@@ -415,16 +419,56 @@ class pdf_convocation extends ModelePDFAgefodd {
 
 					// Pied de page
 					$this->_pagefoot($pdf, $agf, $outputlangs);
-					// FPDI::AliasNbPages() is undefined method into Dolibarr 3.5
+
+					/*
+					 * Page 4 (Annexe 1)
+					 */
+					if (! empty($conf->global->AGF_MERGE_ADVISE_AND_CONVOC)) {
+
+						// this configuration variable is designed like
+						// standard_model_name:new_model_name&standard_model_name:new_model_name&....
+						$model='conseils';
+						$fileconseils = $model . '_' . $agf->id . '.pdf';
+						if (! empty($conf->global->AGF_PDF_MODEL_OVERRIDE) && ($model != 'convention')) {
+							$modelarray = explode('&', $conf->global->AGF_PDF_MODEL_OVERRIDE);
+							if (is_array($modelarray) && count($modelarray) > 0) {
+								foreach ( $modelarray as $modeloveride ) {
+									$modeloverridearray = explode(':', $modeloveride);
+									if (is_array($modeloverridearray) && count($modeloverridearray) > 0) {
+										if ($modeloverridearray[0] == $model) {
+											$model = $modeloverridearray[1];
+										}
+									}
+								}
+							}
+						}
+						$result = agf_pdf_create($this->db, $agf->id, '', $model, $outputlangs, $fileconseils, 0);
+
+						$infileconseil = $conf->agefodd->dir_output.'/'. $fileconseils;
+						if (is_file($infileconseil)) {
+							$countconseil = $pdf->setSourceFile($infileconseil);
+							// import all page
+							for($iconseil = 1; $iconseil <= $countconseil; $iconseil ++) {
+								// New page
+								$pdf->AddPage();
+								$tplIdxconseil = $pdf->importPage($iconseil);
+								$pdf->useTemplate($tplIdxconseil);
+							}
+						}
+					}
+
 					if (method_exists($pdf, 'AliasNbPages')) {
 						$pdf->AliasNbPages();
 					}
 				}
 			}
+
 			$pdf->Close();
-			$pdf->Output($file, 'F');
-			if (! empty($conf->global->MAIN_UMASK))
-				@chmod($file, octdec($conf->global->MAIN_UMASK));
+			if ($nbtraineePage>0) {
+				$pdf->Output($file, 'F');
+				if (!empty($conf->global->MAIN_UMASK))
+					@chmod($file, octdec($conf->global->MAIN_UMASK));
+			}
 
 
 			// Add pdfgeneration hook
@@ -436,7 +480,7 @@ class pdf_convocation extends ModelePDFAgefodd {
 			$hookmanager->initHooks(array('pdfgeneration'));
 			$parameters=array('file'=>$file,'object'=>$agf,'outputlangs'=>$outputlangs);
 			global $action;
-			$reshook=$hookmanager->executeHooks('afterPDFCreation',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+			$reshook=$hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);    // Note that $action and $object may have been modified by some hooks
 
 
 			return 1; // Pas d'erreur

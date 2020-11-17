@@ -171,6 +171,14 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 				if ($nbsta > 0) {
 					// $blocsta=0;
 					foreach ( $agfsta->lines as $line ) {
+						if ($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
+							$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+							$status_stagiaire = (int) $line->status_in_session;
+							if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
+								setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $line->nom), 'warnings');
+								continue;
+							}
+						}
 						$this->_pagebody($pdf, $agf, 1, $outputlangs, $line);
 					}
 				} else {
@@ -397,7 +405,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		$pdf->SetXY($posX, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 9);
 		$pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
-		$this->str = $outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' »,' . $outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' », ' . $outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
 		$this->str .= $mysoc->address . ' ' .$mysoc->zip . ' ' . $mysoc->town;
 		$this->str .= $outputlangs->transnoentities('AgfPDFFichePres4') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . ",\n";
 		$this->str .= $outputlangs->transnoentities('AgfPDFFichePres5');
@@ -465,7 +473,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		//trainee name
 		$pdf->SetXY($this->posxforthcolumn+1, $tab_top+$tab_height/4-3);
 		$this->str = $line->nom . ' ' . $line->prenom;
-		if (! empty($line->poste)) {
+		if (! empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
 			$this->str .= ' (' . $line->poste . ')';
 		}
 		$pdf->MultiCell($this->posxstudentname-$this->posxsecondcolumn, 4, $outputlangs->convToOutputCharset($this->str), 0, 'L');
@@ -544,7 +552,7 @@ class pdf_fiche_presence_trainee_direct extends ModelePDFAgefodd {
 		$pdf->SetXY($posX + $larg_col1 + $larg_col2, $posY);
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', 9);
 		$this->str = $line->nom . ' ' . $line->prenom . ' - ' . dol_trunc($line->socname, 27);
-		if (! empty($line->poste)) {
+		if (! empty($line->poste) && empty($conf->global->AGF_HIDE_POSTE_FICHEPRES)) {
 			$this->str .= ' (' . $line->poste . ')';
 		}
 		//$pdf->Cell($larg_col3, 5, $outputlangs->convToOutputCharset($this->str), TR, 2, "C", 0);

@@ -24,10 +24,55 @@
 
 
 function agefodd_completesubstitutionarray(&$substitutionarray,$outputlangs,$object,$parameters) {
-	$outputlangs->trans('agefood@agefodd');
+	global $conf, $db;
+
+	$outputlangs->load('agefood@agefodd');
 	$substitutionarray=array_merge($substitutionarray, array(
-			'__FORMINTITULE__' => $outputlangs->trans('AgfFormIntitule'),
-			'__FORMDATESESSION__' => $outputlangs->trans('AgfPDFFichePres7bis'),
+			'__FORMINTITULE__' => $outputlangs->trans('AgfFormIntitule').' '.$outputlangs->trans('OnlyOnTrainingMail'),
+			'__FORMDATESESSION__' => $outputlangs->trans('AgfPDFFichePres7bis').' '.$outputlangs->trans('OnlyOnTrainingMail'),
+			'__AGENDATOKEN__' => $conf->global->MAIN_AGENDA_XCAL_EXPORTKEY,
+			'__TRAINER_1_EXTRAFIELD_XXXX__' => $outputlangs->trans('OnlyOnSessionMail')
 	));
+
+	// Add ICS link replacement to mails
+	$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2).'?format=ical&type=event';
+
+	if(!empty($object) && $object->element == 'agefodd_formateur')
+	{
+		$substitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftrainerid='.$object->id;
+		$substitutionarray['__AGENDAICS__'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftrainerid'.$object->id);
+	}
+	elseif(!empty($object) && get_class ($object) == "Agefodd_stagiaire")
+	{
+		$substitutionarray['__AGENDAICS__'] = $downloadIcsLink.'&amp;agftraineeid='.$object->id;
+		$substitutionarray['__AGENDAICS__'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftraineeid'.$object->id);
+	}
+    elseif(!empty($object) && $object->element == 'contact' && $parameters['needforkey'] == 'SUBSTITUTION_AGFSESSIONLIST')
+    {
+        $nbCollections = 0;
+
+        // count session list
+        $sql  = "SELECT";
+        $sql .= " s.rowid";
+        $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_stagiaire as trainee";
+        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_stagiaire as ss ON ss.fk_stagiaire = trainee.rowid";
+        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as s ON s.rowid = ss.fk_session_agefodd";
+        $sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
+        $sql .= " AND trainee.fk_socpeople = " . $object->id;
+
+        $resql = $db->query($sql);
+        if ($resql) {
+            $nbCollections = $db->num_rows($resql);
+        } else {
+            dol_print_error($db);
+        }
+
+        $substitutionarray['AGFSESSIONLIST'] = $outputlangs->trans('AgfMenuSess') . ($nbCollections > 0 ? ' <span class="badge">' . ($nbCollections) . '</span>' : '');
+    }
+
+	// show sendCreneauEmailAlertToTrainees for  __AGENDAICS__ external access substitution
+
+
+
 	return $substitutionarray;
 }

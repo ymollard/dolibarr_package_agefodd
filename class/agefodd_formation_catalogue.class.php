@@ -32,7 +32,7 @@ class Formation extends CommonObject {
 	public $errors = array ();
 	public $element = 'agefodd_formation_catalogue';
 	public $table_element = 'agefodd_formation_catalogue';
-	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $id;
 	public $entity;
 	public $ref;
@@ -65,6 +65,7 @@ class Formation extends CommonObject {
 	public $qr_code_info;
 	public $lines = array ();
 	public $trainers = array ();
+	public $nb_place;
 
 	/**
 	 * Constructor
@@ -126,7 +127,7 @@ class Formation extends CommonObject {
 
 			// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_formation_catalogue(";
-		$sql .= "datec, ref,ref_interne,intitule, duree, public, methode, prerequis, but,";
+		$sql .= "datec, ref,ref_interne,intitule, duree, nb_place, public, methode, prerequis, but,";
 		$sql .= "programme, note1, note2, fk_user_author,fk_user_mod,entity,";
 		$sql .= "fk_product,nb_subscribe_min,fk_c_category,certif_duration";
 		$sql .= ",pedago_usage";
@@ -139,6 +140,7 @@ class Formation extends CommonObject {
 		$sql .= " " . (! isset($this->ref_interne) ? 'NULL' : "'" . $this->ref_interne . "'") . ",";
 		$sql .= " " . (! isset($this->intitule) ? 'NULL' : "'" . $this->intitule . "'") . ",";
 		$sql .= " " . (! isset($this->duree) ? 'NULL' : $this->duree) . ",";
+		$sql .= " " . (empty($this->nb_place) ? 'NULL' : $this->nb_place) . ",";
 		$sql .= " " . (! isset($this->public) ? 'NULL' : "'" . $this->public . "'") . ",";
 		$sql .= " " . (! isset($this->methode) ? 'NULL' : "'" . $this->methode . "'") . ",";
 		$sql .= " " . (! isset($this->prerequis) ? 'NULL' : "'" . $this->prerequis . "'") . ",";
@@ -158,9 +160,7 @@ class Formation extends CommonObject {
 		$sql .= " " . (empty($this->qr_code_info) ? "null" : "'" . $this->qr_code_info . "'") . ', ';
 		$sql .= " " . (empty($this->fk_c_category_bpf) ? "null" : $this->fk_c_category_bpf);
 		$sql .= ")";
-
 		$this->db->begin();
-
 		dol_syslog(get_class($this) . "::create ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
@@ -215,13 +215,12 @@ class Formation extends CommonObject {
 	 * Load object in memory from database
 	 *
 	 * @param int $id object
+	 * @param string $ref
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id, $ref = '') {
-		global $langs;
-
 		$sql = "SELECT";
-		$sql .= " c.rowid, c.ref, c.ref_interne, c.intitule, c.duree,";
+		$sql .= " c.rowid, c.entity, c.ref, c.ref_interne, c.intitule, c.duree, c.nb_place,";
 		$sql .= " c.public, c.methode, c.prerequis, but, c.programme, c.archive, c.note1, c.note2 ";
 		$sql .= " ,c.note_private, c.note_public, c.fk_product,c.nb_subscribe_min,c.fk_c_category,dictcat.code as catcode ,dictcat.intitule as catlib ";
 		$sql .= " ,c.certif_duration";
@@ -252,9 +251,11 @@ class Formation extends CommonObject {
 				$this->ref = $obj->rowid;
 				// use for next prev ref
 				$this->ref_obj = $obj->ref;
+				$this->entity = $obj->entity;
 				$this->ref_interne = $obj->ref_interne;
 				$this->intitule = stripslashes($obj->intitule);
 				$this->duree = $obj->duree;
+				$this->nb_place = $obj->nb_place;
 				$this->public = stripslashes($obj->public);
 				$this->methode = stripslashes($obj->methode);
 				$this->prerequis = stripslashes($obj->prerequis);
@@ -280,7 +281,7 @@ class Formation extends CommonObject {
 				$this->sanction = $obj->sanction;
 				$this->color = $obj->color;
 				$this->qr_code_info = $obj->qr_code_info;
-				
+
 				require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
     			$extrafields = new ExtraFields($this->db);
     			$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
@@ -290,7 +291,7 @@ class Formation extends CommonObject {
 			}
 			$this->db->free($resql);
 
-			
+
 
 			return 1;
 		} else {
@@ -307,10 +308,8 @@ class Formation extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function info($id) {
-		global $langs;
-
 		$sql = "SELECT";
-		$sql .= " c.rowid, c.datec, c.tms, c.fk_user_author, c.fk_user_mod ";
+		$sql .= " c.rowid, c.entity, c.datec, c.tms, c.fk_user_author, c.fk_user_mod ";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " WHERE c.rowid = " . $id;
 
@@ -320,6 +319,7 @@ class Formation extends CommonObject {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->entity = $obj->entity;
 				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->user_creation = $obj->fk_user_author;
@@ -389,6 +389,7 @@ class Formation extends CommonObject {
 		$sql .= " ref_interne=" . (isset($this->ref_interne) ? "'" . $this->ref_interne . "'" : "null") . ",";
 		$sql .= " intitule=" . (isset($this->intitule) ? "'" . $this->intitule . "'" : "null") . ",";
 		$sql .= " duree=" . (isset($this->duree) ? price2num($this->duree) : "null") . ",";
+		$sql .= " nb_place=" . (!empty($this->nb_place) ? ($this->nb_place) : "null") . ",";
 		$sql .= " public=" . (isset($this->public) ? "'" . $this->public . "'" : "null") . ",";
 		$sql .= " methode=" . (isset($this->methode) ? "'" . $this->methode . "'" : "null") . ",";
 		$sql .= " prerequis=" . (isset($this->prerequis) ? "'" . $this->prerequis . "'" : "null") . ",";
@@ -452,10 +453,13 @@ class Formation extends CommonObject {
 	 * Delete object in database
 	 *
 	 * @param int $id to delete
+	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int if KO, >0 if OK
 	 */
-	public function remove($id) {
-		global $conf;
+	public function remove($id, $notrigger = 0) {
+		global $conf, $user;
+		
+		$error = 0;
 
 		$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue";
 		$sql .= " WHERE rowid = " . $id;
@@ -570,8 +574,6 @@ class Formation extends CommonObject {
 	 * @return int if KO, >0 if OK
 	 */
 	public function fetch_objpeda($id) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " o.intitule, o.priorite, o.fk_formation_catalogue";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_objectifs_peda";
@@ -605,8 +607,6 @@ class Formation extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_objpeda_per_formation($id_formation) {
-		global $langs;
-
 		$sql = "SELECT";
 		$sql .= " o.rowid, o.intitule, o.priorite, o.fk_formation_catalogue, o.tms, o.fk_user_author";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_objectifs_peda AS o";
@@ -616,7 +616,7 @@ class Formation extends CommonObject {
 		dol_syslog(get_class($this) . "::fetch_objpeda_per_formation ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
-			$this->line = array ();
+			$this->lines = array();
 			$num = $this->db->num_rows($resql);
 			$i = 0;
 
@@ -751,21 +751,19 @@ class Formation extends CommonObject {
 	 * @return string translated description
 	 */
 	public function getToolTip() {
-		global $conf;
+		global $langs;
 
 		$langs->load("admin");
 		$langs->load("agefodd@agefodd");
+		
+		$s  = '<b>' . $langs->trans("AgfTraining") . '</b>:<u>' . $this->intitule . ':</u><br>';
+		$s .= '<br>';
+		$s .= $langs->trans("AgfDuree") . ' : ' . $this->duree . ' H <br>';
+		$s .= $langs->trans("AgfPublic") . ' : ' . $this->public . '<br>';
+		$s .= $langs->trans("AgfMethode") . ' : ' . $this->methode . '<br>';
 
-		$s = '';
-		if (type == 'trainning') {
-			$s .= '<b>' . $langs->trans("AgfTraining") . '</b>:<u>' . $this->intitule . ':</u><br>';
-			$s .= '<br>';
-			$s .= $langs->trans("AgfDuree") . ' : ' . $this->duree . ' H <br>';
-			$s .= $langs->trans("AgfPublic") . ' : ' . $this->public . '<br>';
-			$s .= $langs->trans("AgfMethode") . ' : ' . $this->methode . '<br>';
+		$s .= '<br>';
 
-			$s .= '<br>';
-		}
 		return $s;
 	}
 
@@ -778,18 +776,27 @@ class Formation extends CommonObject {
 	 * @param int $offset offset limit
 	 * @param int $arch archive
 	 * @param array $filter array of filter where clause
+	 * @param array $array_options_keys extrafields to fetch
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all($sortorder, $sortfield, $limit, $offset, $arch = 0, $filter = array(), $array_options_keys=array()) {
-		global $langs;
+		if (empty($array_options_keys)) {
+			require_once (DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php');
+			$extrafields = new ExtraFields($this->db);
+			$extrafields->fetch_name_optionals_label($this->table_element);
+			if (is_array($extrafields->attributes[$this->table_element]['label'])) {
+				$array_options_keys = array_keys($extrafields->attributes[$this->table_element]['label']);
+			}
+		}
 
-		$sql = "SELECT c.rowid, c.intitule, c.ref_interne, c.ref, c.datec, c.duree, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
+		$sql = "SELECT c.rowid, c.entity, c.intitule, c.ref_interne, c.ref, c.datec, c.duree,c.nb_place, c.fk_product, c.nb_subscribe_min, dictcat.code as catcode ,dictcat.intitule as catlib, ";
 		$sql .= "dictcatbpf.code as catcodebpf ,dictcatbpf.intitule as catlibbpf,";
 		$sql .= " (SELECT MAX(sess1.datef) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess1 WHERE sess1.fk_formation_catalogue=c.rowid AND sess1.status IN (4,5)) as lastsession,";
 		$sql .= " (SELECT count(rowid) FROM " . MAIN_DB_PREFIX . "agefodd_session as sess WHERE sess.fk_formation_catalogue=c.rowid AND sess.status IN (4,5)) as nbsession";
-		foreach ($array_options_keys as $key)
-		{
-			$sql.= ', ef.'.$key;
+		if (is_array($array_options_keys) && count($array_options_keys) > 0) {
+			foreach ($array_options_keys as $key) {
+				$sql .= ', ef.' . $key;
+			}
 		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session as a";
@@ -858,11 +865,13 @@ class Formation extends CommonObject {
 					$line = new AgfTrainingLine();
 
 					$line->rowid = $obj->rowid;
+					$line->entity = $obj->entity;
 					$line->intitule = $obj->intitule;
 					$line->ref = $obj->ref;
 					$line->ref_interne = $obj->ref_interne;
 					$line->datec = $this->db->jdate($obj->datec);
 					$line->duree = $obj->duree;
+					$line->nb_place = $obj->nb_place;
 					$line->lastsession = $obj->lastsession;
 					$line->nbsession = $obj->nbsession;
 					$line->fk_product = $obj->fk_product;
@@ -872,9 +881,10 @@ class Formation extends CommonObject {
 
 					// Formatage comme du Dolibarr standard pour ne pas être perdu
 					$line->array_options = array();
-					foreach ($array_options_keys as $key)
-					{
-						$line->array_options['options_'.$key] = $obj->{$key};
+					if (is_array($array_options_keys) && count($array_options_keys) > 0) {
+						foreach ($array_options_keys as $key) {
+							$line->array_options['options_' . $key] = $obj->{$key};
+						}
 					}
 
 					$this->lines[$i] = $line;
@@ -893,6 +903,9 @@ class Formation extends CommonObject {
 
 	/**
 	 * Create admin level for a session
+	 *
+	 * @param $user User
+	 * @return int <0 if KO, >0 if OK
 	 */
 	public function createAdmLevelForTraining($user) {
 		$error = '';
@@ -914,7 +927,6 @@ class Formation extends CommonObject {
 				$actions->delais_alerte_end = $line->alerte_end;
 				$actions->intitule = $line->intitule;
 				$actions->indice = $line->indice;
-				$actions->archive = 0;
 				$actions->level_rank = $line->level_rank;
 				$actions->fk_parent_level = $line->fk_parent_level; // Treatement to calculate the new parent level is after
 				$actions->trigger_name = $line->trigger_name;
@@ -951,7 +963,7 @@ class Formation extends CommonObject {
 	 * @return int id of clone
 	 */
 	public function createFromClone($fromid) {
-		global $user, $langs, $conf;
+		global $user, $conf;
 
 		$error = 0;
 
@@ -960,7 +972,7 @@ class Formation extends CommonObject {
 		$this->db->begin();
 
 		// Load source object
-		$object->fetch($fromid);
+		$result = $object->fetch($fromid);
 		if ($result < 0) {
 			$this->error = $object->error;
 			$error ++;
@@ -972,7 +984,7 @@ class Formation extends CommonObject {
 		if (! empty($conf->global->AGF_ADDON) && is_readable($path_rel)) {
 			dol_include_once('/agefodd/core/modules/agefodd/' . $conf->global->AGF_ADDON . '.php');
 			$modAgefodd = new $obj();
-			$defaultref = $modAgefodd->getNextValue($soc, $this);
+			$defaultref = $modAgefodd->getNextValue(null, $this);
 		}
 
 		if (is_numeric($defaultref) && $defaultref <= 0)
@@ -1023,6 +1035,7 @@ class Formation extends CommonObject {
 				$this->errors[] = $source->error;
 				$error ++;
 			}
+			$trainer_array = array();
 			foreach ( $source->trainers as $trainer ) {
 				$trainer_array[$trainer->id] = $trainer->id;
 			}
@@ -1056,9 +1069,9 @@ class Formation extends CommonObject {
 	public function getNomUrl($label = 'all') {
 		$link = dol_buildpath('/agefodd/training/card.php', 1);
 		if ($label == 'all') {
-			return '<a href="' . $link . '?id=' . $this->rowid . '">' . $this->ref . ((! empty($this->ref_interne)) ? ' (' . $this->ref_interne . ') ' : ' ') . $this->intitule . '</a>';
+			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->ref . ((! empty($this->ref_interne)) ? ' (' . $this->ref_interne . ') ' : ' ') . $this->intitule . '</a>';
 		} else {
-			return '<a href="' . $link . '?id=' . $this->rowid . '">' . $this->$label . '</a>';
+			return '<a href="' . $link . '?id=' . $this->id . '">' . $this->$label . '</a>';
 		}
 	}
 
@@ -1069,9 +1082,7 @@ class Formation extends CommonObject {
 	 * @param User $user
 	 * @return number
 	 */
-	public function setTrainingTrainer($trainers = array(),$user) {
-		global $conf;
-
+	public function setTrainingTrainer($trainers, $user) {
 		$error = 0;
 
 		$this->db->begin();
@@ -1119,8 +1130,9 @@ class Formation extends CommonObject {
 	 * @return number
 	 */
 	public function fetchTrainer() {
-		global $conf;
 		require_once 'agefodd_formateur.class.php';
+		
+		$error = 0;
 
 		$sql = 'SELECT link.rowid as linkid, f.rowid as fk_trainer ';
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_formateur as f";
@@ -1133,7 +1145,6 @@ class Formation extends CommonObject {
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
-			$i = 0;
 
 			while ( $obj = $this->db->fetch_object($resql) ) {
 				$trainer = new Agefodd_teacher($this->db);
@@ -1177,7 +1188,9 @@ class Formation extends CommonObject {
 			{
 				if($link->label=="PRG"){
 					$fopen = fopen($link->url, 'r');
-					file_put_contents($conf->agefodd->dir_output.'/'.'fiche_pedago_'.$this->id.'.pdf', $fopen);
+					if ($fopen !== false) {
+						file_put_contents($conf->agefodd->dir_output . '/' . 'fiche_pedago_' . $this->id . '.pdf', $fopen);
+					}
 					return 1;
 				}
 			}
@@ -1266,16 +1279,20 @@ class AgfObjPedaLine {
 }
 class AgfTrainingLine {
 	public $rowid;
+	public $entity;
 	public $intitule;
 	public $ref_interne;
 	public $ref;
 	public $datec;
 	public $duree;
+	public $nb_place;
 	public $lastsession;
 	public $nbsession;
 	public $fk_product;
 	public $nb_subscribe_min;
 	public $category_lib;
+	public $category_lib_bpf;
+	public $array_options = array();
 	public function __construct() {
 		return 1;
 	}

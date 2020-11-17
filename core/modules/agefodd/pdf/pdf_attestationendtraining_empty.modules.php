@@ -249,13 +249,13 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 			$pdf->Cell($this->width2, - 3, $this->str2, 0, 0, 'C', 0);*/
 
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$newY = $newY + 20;
+			$newY = $newY + 10;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$this->str = ' ' . $outputlangs->transnoentities('AgfPDFAttestation3');
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 18);
-			$newY = $newY + 10;
+			$newY = $newY + 7;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$pdf->MultiCell($this->page_largeur - $this->marge_gauche - $this->marge_droite, 0, $outputlangs->transnoentities('« ' . $agf->intitule_custo . ' »'), 0, 'C', 0);
 			$newY = $pdf->GetY();
@@ -264,7 +264,7 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 			$this->str .= $agf->libSessionDate();
 			$this->str .= ' ' . $outputlangs->transnoentities('AgfPDFAttestation5') . " " . $agf->duree_session . $outputlangs->transnoentities('AgfPDFAttestation6');
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-			$newY = $newY + 10;
+			$newY = $newY + 7;
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
 			$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'C', 0);
 
@@ -315,6 +315,8 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 					$pdf->SetXY($this->posxacquired+4, $beforeY);
 					if (empty($conf->global->AGF_ATTESTION_PDF_DEFAULT_NOTAQUIS)) {
 						$pdf->MultiCell($width, 0, $outputlangs->transnoentities('X'), 0, 'L', 0);
+					} else {
+						$pdf->MultiCell($width, 0, '', 0, 'L', 0);
 					}
 
 				}
@@ -334,7 +336,7 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 			$newY = $pdf->GetY() + 10;
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'U', 12);
 			$pdf->SetXY($this->marge_gauche + 1, $newY);
-			$this->str = $outputlangs->transnoentities('Fait pour servir et valoir ce que droit');
+			$this->str = $outputlangs->transnoentities('AgfPDFAttestation10');
 			$pdf->MultiCell(80, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
 
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 11);
@@ -397,7 +399,7 @@ class pdf_attestationendtraining_empty extends ModelePDFAgefodd {
 			// alignement du bord droit du container avec le haut de la page
 			$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
 			$baseline_angle = (M_PI / 2); // angle droit
-			$baseline_x = $this->page_largeur - $this->marge - gauche - 12;
+			$baseline_x = $this->page_largeur - $this->marge_gauche - 12;
 			$baseline_y = $baseline_ecart + 30;
 			$baseline_width = $this->width;
 

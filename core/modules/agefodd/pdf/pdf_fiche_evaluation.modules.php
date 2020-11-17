@@ -366,26 +366,27 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$posY = $pdf->GetY() + 1;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
+				if (is_array($agf_op->line)) {
+					for ($y = 0; $y < count($agf_op->line); $y++) {
+						// Intitulé
+						$posY = $pdf->GetY();
+						$pdf->SetXY($posX, $posY);
+						$pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 1, 'L', 0);
+						$posY_after = $pdf->GetY();
+						$hauteur = ($posY_after - $posY);
 
-				for($y = 0; $y < count($agf_op->line); $y ++) {
-					// Intitulé
-					$posY = $pdf->GetY();
-					$pdf->SetXY($posX, $posY);
-					$pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 1, 'L', 0);
-					$posY_after = $pdf->GetY();
-					$hauteur = ($posY_after - $posY);
+						// Oui
+						$pdf->SetXY($posX + $width, $posY);
+						$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalYes');
+						$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
+						$pdf->Rect($posX + $width, $posY, 10, $hauteur);
 
-					// Oui
-					$pdf->SetXY($posX + $width, $posY);
-					$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalYes');
-					$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
-					$pdf->Rect($posX + $width, $posY, 10, $hauteur);
-
-					// Non
-					$pdf->SetXY($posX + $width + 10, $posY);
-					$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalNo');
-					$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
-					$pdf->Rect($posX + $width + 10, $posY, 10, $hauteur);
+						// Non
+						$pdf->SetXY($posX + $width + 10, $posY);
+						$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalNo');
+						$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
+						$pdf->Rect($posX + $width + 10, $posY, 10, $hauteur);
+					}
 				}
 				$posY = $pdf->GetY() + 5;
 

@@ -50,6 +50,12 @@ $ref = GETPOST('ref', 'alpha');
 if (! $user->rights->agefodd->lire)
 	accessforbidden();
 
+
+
+$hookmanager->initHooks(array(
+		'agefoddsessionlinkedfiles'
+));
+
 	// Get parameters
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
@@ -73,10 +79,22 @@ if ($result < 0) {
 } else {
 	$upload_dir = $conf->agefodd->dir_output . "/" . $object->id;
 }
+//Rename training program file with trim whitespace to be enable to move it as training program pdf
+// do_move user rename php function thaht do not work with white space in name
+if (GETPOST('sendit', 'alpha') && ! empty($conf->global->MAIN_UPLOAD_DOC) && ! empty($_FILES))
+{
+	if (is_array($_FILES['userfile']['name'])) $userfiles=$_FILES['userfile']['name'];
+	else $userfiles=array($_FILES['userfile']['name']);
 
-/*
- * Actions
-*/
+	foreach($userfiles as $key => $userfile)
+	{
+		$_FILES['userfile']['name'][$key]=preg_replace('/\s+/', '_', dol_sanitizeFileName($userfile));;
+	}
+}
+$parameters = array('id'=>$id, 'upload_dir'=>$upload_dir);
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0)
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 /*
  * Actions
@@ -84,29 +102,6 @@ if ($result < 0) {
 
 include_once DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 
-/*
-// Post file
-if (GETPOST ( 'sendit' ) && ! empty ( $conf->global->MAIN_UPLOAD_DOC )) {
-	if ($object->id) {
-		dol_add_file_process ( $upload_dir, 0, 1, 'userfile' );
-	}
-}
-
-// Delete file
-if ($action == 'confirm_deletefile' && $confirm == 'yes') {
-	if ($object->id) {
-		$file = $upload_dir . "/" . GETPOST ( 'urlfile' ); // Do not use urldecode here ($_GET and $_REQUEST are already decoded by PHP).
-
-		$ret = dol_delete_file ( $file, 0, 0, 0, $object );
-		if ($ret)
-			setEventMessage ( $langs->trans ( "FileWasRemoved", GETPOST ( 'urlfile' ) ) );
-		else
-			setEventMessage ( $langs->trans ( "ErrorFailToDeleteFile", GETPOST ( 'urlfile' ) ), 'errors' );
-		header ( 'Location: ' . $_SERVER ["PHP_SELF"] . '?id=' . $object->id );
-		exit ();
-	}
-}
-*/
 
 /*
  * View
@@ -117,6 +112,8 @@ $formAgefodd = new FormAgefodd($db);
 
 $help_url = '';
 llxHeader('', $langs->trans("AgfSessionDocuments") . ' - ' . $langs->trans("Files"), $help_url);
+
+
 
 if ($object->id) {
 	/*
@@ -130,9 +127,15 @@ if ($object->id) {
 
 	dol_fiche_head($head, 'documentfiles', $langs->trans("AgfSessionDocuments"), 0, 'bill');
 
+	$parameters = array();
+	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+	print $hookmanager->resPrint;
+
+
 	dol_agefodd_banner_tab($object, 'id');
-	print '<div class="underbanner clearboth"></div>';
-	
+
+	dol_fiche_end();
+
 	// Construit liste des fichiers
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
 	$totalsize = 0;
@@ -142,6 +145,7 @@ if ($object->id) {
 
 	$modulepart = 'agefodd';
 	$permission = ($user->rights->agefodd->creer || $user->rights->agefodd->modifier);
+    $permtoedit = $user->rights->agefodd->creer || $user->rights->agefodd->modifier;
 	$param = '&id=' . $object->id;
 	$object->ref=$object->id; // Hack moche mais cool !
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';

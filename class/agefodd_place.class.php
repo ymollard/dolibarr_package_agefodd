@@ -35,7 +35,7 @@ class Agefodd_place extends CommonObject {
 	public $errors = array ();
 	public $element = 'agefodd_place';
 	public $table_element = 'agefodd_place';
-	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $id;
 	public $entity;
 	public $ref_interne;
@@ -62,6 +62,7 @@ class Agefodd_place extends CommonObject {
 	public $tms = '';
 	public $control_occupation;
 	public $lines = array ();
+	public $nb_place;
 
 	/**
 	 * Constructor
@@ -129,6 +130,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= "cp,";
 		$sql .= "ville,";
 		$sql .= "fk_pays,";
+		$sql .= "nb_place,";
 		$sql .= "tel,";
 		$sql .= "fk_societe,";
 		$sql .= "fk_socpeople,";
@@ -148,9 +150,10 @@ class Agefodd_place extends CommonObject {
 		$sql .= " " . (! isset($this->cp) ? 'NULL' : "'" . $this->db->escape($this->cp) . "'") . ",";
 		$sql .= " " . (! isset($this->ville) ? 'NULL' : "'" . $this->db->escape($this->ville) . "'") . ",";
 		$sql .= " " . (! isset($this->fk_pays) ? 'NULL' : "'" . $this->fk_pays . "'") . ",";
+		$sql .= " " . (empty($this->nb_place) ? 'NULL' : "'" . $this->nb_place . "'") . ",";
 		$sql .= " " . (! isset($this->tel) ? 'NULL' : "'" . $this->db->escape($this->tel) . "'") . ",";
 		$sql .= " " . (! isset($this->fk_societe) ? 'NULL' : "'" . $this->fk_societe . "'") . ",";
-		$sql .= " " . (empty($this->fk_socpeople) ? 'NULL' : "'" . $this->fk_socpeople . "'") . ",";
+		$sql .= " " . (empty($this->fk_socpeople) ? '0' : "'" . $this->fk_socpeople . "'") . ",";
 		$sql .= " " . (empty($this->timeschedule) ? 'NULL' : "'" . $this->timeschedule . "'") . ",";
 		$sql .= " " . (! isset($this->notes) ? 'NULL' : "'" . $this->db->escape($this->notes) . "'") . ",";
 		$sql .= " " . (! isset($this->acces_site) ? 'NULL' : "'" . $this->db->escape($this->acces_site) . "'") . ",";
@@ -206,10 +209,8 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
-
 		$sql = "SELECT";
-		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,";
+		$sql .= " p.rowid, p.entity, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, p.nb_place,  pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,";
 		$sql .= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1, p.fk_reg_interieur";
 		$sql .= " ,p.control_occupation";
 		$sql .= " ,p.fk_socpeople";
@@ -233,6 +234,7 @@ class Agefodd_place extends CommonObject {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
 				$this->ref = $obj->rowid; // Use for next prev control
+				$this->entity = $obj->entity;
 				$this->ref_interne = $obj->ref_interne;
 				$this->adresse = stripslashes($obj->adresse);
 				$this->cp = $obj->cp;
@@ -256,6 +258,7 @@ class Agefodd_place extends CommonObject {
 				$this->socp_firstname=$obj->socp_firstname;
 				$this->socp_phone=$obj->socp_phone;
 				$this->socp_email=$obj->socp_email;
+				$this->nb_place = $obj->nb_place;
 			}
 			$this->db->free($resql);
 
@@ -278,10 +281,8 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all($sortorder='', $sortfield='', $limit=0, $offset=0, $filter = array()) {
-		global $langs;
-
 		$sql = "SELECT";
-		$sql .= " p.rowid, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,";
+		$sql .= " p.rowid, p.entity, p.ref_interne, p.adresse, p.cp, p.ville, p.fk_pays, pays.code as country_code, pays.label as country, p.tel, p.fk_societe, p.notes, p.archive,p.nb_place,";
 		$sql .= " s.rowid as socid, s.nom as socname, p.acces_site, p.note1";
 		$sql .= " ,p.fk_socpeople";
 		$sql .= " ,p.control_occupation";
@@ -327,6 +328,7 @@ class Agefodd_place extends CommonObject {
 				$line = new AgfPlaceLine();
 
 				$line->id = $obj->rowid;
+				$line->entity = $obj->entity;
 				$line->ref_interne = stripslashes($obj->ref_interne);
 				$line->adresse = stripslashes($obj->adresse);
 				$line->cp = $obj->cp;
@@ -349,6 +351,7 @@ class Agefodd_place extends CommonObject {
 				$line->socp_firstname=$obj->socp_firstname;
 				$line->socp_phone=$obj->socp_phone;
 				$line->socp_email=$obj->socp_email;
+				$line->nb_place=$obj->nb_place;
 
 				$this->lines[$i] = $line;
 
@@ -370,10 +373,8 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function info($id) {
-		global $langs;
-
 		$sql = "SELECT";
-		$sql .= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
+		$sql .= " p.rowid, p.entity, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_place as p";
 		$sql .= " WHERE p.rowid = " . $id;
 
@@ -383,6 +384,7 @@ class Agefodd_place extends CommonObject {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
 				$this->id = $obj->rowid;
+				$this->entity = $obj->entity;
 				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->tms);
 				$this->user_modification = $obj->fk_user_mod;
@@ -453,9 +455,9 @@ class Agefodd_place extends CommonObject {
 		$sql .= " adresse=" . (isset($this->adresse) ? "'" . $this->db->escape($this->adresse) . "'" : "null") . ",";
 		$sql .= " cp=" . (isset($this->cp) ? "'" . $this->db->escape($this->cp) . "'" : "null") . ",";
 		$sql .= " ville=" . (isset($this->ville) ? "'" . $this->db->escape($this->ville) . "'" : "null") . ",";
-		$sql .= " fk_pays=" . (isset($this->fk_pays) ? $this->fk_pays : "null") . ",";
+		$sql .= " fk_pays=" . (!empty($this->fk_pays) ? $this->fk_pays : "null") . ",";
 		$sql .= " tel=" . (isset($this->tel) ? "'" . $this->db->escape($this->tel) . "'" : "null") . ",";
-		$sql .= " fk_societe=" . (isset($this->fk_societe) ? $this->fk_societe : "null") . ",";
+		$sql .= " fk_societe=" . (!empty($this->fk_societe) ? $this->fk_societe : "null") . ",";
 		$sql .= " fk_socpeople=" . (!empty($this->fk_socpeople) ? $this->fk_socpeople : "null") . ",";
 		$sql .= " timeschedule=" . (!empty($this->timeschedule) ? "'".$this->db->escape($this->timeschedule). "'"  : "null") . ",";
 		$sql .= " notes=" . (isset($this->notes) ? "'" . $this->db->escape($this->notes) . "'" : "null") . ",";
@@ -463,6 +465,7 @@ class Agefodd_place extends CommonObject {
 		$sql .= " note1=" . (isset($this->note1) ? "'" . $this->db->escape($this->note1) . "'" : "null") . ",";
 		$sql .= " control_occupation=" . (!empty($this->control_occupation) ? $this->db->escape($this->control_occupation) : "0") . ",";
 		$sql .= " archive=" . $this->archive . ",";
+		$sql .= " nb_place=" . (!empty($this->nb_place) ? $this->nb_place : "null") . ",";
 		if (! empty($this->fk_reg_interieur)) {
 			$sql .= " fk_reg_interieur=" . (isset($this->fk_reg_interieur) ? $this->fk_reg_interieur : "null") . ",";
 		}
@@ -597,7 +600,6 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function remove_reg_int($user) {
-		global $conf, $langs;
 		$error = 0;
 
 		$sql = 'UPDATE ' . MAIN_DB_PREFIX . 'agefodd_place as p SET fk_reg_interieur=NULL, fk_user_mod=\'' . $user->id . '\'';
@@ -633,9 +635,6 @@ class Agefodd_place extends CommonObject {
 	 * @return int <0 if KO, Id of created object if OK
 	 */
 	public function import_customer_adress($user) {
-		global $conf, $langs;
-		$error = 0;
-
 		if (! empty($this->fk_societe)) {
 			$sql = "SELECT";
 			$sql .= " s.address, s.zip, s.phone, s.town, s.fk_departement, s.fk_pays";
@@ -655,7 +654,7 @@ class Agefodd_place extends CommonObject {
 					$result = $this->update($user);
 					if ($result < 0) {
 						$this->error = "Error " . $this->db->lasterror();
-						dol_syslog(get_class($this) . "::import_customer_adress::update error=" . $agf->error, LOG_ERR);
+						dol_syslog(get_class($this) . "::import_customer_adress::update error=" . $this->error, LOG_ERR);
 						return - 1;
 					}
 				}
@@ -695,6 +694,7 @@ class Agefodd_place extends CommonObject {
 }
 class AgfPlaceLine {
 	public $id;
+	public $entity;
 	public $ref_interne;
 	public $adresse;
 	public $cp;
@@ -704,6 +704,8 @@ class AgfPlaceLine {
 	public $country_code;
 	public $tel;
 	public $fk_societe;
+	public $fk_socpeople;
+	public $timeschedule;
 	public $notes;
 	public $socid;
 	public $socname;
@@ -711,6 +713,11 @@ class AgfPlaceLine {
 	public $acces_site;
 	public $note1;
 	public $control_occupation;
+	public $socp_lastname;
+	public $socp_firstname;
+	public $socp_phone;
+	public $socp_email;
+	public $nb_place;
 	public function __construct() {
 		return 1;
 	}

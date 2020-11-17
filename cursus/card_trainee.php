@@ -61,7 +61,7 @@ $search_firstname = GETPOST("search_firstname");
 $search_civ = GETPOST("search_civ");
 $search_soc = GETPOST("search_soc");
 
-if ($page == - 1) {
+if ($page == - 1 || $page === '') {
 	$page = 0;
 }
 
@@ -187,7 +187,7 @@ if (! empty($id)) {
 	if ($result < 0) {
 		setEventMessage($trainee->error, 'errors');
 	}
-	$nbtrainee = count($trainee->lines);
+	if(!empty($trainee->lines)) $nbtrainee = count($trainee->lines);
 
 	print_barre_liste($langs->trans("AgfMenuActStagiaire"), $page, $_SERVER ['PHP_SELF'], '&id=' . $id, $sortfield, $sortorder, "", $nbtrainee);
 

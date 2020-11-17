@@ -269,7 +269,7 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 						$pdf->Cell(0, 0, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', 0);
 						$pdf->SetXY(50, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
-						$this->str = $agf_place->ref_interne ."\n".$agf_place->adresse . ", ".$agf_place->cp. ", ". $agf_place->ville;
+						$this->str = $agf_place->ref_interne ."\n".$agf_place->adresse . ", ".$agf_place->cp. " - ". $agf_place->ville;
 						$pdf->MultiCell(60, 3, $outputlangs->convToOutputCharset($this->str), 0, 'L', 0);
 
 						$newY = $pdf->GetY()+10;
@@ -291,7 +291,7 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 						$pdf->SetXY($posX, $newY);
 						$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 12);
 						$this->str = $conf->global->AGF_ORGANISME_REPRESENTANT;
-						$pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfRepresant').':'.$this->str, 0, 'L', 0);
+						$pdf->MultiCell(0, 0, $outputlangs->transnoentities('AgfRepresant').':'."\n".$this->str, 0, 'L', 0);
 
 						// Incrustation image tampon
 						$newY = $pdf->GetY()+5;
@@ -323,7 +323,7 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 						// alignement du bord droit du container avec le haut de la page
 						$baseline_ecart = $this->page_hauteur - $this->marge_haute - $this->marge_basse - $this->width;
 						$baseline_angle = (M_PI / 2); // angle droit
-						$baseline_x = $this->page_largeur - $this->marge - gauche - 12;
+						$baseline_x = $this->page_largeur - $this->marge_gauche - 12;
 						$baseline_y = $baseline_ecart + 30;
 						$baseline_width = $this->width;
 					}
@@ -391,7 +391,7 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 		$posx=$this->page_largeur-$this->marge_droite-55;
 
 		// Logo
-		$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
+		$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
 		if ($this->emetteur->logo)
 		{
 			if (is_readable($logo))
@@ -415,7 +415,7 @@ class pdf_attestationpresencetraining extends ModelePDFAgefodd {
 		}
 		else
 		{
-			$text=$this->emetteur->name;
+			$text = $this->emetteur->name;
 			$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 		// Other Logo

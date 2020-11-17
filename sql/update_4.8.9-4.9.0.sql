@@ -1,0 +1,1 @@
+ALTER TABLE llx_agefodd_session_formateur_calendrier ADD COLUMN note_private text NULL;

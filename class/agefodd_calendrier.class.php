@@ -31,35 +31,38 @@ class Agefoddcalendrier extends CommonObject {
 	public $errors = array (); // !< To return several error codes (or messages)
 	public $element = 'agefodd_calendrier'; // !< Id that identify managed objects
 	public $table_element = 'agefodd_calendrier'; // !< Name of table without prefix where object is stored
-	protected $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	public $ismultientitymanaged = 1; // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 	public $id;
 	public $entity;
 	public $day_session;
 	public $heured = '';
 	public $heuref = '';
 	public $lines = array ();
-	
+
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db handler
 	 */
-	public function __construct($db) {
+	public function __construct($db)
+	{
 		$this->db = $db;
 		return 1;
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
 	 * @param User $user that create
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
+	 * @throws Exception
 	 */
-	public function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0)
+	{
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
 		if (isset($this->day_session))
 			$this->day_session = trim($this->day_session);
@@ -67,10 +70,10 @@ class Agefoddcalendrier extends CommonObject {
 			$this->heured = trim($this->heured);
 		if (isset($this->heuref))
 			$this->heuref = trim($this->heuref);
-			
+
 			// Check parameters
 			// Put here code to add control on parameters values
-			
+
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "agefodd_calendrier(";
 		$sql .= "entity,";
@@ -81,7 +84,7 @@ class Agefoddcalendrier extends CommonObject {
 		$sql .= "datec,";
 		$sql .= "fk_user_mod";
 		$sql .= ") VALUES (";
-		
+
 		$sql .= " '" . $conf->entity . "',";
 		$sql .= " " . (! isset($this->day_session) ? 'NULL' : "'" . $this->day_session . "'") . ",";
 		$sql .= " " . (! isset($this->heured) ? 'NULL' : "'" . $this->heured . "'") . ",";
@@ -89,25 +92,25 @@ class Agefoddcalendrier extends CommonObject {
 		$sql .= " '" . $user->id . "',";
 		$sql .= "'" . $this->db->idate(dol_now()) . "',";
 		$sql .= " '" . $user->id . "'";
-		
+
 		$sql .= ")";
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::create ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
-		
+
 		if (! $error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "agefodd_calendrier");
-			
+
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				
+
 				// // Call triggers
 				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
 				// $interface=new Interfaces($this->db);
@@ -116,7 +119,7 @@ class Agefoddcalendrier extends CommonObject {
 				// // End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -130,7 +133,7 @@ class Agefoddcalendrier extends CommonObject {
 			return $this->id;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
@@ -138,32 +141,36 @@ class Agefoddcalendrier extends CommonObject {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id) {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
-		
+
 		$sql .= " t.entity,";
 		$sql .= " t.day_session,";
 		$sql .= " t.heured,";
 		$sql .= " t.heuref";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_calendrier as t";
-		$sql .= " WHERE t.rowid = " . $id;
+		$sql .= " WHERE t.rowid = " . intval($id);
 		$sql .= " AND t.entity IN (" . getEntity('agefodd'/*'agsession'*/) . ")";
-		
+
 		dol_syslog(get_class($this) . "::fetch ", LOG_DEBUG);
+
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$this->id = $obj->rowid;
-				
+
+				$this->entity = $obj->entity;
 				$this->day_session = $obj->day_session;
 				$this->heured = $obj->heured;
 				$this->heuref = $obj->heuref;
 			}
+            else {
+                return 0;
+            }
 			$this->db->free($resql);
-			
+
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -171,22 +178,22 @@ class Agefoddcalendrier extends CommonObject {
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from database
 	 *
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_all() {
-		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
+		$sql .= " t.entity,";
 		$sql .= " t.day_session,";
 		$sql .= " t.heured,";
 		$sql .= " t.heuref";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_calendrier as t";
 		$sql .= " WHERE t.entity IN (" . getEntity('agefodd'/*'agsession'*/) . ")";
-		
+
 		dol_syslog(get_class($this) . "::fetch_all ", LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -197,23 +204,25 @@ class Agefoddcalendrier extends CommonObject {
 				$obj = $this->db->fetch_object($resql);
 				$this->lines[$i] = new AgefoddcalendrierLines();
 				$this->lines[$i]->id = $obj->rowid;
-				
+
+				$this->lines[$i]->entity = $obj->entity;
 				$this->lines[$i]->day_session = $obj->day_session;
 				$this->lines[$i]->heured = $obj->heured;
 				$this->lines[$i]->heuref = $obj->heuref;
-				
+
 				$i ++;
 			}
 			$this->db->free($resql);
-			
+
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
+			$this->errors[] = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
@@ -224,14 +233,14 @@ class Agefoddcalendrier extends CommonObject {
 	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		$this->db->begin();
-		
+
 		if (! $error) {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action call a trigger.
-				
+
 				// // Call triggers
 				// include_once(DOL_DOCUMENT_ROOT . "/core/class/interfaces.class.php");
 				// $interface=new Interfaces($this->db);
@@ -240,11 +249,11 @@ class Agefoddcalendrier extends CommonObject {
 				// // End call triggers
 			}
 		}
-		
+
 		if (! $error) {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "agefodd_calendrier";
 			$sql .= " WHERE rowid=" . $this->id;
-			
+
 			dol_syslog(get_class($this) . "::delete ");
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -252,7 +261,7 @@ class Agefoddcalendrier extends CommonObject {
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -266,7 +275,7 @@ class Agefoddcalendrier extends CommonObject {
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Initialise object with example values
 	 * Id must be 0 if object instance is a specimen
@@ -275,7 +284,7 @@ class Agefoddcalendrier extends CommonObject {
 	 */
 	public function initAsSpecimen() {
 		$this->id = 0;
-		
+
 		$this->entity = '';
 		$this->day_session = '';
 		$this->heured = '';

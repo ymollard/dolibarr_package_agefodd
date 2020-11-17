@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_formation_catalogue (
   entity integer NOT NULL DEFAULT 1,
   intitule varchar(100) NOT NULL,
   duree real NOT NULL DEFAULT 0,
+  nb_place integer NULL,
   public text NULL,
   methode text NULL,
   but text NULL,
