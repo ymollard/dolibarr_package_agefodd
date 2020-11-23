@@ -1458,10 +1458,10 @@ if (! empty($id)) {
 				if ($resql){
 					$obj = $db->fetch_object($resql);
 					//Récupération des données du tiers ayant inscript le participant
-					$socAuthor = new Societe($db);
-					$socAuthor->fetch($obj->fk_user_author);
+					$userAuthor = new User($db);
+					$userAuthor->fetch($obj->fk_user_author);
 					print '<td>'.date('d-m-Y H:m:s', strtotime($obj->datec)).'</td>';
-					print '<td>'.$socAuthor->getNomUrl(1).'</td>';
+					print '<td>'.$userAuthor->getNomUrl(1).'</td>';
 				} else {
 					dol_print_error($db);
 				}
