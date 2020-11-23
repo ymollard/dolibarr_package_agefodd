@@ -19,7 +19,7 @@ require_once '../lib/agefodd.lib.php';
 
 $langs->load("admin");
 $langs->load('agefodd@agefodd');
-$action = GETPOST("action");
+$action = GETPOST("action", 'none');
 if ($action == 'save_multicompany_shared_conf')
 {
 	$multicompanypriceshare = GETPOST('multicompany-agefodd', 'array');
@@ -135,7 +135,7 @@ if (!empty($conf->multicompany->enabled) && !empty($conf->global->MULTICOMPANY_S
 				print '<tr class="oddeven" >';
 				print '<td align="left" >';
 				print $entitie->name.' <em>('.$entitie->label.')</em> ';
-				// 
+				//
 				print '</td>';
 				print '<td align="center" >';
 				print _multiselect_entities('multicompany-agefodd['.$entitie->id.']', $entitie, '', $element);

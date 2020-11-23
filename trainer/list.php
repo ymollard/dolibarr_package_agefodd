@@ -64,7 +64,7 @@ if (empty($arch)) {
 if (empty($page) || $page == -1) { $page = 0; }
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_id = '';
 	$search_lastname = '';
 	$search_firstname = "";

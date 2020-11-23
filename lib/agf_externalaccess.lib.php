@@ -182,7 +182,7 @@ function getPageViewTraineeSessionListExternalAccess()
 					$(document).ready(function(){
 						$("#session-list").DataTable({
 							"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
-							stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
+							stateSave: '.(GETPOST('save_lastsearch_values', 'none') ? 'true' : 'false').',
 							"language": {
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 							},
@@ -231,7 +231,7 @@ function getPageViewSessionListExternalAccess()
 	$agsession = new Agsession($db);
 
 	$formateur->fetchByUser($user);
-	$status = GETPOST('filterStatusCode');
+	$status = GETPOST('filterStatusCode', 'none');
 	if (!empty($formateur->id))
 	{
 		$sortorder = '';
@@ -440,7 +440,7 @@ function getPageViewSessionListExternalAccess()
 					$(document).ready(function(){
 						$("#session-list").DataTable({
 							"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
-							stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
+							stateSave: '.(GETPOST('save_lastsearch_values', 'none') ? 'true' : 'false').',
 							"language": {
 								"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 							},
@@ -488,7 +488,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
 
 	$langs->load('agfexternalaccess@agefodd');
 
-	$tab = GETPOST('tab');
+	$tab = GETPOST('tab', 'none');
 	$agf_calendrier_formateur = new Agefoddsessionformateurcalendrier($db);
 	$agf_calendrier_formateur->fetchAllBy(array('trainer.rowid'=>$trainer->id, 'sf.fk_session'=>$agsession->id), '');
 
@@ -616,7 +616,7 @@ function getPageViewTraineeSessionCardExternalAccess()
     if (!validateTrainee($context)) return '';
 
     $agsession = new Agsession($db);
-    if ($agsession->fetch(GETPOST('sessid')) > 0) // Vérification que la session existe
+    if ($agsession->fetch(GETPOST('sessid', 'none')) > 0) // Vérification que la session existe
     {
         $trainee = new Agefodd_stagiaire($db);
         if($trainee->fetch_by_contact($user->contactid) <= 0){
@@ -631,7 +631,7 @@ function getPageViewTraineeSessionCardExternalAccess()
             $calendrier = new Agefodd_sesscalendar($db);
             $calendrier->fetch_all($agsession->id);
 
-            $tab = GETPOST('tab');
+            $tab = GETPOST('tab', 'none');
 
             $out = '<!-- getPageViewSessionCardExternalAccessTrainee -->';
             $out.= '<section id="section-session-card" class="py-5"><div class="container">';
@@ -1021,7 +1021,7 @@ function getPageViewSessionCardExternalAccess_creneaux(&$agsession, &$trainer, &
 				$(document).ready(function(){
 					$("#session-list").DataTable({
 						"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
-						stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
+						stateSave: '.(GETPOST('save_lastsearch_values', 'none') ? 'true' : 'false').',
 						"language": {
 							"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 						},
@@ -1230,7 +1230,7 @@ function getPageViewTraineeSessionCardExternalAccess_creneaux(&$agsession, &$tra
 				$(document).ready(function(){
 					$("#session-list").DataTable({
 						"pageLength" : '.(empty($conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS) ? 10 : $conf->global->AGF_EA_NUMBER_OF_ELEMENTS_IN_LISTS).',
-						stateSave: '.(GETPOST('save_lastsearch_values') ? 'true' : 'false').',
+						stateSave: '.(GETPOST('save_lastsearch_values', 'none') ? 'true' : 'false').',
 						"language": {
 							"url": "'.$context->getRootUrl().'vendor/data-tables/french.json"
 						},
@@ -1665,10 +1665,10 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
 		$out .= '<input type="hidden" name="iframe" value="' . $context->iframe . '" />';
 		$out .= '<input type="hidden" name="controller" value="' . $context->controller . '" />';
 
-		$startDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('start'));
+		$startDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('start', 'none'));
 		$fullDay = false;
 		if (!$startDate) {
-			$startDate = DateTime::createFromFormat("Y-m-d", GETPOST('start'));
+			$startDate = DateTime::createFromFormat("Y-m-d", GETPOST('start', 'none'));
 			$fullDay = true;
 		}
 
@@ -1679,7 +1679,7 @@ function getPageViewSessionCardCalendrierFormateurAddFullCalendarEventExternalAc
 		}
 
 
-		$endDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('end'));
+		$endDate = DateTime::createFromFormat("Y-m-d\TH:i:s P", GETPOST('end', 'none'));
 
 
 		if (!empty($endDate)) {
@@ -1857,7 +1857,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 	$out = '<!-- getPageViewSessionCardCalendrierFormateurExternalAccess -->';
 
 	// CLOSE IFRAME
-	$fromaction = GETPOST('fromaction');
+	$fromaction = GETPOST('fromaction', 'none');
 	if ($context->iframe && $fromaction === 'add' && $action === 'view'){
 		$out.= '<script >window.parent.closeModal();</script>';
 	} elseif ($context->iframe && $fromaction === 'update' && $action === 'view' && $conf->global->AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT) {
@@ -1932,17 +1932,17 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 
 	$date_session = (($action == 'update' || $action == 'view') ? date('Y-m-d', $agf_calendrier_formateur->date_session) : date('Y-m-d'));
 	if(isset($_POST['date'])){
-		$date_session = GETPOST('date');
+		$date_session = GETPOST('date', 'none');
 	}
 
 	$heured = (($action == 'update' || $action == 'view') ? date('H:i', $agf_calendrier_formateur->heured) : '09:00' );
 	if(isset($_POST['heured'])){
-		$heured = GETPOST('heured');
+		$heured = GETPOST('heured', 'none');
 	}
 
 	$heuref = (($action == 'update' || $action == 'view') ? date('H:i', $agf_calendrier_formateur->heuref) : '12:00' );
 	if(isset($_POST['heuref'])){
-		$heuref = GETPOST('heuref');
+		$heuref = GETPOST('heuref', 'none');
 	}
 
 	$TStatus = Agefoddsessionformateurcalendrier::getListStatus();
@@ -2510,9 +2510,9 @@ function getPageViewAgendaOtherExternalAccess()
 	}
 
 	// Get start date
-	$heured = GETPOST('heured');
-	$heuredDate = GETPOST('heured-date');
-	$heuredTime = GETPOST('heured-time');
+	$heured = GETPOST('heured', 'none');
+	$heuredDate = GETPOST('heured-date', 'none');
+	$heuredTime = GETPOST('heured-time', 'none');
 	if(empty($heured) && !empty($heuredDate) && !empty($heuredTime)){
 		$heured = $heuredDate.'T'.$heuredTime; // it's a fix for firefox and datetime-local
 	}
@@ -2532,9 +2532,9 @@ function getPageViewAgendaOtherExternalAccess()
 	}
 
 	// Get end date
-	$heuref = GETPOST('heuref'); // envoyer par le calendrier
-	$heurefDate = GETPOST('heuref-date');
-	$heurefTime = GETPOST('heuref-time');
+	$heuref = GETPOST('heuref', 'none'); // envoyer par le calendrier
+	$heurefDate = GETPOST('heuref-date', 'none');
+	$heurefTime = GETPOST('heuref-time', 'none');
 	if(empty($heuref) && !empty($heurefDate) && !empty($heurefTime)){
 		$heured = $heurefDate.'T'.$heurefTime; // it's a fix for firefox and datetime-local
 	}
@@ -2562,7 +2562,7 @@ function getPageViewAgendaOtherExternalAccess()
 		$html.= '<input type="hidden" name="controller" value="'.$context->controller.'" />';
 	}
 
-	$type = GETPOST('type');
+	$type = GETPOST('type', 'none');
 	if(!empty($id)){
 		$type =$event->type_code; // on update, code could not be change
 	}
@@ -3208,7 +3208,7 @@ function downloadAgefoddTrainneeDoc(){
     $filename=false;
     $context = Context::getInstance();
     $forceDownload = GETPOST('forcedownload','int');
-    $model = GETPOST('model');
+    $model = GETPOST('model', 'none');
     $sessionId = GETPOST('session', 'int');
 
 

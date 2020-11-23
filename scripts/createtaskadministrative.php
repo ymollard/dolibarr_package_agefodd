@@ -39,8 +39,8 @@ if (! $res)
 dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/user/class/user.class.php');
 
-$userlogin = GETPOST('login');
-$id = GETPOST('id');
+$userlogin = GETPOST('login', 'none');
+$id = GETPOST('id', 'none');
 $key = GETPOST('key', 'alpha');
 
 // Security test
@@ -59,7 +59,7 @@ if (empty($user->id)) {
 $agf = new Agsession($db);
 $agf->fetch($id);
 if (! empty($agf->id)) {
-	
+
 	$result = $agf->createAdmLevelForSession($user);
 	if ($result > 0) {
 		print - 1;
@@ -67,7 +67,7 @@ if (! empty($agf->id)) {
 		print 1;
 	}
 }
-			
+
 
 
  //Use for data retreive from Akteos
@@ -83,7 +83,7 @@ if ($resql) {
 			$agf = new Agsession($db);
 			$agf->fetch($obj->rowid);
 			if (!empty($agf->id)) {
-			
+
 				$result = $agf->createAdmLevelForSession($user);
 				if ($result>0) {
 					print -1;
@@ -94,4 +94,3 @@ if ($resql) {
 		}
 }
 */
-			

@@ -56,8 +56,8 @@ $stag_update_x = GETPOST('stag_update_x', 'alpha');
 $stag_add_x = GETPOST('stag_add_x', 'alpha');
 $stag_remove_x = GETPOST('stag_remove', 'alpha');
 $modstagid = GETPOST('modstagid', 'int');
-$newstag = GETPOST('newstag');
-$edithours = ( bool ) GETPOST('edithours');
+$newstag = GETPOST('newstag', 'none');
+$edithours = ( bool ) GETPOST('edithours', 'none');
 
 $fk_soc_requester = GETPOST('fk_soc_requester', 'int');
 if ($fk_soc_requester < 0) {
@@ -275,9 +275,9 @@ if ($action == 'remove_opcafksocOPCA') {
  */
 if ($action == 'editrealhours') {
 
-	$hours = GETPOST('realhours');
-	$sessid = ( int ) GETPOST('id');
-	$edit = GETPOST('edit');
+	$hours = GETPOST('realhours', 'none');
+	$sessid = ( int ) GETPOST('id', 'none');
+	$edit = GETPOST('edit', 'none');
 
 	if (! empty($hours)) {
 
@@ -1068,7 +1068,7 @@ if (! empty($id)) {
 			print $form->select_company(0, 'fk_soc_requester', '', 'SelectThirdParty', 1, 0);
 			if (! empty($conf->global->AGF_MANAGE_BPF)) {
 				print '<br>' . $langs->trans('AgfHourFOAD') . ' ';
-				print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . GETPOST('hour_load') . '" />';
+				print '<input size="4" type="text" class="flat" id="hour_foad" name="hour_foad" value="' . GETPOST('hour_load', 'none') . '" />';
 			}
 			print '</div>';
 			if ($user->rights->agefodd->modifier) {
@@ -1458,10 +1458,10 @@ if (! empty($id)) {
 				if ($resql){
 					$obj = $db->fetch_object($resql);
 					//Récupération des données du tiers ayant inscript le participant
-					$socAuthor = new Societe($db);
-					$socAuthor->fetch($obj->fk_user_author);
+					$userAuthor = new User($db);
+					$userAuthor->fetch($obj->fk_user_author);
 					print '<td>'.date('d-m-Y H:m:s', strtotime($obj->datec)).'</td>';
-					print '<td>'.$socAuthor->getNomUrl(1).'</td>';
+					print '<td>'.$userAuthor->getNomUrl(1).'</td>';
 				} else {
 					dol_print_error($db);
 				}

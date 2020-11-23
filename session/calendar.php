@@ -61,7 +61,7 @@ $action = GETPOST('action', 'alpha');
 $confirm = GETPOST('confirm', 'alpha');
 $id = GETPOST('id', 'int');
 $arch = GETPOST('arch', 'int');
-$anchor = GETPOST('anchor');
+$anchor = GETPOST('anchor', 'none');
 $massaction = GETPOST('massaction', 'alpha');
 $toselect = GETPOST('toselect', 'array');
 
@@ -79,8 +79,8 @@ if ($reshook < 0)
  */
 
 $period_update = GETPOST('period_update', 'int');
-$cancel = GETPOST('cancel');
-$saveandclose = GETPOST('saveandclose');
+$cancel = GETPOST('cancel', 'none');
+$saveandclose = GETPOST('saveandclose', 'none');
 $modperiod = GETPOST('modperiod', 'int');
 $period_remove = GETPOST('period_remove', 'int');
 $period_remove_all = GETPOST('period_remove_all', 'int');
@@ -341,8 +341,8 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 		if (! empty($heuref))
 			$agf->heuref = $heuref;
 
-		$agf->status = GETPOST('calendar_status');
-		$agf->calendrier_type = GETPOST('code_c_session_calendrier_type');
+		$agf->status = GETPOST('calendar_status', 'none');
+		$agf->calendrier_type = GETPOST('code_c_session_calendrier_type', 'none');
 		$result = $agf->update($user);
 
 		if ($result > 0) {
@@ -351,7 +351,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 
 			if (is_array($TTrainerCalendar) && count($TTrainerCalendar)>0) {
 				foreach($TTrainerCalendar as $tainercal) {
-					$tainercal->status=GETPOST('calendar_status');
+					$tainercal->status=GETPOST('calendar_status', 'none');
 					$tainercal->heured = $agf->heured;
 					$tainercal->heuref = $agf->heuref;
 					$tainercal->date_session = $agf->date_session;
@@ -378,14 +378,14 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 		}
 	}
 
-	$period_add = GETPOST('period_add');
+	$period_add = GETPOST('period_add', 'none');
 	if (! empty($period_add)) {
 		$error = 0;
 		$error_message = '';
 
 		// From template
-		$idtemplate_array = GETPOST('fromtemplate');
-		$TCodeSessionCalendrierType = GETPOST('code_c_session_calendrier_type');
+		$idtemplate_array = GETPOST('fromtemplate', 'none');
+		$TCodeSessionCalendrierType = GETPOST('code_c_session_calendrier_type', 'none');
 		if (is_array($idtemplate_array)) {
 			foreach ( $idtemplate_array as $index => $idtemplate ) {
 
@@ -440,7 +440,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
                 		$error++;
             		}
 
-			$agf->calendrier_type = GETPOST('calendrier_type');
+			$agf->calendrier_type = GETPOST('calendrier_type', 'none');
 			// From calendar selection
 			$heure_tmp_arr = array();
 
@@ -481,7 +481,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 		}
 	}
 
-	$period_daytodate = GETPOST('period_daytodate');
+	$period_daytodate = GETPOST('period_daytodate', 'none');
 	if (! empty($period_daytodate)) {
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 
@@ -489,7 +489,7 @@ if ($action == 'edit' && !empty($user->rights->agefodd->modifier)) {
 		$error_message = '';
 
 		// From template
-		$calendrier_type = GETPOST('code_c_session_calendrier_type');
+		$calendrier_type = GETPOST('code_c_session_calendrier_type', 'none');
 		$weekday = GETPOST('fromdaytodate', 'array');
 		$datedaytodate1d = GETPOST('datedaytodate1d', 'alpha');
 		$datedaytodate1f = GETPOST('datedaytodate1f', 'alpha');

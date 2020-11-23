@@ -81,6 +81,7 @@ class Agefodd_index
 		$sql .= " sum(se.nb_stagiaire) as nb_sta ";
 		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session as se";
 		$sql .= " WHERE se.status IN (4,5)";
+		$sql .= " AND se.entity IN (" . getEntity('agefodd') . ")";
 
 		dol_syslog(get_class($this) . "::fetch_student_nb", LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -381,11 +382,13 @@ class Agefodd_index
 	public function fetch_tache_late() {
 		$this->lines = array();
 
-		$sql = "SELECT DISTINCT rowid,fk_agefodd_session";
-		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
+		$sql = "SELECT DISTINCT asa.rowid, asa.fk_agefodd_session";
+		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as asa";
+		$sql .= " LEFT JOIN  " . MAIN_DB_PREFIX . "agefodd_session as asession ON (asession.rowid = asa.fk_agefodd_session)";
 		$sql .= ' WHERE 1=1 ';
-		$sql .= " AND datea <= NOW() ";
-		$sql .= " AND fk_parent_level <> 0 AND archive <> 1";
+		$sql .= " AND asa.datea <= NOW() ";
+		$sql .= " AND asa.fk_parent_level <> 0 AND asa.archive <> 1";
+		$sql .= " AND asession.entity IN (" . getEntity('agefodd') . ")";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -437,17 +440,19 @@ class Agefodd_index
 			$intervaldayend = "'" . $nbjourend . " DAYS'";
 		}
 
-		$sql = "SELECT DISTINCT rowid,fk_agefodd_session, intitule";
-		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session_adminsitu";
+		$sql = "SELECT DISTINCT asa.rowid,asa.fk_agefodd_session, asa.intitule";
+		$sql .= " FROM  " . MAIN_DB_PREFIX . "agefodd_session_adminsitu as asa";
+		$sql .= " LEFT JOIN  " . MAIN_DB_PREFIX . "agefodd_session as asession ON (asession.rowid = asa.fk_agefodd_session)";
 		$sql .= ' WHERE 1=1 ';
 		if (!empty($nbjourst) && !empty($nbjourend)) {
-			$sql .= " AND (NOW() BETWEEN (datea - INTERVAL " . $intervaldayend . ") AND (datea - INTERVAL " . $intervaldayst . "))";
+			$sql .= " AND (NOW() BETWEEN (asa.datea - INTERVAL " . $intervaldayend . ") AND (asa.datea - INTERVAL " . $intervaldayst . "))";
 		} elseif (!empty($nbjourst) && empty($nbjourend)) {
-			$sql .= " AND (datea > (NOW() +  INTERVAL " . $intervaldayst . "))";
+			$sql .= " AND (asa.datea > (NOW() +  INTERVAL " . $intervaldayst . "))";
 		} elseif (empty($nbjourst) && ! empty($nbjourend)) {
-			$sql .= " AND (NOW() BETWEEN (datea - INTERVAL " . $intervaldayend . ") AND datea)";
+			$sql .= " AND (NOW() BETWEEN (asa.datea - INTERVAL " . $intervaldayend . ") AND asa.datea)";
 		}
-		$sql .= " AND rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu) AND archive <> 1";
+		$sql .= " AND asa.rowid NOT IN (select fk_parent_level FROM " . MAIN_DB_PREFIX . "agefodd_session_adminsitu) AND asa.archive <> 1";
+		$sql .= " AND asession.entity IN (" . getEntity('agefodd') . ")";
 
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);

@@ -50,7 +50,7 @@ $search_session_status = GETPOST("search_session_status", 'array');
 $type_report = GETPOST("type_report", 'alpha');
 
 $modelexport = GETPOST('modelexport', 'alpha');
-$lang_id = GETPOST('lang_id');
+$lang_id = GETPOST('lang_id', 'none');
 
 $langs->load('agefodd@agefodd');
 $langs->load('bills');
@@ -129,12 +129,12 @@ if ($action == 'builddoc') {
 	require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 
 	$langs->load("other");
-	$file = $upload_dir . '/' . GETPOST('file');
+	$file = $upload_dir . '/' . GETPOST('file', 'none');
 	$ret = dol_delete_file($file, 0, 0, 0, '');
 	if ($ret)
-		setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile')));
+		setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile', 'none')));
 	else
-		setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile')), 'errors');
+		setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile', 'none')), 'errors');
 	$action = '';
 }
 

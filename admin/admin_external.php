@@ -51,35 +51,35 @@ if ($action == 'setvarother') {
     if (empty($conf->use_javascript_ajax))
     {
         // Active l'accés externe pour agefodd
-        $activAccesexterne = GETPOST('AGF_EACCESS_ACTIVATE');
+        $activAccesexterne = GETPOST('AGF_EACCESS_ACTIVATE', 'none');
         $res = dolibarr_set_const($db, 'AGF_EACCESS_ACTIVATE', $activAccesexterne, 'chaine', 0, '', $conf->entity);
         if ($res < 0) $error++;
-        
+
         // Active l'accés formateur
-        $activeAccesFormateur = GETPOST('AGF_EA_TRAINER_ENABLED');
+        $activeAccesFormateur = GETPOST('AGF_EA_TRAINER_ENABLED', 'none');
         $res = dolibarr_set_const($db, 'AGF_EA_TRAINER_ENABLED', $activeAccesFormateur, 'chaine', 0, '', $conf->entity);
         if ($res < 0) $error++;
-        
+
         // Vue éclatée des heures participant sur la liste des sessions
-        $heuresEclatee = GETPOST('AGF_EA_ECLATE_HEURES_PAR_TYPE');
+        $heuresEclatee = GETPOST('AGF_EA_ECLATE_HEURES_PAR_TYPE', 'none');
         $res = dolibarr_set_const($db, 'AGF_EA_ECLATE_HEURES_PAR_TYPE', $heuresEclatee, 'chaine', 0, '', $conf->entity);
         if ($res < 0) $error++;
 
         // Ferme la popin (modal) de visualisation d’un créneau lors de la sauvegarde
-        $closeSessionSlotPopin = GETPOST('AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT');
+        $closeSessionSlotPopin = GETPOST('AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT', 'none');
         $res = dolibarr_set_const($db, 'AGF_EA_CLOSE_MODAL_AFTER_UPDATE_SESSION_SLOT', $closeSessionSlotPopin, 'chaine', 0, '', $conf->entity);
         if ($res < 0) $error++;
     }
 
 
     // Utilisation des config de mail par defaut
-    $confSend = GETPOST('AGF_SEND_EMAIL_CONTEXT_STANDARD');
+    $confSend = GETPOST('AGF_SEND_EMAIL_CONTEXT_STANDARD', 'none');
     $res = dolibarr_set_const($db, 'AGF_SEND_EMAIL_CONTEXT_STANDARD', $confSend, 'chaine', 0, '', $conf->entity);
     if ($res < 0) $error++;
 
 
     // Email from
-    $confSend = GETPOST('AGF_EA_SEND_EMAIL_FROM');
+    $confSend = GETPOST('AGF_EA_SEND_EMAIL_FROM', 'none');
     $res = dolibarr_set_const($db, 'AGF_EA_SEND_EMAIL_FROM', $confSend, 'chaine', 0, '', $conf->entity);
     if ($res < 0) $error++;
 
@@ -127,12 +127,12 @@ if ($action == 'setvarother') {
     if (! $res > 0)
         $error ++;
 
-    
+
     // Vue éclatée des heures participant sur la liste des sessions
-    $heuresEclateeExclues = serialize(GETPOST('AGF_EA_ECLATE_HEURES_EXCLUES'));
+    $heuresEclateeExclues = serialize(GETPOST('AGF_EA_ECLATE_HEURES_EXCLUES', 'none'));
     $res = dolibarr_set_const($db, 'AGF_EA_ECLATE_HEURES_EXCLUES', $heuresEclateeExclues, 'chaine', 0, '', $conf->entity);
     if ($res < 0) $error++;
-    
+
     if (! $error) {
         setEventMessage($langs->trans("SetupSaved"), 'mesgs');
     } else {
@@ -207,7 +207,7 @@ if(!empty($conf->externalaccess->enabled))
                 )
             )
         );
-        
+
         print ajax_constantonoff('AGF_EACCESS_ACTIVATE', $input_array);
     } else {
         $arrval = array (
@@ -245,7 +245,7 @@ if(!empty($conf->externalaccess->enabled))
     print '<td></td>';
     print '</tr>';
 
-    
+
     // Vue éclatée des heures participant sur la liste des sessions
     print '<tr  class="oddeven" ><td>' . $langs->trans("AgfHeuresDeclareesEclateesParType") . '</td>';
     print '<td align="left">';
@@ -262,14 +262,14 @@ if(!empty($conf->externalaccess->enabled))
     print '<td></td>';
     print '</tr>';
 
-    
+
     // status à exclure des heures éclatées
     print '<tr  class="oddeven" ><td>' . $langs->trans("AgfHeuresDeclareesEclateesStatusExclus") . '</td>';
     print '<td align="left">';
     //AGF_EA_ECLATE_HEURES_EXCLUES
     $arrval = Agefodd_sesscalendar::getListStatus();
     print $form->multiselectarray('AGF_EA_ECLATE_HEURES_EXCLUES', $arrval, unserialize($conf->global->AGF_EA_ECLATE_HEURES_EXCLUES));
-    
+
     // Petit hack parce qu'évidemment le multiselectarray ne prend pas en compte le valeur 0 => STATUS_DRAFT
     // sauf en à partir de la V 9
     if (intval(DOL_VERSION) < 9 && is_array(unserialize($conf->global->AGF_EA_ECLATE_HEURES_EXCLUES)) && in_array(0, unserialize($conf->global->AGF_EA_ECLATE_HEURES_EXCLUES)))
@@ -284,7 +284,7 @@ if(!empty($conf->externalaccess->enabled))
         </script>
         <?php
     }
-    
+
     print '</td>';
     print '<td></td>';
     print '</tr>';
