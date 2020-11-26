@@ -491,7 +491,12 @@ class Agefodd_convention {
 						dol_syslog(get_class($this) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR);
 					}
 
-					$line->description = $prod_static->ref . ' ' . self::nl2br($prod_static->description) . '<BR>' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
+					if (strpos($obj->description, $prod_static->description) !== false) {
+						$line->description = $prod_static->ref . ' ' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
+					} else {
+						$line->description = $prod_static->ref . ' ' . self::nl2br($prod_static->description) . '<BR>' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
+					}
+
 				} else {
 					$line->description = $obj->description;
 				}
@@ -559,7 +564,12 @@ class Agefodd_convention {
 						dol_syslog(get_class($this) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR);
 					}
 
-					$line->description = $prod_static->ref . ' ' . self::nl2br($prod_static->description) . '<BR>' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
+					if (strpos($obj->description, $prod_static->description) !== false) {
+						$line->description = $prod_static->ref . ' ' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
+					} else {
+						$line->description = $prod_static->ref . ' ' . self::nl2br($prod_static->description) . '<BR>' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
+					}
+
 				} else {
 					$line->description = $obj->description;
 				}
