@@ -9,6 +9,10 @@ GPLv3 or (at your option) any later version.
 
 See COPYING for more information.
 
+HIDDEN CONFIGURATION
+-------
+
+- "AGEFODD_CONVENTION_DOUBLE_DESC_DESACTIVATE" => Disables the display of a double description in PDF Convention Sessions
 
 INSTALL AGEFODD
 ----------------------
