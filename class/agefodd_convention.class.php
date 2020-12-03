@@ -458,7 +458,7 @@ class Agefodd_convention {
 	public function fetch_order_lines($comid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 
-		global $langs;
+		global $langs, $conf;
 
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
@@ -491,7 +491,7 @@ class Agefodd_convention {
 						dol_syslog(get_class($this) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR);
 					}
 
-					if (strpos($obj->description, $prod_static->description) !== false) {
+					if (strpos($obj->description, $prod_static->description) !== false || $conf->global->AGEFODD_CONVENTION_DOUBLE_DESC_DESACTIVATE) {
 						$line->description = $prod_static->ref . ' ' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
 					} else {
 						$line->description = $prod_static->ref . ' ' . self::nl2br($prod_static->description) . '<BR>' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
@@ -531,7 +531,7 @@ class Agefodd_convention {
 	public function fetch_invoice_lines($factid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 
-		global $langs;
+		global $langs, $conf;
 
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
@@ -564,7 +564,7 @@ class Agefodd_convention {
 						dol_syslog(get_class($this) . "::fetch_propal_lines " . $prod_static->error, LOG_ERR);
 					}
 
-					if (strpos($obj->description, $prod_static->description) !== false) {
+					if (strpos($obj->description, $prod_static->description) !== false || $conf->global->AGEFODD_CONVENTION_DOUBLE_DESC_DESACTIVATE) {
 						$line->description = $prod_static->ref . ' ' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
 					} else {
 						$line->description = $prod_static->ref . ' ' . self::nl2br($prod_static->description) . '<BR>' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
