@@ -172,6 +172,6 @@ class box_agefodd_stats extends ModeleBoxes {
 	 * @return void
 	 */
 	function showBox($head = null, $contents = null, $nooutput = 0) {
-		parent::showBox($this->info_box_head, $this->info_box_contents);
+		parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 }
