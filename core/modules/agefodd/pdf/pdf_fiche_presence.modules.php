@@ -291,6 +291,16 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			}
 		}
 
+		// nom de l'entité
+		if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+			$this->h_ligne = $this->h_ligne + 3;
+		}
+
+		// date d'anniversaire du stagiaire
+		if (!empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
+			$this->h_ligne = $this->h_ligne + 3;
+		}
+
 		$this->agf = $agf;
 		foreach ($session_hours as $key => $dates_array) {
 			// New page
@@ -306,17 +316,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				if (!empty($this->{$personType}->lines)) {
 					$this->printPersonsBlock($personType, $this->{$personType}->lines, $dates_array);
 				}
-			}
-			continue; // TODO reprendre les devs pour les options AGF_ADD_ENTITYNAME_FICHEPRES et AGF_ADD_DTBIRTH_FICHEPRES
-
-			// nom de l'entité
-			if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
-				$this->h_ligne = $this->h_ligne + 3;
-			}
-
-			// date d'anniversaire du stagiaire
-			if (!empty($conf->global->AGF_ADD_DTBIRTH_FICHEPRES)) {
-				$this->h_ligne = $this->h_ligne + 3;
 			}
 		}
 	}
