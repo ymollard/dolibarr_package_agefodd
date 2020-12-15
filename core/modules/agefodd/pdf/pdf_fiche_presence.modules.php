@@ -349,7 +349,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			}
 			$this->printPersonLine($type, $line, $lineN, $dates_array);
 			if ($isLastLine && $type == 'stagiaires') {
-				$this->printSignature();
+				$this->printSignatureBloc();
 			}
 
 
@@ -446,17 +446,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'B', 9);
 			$this->printText('HEADER (' . $type . ')', 1);
 		}
-	}
-
-	function printSignature()
-	{
-		$this->printSignatureBloc();
-	}
-
-	function printText($text, $fill = 0)
-	{
-		$this->pdf->SetTextColor(0, 0, 0);
-		$this->pdf->Cell(0, 30, $text, 1, 2, 'L', $fill);
 	}
 
 	/**
@@ -577,45 +566,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 * @param $dates_array
 	 * @return array
 	 */
-	function printTrainerBlockLines($dates_array)
-	{
-		$nbTimeSlots = $this->nbtimeslots;
-		$timeSlotWidth = $this->trainer_widthtimeslot;
-
-		if (!empty($dates_array) && count($dates_array) < $this->nbtimeslots) {
-			$nbTimeSlots = count($dates_array);
-			$timeSlotWidth = ($this->espaceH_dispo - 2 - $this->trainer_widthcol1) / $nbTimeSlots;
-		}
-
-		foreach ($this->formateurs->lines as $trainerlines) {
-
-			// Cadre
-			$this->pdf->Rect($posX - 2, $posY, $this->espaceH_dispo, $this->h_ligne);
-
-			// Nom
-			$this->pdf->SetXY($posX - 2, $posY);
-			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 7);
-			$str = (!empty($trainerlines->lastname) ? strtoupper($trainerlines->lastname) : strtoupper($trainerlines->name)) . ' ' . ucfirst($trainerlines->firstname);
-			$this->pdf->MultiCell($this->trainer_widthcol1 + 2, $this->h_ligne, $this->outputlangs->convToOutputCharset($str), 1, "L", false, 1, '', '', true, 0, false, false, $this->h_ligne, 'M');
-
-			for ($i = 0; $i < $nbTimeSlots - 1; $i++) {
-				$this->pdf->Rect($posX + $this->trainer_widthcol1 + $timeSlotWidth * $i, $posY, $timeSlotWidth, $this->h_ligne);
-			}
-
-			$posY = $this->pdf->GetY();
-		}
-
-		$posY = $posY + 2;
-
-		return array($posX, $posY);
-	}
-
-	/**
-	 * @param $posX
-	 * @param $posY
-	 * @param $dates_array
-	 * @return array
-	 */
 	function printTraineeBlockHeader($dates_array)
 	{
 		global $conf;
@@ -706,79 +656,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		}
 		$posY = $this->pdf->GetY();
 		$this->pdf->SetX($this->marge_gauche);
-
-		return array($posX, $posY);
-	}
-
-	/**
-	 * @param $posX
-	 * @param $posY
-	 * @param $dates_array
-	 * @return array
-	 */
-	function printTraineeBlockLines($dates_array)
-	{
-		global $conf, $dao, $langs;
-		$agf = $this->agf;
-
-		$nbsta_index = 1;
-
-		$nbTimeSlots = $this->nbtimeslots;
-		$timeSlotWidth = $this->trainee_widthtimeslot;
-		if (!empty($dates_array) && count($dates_array) < $this->nbtimeslots ) {
-			$nbTimeSlots = count($dates_array);
-			$timeSlotWidth = ($this->espaceH_dispo - 2 - $this->trainee_widthcol1 - (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES) ? $this->trainee_widthcol2 : 0)) / $nbTimeSlots;
-		}
-
-		foreach ($this->stagiaires->lines as $staline_key => $line) {
-
-			if ($conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES!=='') {
-				$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
-				$status_stagiaire = (int) $line->status_in_session;
-				if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
-					setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $line->nom), 'warnings');
-					continue;
-				}
-			}
-
-			$this->pdf->startTransaction();
-			$startPosY = $posY;
-			list($posX, $posY) = $this->printTraineeLine($line, $posX, $posY, $nbsta_index, $nbTimeSlots, $timeSlotWidth);
-			list($posX, $posY) = $this->printSignatureBloc($posX, $posY);
-
-			if ($posY > $this->page_hauteur - $this->height_for_footer) {
-				$this->pdf = $this->pdf->rollbackTransaction();
-
-				list($posX, $posY) = $this->printSignatureBloc($posX, $startPosY);
-				$this->_pagefoot($agf, $this->outputlangs);
-				$this->pdf->AddPage();
-				if (!empty($tplidx))
-					$this->pdf->useTemplate($tplidx);
-				list($posX, $posY) = $this->_pagehead($agf, 1, $this->outputlangs);
-
-				list($posX, $posY) = $this->printSessionSummary($posX, $posY);
-
-				if ($nbsta_index <= count($this->stagiaires->lines))
-				{
-					if (!empty($this->formateurs->lines) && empty($conf->global->AGF_DONOT_REPEAT_TRAINER_BLOCK))
-					{
-						list($posX, $posY) = $this->printTrainerBlockHeader($posX, $posY, $dates_array);
-						list($posX, $posY) = $this->printTrainerBlockLines($posX, $posY, $dates_array, $agf);
-					}
-
-					list($posX, $posY) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
-					list($posX, $posY) = $this->printTraineeLine($line, $posX, $posY, $nbsta_index, $nbTimeSlots, $timeSlotWidth);
-					if ($nbsta_index == count($this->stagiaires->lines)) $this->printSignatureBloc($posX, $posY);
-				}
-			}
-			else
-			{
-				$this->pdf = $this->pdf->rollbackTransaction();
-				list($posX, $posY) = $this->printTraineeLine($line, $posX, $startPosY, $nbsta_index, $nbTimeSlots, $timeSlotWidth);
-				if ($nbsta_index == count($this->stagiaires->lines)) $this->printSignatureBloc($posX, $posY);
-			}
-			$nbsta_index++;
-		}
 
 		return array($posX, $posY);
 	}
@@ -918,7 +795,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 */
 	function printSessionSummary($posX, $posY)
 	{
-//		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'BI', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres23');
 		$this->pdf->Cell(0, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
