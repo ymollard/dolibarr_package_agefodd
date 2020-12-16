@@ -514,19 +514,19 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres16');
-		$this->pdf->Cell($this->trainer_widthcol1, $this->h_ligne + 8, $this->outputlangs->convToOutputCharset($str), 'R', 2, "C", 0);
+		$this->pdf->Cell($this->trainer_widthcol1, $this->h_ligne + 8, $this->outputlangs->convToOutputCharset($str), 'LTRB', 2, "C", 0);
 		// Signature
 		$this->pdf->SetXY($posX + $this->trainer_widthcol1, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres18');
-		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), '', 2, "C", 0);
 
 		if (empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER))
 		{
 			$this->pdf->SetXY($posX + $this->trainer_widthcol1, $posY + 3);
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 7);
 			$str = $this->outputlangs->transnoentities('AgfPDFFichePres13');
-			$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+			$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), '', 2, "C", 0);
 		}
 		$posY += $this->h_ligne;
 
@@ -605,13 +605,13 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres16');
-		$this->pdf->Cell($this->trainee_widthcol1, $this->h_ligne + 8, $this->outputlangs->convToOutputCharset($str), 'R', 2, "C", 0);
+		$this->pdf->Cell($this->trainee_widthcol1, $this->h_ligne + 8, $this->outputlangs->convToOutputCharset($str), 'LTRB', 2, "C", 0);
 		// Société
 		if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
 			$this->pdf->SetXY($posX + $this->trainee_widthcol1, $posY);
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 			$str = $this->outputlangs->transnoentities('AgfPDFFichePres17');
-			$this->pdf->Cell($this->trainee_widthcol2, $this->h_ligne + 8, $this->outputlangs->convToOutputCharset($str), 0, 2, "C", 0);
+			$this->pdf->Cell($this->trainee_widthcol2, $this->h_ligne + 8, $this->outputlangs->convToOutputCharset($str), 'LTRB', 2, "C", 0);
 		} else {
 			$this->trainee_widthcol2 = 0;
 		}
@@ -620,14 +620,14 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$str = $this->outputlangs->transnoentities('AgfPDFFichePres18');
-		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+		$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), '', 2, "C", 0);
 
 		if (empty($conf->global->AGF_FICHE_PRES_HIDE_LEGAL_MEANING_BELOW_SIGNATURE_HEADER))
 		{
 			$this->pdf->SetXY($posX + $this->trainee_widthcol1 + $this->trainee_widthcol2, $posY + 3);
 			$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), 'I', 7);
 			$str = $this->outputlangs->transnoentities('AgfPDFFichePres19');
-			$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), 'LR', 2, "C", 0);
+			$this->pdf->Cell(0, 5, $this->outputlangs->convToOutputCharset($str), '', 2, "C", 0);
 		}
 		$posY += $this->h_ligne;
 
