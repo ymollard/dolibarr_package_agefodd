@@ -242,8 +242,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		if (!empty($conf->multicompany->enabled)) {
 			dol_include_once('/multicompany/class/dao_multicompany.class.php');
-			$dao = new DaoMulticompany($this->db);
-			$dao->getEntities();
+			$this->dao = new DaoMulticompany($this->db);
+			$this->dao->getEntities();
 		}
 
 		$session_hours = array();
@@ -292,7 +292,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		}
 
 		// nom de l'entité
-		if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+		if (is_object($this->dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
 			$this->h_ligne = $this->h_ligne + 3;
 		}
 
@@ -679,7 +679,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 	function printTraineeLine(&$line, $nbsta_index, $nbTimeSlots, $timeSlotWidth)
 	{
-		global $conf, $dao;
+		global $conf;
 		$posX = $this->pdf->GetX();
 		$posY = $this->pdf->GetY();
 
@@ -722,12 +722,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			}
 		}
 
-		if (is_object($dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
+		if (is_object($this->dao) && $conf->global->AGF_ADD_ENTITYNAME_FICHEPRES) {
 			$c = new Societe($this->db);
 			$c->fetch($line->socid);
 
-			if (count($dao->entities) > 0) {
-				foreach ($dao->entities as $e) {
+			if (count($this->dao->entities) > 0) {
+				foreach ($this->dao->entities as $e) {
 					if ($e->id == $c->entity) {
 						$str .= "\n" . $this->outputlangs->trans('Entity') . ' : ' . $e->label;
 						break;
