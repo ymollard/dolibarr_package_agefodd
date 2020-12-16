@@ -328,11 +328,28 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 */
 	function printPersonsBlock($type, $lines, $dates_array)
 	{
+		global $conf, $langs;
 		$headerOnPage = false; // whether the table header has been printed on the current page
 		$prevLineOnPage = false; // whether at least one table line has been printed on the current page
 		$isNewPage = true;
 		$posy = $this->pdf->GetY();
 		$posx = $this->pdf->GetX();
+
+		// exclusion de stagiaires de la fiche de présence en fonction de leur statut dans la session
+		if ($type === 'stagiaires' && $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES !== '') {
+			$TStagiaireStatusToExclude = explode(',', $conf->global->AGF_STAGIAIRE_STATUS_TO_EXCLUDE_TO_FICHEPRES);
+			$includedLines = array();
+			foreach ($lines as $line) {
+				$status_stagiaire = (int) $line->status_in_session;
+				if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
+					setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $line->nom), 'warnings');
+				} else {
+					$includedLines[] = $line;
+				}
+			}
+			// on remplace
+			$lines = $includedLines;
+		}
 
 		$lineN = 0;
 		foreach ($lines as $line) {
@@ -469,7 +486,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetAutoPageBreak(true, $this->height_for_footer);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
-		$this->pdf->SetTextColor(0, 0, 0);
+		$this->pdf->SetDrawColor($this->colorLine[0], $this->colorLine[1], $this->colorLine[2]);
+		$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
 	}
 
 	/**
