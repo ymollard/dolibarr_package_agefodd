@@ -1,4 +1,17 @@
-English Dolibarr ChangeLog
+# Change Log
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+
+- 
+
+## Version 4.12
+
+- FIX : Multicell html in PDF [2020-12-18]
+- FIX : Dol V13 compatibility [2020-12-09]
+
+___
+## OLDER
 
 ***** ChangeLog for 3.0.18 compared to 3.0.17 *****
 NEW : Can add image on location
