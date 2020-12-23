@@ -224,6 +224,8 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($sessid, $socid, $id = 0) {
+		global $langs;
+
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_agefodd_session, c.fk_societe, c.intro1, c.intro2,";
 		$sql .= " c.art1, c.art2, c.art3, c.art4, c.art5, c.art6, c.art7, c.art8, c.art9, c.sig, notes, s.nom as socname";
@@ -312,6 +314,9 @@ class Agefodd_convention {
 	 * @throws Exception
 	 */
 	public function fetch_all($sessid, $socid = 0, $filterTraineeStatus=array()) {
+
+		global $langs;
+
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_agefodd_session, c.fk_societe, c.intro1, c.intro2,";
 		$sql .= " c.art1, c.art2, c.art3, c.art4, c.art5, c.art6, c.art7, c.art8, c.art9, c.sig, notes, s.nom as socname";
@@ -407,6 +412,8 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch_last_conv_per_socity($socid) {
+		global $langs;
+
 		$sql = "SELECT";
 		$sql .= " c.rowid, MAX(c.fk_agefodd_session) as sessid";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
@@ -453,6 +460,8 @@ class Agefodd_convention {
 	public function fetch_order_lines($comid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 
+		global $langs, $conf;
+
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
@@ -483,7 +492,8 @@ class Agefodd_convention {
 					if ($result < 0) {
 						dol_syslog(get_class($this) . "::fetch_order_lines " . $prod_static->error, LOG_ERR);
 					}
-					if (strpos($obj->description, $prod_static->description) !== false) {
+
+					if (strpos($obj->description, $prod_static->description) !== false || $conf->global->AGEFODD_CONVENTION_DOUBLE_DESC_DESACTIVATE) {
 						$line->description = $prod_static->ref . ' ' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
 					} else {
 						$line->description = $prod_static->ref . ' ' . self::nl2br($prod_static->description) . '<BR>' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
@@ -522,6 +532,8 @@ class Agefodd_convention {
 	public function fetch_invoice_lines($factid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
 
+		global $langs, $conf;
+
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_product, c.description, c.tva_tx, c.remise_percent,";
 		$sql .= " c.fk_remise_except, c.subprice, c.qty, c.total_ht, c.total_tva, c.total_ttc";
@@ -552,7 +564,8 @@ class Agefodd_convention {
 					if ($result < 0) {
 						dol_syslog(get_class($this) . "::fetch_invoice_lines " . $prod_static->error, LOG_ERR);
 					}
-					if (strpos($obj->description, $prod_static->description) !== false) {
+
+					if (strpos($obj->description, $prod_static->description) !== false || $conf->global->AGEFODD_CONVENTION_DOUBLE_DESC_DESACTIVATE) {
 						$line->description = $prod_static->ref . ' ' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
 					} else {
 						$line->description = $prod_static->ref . ' ' . self::nl2br($prod_static->description) . '<BR>' . $prod_static->label . '<BR>' . self::nl2br($obj->description);
@@ -590,6 +603,8 @@ class Agefodd_convention {
 	 */
 	public function fetch_propal_lines($propalid) {
 		require_once (DOL_DOCUMENT_ROOT . "/product/class/product.class.php");
+
+		global $langs;
 
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.fk_product, c.description,c.label, c.tva_tx, c.remise_percent,";
@@ -661,6 +676,8 @@ class Agefodd_convention {
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function info($id) {
+		global $langs;
+
 		$sql = "SELECT";
 		$sql .= " c.rowid, c.datec, c.tms, c.fk_user_author, c.fk_user_mod";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_convention as c";
@@ -910,6 +927,8 @@ class Agefodd_convention {
 	 */
 	public function fetch_contact($contactsource, $contacttype) {
 		require_once (DOL_DOCUMENT_ROOT . "/contact/class/contact.class.php");
+
+		global $langs;
 
 		$sql = "SELECT";
 		$sql .= " socp.rowid as contactid";
