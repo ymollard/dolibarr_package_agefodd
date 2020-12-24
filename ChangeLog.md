@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 - FIX tickets #11916, #11888, #11861 and #12049 : PDF templates for
   attendance sheets had wrong page break rules leading to orphans/widows
   and, in some cases, successions of pages containing one single cell
-  overlapping the page break threshold
+  overlapping the page break threshold [2020-12-24]
 
 ## Version 4.12
 
