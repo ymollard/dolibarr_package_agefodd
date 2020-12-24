@@ -311,6 +311,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 			foreach ($session_hours as $key => $dates_array) {
 				// New page
 				$this->pdf->AddPage();
+				$this->setupNewPage();
 				if (!empty($tplidx)) $this->pdf->useTemplate($tplidx);
 				list($posX, $posY) = $this->_pagehead($this->pdf, $this->outputlangs);
 
@@ -347,12 +348,6 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 				if (!empty($this->stagiaires->lines))
 				{
 					$this->printPersonsBlock('stagiaires', $this->stagiaires->lines, $dates_array);
-				}
-
-				// Pied de page
-				$this->_pagefoot($this->pdf, $this->pdf->ref_object, $this->outputlangs);
-				if (method_exists($this->pdf, 'AliasNbPages')) {
-					$this->pdf->AliasNbPages();
 				}
 			}
 		}
