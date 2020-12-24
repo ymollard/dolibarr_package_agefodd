@@ -3,7 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- 
+- WARNING : The changes may create regressions for external modules with
+  classes that extend `pdf_fiche_presence.modules.php`
+- FIX tickets #11916, #11888, #11861 and #12049 : PDF templates for
+  attendance sheets had wrong page break rules leading to orphans/widows
+  and, in some cases, successions of pages containing one single cell
+  overlapping the page break threshold
 
 ## Version 4.12
 

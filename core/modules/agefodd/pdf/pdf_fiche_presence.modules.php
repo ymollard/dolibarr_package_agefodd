@@ -35,6 +35,17 @@ dol_include_once('/agefodd/lib/agefodd.lib.php');
 dol_include_once('/core/lib/company.lib.php');
 dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 
+/**
+ * Class pdf_fiche_presence
+ *
+ * Modèle PDF des feuilles d'émargement (fiches de présence) Agefodd.
+ *
+ * Cette classe est étendue par d'autres, notamment :
+ *  - pdf_fiche_presence_landscape
+ *  - pdf_fiche_presence_societe
+ *  - pdf_fiche_presence_landscape_bymonth
+ *
+ */
 class pdf_fiche_presence extends ModelePDFAgefodd
 {
 	var $emetteur; // Objet societe qui emet
