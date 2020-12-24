@@ -327,8 +327,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 
 				if (!empty($this->formateurs->lines))
 				{
-					list($posX, $posY) = $this->printTrainerBlockHeader($posX, $posY, $dates_array);
-					list($posX, $posY) = $this->printTrainerBlockLines($posX, $posY, $dates_array, $agf);
+					$this->printPersonsBlock('formateurs', $this->formateurs->lines, $dates_array);
 				}
 
 				/**
@@ -347,8 +346,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 
 				if (!empty($this->stagiaires->lines))
 				{
-					list($posX, $posY) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
-					list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $this->pdf->ref_object);
+					$this->printPersonsBlock('stagiaires', $this->stagiaires->lines, $dates_array);
 				}
 
 				// Pied de page
