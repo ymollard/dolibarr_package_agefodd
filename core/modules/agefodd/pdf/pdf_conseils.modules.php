@@ -178,6 +178,8 @@ class pdf_conseils extends ModelePDFAgefodd {
 			$agf_soc = new Societe($this->db);
 			$result = $agf_soc->fetch($socid);
 
+			$ishtml = 1; // $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;  il est préférable de partir du principe qu'il est tjr activé car il n'y à pas que cette conf il y a aussi les substitutions (doc edit). Il faudra alors gérer le cas inverse qui est plus rare mais au cas par cas, une detection html avant multicell peut-être ?
+
 			if ($result) {
 				// New page
 				$pdf->AddPage();
@@ -189,7 +191,6 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
 				$pdf->SetTextColor($this->colorheaderText [0], $this->colorheaderText [1], $this->colorheaderText [2]);
 
-				$ishtml = $conf->global->FCKEDITOR_ENABLE_SOCIETE ? 1 : 0;
 
 				$posY=$this->marge_haute;
 				$posX=$this->page_largeur-$this->marge_droite-55;
@@ -343,7 +344,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
 					$pdf->SetXY($posX, $posY);
 					$this->str = $langs->transnoentities("AgfDocNeeded");
-					$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
+					$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', false, 1, '', '', true, 0,  $ishtml);
 					$posY += 5;
 
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
@@ -363,7 +364,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $this->default_font_size); // $pdf->SetFont('Arial','B',9);
 					$pdf->SetXY($posX, $posY);
 					$this->str = $langs->transnoentities("AgfEquiNeeded");
-					$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L');
+					$pdf->Cell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 0, 'L', false, 1, '', '', true, 0,  $ishtml);
 					$posY += 5;
 
 					$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size);
@@ -388,7 +389,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$this->str = ucfirst($agf_session->placecode);
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', false, 1, '', '', true, 0,  $ishtml);
 
 				$posY = $pdf->GetY() + 2;
 
@@ -396,7 +397,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$this->str = $agf_place->adresse . ' - ' . $agf_place->cp . ' ' . $agf_place->ville;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L');
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', false, 1, '', '', true, 0,  $ishtml);
 				$posY = $pdf->GetY() + 8;
 
 				/**
@@ -414,6 +415,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$this->str.= strtr($agf_place->acces_site, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));
 
 				$pdf->SetXY($posX, $posY);
+
 				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
 				$posY = $pdf->GetY() + 8;
 
@@ -461,7 +463,7 @@ class pdf_conseils extends ModelePDFAgefodd {
 				$this->str.= strtr($agf_place->note1, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));;
 
 				$pdf->SetXY($posX, $posY);
-				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', $ishtml);
+				$pdf->MultiCell(0, 5, $outputlangs->convToOutputCharset($this->str), 0, 'L', '', '2', '', '', '', '', 1);
 				$posY = $pdf->GetY() + 8;
 
 
