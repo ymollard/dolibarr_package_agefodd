@@ -60,6 +60,10 @@ class pdf_fiche_presence_landscape extends pdf_fiche_presence
 		$this->marge_haute = 2;
 		$this->marge_gauche = 15;
 		$this->marge_droite = 15;
+
+		// nombre de colonnes pour les dates de session
+		$this->nbtimeslots = empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES) ? 9 : 10;
+
 		$this->oriantation = 'l'; // use Landscape format
 		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
@@ -67,24 +71,28 @@ class pdf_fiche_presence_landscape extends pdf_fiche_presence
 		$this->header_vertical_margin = 1;
 		$this->summaryPaddingBottom = 1;
 
-		$this->formation_widthcol1 = 20;
-		$this->formation_widthcol2 = 130;
-		$this->formation_widthcol3 = 35;
-		$this->formation_widthcol4 = 82;
 
-		$this->trainer_widthcol1 = 55;
-		$this->trainer_widthcol2 = 145;
+		// largeur de la page moins les marges
+		$page_largeur_utile = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 
-		$this->trainee_widthcol1 = 50;
-		$this->trainee_widthcol2 = 45;
-		if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
-			$this->trainer_widthtimeslot = 21;
-			$this->trainee_widthtimeslot = 17;
-			$this->nbtimeslots = 10;
-		} else {
-			$this->trainer_widthtimeslot = 23.3;
-			$this->trainee_widthtimeslot = 23.9;
-			$this->nbtimeslots = 9;
+		// "taquets" d'alignement des textes pour l'encadré "La formation"
+		$this->formation_widthcol1 = 20;  // titres "Intitulé", "Période", "Session"
+		$this->formation_widthcol2 = 130; // valeurs pour intitulé, période, session
+		$this->formation_widthcol3 = 35;  // titre "Lieu de formation"
+		$this->formation_widthcol4 = 82;  // adresse du lieu de formation
+
+		$this->trainer_widthcol1 = 55; // noms des formateurs
+		// colonnes des dates des formateurs
+		$this->trainer_widthtimeslot = ($page_largeur_utile - $this->trainer_widthcol1) / $this->nbtimeslots;
+
+		$this->trainee_widthcol1 = 50; // noms des stagiaires
+		$this->trainee_widthcol2 = 45; // sociétés des stagiaires
+
+		if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
+			$this->trainee_widthcol2 = 0;
 		}
+
+		// colonnes des dates des stagiaires
+		$this->trainee_widthtimeslot = ($page_largeur_utile - $this->trainee_widthcol1 - $this->trainee_widthcol2) / $this->nbtimeslots;
 	}
 }

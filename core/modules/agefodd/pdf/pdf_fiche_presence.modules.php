@@ -121,27 +121,32 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->header_vertical_margin = 3;
 		$this->summaryPaddingBottom = 3;
 
-		$this->formation_widthcol1 = 20;
-		$this->formation_widthcol2 = 80;
-		$this->formation_widthcol3 = 27;
-		$this->formation_widthcol4 = 65;
+		// nombre maximum de colonnes de dates de sessions qu'on fera tenir dans la largeur de la page.
+		$this->nbtimeslots = 6;
+
+		// "taquets" d'alignement des textes pour l'encadré "La formation"
+		$this->formation_widthcol1 = 20; // titres "Intitulé", "Période", "Session"
+		$this->formation_widthcol2 = 80; // valeurs pour intitulé, période, session
+		$this->formation_widthcol3 = 27; // titre "Lieu de formation"
+		$this->formation_widthcol4 = 65; // adresse du lieu de formation
 
 		// largeur page = 210, les marges font 20 donc largeur utile = 190
-		$this->trainer_widthcol1 = 44;
-		$this->trainer_widthcol2 = 146;
-		$this->trainer_widthtimeslot = 146/6;
+		$page_largeur_utile = $this->page_largeur - $this->marge_gauche - $this->marge_droite;
 
-		$this->trainee_widthcol1 = 40;
-		$this->trainee_widthcol2 = 40;
-		if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
-			$this->trainee_widthtimeslot = 110 / 6; // 110 = 190 - 2*40 car la colonne 2 est affichée
-		} else {
-			$this->trainee_widthtimeslot = 150 / 6; // 150 = 190 - 40 car la colonne 2 n'est pas affichée
+		$this->trainer_widthcol1 = 44; // noms des formateurs
+
+		// colonnes des dates des formateurs
+		$this->trainer_widthtimeslot = ($page_largeur_utile - $this->trainer_widthcol1) / $this->nbtimeslots;
+
+		$this->trainee_widthcol1 = 40; // noms des stagiaires
+		$this->trainee_widthcol2 = 40; // sociétés des stagiaires
+		if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
+			$this->trainee_widthcol2 = 0;
 		}
+		// colonnes des dates des stagiaires
+		$this->trainee_widthtimeslot = ($page_largeur_utile - $this->trainee_widthcol1 - $this->trainee_widthcol2) / $this->nbtimeslots; // 110 = 190 - 2*40 car la colonne 2 est affichée
 
 		$this->height_for_footer = isset($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER) ? $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER : 20;
-
-		$this->nbtimeslots = 6;
 
 		$this->h_ligne = 10;
 		$this->totalSecondsSessCalendar = 0;
@@ -169,6 +174,10 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$id = $agf;
 			$agf = new Agsession($this->db);
 			$ret = $agf->fetch($id);
+			if ($ret <= 0)  {
+				$this->error = $langs->trans('AgfErrorUnableToFetchSession', $id);
+				return 0;
+			}
 			$this->session=$agf;
 		}
 
@@ -218,7 +227,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$result = $agf_soc->fetch($socid);
 
 			if ($result) {
-				$this->_pagebody($agf, $this->outputlangs);
+				if ($this->_pagebody($agf, $this->outputlangs) < 0)
+					return -1;
 			}
 
 			$this->pdf->Close();
@@ -249,7 +259,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	 * Show body of page
 	 * @param object $agf Object session
 	 * @param Translate $outputlangs Object lang for output
-	 * @return void
+	 * @return int <0 = KO;  >0 = OK
 	 */
 	function _pagebody($agf, $outputlangs)
 	{
@@ -275,7 +285,8 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->agf_date = new Agefodd_sesscalendar($this->db);
 		$resql = $this->agf_date->fetch_all($this->pdf->ref_object->id);
 		if ($resql < 0) {
-			setEventMessage($this->agf_date->error, 'errors');
+			$this->errors[] = $this->agf_date->error;
+			return -1;
 		}
 		if (is_array($this->agf_date->lines) && count($this->agf_date->lines) > $this->nbtimeslots) {
 			for ($i = 0; $i < count($this->agf_date->lines); $i++) {
@@ -293,14 +304,16 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->formateurs = new Agefodd_session_formateur($this->db);
 		$nbform = $this->formateurs->fetch_formateur_per_session($this->pdf->ref_object->id);
 		if ($nbform < 0) {
-			setEventMessages($outputlangs->trans('AgfErrorUnableToFetchTrainer'), array(), 'errors');
+			$this->errors[] = $outputlangs->trans('AgfErrorUnableToFetchTrainer');
+			return -1;
 		}
 
 		// récupération des stagiaires de la session
 		$this->stagiaires = new Agefodd_session_stagiaire($this->db);
 		$resfetch = $this->stagiaires->fetch_stagiaire_per_session($this->pdf->ref_object->id);
 		if ($resfetch < 0) {
-			setEventMessages($outputlangs->trans('AgfErrorUnableToFetchTrainees'), array(), 'errors');
+			$this->errors[] = $outputlangs->trans('AgfErrorUnableToFetchTrainees');
+			return -1;
 		}
 
 		if (!empty($conf->global->AGF_FICHEPRES_SHOW_OPCO_NUMBERS))
@@ -370,7 +383,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			foreach ($lines as $line) {
 				$status_stagiaire = (int) $line->status_in_session;
 				if (in_array($status_stagiaire, $TStagiaireStatusToExclude)) {
-					setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $line->nom), 'warnings');
 				} else {
 					$includedLines[] = $line;
 				}
@@ -380,8 +392,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		}
 
 		$lineN = 0;
-		foreach ($lines as $line) {
-			re_loop:
+		// ce while est un foreach "manuel" pour permettre de reboucler sur la *même* ligne en cas de rollback
+		// (ça évite un GOTO)
+		while ($line = current($lines)) {
 			$isLastLine = $lineN === count($lines) - 1;
 
 			// begin
@@ -399,27 +412,20 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 
 			if ($this->pdf->getPage() == $pageBefore) {
-				// commit
+				// commit et boucle sur la ligne suivante
+				$this->pdf->commitTransaction();
 				$isNewPage = false;
+				next($lines);
+				$lineN++;
 			} else {
-				// rollback
+				// rollback et reboucle sur la même ligne (en ajoutant une nouvelle page)
 				$this->pdf->rollbackTransaction(true);
 				$this->pdf->AddPage();
 				$this->pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 				$this->pdf->setPageOrientation($this->orientation, 1, $this->height_for_footer); // margin bottom
 				$this->setupNewPage();
 				$isNewPage = true;
-				// permet de répéter la boucle pour le même élément.
-				// Je pense que c'est un des rares cas où un goto est acceptable
-				// car c'est plus facilement maintenable que de copier-coller le
-				// contenu de la boucle.
-				// Cependant, une solution avec une méthode récursive est aussi
-				// possible si jamais (je pense que ce sera moins lisible mais ça
-				// évite un goto)
-				goto re_loop;
 			}
-
-			$lineN++;
 		}
 	}
 

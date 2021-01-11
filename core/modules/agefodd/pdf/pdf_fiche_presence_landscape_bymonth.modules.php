@@ -63,11 +63,15 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 		else $this->outputlangs = $outputlangs;
 
 		if (!is_object($agf)) {
+			/** @var int $id  If $agf is not an object, we assume it is the ID of a session. */
 			$id = $agf;
-			if ($this->session->fetch($id) <= 0) {
+			$agf = new Agsession($this->db);
+			$ret = $agf->fetch($id);
+			if ($ret <= 0)  {
 				$this->error = $langs->trans('AgfErrorUnableToFetchSession', $id);
 				return 0;
-			};
+			}
+			$this->session=$agf;
 		}
 		else $this->session = $agf;
 

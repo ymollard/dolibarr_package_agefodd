@@ -279,8 +279,9 @@ function agf_pdf_create($db, $id, $message, $typeModele, $outputlangs, $file, $s
 			return 1;
 		} else {
 			$outputlangs->charset_output = $sav_charset_output;
-			dol_print_error($db, "pdf_create Error: " . $obj->error);
-			return - 1;
+			setEventMessages($langs->trans('AgfPDFGenerationError'), null, 'errors');
+			setEventMessages($obj->error, $obj->errors, 'errors');
+			return -1;
 		}
 	} else {
 		dol_print_error('', $langs->trans("Error") . " " . $langs->trans("ErrorFileDoesNotExists", $nomModele));
