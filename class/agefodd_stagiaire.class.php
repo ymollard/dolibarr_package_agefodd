@@ -179,10 +179,7 @@ class Agefodd_stagiaire extends CommonObject {
 				$error ++;
 			}
 			//Historisation fk_soc
-			dol_include_once('/agefodd/class/agefodd_stagiaire_soc_history.class.php');
-			$socHistory = new Agefodd_stagiaire_soc_history($this->db);
-			$socHistory->fk_stagiaire = $this->id;
-			$result = $socHistory->historize($this->socid, true);
+			$result = $this->historizeSoc(true);
 			if ($result < 0) {
 				$error++;
 			}
@@ -202,6 +199,19 @@ class Agefodd_stagiaire extends CommonObject {
 			$this->db->commit();
 			return $this->id;
 		}
+	}
+
+	/**
+	 * Function to historize soc of trainee
+	 * @param bool $onCreate
+	 * @return int
+	 */
+	public function historizeSoc($onCreate = false) {
+		dol_include_once('/agefodd/class/agefodd_stagiaire_soc_history.class.php');
+		$socHistory = new Agefodd_stagiaire_soc_history($this->db);
+		$socHistory->fk_stagiaire = $this->id;
+		$result = $socHistory->historize($this->socid, $onCreate);
+		return $result;
 	}
 
 
@@ -654,10 +664,7 @@ class Agefodd_stagiaire extends CommonObject {
 			}
 
 			//Historisation fk_soc
-			dol_include_once('/agefodd/class/agefodd_stagiaire_soc_history.class.php');
-			$socHistory = new Agefodd_stagiaire_soc_history($this->db);
-			$socHistory->fk_stagiaire = $this->id;
-			$result = $socHistory->historize($this->socid);
+			$result = $this->historizeSoc();
 			if ($result < 0) {
 				$error++;
 			}

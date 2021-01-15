@@ -41,6 +41,7 @@ class Agefodd_stagiaire_soc_history extends CommonObject
 	}
 
 	/**
+	 * Historize soc of trainee
 	 * @param   int   $fk_soc
 	 * @param   bool  $onCreate
 	 * @return  int   > 0 IF OK, < 0 IF KO
@@ -62,6 +63,7 @@ class Agefodd_stagiaire_soc_history extends CommonObject
 	}
 
 	/**
+	 * Delete All history of a trainee
 	 * @param int   $fk_stagiaire
 	 * @return int > 0 IF OK, < 0 IF KO
 	 */
