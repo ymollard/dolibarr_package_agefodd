@@ -1475,7 +1475,7 @@ class Agefodd extends DolibarrApi
         $this->traineeinsession->fk_soc_requester = $fk_soc_requester;         // tiers demandeur
         $this->traineeinsession->fk_socpeople_sign = $fk_socpeople_sign;       // signataire de la convention
         $this->traineeinsession->hour_foad = $hour_foad;                       // heure en parcours FOAD
-
+	    $this->traineeinsession->fk_soc = $this->trainee->socid;
         $result = $this->traineeinsession->create(DolibarrApiAccess::$user);
 
         if ($result > 0) {

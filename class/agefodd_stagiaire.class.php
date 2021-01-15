@@ -178,6 +178,16 @@ class Agefodd_stagiaire extends CommonObject {
 			if ($result < 0) {
 				$error ++;
 			}
+			//Historisation fk_soc
+			dol_include_once('/agefodd/class/agefodd_stagiaire_soc_history.class.php');
+			$socHistory = new Agefodd_stagiaire_soc_history($this->db);
+			$socHistory->fk_stagiaire = $this->id;
+			$result = $socHistory->historize($this->socid, true);
+			if ($result < 0) {
+				$error++;
+			}
+
+
 		}
 
 		// Commit or rollback
@@ -642,6 +652,15 @@ class Agefodd_stagiaire extends CommonObject {
 			if ($result < 0) {
 				$error ++;
 			}
+
+			//Historisation fk_soc
+			dol_include_once('/agefodd/class/agefodd_stagiaire_soc_history.class.php');
+			$socHistory = new Agefodd_stagiaire_soc_history($this->db);
+			$socHistory->fk_stagiaire = $this->id;
+			$result = $socHistory->historize($this->socid);
+			if ($result < 0) {
+				$error++;
+			}
 		}
 
 		// Commit or rollback
@@ -679,6 +698,15 @@ class Agefodd_stagiaire extends CommonObject {
 
 			$this->id = $id;
 			$result = $this->deleteExtraFields();
+			if ($result < 0) {
+				$error ++;
+				dol_syslog(get_class($this) . "::delete erreur " . $error . " " . $this->error, LOG_ERR);
+			}
+
+			//Delete historisation
+			dol_include_once('/agefodd/class/agefodd_stagiaire_soc_history.class.php');
+			$socHistory = new Agefodd_stagiaire_soc_history($this->db);
+			$socHistory->deleteByStagiaire($this->id);
 			if ($result < 0) {
 				$error ++;
 				dol_syslog(get_class($this) . "::delete erreur " . $error . " " . $this->error, LOG_ERR);
