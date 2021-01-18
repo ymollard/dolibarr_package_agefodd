@@ -202,6 +202,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 				$this->pdf->setPrintFooter(false);
 			}
 
+			if (!empty($conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER))
+				$this->height_for_footer = $conf->global->AGEFODD_CUSTOM_HEIGHT_FOR_FOOTER;
+
 			$realFooterHeight = $this->getRealHeightLine('foot');
 
 			// if the footer is larger than expected, use its real height.
