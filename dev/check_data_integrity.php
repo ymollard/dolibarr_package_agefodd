@@ -67,7 +67,7 @@ if ($resql) {
 			print 'Session '.$obj->fk_session.' dans '.MAIN_DB_PREFIX.'agefodd_session_stagiaire et non dans '.MAIN_DB_PREFIX.'agefodd_session<BR>';
 		}
 
-		$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd NOT IN (SELECT rowid FROM llx_agefodd_session)';
+		$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_stagiaire WHERE fk_session_agefodd NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -92,7 +92,7 @@ if ($resql) {
 			print 'Foramteur '.$obj-> 	fk_agefodd_formateur.' dans '.MAIN_DB_PREFIX.'agefodd_session_formateur et non dans '.MAIN_DB_PREFIX.'agefodd_session<BR>';
 		}
 
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur WHERE fk_agefodd_formateur NOT IN (SELECT rowid FROM llx_agefodd_formateur)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_formateur WHERE fk_agefodd_formateur NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formateur)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -120,7 +120,7 @@ if ($resql) {
 		}
 
 
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_adminsitu WHERE fk_agefodd_session NOT IN (SELECT rowid FROM llx_agefodd_session)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_adminsitu WHERE fk_agefodd_session NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -147,7 +147,7 @@ if ($resql) {
 			print 'Session '.$obj->fk_session.' dans '.MAIN_DB_PREFIX.'agefodd_session_commercial et non dans '.MAIN_DB_PREFIX.'agefodd_session<BR>';
 		}
 
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_commercial WHERE fk_session_agefodd NOT IN (SELECT rowid FROM llx_agefodd_session)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_commercial WHERE fk_session_agefodd NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -173,7 +173,7 @@ if ($resql) {
 			print 'Session '.$obj->fk_session.' dans '.MAIN_DB_PREFIX.'agefodd_session_calendrier et non dans '.MAIN_DB_PREFIX.'agefodd_session<BR>';
 		}
 
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier WHERE fk_agefodd_session NOT IN (SELECT rowid FROM llx_agefodd_session)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier WHERE fk_agefodd_session NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'gefodd_session)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -200,7 +200,7 @@ if ($resql) {
 			print 'Session '.$obj->fk_session.' dans '.MAIN_DB_PREFIX.'agefodd_session_calendrier et non dans '.MAIN_DB_PREFIX.'actioncomm<BR>';
 		}
 
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier WHERE fk_actioncomm NOT IN (SELECT id FROM llx_actioncomm)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_calendrier WHERE fk_actioncomm NOT IN (SELECT id FROM '.MAIN_DB_PREFIX.'actioncomm)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -272,7 +272,7 @@ if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			print 'Formation id:'.$obj->fk_formation_catalogue.' n existe pas dans la table  agefodd_formation_catalogue<BR>';
 		}
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_formation_objectifs_peda WHERE fk_formation_catalogue NOT IN (SELECT rowid FROM llx_agefodd_formation_catalogue)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_formation_objectifs_peda WHERE fk_formation_catalogue NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formation_catalogue)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -297,7 +297,7 @@ if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			print 'Session id:'.$obj->fk_formation_catalogue.' n existe pas dans la table  agefodd_Session<BR>';
 		}
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_contact WHERE fk_session_agefodd NOT IN (SELECT rowid FROM llx_agefodd_session)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_contact WHERE fk_session_agefodd NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -323,7 +323,7 @@ if ($resql) {
 			print 'Session id:'.$obj->fk_formation_catalogue.' n existe pas dans la table  agefodd_Session<BR>';
 		}
 
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_convention WHERE fk_agefodd_session NOT IN (SELECT rowid FROM llx_agefodd_session)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_convention WHERE fk_agefodd_session NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -380,7 +380,7 @@ if ($resql) {
 			print 'session id:'.$obj->fk_session_agefodd.' n existe pas dans la table  agefodd_Session<BR>';
 		}
 
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_element WHERE fk_session_agefodd NOT IN (SELECT rowid FROM llx_agefodd_session)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_element WHERE fk_session_agefodd NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -405,7 +405,7 @@ if ($resql) {
 		while ( $obj = $db->fetch_object($resql) ) {
 			print 'training id:'.$obj->fk_training.' n existe pas dans la table agefodd_Session<BR>';
 		}
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_training_admlevel WHERE fk_training NOT IN (SELECT rowid FROM llx_agefodd_formation_catalogue)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_training_admlevel WHERE fk_training NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formation_catalogue)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -475,7 +475,7 @@ if ($resql) {
 			print 'fk_socpeople id:'.$obj->fk_socpeople.' n existe pas dans la table socpeople<BR>';
 		}
 
-$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_contact WHERE fk_socpeople NOT IN (SELECT rowid FROM llx_socpeople)';
+$sql ='DELETE FROM '.MAIN_DB_PREFIX.'agefodd_contact WHERE fk_socpeople NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'socpeople)';
                 if(GETPOST('do-it-for-me', 'none')=='yesiwantit') {
                         $res = $db->query($sql);
                         if($res===false) {
@@ -554,7 +554,7 @@ if ($resql) {
 }
 
 //Session sans formation catalogue....
-$sql = 'SELECT rowid FROM llx_agefodd_session WHERE fk_formation_catalogue NOT IN (SELECT rowid FROM llx_agefodd_formation_catalogue)';
+$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_session WHERE fk_formation_catalogue NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'agefodd_formation_catalogue)';
 
 $resql = $db->query($sql);
 if ($resql) {
@@ -599,7 +599,7 @@ if ($resql) {
 	if ($db->num_rows($resql)) {
 		print '<BR><BR>';
 		while ( $obj = $db->fetch_object($resql) ) {
-			print 'Propal id '.$obj->fk_element.' dans '.MAIN_DB_PREFIX.'agefodd_session_element who is not in llx_propal <BR>';
+			print 'Propal id '.$obj->fk_element.' dans '.MAIN_DB_PREFIX.'agefodd_session_element who is not in '.MAIN_DB_PREFIX.'propal <BR>';
 		}
 		print '<BR><BR><BR>Suggestion de correction : DELETE FROM '.MAIN_DB_PREFIX.'agefodd_session_element WHERE element_type=\'propal\' AND fk_element NOT IN (SELECT rowid from '.MAIN_DB_PREFIX.'propal)<BR><BR><BR>';
 	}
@@ -753,7 +753,7 @@ if (!empty($conf->global->AGF_USE_REAL_HOURS)){
 			while ( $obj = $db->fetch_object($resql) ) {
 				print 'Pour la session '.$obj->id.'#'.$obj->ref.' , mais il semble que des heures stagiaires n est pas été saisie alors qu ils sont notés présents<BR>';
 			}
-			print '<BR><BR><BR>Suggestion de correction : INSERT INTO llx_agefodd_session_stagiaire_heures(entity, fk_stagiaire, fk_session, fk_calendrier, heures, fk_user_author, datec, tms, import_key, mail_sended, planned_absence)
+			print '<BR><BR><BR>Suggestion de correction : INSERT INTO '.MAIN_DB_PREFIX.'agefodd_session_stagiaire_heures(entity, fk_stagiaire, fk_session, fk_calendrier, heures, fk_user_author, datec, tms, import_key, mail_sended, planned_absence)
 			SELECT '.$conf->entity.',sesssta.fk_stagiaire,s.rowid,secal.rowid,';
 			if ($db->type == 'pgsql') {
 				print "TIME_TO_SEC(TIMEDIFF('second',secal.heuref, secal.heured))/(3600),";
