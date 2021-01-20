@@ -723,7 +723,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= ((! empty($this->fk_soc_requester)) ? $this->fk_soc_requester : "NULL") . ",";
 		$sql .= ((! empty($this->fk_socpeople_sign)) ? $this->fk_socpeople_sign : "NULL") . ",";
 		$sql .= ((! empty($this->hour_foad)) ? price2num($this->hour_foad): "NULL"). ",";
-		$sql .= ((! empty($this->fk_soc)) ? price2num($this->fk_soc): "NULL");
+		$sql .= ((! empty($this->fk_soc)) ? $this->fk_soc: "NULL");
 		$sql .= ")";
 
 		$this->db->begin();
