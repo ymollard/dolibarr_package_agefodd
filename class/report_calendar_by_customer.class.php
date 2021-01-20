@@ -300,7 +300,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 		$sql.= ' LEFT JOIN llx_agefodd_session_calendrier AS sesscal ON sesscal.fk_agefodd_session = s.rowid';
 		$sql.= ' INNER JOIN llx_agefodd_session_stagiaire AS ss ON s.rowid = ss.fk_session_agefodd';
 
-		if ($filter['so.rowid']) $sql .= ' INNER JOIN llx_agefodd_stagiaire AS sta ON ss.fk_stagiaire = sta.rowid AND sta.fk_soc = '.$this->db->escape($filter['so.rowid']);
+		if ($filter['so.rowid']) $sql .= ' INNER JOIN llx_agefodd_stagiaire AS sta ON ss.fk_stagiaire = sta.rowid AND ss.fk_soc = '.$this->db->escape($filter['so.rowid']);
 
 		$sql .= ' WHERE s.entity IN (' . getEntity('agefodd') . ')';
 
@@ -458,7 +458,7 @@ class ReportCalendarByCustomer extends AgefoddExportExcel {
 	    $sql.= ' LEFT JOIN llx_agefodd_session_calendrier AS sesscal ON sesscal.fk_agefodd_session = s.rowid';
 	    $sql.= ' INNER JOIN llx_agefodd_session_stagiaire AS ss ON s.rowid = ss.fk_session_agefodd';
 
-	    if ($filter['so.rowid']) $sql .= ' INNER JOIN llx_agefodd_stagiaire AS sta ON ss.fk_stagiaire = sta.rowid AND sta.fk_soc = '.$this->db->escape($filter['so.rowid']);
+	    if ($filter['so.rowid']) $sql .= ' INNER JOIN llx_agefodd_stagiaire AS sta ON ss.fk_stagiaire = sta.rowid AND ss.fk_soc = '.$this->db->escape($filter['so.rowid']);
 
 	    $sql .= ' WHERE s.entity IN (' . getEntity('agefodd') . ')';
 

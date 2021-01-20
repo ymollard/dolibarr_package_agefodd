@@ -214,6 +214,11 @@ if ($action == 'edit' && ($user->rights->agefodd->creer | $user->rights->agefodd
 		$agf->fk_socpeople_sign = $fk_socpeople_sign;
 		$agf->hour_foad = GETPOST('hour_foad', 'int');
 
+		require_once ('../class/agefodd_stagiaire.class.php');
+		$stag = new Agefodd_stagiaire($db);
+		$stag->fetch($agf->fk_stagiaire);
+		$agf->fk_soc = $stag->socid;
+
 		$result = $agf->create($user);
 
 		if ($result > 0) {

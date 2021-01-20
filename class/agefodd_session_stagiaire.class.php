@@ -42,6 +42,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 	public $fk_socpeople_sign;
 	public $fk_soc_link;
 	public $fk_soc_requester;
+	public $fk_soc;
 
 	/**
 	 * 0 => TraineeSessionStatusProspect (Prospect)
@@ -145,6 +146,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " ,fk_soc_requester";
 		$sql .= " ,fk_socpeople_sign";
 		$sql .= " ,hour_foad";
+		$sql .= " ,fk_soc";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire";
 		$sql .= " WHERE rowid= " . $id;
 
@@ -168,6 +170,7 @@ class Agefodd_session_stagiaire extends CommonObject {
     			$this->datec = $this->db->jdate($obj->datec);
     			$this->status_in_session = $obj->status_in_session;
     			$this->hour_foad= $obj->hour_foad;
+    			$this->fk_soc= $obj->fk_soc;
             }
 
 			$this->db->free($resql);
@@ -187,7 +190,8 @@ class Agefodd_session_stagiaire extends CommonObject {
 	    $sql .= " ,fk_soc_requester";
 	    $sql .= " ,fk_socpeople_sign";
 	    $sql .= " ,hour_foad";
-	    $sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire";
+		$sql .= " ,fk_soc";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session_stagiaire";
 	    $sql .= " WHERE fk_session_agefodd = " . $sessid;
 	    $sql .= " AND fk_stagiaire = " . $traineeid;
 
@@ -211,6 +215,7 @@ class Agefodd_session_stagiaire extends CommonObject {
     	        $this->datec = $this->db->jdate($obj->datec);
     	        $this->status_in_session = $obj->status_in_session;
     	        $this->hour_foad= $obj->hour_foad;
+    	        $this->fk_soc= $obj->fk_soc;
 	        }
 
 	        $this->db->free($resql);
@@ -269,7 +274,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON civ.code = sa.civilite";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
-		$sql .= " ON so.rowid = sa.fk_soc";
+		$sql .= " ON so.rowid = ss.fk_soc";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as sope";
 		$sql .= " ON sope.rowid = sa.fk_socpeople";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as st";
@@ -388,7 +393,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 				$sql .= " ON civ.code = sa.civilite";
 				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
-				$sql .= " ON so.rowid = sa.fk_soc";
+				$sql .= " ON so.rowid = ss.fk_soc";
 				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as sope";
 				$sql .= " ON sope.rowid = sa.fk_socpeople";
 				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as st";
@@ -523,7 +528,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_civility as civ";
 		$sql .= " ON civ.code = sa.civilite";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe as so";
-		$sql .= " ON so.rowid = sa.fk_soc";
+		$sql .= " ON so.rowid = ss.fk_soc";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "socpeople as sope";
 		$sql .= " ON sope.rowid = sa.fk_socpeople";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_stagiaire_type as st";
@@ -657,6 +662,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$this->fk_soc_requester = $this->db->escape(trim($this->fk_soc_requester));
 		$this->fk_socpeople_sign = $this->db->escape(trim($this->fk_socpeople_sign));
 		$this->hour_foad= $this->db->escape(trim($this->hour_foad));
+		$this->fk_soc= $this->db->escape(trim($this->fk_soc));
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -704,6 +710,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " ,fk_soc_requester";
 		$sql .= " ,fk_socpeople_sign";
 		$sql .= " ,hour_foad";
+		$sql .= " ,fk_soc";
 		$sql .= ") VALUES (";
 		$sql .= $this->fk_session_agefodd . ', ';
 		$sql .= $this->fk_stagiaire . ', ';
@@ -715,7 +722,8 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= ((! empty($this->fk_soc_link)) ? $this->fk_soc_link : "NULL") . ",";
 		$sql .= ((! empty($this->fk_soc_requester)) ? $this->fk_soc_requester : "NULL") . ",";
 		$sql .= ((! empty($this->fk_socpeople_sign)) ? $this->fk_socpeople_sign : "NULL") . ",";
-		$sql .= ((! empty($this->hour_foad)) ? price2num($this->hour_foad): "NULL");
+		$sql .= ((! empty($this->hour_foad)) ? price2num($this->hour_foad): "NULL"). ",";
+		$sql .= ((! empty($this->fk_soc)) ? $this->fk_soc: "NULL");
 		$sql .= ")";
 
 		$this->db->begin();
@@ -919,6 +927,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$this->fk_soc_requester = $this->db->escape(trim($this->fk_soc_requester));
 		$this->fk_socpeople_sign = $this->db->escape(trim($this->fk_socpeople_sign));
 		$this->hour_foad= $this->db->escape(trim($this->hour_foad));
+		$this->fk_soc= $this->db->escape(trim($this->fk_soc));
 
 		// Check parameters
 		// Put here code to add control on parameters value
@@ -936,7 +945,8 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " fk_soc_link=" . (!empty($this->fk_soc_link) ? $this->fk_soc_link : "null") . ",";
 		$sql .= " fk_soc_requester=" . (!empty($this->fk_soc_requester) ? $this->fk_soc_requester : "null"). ",";
 		$sql .= " fk_socpeople_sign=" . (!empty($this->fk_socpeople_sign) ? $this->fk_socpeople_sign : "null"). ",";
-		$sql .= " hour_foad=" . (!empty($this->hour_foad) ? price2num($this->hour_foad): "null");
+		$sql .= " hour_foad=" . (!empty($this->hour_foad) ? price2num($this->hour_foad): "null"). ",";
+		$sql .= " fk_soc =" . (!empty($this->fk_soc) ? $this->fk_soc : "null");
 		$sql .= " WHERE rowid = " . $this->id;
 
 		$this->db->begin();
@@ -995,7 +1005,7 @@ class Agefodd_session_stagiaire extends CommonObject {
 		$sql .= " WHERE fk_session_agefodd = " . $this->fk_session_agefodd;
 		if (! empty($socid)) {
 			// For the same thirdparty as the trainee
-			$sql .= ' AND ((fk_stagiaire IN (SELECT rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_stagiaire WHERE fk_soc=' . $socid . '))';
+			$sql .= ' AND ((fk_soc=' . $socid . '))';
 			// For the trainne link with use trhidparty into doc
 			$sql .= ' OR (fk_soc_link =' . $socid . '))';
 		}

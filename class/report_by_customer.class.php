@@ -484,13 +484,13 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 									$traineelist[$trainee_session_id] = $stagiaire_conv->nom . ' ' . $stagiaire_conv->prenom;
 
 									$sessionOPCA = new Agefodd_opca($this->db);
-									$result = $sessionOPCA->getOpcaForTraineeInSession($stagiaire_conv->socid, $line->id);
+									$result = $sessionOPCA->getOpcaForTraineeInSession($stagiaires_session_conv->fk_soc, $line->id);
 									if ($result < 0) {
 										$this->error = $sessionOPCA->error;
 										return $result;
 									}
-									$OPCA_array[$sessionOPCA->fk_soc_OPCA] = $stagiaire_conv->socid;
-									$OPCA_array_socid[$stagiaire_conv->socid] = $sessionOPCA->fk_soc_OPCA;
+									$OPCA_array[$sessionOPCA->fk_soc_OPCA] = $stagiaires_session_conv->fk_soc;
+									$OPCA_array_socid[$stagiaires_session_conv->fk_soc] = $sessionOPCA->fk_soc_OPCA;
 
 									// If comapny is empty we are probably in inter-entre or false inter
 									// In this case we add into company column the trainee company
@@ -941,7 +941,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 
 										// Check if procut is in not in category of CHARGES
 										$is_not_frais = true;
-										if (!empty($invoice_lines->fk_product)) {
+										if (!empty($invoice_lines->fk_product) && !empty($conf->global->AGF_CAT_PRODUCT_CHARGES)) {
 											$sql = " SELECT prod.rowid FROM " . MAIN_DB_PREFIX . "product as prod";
 											$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "categorie_product as catprod ON prod.rowid=catprod.fk_product AND catprod.fk_categorie IN (" . $conf->global->AGF_CAT_PRODUCT_CHARGES . ")";
 											$sql .= " WHERE  prod.rowid=" . $invoice_lines->fk_product;
@@ -1490,7 +1490,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 					$sql .= ' OR (s.rowid IN (SELECT DISTINCT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess';
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = insersta.fk_soc';
+					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = inserss.fk_soc';
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe_commerciaux as saleinnersess ON insersoc.rowid = saleinnersess.fk_soc';
 					$sql .= ' WHERE saleinnersess.fk_user=' . $this->db->escape($value) . '))';
 					$sql .= ')';
@@ -1502,7 +1502,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 					$sql .= ' OR (  s.rowid IN (SELECT DISTINCT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess';
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = insersta.fk_soc';
+					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = inserss.fk_soc';
 					$sql .= ' WHERE insersoc.parent=' . $this->db->escape($value) . '))';
 					// Parent company of trainnee soc requester
 					$sql .= ' OR (  s.rowid IN (SELECT DISTINCT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess';
@@ -1530,7 +1530,7 @@ class ReportByCustomer extends AgefoddExportExcelByCustomer
 					$sql .= ' AND ((' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\') OR (s.rowid IN (SELECT innersess.rowid FROM ' . MAIN_DB_PREFIX . 'agefodd_session as innersess ';
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_session_stagiaire as inserss ON innersess.rowid = inserss.fk_session_agefodd';
 					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'agefodd_stagiaire as insersta ON insersta.rowid = inserss.fk_stagiaire ';
-					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = insersta.fk_soc ';
+					$sql .= ' INNER JOIN ' . MAIN_DB_PREFIX . 'societe as insersoc ON insersoc.rowid = inserss.fk_soc ';
 					$sql .= ' WHERE insersoc.nom LIKE \'%' . $this->db->escape($value) . '%\' )))';
 				} elseif ($key == 's.status') {
 					if (is_array($value) && count($value) > 0) {

@@ -353,6 +353,10 @@ function trainee_prepare_head($object, $showcursus = 0)
 			$h++;
 		}
 	}
+	$head [$h] [0] = dol_buildpath('/agefodd/trainee/soc_history.php', 1) . '?id=' . $object->id;
+	$head [$h] [1] = $langs->trans("AgfStagiaireSocHistory");
+	$head [$h] [2] = 'soc_history';
+	$h++;
 
 	$head [$h] [0] = dol_buildpath('/agefodd/trainee/document_files.php', 1) . '?id=' . $object->id;
 	$head [$h] [1] = $langs->trans("Documents");
