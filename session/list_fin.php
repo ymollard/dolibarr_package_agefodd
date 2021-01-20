@@ -820,7 +820,7 @@ if (! empty($search_fournorderid)) {
             FROM " . MAIN_DB_PREFIX . "agefodd_session as s
             LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p ON p.rowid = s.fk_session_place
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,1)";
+            WHERE s.entity IN (0,". getEntity('agefodd') .")";
 		if (is_array($excludeSessions) && count($excludeSessions) > 0) {
 			$sql .= " AND s.rowid NOT IN (" . implode(",", $excludeSessions) . ")";
 		}
@@ -958,7 +958,8 @@ if (! empty($search_fournorderid)) {
             FROM " . MAIN_DB_PREFIX . "agefodd_session as s
             LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p ON p.rowid = s.fk_session_place
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,1) ";
+            WHERE s.entity IN (0,". getEntity('agefodd') .") ";
+
 		if (is_array($excludeSessions) && count($excludeSessions) > 0) {
 			$sql .= " AND s.rowid NOT IN (" . implode(",", $excludeSessions) . ")";
 		}
