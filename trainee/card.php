@@ -356,6 +356,7 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				$sessionstat->fk_soc_link = $fk_soc_link;
 				$sessionstat->status_in_session = GETPOST('status_in_session', 'int');
 				$sessionstat->fk_soc_requester = $fk_soc_requester;
+				$sessionstat->fk_soc = $agf->socid;
 				$result = $sessionstat->create($user);
 
 				if ($result > 0) {
@@ -373,7 +374,8 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
                 if (strlen($url_back) > 0) {
                     header("Location: " . $url_back);
                 } else {
-                    header("Location: " . $_SERVER['PHP_SELF'] . "?session_id=" . $session_id.'&societe='.$socid);
+                    if($session_id > 0) header("Location: " . $_SERVER['PHP_SELF'] . "?session_id=" . $session_id.'&societe='.$socid);
+                    else header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $result);
                 }
                 exit();
             } else {

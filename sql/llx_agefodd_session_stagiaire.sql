@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS llx_agefodd_session_stagiaire (
   fk_soc_link integer NULL,
   fk_socpeople_sign integer NULL,
   fk_soc_requester integer NULL,
+  fk_soc integer NULL,
   status_in_session integer NULL,
   hour_foad real NULL,
   fk_user_author integer NOT NULL,
