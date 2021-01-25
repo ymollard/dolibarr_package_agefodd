@@ -60,8 +60,17 @@ class pdf_fiche_presence_landscape_societe extends pdf_fiche_presence_societe
 		$this->marge_haute = 2;
 		$this->marge_gauche = 15;
 		$this->marge_droite = 15;
+
+
+		if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
+			$this->nbtimeslots = 9;
+		} else {
+			$this->nbtimeslots = 10;
+		}
+
 		$this->oriantation = 'l'; // use Landscape format
-		$this->espaceH_dispo = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
+
+		$this->espaceH_dispo = $page_largeur_utile = $this->page_largeur - ($this->marge_gauche + $this->marge_droite);
 		$this->milieu = $this->espaceH_dispo / 2;
 		$this->espaceV_dispo = $this->page_hauteur - ($this->marge_haute + $this->marge_basse);
 
@@ -71,18 +80,16 @@ class pdf_fiche_presence_landscape_societe extends pdf_fiche_presence_societe
 		$this->formation_widthcol4 = 82;
 
 		$this->trainer_widthcol1 = 55;
-		$this->trainer_widthcol2 = 145;
+		// colonnes des dates des formateurs
+		$this->trainer_widthtimeslot = ($page_largeur_utile - $this->trainer_widthcol1) / $this->nbtimeslots;
 
 		$this->trainee_widthcol1 = 50;
 		$this->trainee_widthcol2 = 45;
-		if (empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
-			$this->trainer_widthtimeslot = 21;
-			$this->trainee_widthtimeslot = 17;
-			$this->nbtimeslots = 10;
-		} else {
-			$this->trainer_widthtimeslot = 23.3;
-			$this->trainee_widthtimeslot = 23.9;
-			$this->nbtimeslots = 9;
+		if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
+			$this->trainee_widthcol2 = 0;
 		}
+
+		// colonnes des dates des stagiaires
+		$this->trainee_widthtimeslot = ($page_largeur_utile - $this->trainee_widthcol1 - $this->trainee_widthcol2) / $this->nbtimeslots;
 	}
 }

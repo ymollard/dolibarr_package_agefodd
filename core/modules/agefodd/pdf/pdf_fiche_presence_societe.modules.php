@@ -101,7 +101,6 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 		$this->formation_widthcol4 = 60;
 
 		$this->trainer_widthcol1 = 44;
-		$this->trainer_widthcol2 = 140;
 		$this->trainer_widthtimeslot = 24;
 
 		$this->trainee_widthcol1 = 40;
@@ -216,7 +215,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 	 * Show header of page
 	 * @param object $agf Object invoice
 	 * @param Translate $outputlangs Object lang for output
-	 * @return void
+	 * @return int <0 if KO, > 0 if OK
 	 */
 	function _pagebody($agf, $outputlangs)
 	{
@@ -245,7 +244,8 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 		$agf_date = new Agefodd_sesscalendar($this->db);
 		$resql = $agf_date->fetch_all($this->pdf->ref_object->id);
 		if (! $resql) {
-			setEventMessage($agf_date->error, 'errors');
+			$this->errors[] = $agf_date->error;
+			return -1;
 		}
 		if (is_array($agf_date->lines) && count($agf_date->lines)>$this->nbtimeslots) {
 			for($i = 0; $i < count($agf_date->lines); $i ++) {
@@ -272,7 +272,6 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 
 		foreach ($this->stagiaires->lines as $line) {
 			if (! empty($TStagiaireStatusToExclude) && in_array($line->status_in_session, $TStagiaireStatusToExclude)) {
-				setEventMessage($langs->trans('AgfStaNotInStatusToOutput', $line->nom), 'warnings');
 				continue;
 			}
 
@@ -311,6 +310,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 			foreach ($session_hours as $key => $dates_array) {
 				// New page
 				$this->pdf->AddPage();
+				$this->setupNewPage();
 				if (!empty($tplidx)) $this->pdf->useTemplate($tplidx);
 				list($posX, $posY) = $this->_pagehead($this->pdf, $this->outputlangs);
 
@@ -327,8 +327,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 
 				if (!empty($this->formateurs->lines))
 				{
-					list($posX, $posY) = $this->printTrainerBlockHeader($posX, $posY, $dates_array);
-					list($posX, $posY) = $this->printTrainerBlockLines($posX, $posY, $dates_array, $agf);
+					$this->printPersonsBlock('formateurs', $this->formateurs->lines, $dates_array);
 				}
 
 				/**
@@ -347,14 +346,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 
 				if (!empty($this->stagiaires->lines))
 				{
-					list($posX, $posY) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
-					list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $this->pdf->ref_object);
-				}
-
-				// Pied de page
-				$this->_pagefoot($this->pdf, $this->pdf->ref_object, $this->outputlangs);
-				if (method_exists($this->pdf, 'AliasNbPages')) {
-					$this->pdf->AliasNbPages();
+					$this->printPersonsBlock('stagiaires', $this->stagiaires->lines, $dates_array);
 				}
 			}
 		}

@@ -63,11 +63,15 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 		else $this->outputlangs = $outputlangs;
 
 		if (!is_object($agf)) {
+			/** @var int $id  If $agf is not an object, we assume it is the ID of a session. */
 			$id = $agf;
-			if ($this->session->fetch($id) <= 0) {
+			$agf = new Agsession($this->db);
+			$ret = $agf->fetch($id);
+			if ($ret <= 0)  {
 				$this->error = $langs->trans('AgfErrorUnableToFetchSession', $id);
 				return 0;
-			};
+			}
+			$this->session=$agf;
 		}
 		else $this->session = $agf;
 
@@ -252,8 +256,7 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 			foreach ($TTSessionDate as $dates_array) {
 				// New page
 				$this->pdf->AddPage();
-				//$this->heightForHeader = $this->prepareNewPage($this->pdf, true, $dates_array);
-				//$posY = $this->heightForHeader;
+				$this->setupNewPage();
 
 				$this->maxSlot = count($dates_array);
 				$this->trainer_widthtimeslot = ($this->espaceH_dispo - $this->trainer_widthcol1 -2) / $this->maxSlot;
@@ -266,12 +269,6 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 
 				list($posX, $posY) = $this->showTrainerBloc(array($this->marge_gauche, $posY, $dates_array));
 				list($posX, $posY) = $this->showTraineeBloc(array($this->marge_gauche, $posY, $dates_array));
-
-				// Pied de page
-				$this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
-				if (method_exists($this->pdf, 'AliasNbPages')) {
-					$this->pdf->AliasNbPages();
-				}
 			}
 		}
 
@@ -292,8 +289,9 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 		if (!empty($this->session->TTrainer))
 		{
 			$this->formateurs->lines = $this->session->TTrainer;
-			list($posX, $posY) = $this->printTrainerBlockHeader($posX, $posY, $dates_array);
-			list($posX, $posY) = $this->printTrainerBlockLines($posX, $posY, $dates_array, $this->session);
+			$this->printPersonsBlock('formateurs', $this->formateurs->lines, $dates_array);
+//			list($posX, $posY) = $this->printTrainerBlockHeader($dates_array);
+//			list($posX, $posY) = $this->printTrainerBlockLines($posX, $posY, $dates_array, $this->session);
 		}
 
 		return array($posX, $posY);
@@ -314,51 +312,13 @@ class pdf_fiche_presence_landscape_bymonth extends pdf_fiche_presence_landscape
 
 		if (!empty($this->stagiaires->lines))
 		{
-			list($posX, $posY) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
-			list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $agf);
+			$this->printPersonsBlock('stagiaires', $this->stagiaires->lines, $dates_array);
+//			list($posX, $posY) = $this->printTraineeBlockHeader($posX, $posY, $dates_array);
+//			list($posX, $posY) = $this->printTraineeBlockLines($posX, $posY, $dates_array, $agf);
 		}
 
 		return array($posX, $posY);
 
-	}
-
-	public function printSignatureBloc($posX, $posY)
-	{
-		global $conf;
-
-		$posX+= 2;
-
-		// Cachet et signature
-		if (empty($conf->global->AGF_HIDE_CACHET_FICHEPRES)) {
-			$posX -= 2;
-			$this->pdf->SetXY($posX, $posY);
-			$str = $this->outputlangs->transnoentities('AgfPDFFichePres20');
-			$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-			$this->pdf->SetXY($posX + 55, $posY);
-			$str = $this->outputlangs->transnoentities('AgfPDFFichePres21') . dol_print_date($this->session->datef);
-			$this->pdf->Cell(20, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-			$this->pdf->SetXY($posX + 92, $posY);
-			$str = $this->outputlangs->transnoentities('AgfPDFFichePres22');
-			$this->pdf->Cell(50, 4, $this->outputlangs->convToOutputCharset($str), 0, 2, "L", 0);
-
-		}
-		$posY = $this->pdf->GetY() - 2;
-
-		// Incrustation image tampon
-		if ($conf->global->AGF_INFO_TAMPON) {
-			$dir = $conf->agefodd->dir_output . '/images/';
-			$img_tampon = $dir . $conf->global->AGF_INFO_TAMPON;
-			if (file_exists($img_tampon))
-			{
-				$imgHeight = pdf_getHeightForLogo($img_tampon);
-				$this->pdf->Image($img_tampon, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 50, $posY, 50);
-				$posY+=$imgHeight;
-			}
-		}
-
-		return array($posX, $posY);
 	}
 
 	/**

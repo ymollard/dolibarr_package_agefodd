@@ -71,7 +71,6 @@ class pdf_fiche_presence_landscape_empty extends pdf_fiche_presence_empty
         $this->formation_widthcol4 = 82;
 
         $this->trainer_widthcol1 = 55;
-        $this->trainer_widthcol2 = 145;
 
         $this->trainee_widthcol1 = 50;
         $this->trainee_widthcol2 = 45;
