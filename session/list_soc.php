@@ -534,11 +534,12 @@ if ($result >= 0) {
 			//	$coutTotalLigne *= $nbSocParticipant;
 				$total += $coutTotalLigne;
 				$totalforthirdparty += $coutTotalLigne;
+				$costBySoc = ($coutTotalLigne / $line->nb_stagiaire) * $nbSocParticipant;
 
 				print '<td>' . $nbSocParticipant . ' / ' . $line->nb_stagiaire . '</td>';
 				print '<td>' . price(round($pertrainee,2)) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
 
-				print '<td>' . price(round($coutTotalLigne,2) ) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
+				print '<td>' . price(round($costBySoc,2) ) . ' ' . $langs->trans('Currency' . $conf->currency) . '</td>';
 			}
 			print '<td></td>';
 			print "</tr>\n";
