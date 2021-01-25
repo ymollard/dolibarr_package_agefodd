@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+
+## Version 5.0
 - WARNING : The changes may create regressions for external modules with
   classes that extend `pdf_fiche_presence.modules.php`
 - FIX tickets #11916, #11888, #11861 and #12049 : PDF templates for
