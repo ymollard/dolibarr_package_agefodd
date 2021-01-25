@@ -9,7 +9,6 @@ GPLv3 or (at your option) any later version.
 
 See COPYING for more information.
 
-
 INSTALL AGEFODD
 ----------------------
 
@@ -48,7 +47,9 @@ LIVE DEMO
 
 HIDDEN CONFIGURATION
 ---------------
-AGF_CRENEAU_FORCE_EMAIL_TO
+
+- AGF_CRENEAU_FORCE_EMAIL_TO
+- "AGEFODD_CONVENTION_DOUBLE_DESC_DESACTIVATE" => Disables the display of a double description in PDF Convention Sessions
 
 
 Other Licences

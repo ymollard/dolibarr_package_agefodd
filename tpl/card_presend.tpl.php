@@ -97,7 +97,7 @@ if ($action == 'presend')
 	{
 		if ((! $file || ! is_readable($file)) && method_exists($agf, 'generateDocument'))
 		{
-			$result = $agf->generateDocument(GETPOST('model') ? GETPOST('model') : $agf->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
+			$result = $agf->generateDocument(GETPOST('model', 'none') ? GETPOST('model', 'none') : $agf->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
 			if ($result < 0) {
 				dol_print_error($db, $agf->error, $agf->errors);
 				exit();
@@ -127,7 +127,7 @@ if ($action == 'presend')
 	$formmail = new FormMail($db);
 
 	$formmail->param['langsmodels']=(empty($newlang)?$langs->defaultlang:$newlang);
-	$formmail->fromtype = (GETPOST('fromtype')?GETPOST('fromtype'):(!empty($conf->global->MAIN_MAIL_DEFAULT_FROMTYPE)?$conf->global->MAIN_MAIL_DEFAULT_FROMTYPE:'user'));
+	$formmail->fromtype = (GETPOST('fromtype', 'none')?GETPOST('fromtype', 'none'):(!empty($conf->global->MAIN_MAIL_DEFAULT_FROMTYPE)?$conf->global->MAIN_MAIL_DEFAULT_FROMTYPE:'user'));
 
 	if ($formmail->fromtype === 'user')
 	{
@@ -186,7 +186,7 @@ if ($action == 'presend')
 		}
 	}
 
-	$formmail->withto = GETPOST('sendto') ? GETPOST('sendto') : $liste;
+	$formmail->withto = GETPOST('sendto', 'none') ? GETPOST('sendto', 'none') : $liste;
 	$formmail->withtocc = $liste;
 	$formmail->withtoccc = $conf->global->MAIN_EMAIL_USECCC;
 	$formmail->withtopic = $topicmail;

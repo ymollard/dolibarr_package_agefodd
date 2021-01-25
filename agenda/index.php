@@ -81,7 +81,7 @@ if ($filter_location == - 1) {
 if ($filter_trainee == -1) {
 	$filter_trainee=0;
 }
-$type = GETPOST('type');
+$type = GETPOST('type', 'none');
 $sortfield = GETPOST("sortfield", 'alpha');
 $sortorder = GETPOST("sortorder", 'alpha');
 $page = (int) GETPOST("page", "int");
@@ -146,19 +146,19 @@ $month = GETPOST("month", "int") ? GETPOST("month", "int") : date("m");
 $week = GETPOST("week", "int") ? GETPOST("week", "int") : date("W");
 $day = GETPOST("day", "int") ? GETPOST("day", "int") : 0;
 
-$maxprint = (isset($_GET ["maxprint"]) ? GETPOST("maxprint") : $conf->global->AGENDA_MAX_EVENTS_DAY_VIEW);
+$maxprint = (isset($_GET ["maxprint"]) ? GETPOST("maxprint", 'none') : $conf->global->AGENDA_MAX_EVENTS_DAY_VIEW);
 
 if ($actioncode == '') $actioncode=(empty($conf->global->AGENDA_DEFAULT_FILTER_TYPE)?'':$conf->global->AGENDA_DEFAULT_FILTER_TYPE);
 if ($status == ''   && ! isset($_GET['status']) && ! isset($_POST['status'])) $status=(empty($conf->global->AGENDA_DEFAULT_FILTER_STATUS)?'':$conf->global->AGENDA_DEFAULT_FILTER_STATUS);
 if (empty($action) && ! isset($_GET['action']) && ! isset($_POST['action'])) $action=(empty($conf->global->AGENDA_DEFAULT_VIEW)?'show_month':$conf->global->AGENDA_DEFAULT_VIEW);
 
-if (GETPOST('viewcal') && $action != 'show_day' && $action != 'show_week')  {
+if (GETPOST('viewcal', 'none') && $action != 'show_day' && $action != 'show_week')  {
     $action='show_month'; $day='';
 } // View by month
-if (GETPOST('viewweek') || $action == 'show_week') {
+if (GETPOST('viewweek', 'none') || $action == 'show_week') {
     $action='show_week'; $week=($week?$week:date("W")); $day=($day?$day:date("d"));
 } // View by week
-if (GETPOST('viewday') || $action == 'show_day')  {
+if (GETPOST('viewday', 'none') || $action == 'show_day')  {
     $action='show_day'; $day=($day?$day:date("d"));
 } // View by day
 
@@ -172,7 +172,7 @@ $langs->load("agefodd@agefodd");
  * Actions
  */
 
-if (GETPOST("viewlist") || $action == 'show_list')
+if (GETPOST("viewlist", 'none') || $action == 'show_list')
 {
 	$param = '';
     foreach($_POST as $key => $val)
@@ -185,7 +185,7 @@ if (GETPOST("viewlist") || $action == 'show_list')
 	exit();
 }
 
-if (GETPOST("viewperuser") || $action == 'show_peruser')
+if (GETPOST("viewperuser", 'none') || $action == 'show_peruser')
 {
     $param='';
     foreach($_POST as $key => $val)

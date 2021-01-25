@@ -48,15 +48,15 @@ $page = GETPOST('page', 'int');
 $socid = GETPOST('socid', 'int');
 
 // Search criteria
-$search_soc = GETPOST("search_soc");
-$search_trainning_name = GETPOST("search_trainning_name");
-$search_teacher_id = GETPOST("search_teacher_id");
+$search_soc = GETPOST("search_soc", 'none');
+$search_trainning_name = GETPOST("search_trainning_name", 'none');
+$search_teacher_id = GETPOST("search_teacher_id", 'none');
 $search_training_ref = GETPOST("search_training_ref", 'alpha');
 $search_start_date = dol_mktime(0, 0, 0, GETPOST('search_start_datemonth', 'int'), GETPOST('search_start_dateday', 'int'), GETPOST('search_start_dateyear', 'int'));
 $search_start_date2 = dol_mktime(0, 0, 0, GETPOST('search_start_date2month', 'int'), GETPOST('search_start_date2day', 'int'), GETPOST('search_start_date2year', 'int'));
 $search_end_date = dol_mktime(0, 0, 0, GETPOST('search_end_datemonth', 'int'), GETPOST('search_end_dateday', 'int'), GETPOST('search_end_dateyear', 'int'));
 $search_end_date2 = dol_mktime(0, 0, 0, GETPOST('search_end_date2month', 'int'), GETPOST('search_end_date2day', 'int'), GETPOST('search_end_date2year', 'int'));
-$search_site = GETPOST("search_site");
+$search_site = GETPOST("search_site", 'none');
 $search_training_ref_interne = GETPOST('search_training_ref_interne', 'alpha');
 $search_type_session = GETPOST("search_type_session", 'int');
 $training_view = GETPOST("training_view", 'int');
@@ -67,7 +67,7 @@ $search_certif_end_date = dol_mktime(0, 0, 0, GETPOST('search_certif_end_datemon
 $search_certif_end_date2 = dol_mktime(0, 0, 0, GETPOST('search_certif_end_date2month', 'int'), GETPOST('search_certif_end_date2day', 'int'), GETPOST('search_certif_end_date2year', 'int'));
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
     $search_soc = '';
 	$search_trainning_name = '';
 	$search_teacher_id = "";
@@ -142,7 +142,7 @@ if (empty($arch))
 
 if (empty($page) || $page == -1) { $page = 0; }
 
-$limit = GETPOST("limit")?GETPOST("limit","int"):$conf->liste_limit;
+$limit = GETPOST("limit", 'none')?GETPOST("limit","int"):$conf->liste_limit;
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;

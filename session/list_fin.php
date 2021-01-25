@@ -50,25 +50,25 @@ $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
 
-$action = GETPOST('action');
-$confirm = GETPOST('confirm');
-$idelement = GETPOST('idelement');
-$idsess = GETPOST('idsess');
+$action = GETPOST('action', 'none');
+$confirm = GETPOST('confirm', 'none');
+$idelement = GETPOST('idelement', 'none');
+$idsess = GETPOST('idsess', 'none');
 
 // Search criteria
 $search_orderid = GETPOST('search_orderid', 'int');
 $search_invoiceid = GETPOST('search_invoiceid', 'int');
 $search_fourninvoiceid = GETPOST('search_fourninvoiceid', 'int');
-$search_fourninvoiceref = GETPOST('search_fourninvoiceref');
+$search_fourninvoiceref = GETPOST('search_fourninvoiceref', 'none');
 $search_fournorderid = GETPOST('search_fournorderid', 'int');
-$search_fournorderref = GETPOST('search_fournorderref');
+$search_fournorderref = GETPOST('search_fournorderref', 'none');
 $search_orderref = GETPOST('search_orderref', 'alpha');
 $search_invoiceref = GETPOST('search_invoiceref', 'alpha');
 $search_propalref = GETPOST('search_propalref', 'alpha');
 $search_propalid = GETPOST('search_propalid', 'alpha');
 
 
-$link_element = GETPOST("link_element");
+$link_element = GETPOST("link_element", 'none');
 if (! empty($link_element)) {
 	$action = 'link_element';
 }
@@ -77,7 +77,7 @@ $langs->load('bills');
 $langs->load('orders');
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter")) {
+if (GETPOST("button_removefilter_x", 'none') || GETPOST("button_removefilter", 'none')) {
 	$search_orderid = '';
 	$search_invoiceid = '';
 	$search_fourninvoiceid = '';
@@ -346,7 +346,7 @@ if ($action == 'link_element' && ($user->rights->agefodd->modifier || $user->rig
 	}
 }
 
-if (GETPOST('link_site') && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)) {
+if (GETPOST('link_site', 'none') && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)) {
 	$id = GETPOST('session_id_site', 'int');
 	if ($id > 0) {
 		$sess = new Agsession($db);
@@ -402,9 +402,9 @@ if (GETPOST('link_site') && ($user->rights->agefodd->modifier || $user->rights->
 	}
 }
 
-if (GETPOST('link_formateur') && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)) {
+if (GETPOST('link_formateur', 'none') && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)) {
 
-	$id = GETPOST('session_id_form');
+	$id = GETPOST('session_id_form', 'none');
 	if ($id > 0) {
 		$sess = new Agsession($db);
 		$sess->fetch($id);
@@ -461,9 +461,9 @@ if (GETPOST('link_formateur') && ($user->rights->agefodd->modifier || $user->rig
 	}
 }
 
-if (GETPOST('link_mission') && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)) {
+if (GETPOST('link_mission', 'none') && ($user->rights->agefodd->modifier || $user->rights->fournisseur->facture->creer)) {
 
-	$id = GETPOST('session_id_missions');
+	$id = GETPOST('session_id_missions', 'none');
 	if ($id > 0) {
 		$sess = new Agsession($db);
 		$sess->fetch($id);
@@ -758,7 +758,7 @@ if ($resql != - 1) {
 				}
 				$idelement = $agf_fin->lines[0]->id;
 				if (property_exists($line, 'agelemetnid') && ! empty($line->agelemetnid)) {
-					$idelement = $line->agelemetnid;
+					$id_element = $line->agelemetnid;
 				}
 			} else {
 				$type = 'order_supplier';
@@ -820,7 +820,7 @@ if (! empty($search_fournorderid)) {
             FROM " . MAIN_DB_PREFIX . "agefodd_session as s
             LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p ON p.rowid = s.fk_session_place
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,1)";
+            WHERE s.entity IN (0,". getEntity('agefodd') .")";
 		if (is_array($excludeSessions) && count($excludeSessions) > 0) {
 			$sql .= " AND s.rowid NOT IN (" . implode(",", $excludeSessions) . ")";
 		}
@@ -958,7 +958,8 @@ if (! empty($search_fournorderid)) {
             FROM " . MAIN_DB_PREFIX . "agefodd_session as s
             LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_formation_catalogue as c ON c.rowid = s.fk_formation_catalogue
             LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_place as p ON p.rowid = s.fk_session_place
-            WHERE s.entity IN (0,". getEntity('agefodd') .") AND s.status NOT IN (4,1) ";
+            WHERE s.entity IN (0,". getEntity('agefodd') .") ";
+
 		if (is_array($excludeSessions) && count($excludeSessions) > 0) {
 			$sql .= " AND s.rowid NOT IN (" . implode(",", $excludeSessions) . ")";
 		}
@@ -978,7 +979,7 @@ if (! empty($search_fournorderid)) {
 		print '<table class="noborder" width="100%">';
 		print '<tr>';
 		print '<td align="right">';
-		print $form->selectarray('session_id', $sessions, GETPOST('session_id'), 1, 0, 0, '', 0, 0, 0, '', '', 1);
+		print $form->selectarray('session_id', $sessions, GETPOST('session_id', 'none'), 1, 0, 0, '', 0, 0, 0, '', '', 1);
 		print '</td>';
 		print '<td align="left">';
 		print '<input type="submit" value="' . $langs->trans('AgfSelectAgefoddSessionToLink') . '" class="butAction" name="link_element"/>';

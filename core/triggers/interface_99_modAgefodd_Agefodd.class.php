@@ -486,7 +486,7 @@ class InterfaceAgefodd {
 			$actioncomm->fk_element = $object->id;
 			$actioncomm->elementtype = $object->element;
 			$actioncomm->userownerid=$user->id;
-			
+
 			$ret = method_exists($actioncomm, 'create') ? $actioncomm->create($user) : $actioncomm->add($user); // User qui saisit l'action
 			if ($ret > 0) {
 				return 1;
@@ -661,16 +661,17 @@ class InterfaceAgefodd {
 						return - 1;
 					} else {
 						if (is_array($agf_fin->lines) && count($agf_fin->lines)>0) {
-							$elment = reset($agf_fin->lines);
-							$agf_fin->fk_session_agefodd=$elment->fk_session_agefodd;
-							$agf_fin->fk_soc=$elment->socid;
-							$agf_fin->element_type=str_replace('order', 'invoice', $elment->element_type);
-							$agf_fin->fk_element=$object->id;
-							$result=$agf_fin->create($user);
-							if ($result < 0) {
-								$this->error = $agf_fin->error;
-								dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
-								return - 1;
+							foreach($agf_fin->lines as $elment) {
+								$agf_fin->fk_session_agefodd=$elment->fk_session_agefodd;
+								$agf_fin->fk_soc=$elment->socid;
+								$agf_fin->element_type=str_replace('order', 'invoice', $elment->element_type);
+								$agf_fin->fk_element=$object->id;
+								$result=$agf_fin->create($user);
+								if ($result < 0) {
+									$this->error = $agf_fin->error;
+									dol_syslog(get_class($this).":: error in trigger" . $this->error, LOG_ERR);
+									return - 1;
+								}
 							}
 						}
 					}
@@ -1043,8 +1044,8 @@ class InterfaceAgefodd {
 			{
 				foreach($agf_fin->lines as $line){
 					$agf_fin->fk_session_agefodd =$line->fk_session_agefodd;
-					$actionPage = GETPOST('action');
-					$lineid = GETPOST('lineid');
+					$actionPage = GETPOST('action', 'none');
+					$lineid = GETPOST('lineid', 'none');
 					$agf_fin->updateSellingPrice($user,$actionPage,$lineid);
 				}
 			}
@@ -1229,7 +1230,7 @@ class InterfaceAgefodd {
 		}
 		elseif ($action == 'USER_MODIFY')
         {
-            if ((empty($object->contactid) && GETPOST('contactid') > 0) || (!empty($object->contactid) && GETPOST('contactid') == 0))
+            if ((empty($object->contactid) && GETPOST('contactid', 'none') > 0) || (!empty($object->contactid) && GETPOST('contactid', 'none') == 0))
             {
                 dol_include_once('agefodd/class/agefodd_formateur.class.php');
                 // Nous avons peut être un formateur de déclaré avec cet utilisateur, puis il est changé en tant que contact externe
@@ -1241,7 +1242,7 @@ class InterfaceAgefodd {
                     if (empty($object->contactid))
                     {
                         $formateur->type_trainer = 'socpeople';
-                        $formateur->fk_socpeople = GETPOST('contactid');
+                        $formateur->fk_socpeople = GETPOST('contactid', 'none');
                         $formateur->update($user);
                     }
                     // Cas 2 : utilisateur externe qui passe à interne

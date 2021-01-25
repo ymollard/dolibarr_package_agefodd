@@ -16,7 +16,7 @@ require_once '../class/html.formagefodd.class.php';
 require_once '../lib/agefodd.lib.php';
 require_once '../class/agefodd_session_element.class.php';
 
-$id = GETPOST('id');
+$id = GETPOST('id', 'none');
 $with_calendar = GETPOST('with_calendar','alpha');
 if (empty($with_calendar)) {
 	$with_calendar = 'nocalendar';

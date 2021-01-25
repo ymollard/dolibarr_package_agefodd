@@ -130,7 +130,7 @@ class Agsession extends CommonObject
 	public $signataire_inter_array_poste = array();
 	public $signataire_inter_array_mail = array();
 	public $signataire_inter_array_phone = array();
-	
+
 	/**
 	 * Constructor
 	 *
@@ -563,7 +563,7 @@ class Agsession extends CommonObject
 
 		// Create clone
 		$result = $object->create($user);
-		
+
 		if ($result < 0) {
 			$this->db->rollback();
 			return -1;
@@ -3583,6 +3583,9 @@ class Agsession extends CommonObject
 				$sql .= " ,s.intitule_custo";
 				$sql .= " ,s.duree_session,";
 				$sql .= " p.ref_interne";
+				$sql .= " ,ord_inv.element_type";
+				$sql .= " , s.ref as refsession";
+				$sql .= " ,sale.fk_user_com";
 				$sql .= " ,fourninvoice.ref as fourninvoiceref";
 				$sql .= " ,ord_inv.rowid as agelemetnid ";
 				$sql .= " FROM " . MAIN_DB_PREFIX . "agefodd_session as s";
@@ -3600,6 +3603,8 @@ class Agsession extends CommonObject
 				$sql .= " AND ord_inv.element_type LIKE 'invoice_supplierline%'  ";
 				$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "facture_fourn AS fourninvoice ON fourninvoice.rowid = fourninvoiceline.fk_facture_fourn ";
 				$sql .= " AND fourninvoice.rowid = ".$fourninvoiceid;
+				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "agefodd_session_commercial as sale";
+				$sql .= " ON s.rowid = sale.fk_session_agefodd";
 				$sql .= " WHERE s.entity IN (" . getEntity('agefodd') . ")";
 				$sql .= " GROUP BY s.rowid,c.intitule,c.ref,p.ref_interne";
 				$sql .= " ,fourninvoice.ref, ord_inv.rowid ";
@@ -3640,6 +3645,9 @@ class Agsession extends CommonObject
 							$line->notes = $obj->notes;
 							$line->fourninvoiceref = $obj->fourninvoiceref;
 							$line->agelemetnid = $obj->agelemetnid;
+							$line->element_type = $obj->element_type;
+							$line->refsession = $obj->refsession;
+							$line->fk_user_com = $obj->fk_user_com;
 
 							$this->lines[] = $line;
 						}
@@ -3682,7 +3690,7 @@ class Agsession extends CommonObject
 		$action=GETPOST('action','alpha');
 
 		if ($action=='setsession_status') {
-			$this->status=GETPOST('session_status');
+			$this->status=GETPOST('session_status', 'none');
 			$result=$this->update($user);
 			if ($result<0) {
 				setEventMessage($this->error,'errors');
@@ -4885,7 +4893,7 @@ class Agsession extends CommonObject
 				$vat_src_code = $reg[1];
 				$tva_tx = preg_replace('/\s*\(.*\)/', '', $tva_tx);    // Remove code into vatrate.
 			}
-			
+
 			if (! empty($from_financial_id) && ! empty($from_financial_elementtype)) {
 				if ($from_financial_elementtype == 'propal') {
 					require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
@@ -5159,7 +5167,7 @@ class Agsession extends CommonObject
 				$obj = $this->db->fetch_object($resql);
 				return $this->db->jdate($obj->maxdate);
 			}
-			
+
 			return -1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -5702,7 +5710,7 @@ class Agsession extends CommonObject
 						$this->dthour_text .= dol_print_date($line->date_session, 'daytext','tzserver',$langs) . ' ' . $langs->trans('AgfPDFConvocation4') . ' ' . dol_print_date($line->heured, 'hour','',$langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour','',$langs);
 					} else {
 						$this->dthour_text .= ', ';
-						$this->dthour_text .= dol_print_date($line->heured, 'hour','',$langs) . ' - ' . dol_print_date($line->heuref, 'hour','',$langs);
+						$this->dthour_text .= dol_print_date($line->heured, 'hour','',$langs) . ' ' . $langs->trans('AgfPDFConvocation5') . ' ' . dol_print_date($line->heuref, 'hour','',$langs);
 					}
 					$old_date = $line->date_session;
 				}
