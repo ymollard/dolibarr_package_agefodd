@@ -1659,14 +1659,14 @@ function pdf_agfpagefoot(&$pdf, $outputlangs, $paramfreetext, $fromcompany, $mar
 	}
 
 	if (!empty($line2)) {
-		$pdf->SetFont('', 'I', 6);
+	    $pdf->SetFont('', 'I', 5.5);
 		$pdf->SetXY($dims['lm'] - 6, -$posy);
 		$pdf->MultiCell($dims['wk'] - $dims['rm'], 2, $line2, 0, 'C', 0);
 		$posy -= 3;
 	}
 
 	if (!empty($line3)) {
-		$pdf->SetFont('', 'I', 6);
+		$pdf->SetFont('', 'I', 5.5);
 		$pdf->SetXY($dims['lm'] - 6, -$posy);
 		$pdf->MultiCell($dims['wk'] - $dims['rm'], 2, $line3, 0, 'C', 0);
 	}
