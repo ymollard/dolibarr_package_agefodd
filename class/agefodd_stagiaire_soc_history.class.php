@@ -55,6 +55,7 @@ class Agefodd_stagiaire_soc_history extends CommonObject
 			if($res < 0) return -1;
 		}
 		$this->id = 0;
+		$this->fk_user_creat = $user->id;
 		$this->fk_soc = $fk_soc;
 		$this->date_start = dol_now();
 		$this->date_end = null;
