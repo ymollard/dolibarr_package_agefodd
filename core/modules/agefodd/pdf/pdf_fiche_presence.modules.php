@@ -1037,6 +1037,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		// Logo
 		$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
+		$width_logo = pdf_getWidthForLogo($logo);
 		if ($this->emetteur->logo) {
 			if (is_readable($logo)) {
 				$height = pdf_getHeightForLogo($logo);
@@ -1097,8 +1098,10 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$dir = $conf->societe->multidir_output[$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
 			if (!empty($staticsoc->logo)) {
 				$logo_client = $dir . $staticsoc->logo;
-				if (file_exists($logo_client) && is_readable($logo_client))
-					$this->pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute, 40);
+				if (file_exists($logo_client) && is_readable($logo_client)){
+					$heightlogo = pdf_getHeightForLogo($logo_client);
+					$this->pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - ( $width_logo * 1.5), $this->marge_haute, $heightlogo);
+				}
 			}
 		}
 
