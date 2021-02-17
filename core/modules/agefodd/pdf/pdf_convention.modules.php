@@ -207,6 +207,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				// Logo en haut à gauche
 				$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
+				$width_logo = pdf_getWidthForLogo($logo);
 				if ($this->emetteur->logo) {
 					if (is_readable($logo)) {
 						$height = pdf_getHeightForLogo($logo);
@@ -294,8 +295,8 @@ class pdf_convention extends ModelePDFAgefodd
 					if (! empty($staticsoc->logo)) {
 						$logo_client = $dir . $staticsoc->logo;
 						if (file_exists($logo_client) && is_readable($logo_client)) {
-							$pdf->SetXY(($this->page_largeur / 2) - 20, $this->marge_haute + 50);
-							$pdf->Image($logo_client, '', '', 40, 40, '', '', 'T', false, 300, '', false, false, 0, true, false, false);
+							$heightlogo = pdf_getHeightForLogo($logo_client);
+							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - ( $width_logo * 1.5), $this->marge_haute, $heightlogo);
 						}
 					}
 				}
