@@ -492,7 +492,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 	function printHeader($type, $dates_array)
 	{
 		$this->pdf->SetX($this->marge_gauche);
-		$this->pdf->SetY($this->pdf->GetY() + 5);
+		$this->pdf->SetY($this->pdf->GetY() + 10);
 		$this->pdf->SetTextColor(0, 0, 0);
 		if ($type === 'formateurs') {
 			$this->printTrainerBlockHeader($dates_array);
