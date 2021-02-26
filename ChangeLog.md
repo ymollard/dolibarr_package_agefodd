@@ -3,7 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-
+## Version 5.0.5
+ - bug : same tiers historized even if no soc change. 
+   fix : historize function from agefodd_stagiaire_soc_history.php
+         test on soc change    
+          
+        
 ## Version 5.0
 - WARNING : The changes may create regressions for external modules with
   classes that extend `pdf_fiche_presence.modules.php`

@@ -50,6 +50,7 @@ class Agefodd_stagiaire_soc_history extends CommonObject
 		global $user;
 		if(!$onCreate) {
 			$this->fetchCommon(0,'', ' AND date_end IS NULL AND fk_stagiaire = '.$this->fk_stagiaire);
+			if ($this->fk_soc == $fk_soc) return 1;
 			$this->date_end = dol_now();
 			$res = $this->updateCommon($user);
 			if($res < 0) return -1;
