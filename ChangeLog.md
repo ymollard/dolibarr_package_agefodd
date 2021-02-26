@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-
+## Version 5.0.5
+ - bug : can't modify participant on session. 
+   fix : historize function from agefodd_stagiaire_soc_history.php 
+        missed return 1 from historize if no error found. 
+        
 ## Version 5.0
 - WARNING : The changes may create regressions for external modules with
   classes that extend `pdf_fiche_presence.modules.php`
