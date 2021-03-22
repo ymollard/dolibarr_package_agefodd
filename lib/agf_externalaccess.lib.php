@@ -1885,7 +1885,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
     if ($action != 'view')
 	{
 		$out.= '
-			<form action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">
+			<form id="formViewSessionCardCalendrierFormateurExternalAccess" action="'.$_SERVER['PHP_SELF'].'" method="POST" class="clearfix">
 				<input type="hidden" name="action" value="'.$action.'" />
 				<input type="hidden" name="sessid" value="'.$agsession->id.'" />
 				<input type="hidden" name="trainerid" value="'.$trainer->id.'" />
@@ -1970,13 +1970,13 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 		<div class="col">
 			<div class="form-group">
 				<label for="heured">Heure début:</label>
-				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heured" required name="heured" value="'.$heured.'">
+				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control show-invalid" step="900" id="heured" required name="heured" value="'.$heured.'">
 			</div>
 		</div>
 		<div class="col">
 			<div class="form-group">
 				<label for="heuref">Heure fin:</label>
-				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control" step="900" id="heuref" required name="heuref" value="'.$heuref.'">
+				<input '.($action == 'view' ? 'readonly' : '').' type="time" class="form-control show-invalid" step="900" id="heuref" required name="heuref" value="'.$heuref.'">
 			</div>
 		</div>
 	</div>
@@ -2018,6 +2018,10 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 				}
 
 
+				$(document).on("submit","#formViewSessionCardCalendrierFormateurExternalAccess", function(){
+				   $("#formViewSessionCardCalendrierFormateurExternalAccess .submit-form-btn").prop("disabled",true);
+				});
+				
 				$(".setTraineePresent").click(function() {
 
                     // auto update Hours
@@ -2035,9 +2039,9 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
                     $($(this).data("target")).css("outline", "none");
 				});
 
-
 				var heured = document.getElementById("heured");
 				var heuref = document.getElementById("heuref");
+				
 
 				var checkPlannedTimeValidation = function(inputHeure) {
 					var dureePlanif = ' . $duree_timePlanned . ';
@@ -2047,14 +2051,29 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 //					console.log(dureePlanif, dureeCreneau, (dureePlanif + dureeCreneau), dureeSession);
 					if (dureeCreneau < 0) {
 						inputHeure.setCustomValidity("'.$langs->transnoentities('HourInvalid').'");
+						if(typeof document.createElement( "input" ).checkValidity == "function"){
+							inputHeure.reportValidity();
+						}
 					} else if (dureePlanif + dureeCreneau > dureeSession) {
 					    inputHeure.setCustomValidity("'.$langs->transnoentities('HourInvalidNoTime').'");
+					    
+						if(typeof document.createElement( "input" ).checkValidity == "function"){
+							inputHeure.reportValidity();
+						}
 					} else {
 						heured.setCustomValidity("");
 						heuref.setCustomValidity("");
+						
+						if(typeof document.createElement( "input" ).checkValidity == "function"){
+							heured.reportValidity();
+							heuref.reportValidity();
+						}
 					}
 				};
 
+				checkPlannedTimeValidation(heured);
+				checkPlannedTimeValidation(heuref);
+				
 				heured.addEventListener("change", function (event) {
 					checkPlannedTimeValidation(heured);
 				});
@@ -2301,7 +2320,7 @@ function getPageViewSessionCardCalendrierFormateurExternalAccess($agsession, $tr
 			$buttonsValue = $langs->trans('Update');
 		}
 
-		$buttons.= '<input type="submit" onclick="this.disabled=true; this.form.submit();" class="btn btn-primary pull-right" value="'.$buttonsValue.'" />';
+		$buttons.= '<input type="submit"  class="btn btn-primary pull-right submit-form-btn" value="'.$buttonsValue.'" />';
 
 	}
 
