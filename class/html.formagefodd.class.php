@@ -1560,13 +1560,41 @@ class FormAgefodd extends Form
 	 *
 	 * @param string $selectval valeur a selectionner par defaut
 	 * @param string $htmlname nom du control HTML
+	 * @param Agsession $session Object de la session en court
 	 * @return string The HTML control
 	 */
-	public function select_stagiaire_session_status($htmlname, $selectval) {
+	public function select_stagiaire_session_status($htmlname, $selectval, $session = null)
+	{
+		global $conf,$langs;
+
 		require_once 'agefodd_session_stagiaire.class.php';
 		$sess_sta = new Agefodd_session_stagiaire($this->db);
 
-		return $this->selectarray($htmlname, $sess_sta->labelstatut, $selectval, 0);
+		if (! empty($conf->global->AGF_USE_REAL_HOURS) && isset($session)) {
+			require_once 'agefodd_session_calendrier.class.php';
+			$cal = new Agefodd_sesscalendar($this->db);
+			$res = $cal->fetch_all($session->id);
+			if ($res < 0) {
+				setEventMessage($cal->error, 'errors');
+			} else {
+				$optionStatus=array();
+				if (is_array($cal->lines) && count($cal->lines)>0) {
+					$dateToTest = $cal->lines[0]->heured;
+				} else {
+					$dateToTest = $session->dated;
+				}
+				foreach ($sess_sta->labelstatut as $statuskey => $statuslabel) {
+					if($dateToTest >= dol_now() && in_array($statuskey, $sess_sta->statusAvalaibleForFuture)) {
+						$optionStatus[$statuskey]=$statuslabel;
+					} elseif ($dateToTest <= dol_now() && in_array($statuskey, $sess_sta->statusAvalaibleForPast)) {
+						$optionStatus[$statuskey]=$statuslabel;
+					}
+				}
+				return $this->selectarray($htmlname, $optionStatus, $selectval, 0).img_warning($langs->trans('AgfWarnStatusLimited'));
+			}
+		} else {
+			return $this->selectarray($htmlname, $sess_sta->labelstatut, $selectval, 0);
+		}
 	}
 
 	/**
@@ -1988,7 +2016,8 @@ class FormAgefodd extends Form
 
 		return $return;
 	}
-	public function selectMassSessionsAction() {
+	public function selectMassSessionsAction()
+	{
 		global $langs;
 
 		$sql = "SELECT rowid, code FROM " . MAIN_DB_PREFIX . "agefodd_session_status_type WHERE active = 1";
@@ -2014,7 +2043,8 @@ class FormAgefodd extends Form
 	 * @param bool $emptyvalue
 	 * @return string
 	 */
-	public function select_calendrier_type($selected = '', $htmlname = 'code_c_session_calendrier_type', $emptyvalue = true, $moreattr = '', $more_class = '') {
+	public function select_calendrier_type($selected = '', $htmlname = 'code_c_session_calendrier_type', $emptyvalue = true, $moreattr = '', $more_class = '')
+	{
 		global $conf;
 
 		$out = '<select class="flat select_calendrier_type ' . $more_class . '" name="' . $htmlname . '" id="' . $htmlname . '" ' . $moreattr . '>';
@@ -2035,6 +2065,38 @@ class FormAgefodd extends Form
 		$out .= '</select>';
 
 		return $out;
+	}
+
+	/**
+	 * Permet de retourner un select html des formateur d'une session
+	 *
+	 * @param int $sessionId Session Id
+	 * @param int $selectId selected id
+	 * @param string $htmlname html input name
+	 * @param int $showempty show empty value
+	 * @return string
+	 */
+	public function selectSessionTrainer($sessionId = 0, $selectId = 0, $htmlname = 'trainerid', $showempty = 1)
+	{
+		if (!empty($sessionId)) {
+			require_once 'agefodd_session_formateur.class.php';
+
+			$arrayTrainer=array();
+			$sess_trainer = new Agefodd_session_formateur($this->db);
+			$result = $sess_trainer->fetch_formateur_per_session($sessionId);
+			if ($result < 0) {
+				setEventMessage($sess_trainer->error, 'errors');
+			} else {
+				if (is_array($sess_trainer->lines) && count($sess_trainer->lines)>0) {
+					foreach($sess_trainer->lines as $line) {
+						$arrayTrainer[$line->opsid]=$line->firstname.' '.$line->lastname;
+					}
+				}
+			}
+			return $this->selectarray($htmlname, $arrayTrainer, $selectId, $showempty);
+		} else {
+			return'';
+		}
 	}
 
 	/**

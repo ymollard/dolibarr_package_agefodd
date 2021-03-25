@@ -304,27 +304,7 @@ function _createOrUpdateCalendrier($fk_agefodd_session_calendrier, $fk_agefodd_s
 				$agfstagiaireheure->create($user);
 			}
 
-			$duree_total_presence = $agsession->getSumDureePresence($fk_stagiaire);
-
-			$stagiaire = new Agefodd_session_stagiaire($db);
-			$stagiaire->fetch_by_trainee($fk_agefodd_session, $fk_stagiaire);
-
-			if ((float) $dureeCalendrier == (float) $heures)
-			{
-				// stagiaire entièrement présent
-				$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_TOTALLY_PRESENT;
-			}
-			elseif (!empty($heures))
-			{
-				// stagiaire partiellement présent
-				$stagiaire->status_in_session = Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT;
-			}
-			elseif (empty($heures))
-			{
-				$stagiaire->status_in_session = $duree_total_presence > 0 ? Agefodd_session_stagiaire::STATUS_IN_SESSION_PARTIALLY_PRESENT : Agefodd_session_stagiaire::STATUS_IN_SESSION_NOT_PRESENT;
-			}
-
-			if (!empty($stagiaire->id)) $stagiaire->update($user);
+			$agfstagiaireheure->setStatusAccordingTime($user,$fk_agefodd_session,$fk_stagiaire);
 		}
 	}
 

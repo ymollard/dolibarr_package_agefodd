@@ -28,6 +28,7 @@ dol_include_once('/agefodd/class/agsession.class.php');
 dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
 dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+dol_include_once('/agefodd/class/agefodd_session_formateur_calendrier.class.php');
 dol_include_once('/agefodd/class/agefodd_formation_catalogue_modules.class.php');
 dol_include_once('/agefodd/class/agefodd_session_calendrier.class.php');
 
@@ -163,6 +164,11 @@ function session_prepare_head($object, $showconv = 0)
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/calendar.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfCalendrier");
+	$session_calendar = new Agefodd_sesscalendar($db);
+	$badgeNbCal = $session_calendar->fetch_all($id);
+	if (!empty($badgeNbCal))
+		$head [$h] [1] .= " <span class='badge'>" . $badgeNbCal . "</span>";
+
 	$head [$h] [2] = 'calendar';
 	$h++;
 
@@ -172,6 +178,11 @@ function session_prepare_head($object, $showconv = 0)
 		$head [$h] [2] = 'scheduler';
 		$h++;
 	}
+
+    $head [$h] [0] = dol_buildpath('/agefodd/session/planningpertrainee.php', 1) . '?id=' . $id;
+    $head [$h] [1] = $langs->trans("AgfPlanningPerTrainee");
+    $head [$h] [2] = 'planningpertrainee';
+    $h++;
 
 	$head [$h] [0] = dol_buildpath('/agefodd/session/subscribers.php', 1) . '?id=' . $id;
 	$head [$h] [1] = $langs->trans("AgfParticipant");
@@ -693,7 +704,7 @@ function agf_calendars_prepare_head($param)
  *
  * @return array Array of head
  */
-function agf_revenue_report_prepare_head()
+function agf_report_revenue_prepare_head()
 {
 	global $langs, $conf, $user;
 
@@ -729,7 +740,7 @@ function agf_revenue_report_prepare_head()
  *
  * @return array Array of head
  */
-function agf_revenue_ventilated_report_prepare_head() {
+function agf_report_revenue_ventilated_prepare_head() {
 	global $langs, $conf, $user;
 
 	$h = 0;
@@ -740,10 +751,10 @@ function agf_revenue_ventilated_report_prepare_head() {
 	$head[$h][2] = 'card';
 	$h++;
 
-//	$head[$h][0] = dol_buildpath("/agefodd/report/report_ca_ventilated_help.php", 1);
-//	$head[$h][1] = $langs->trans("Help");
-//	$head[$h][2] = 'help';
-//	$h++;
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_ca_ventilated_help.php", 1);
+	$head[$h][1] = $langs->trans("Help");
+	$head[$h][2] = 'help';
+	$h++;
 
 	$object=new stdClass();
 
@@ -829,7 +840,7 @@ function agf_report_calendar_by_customer_prepare_head()
  *
  * @return array Array of head
  */
-function agf_commercial_report_prepare_head()
+function agf_report_commercial_prepare_head()
 {
 	global $langs, $conf, $user;
 
@@ -855,6 +866,41 @@ function agf_commercial_report_prepare_head()
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_report_commercial');
 
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_report_commercial', 'remove');
+
+	return $head;
+}
+
+/**
+ * Define head array for tabs of commercial report
+ *
+ * @return array Array of head
+ */
+function agf_report_time_prepare_head()
+{
+	global $langs, $conf, $user;
+
+	$h = 0;
+	$head = array();
+
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_time.php", 1);
+	$head[$h][1] = $langs->trans("AgfMenuReportTime");
+	$head[$h][2] = 'card';
+	$h++;
+
+	$head[$h][0] = dol_buildpath("/agefodd/report/report_time_help.php", 1);
+	$head[$h][1] = $langs->trans("Help");
+	$head[$h][2] = 'help';
+	$h++;
+
+	$object = new stdClass();
+
+	// Show more tabs from modules
+	// Entries must be declared in modules descriptor with line
+	// $this->tabs = array('entity:+tabname:Title:@mymodule:/mymodule/mypage.php?id=__ID__');   to add new tab
+	// $this->tabs = array('entity:-tabname);   												to remove a tab
+	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_report_time');
+
+	complete_head_from_modules($conf, $langs, $object, $head, $h, 'agefodd_report_time', 'remove');
 
 	return $head;
 }
@@ -1775,7 +1821,18 @@ function pdf_getInstance_agefodd($session, &$model, $format = '', $metric = 'mm'
 	return $pdf;
 }
 
-function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $y, $align)
+/**
+ * @param $db
+ * @param Translate $outputlangs
+ * @param $object
+ * @param $font_size
+ * @param TCPDF $pdf
+ * @param $x
+ * @param $y
+ * @param $align
+ * @param bool $noSessRef
+ */
+function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $y, $align, $noSessRef = false)
 {
 	global $conf;
 
@@ -1791,13 +1848,13 @@ function printRefIntForma(&$db, $outputlangs, &$object, $font_size, &$pdf, $x, $
 			$agf->fetch($object->fk_formation_catalogue);
 			$forma_ref_int = $agf->ref_interne;
 			if (empty($conf->global->AGF_HIDE_DATE_ON_HEADER)) {
-				$forma_ref_int .= '(' . $object->libSessionDate() . ') - ';
+				$forma_ref_int .= '(' . $object->libSessionDate() . ')';
+				if (!$noSessRef) $forma_ref_int .= ' - ';
 			}
-			$forma_ref_int .= $object->id . '#' . $object->ref ;
+			if (!$noSessRef) $forma_ref_int .= "\n".$object->id . '#' . $object->ref ;
 		}
 
-
-		if ($forma_ref_int != null) {
+		if (!empty($forma_ref_int)) {
 			$pdf->SetXY($x, $y);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $font_size);
 			$pdf->MultiCell(70, 4, $outputlangs->transnoentities('AgfRefInterne') . ' : ' . $outputlangs->convToOutputCharset($forma_ref_int), 0, $align);
@@ -2071,6 +2128,9 @@ function dol_agefodd_banner_tab($object, $paramid, $morehtml = '', $shownav = 1,
 		if (!empty($object->datef)) {
 			$morehtmlref .= '<br>' . $langs->trans("AgfDateFin") . ' : ' . dol_print_date($object->datef, 'daytext');
 		}
+		if (!empty($object->datef)) {
+			$morehtmlref .= '<br>' . $langs->trans("AgfDuree") . ' : ' . $object->duree_session;
+		}
 		// var_dump($object);
 
 		$morehtmlref .= '</div>';
@@ -2152,7 +2212,7 @@ function calcul_margin_percent($cashed_cost, $spend_cost)
  * @param $agf_calendrier Agefodd_sesscalendar
  * @return Agefoddsessionformateurcalendrier[]
  */
-function _getCalendrierFormateurFromCalendrier(&$agf_calendrier)
+function _getCalendrierFormateurFromCalendrier(Agefodd_sesscalendar &$agf_calendrier)
 {
 	global $db, $response;
 
@@ -2325,3 +2385,4 @@ function get_agf_session_mails_infos(Agsession $agsession)
     return $emailInfos;
 
 }
+

@@ -33,7 +33,7 @@ class Agefodd_sesscalendar extends CommonObject{
 	public $error;
 	public $errors = array ();
 	public $element = 'agefodd';
-	public $table_element = 'agefodd';
+	public $table_element = 'agefodd_session_calendrier';
 	public $id;
 	public $date_session;
 	public $heured;
@@ -53,6 +53,8 @@ class Agefodd_sesscalendar extends CommonObject{
 	const STATUS_MISSING = 2;
 	const STATUS_FINISH = 3;
 	const STATUS_CANCELED = -1;
+
+	public $statusCountTime =array();
 	/**
 	 * Constructor
 	 *
@@ -60,6 +62,9 @@ class Agefodd_sesscalendar extends CommonObject{
 	 */
 	public function __construct($db) {
 		$this->db = $db;
+
+		$this->statusCountTime = array(self::STATUS_CONFIRMED,self::STATUS_FINISH);
+
 		return 1;
 	}
 
@@ -95,7 +100,8 @@ class Agefodd_sesscalendar extends CommonObject{
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	public function create($user, $notrigger = 0, $timeslottrainer = false) {
+	public function create($user, $notrigger = 0, $timeslottrainer = false)
+	{
 		global $conf, $langs;
 		$error = 0;
 
@@ -483,7 +489,7 @@ class Agefodd_sesscalendar extends CommonObject{
 		$sql .= " GROUP BY s.rowid, s.date_session, s.heured";
 		$sql .= " ORDER BY s.date_session ASC, s.heured ASC";
 
-		dol_syslog(get_class($this) . "::fetch_all", LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$this->lines = array ();
@@ -496,7 +502,7 @@ class Agefodd_sesscalendar extends CommonObject{
 			}
 
 			$this->db->free($resql);
-			return 1;
+			return count($this->lines);
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			$this->errors[] = "Error " . $this->db->lasterror();
@@ -714,7 +720,7 @@ class Agefodd_sesscalendar extends CommonObject{
 
 		dol_syslog(get_class($this) . "::remove", LOG_DEBUG);
 		$result = $this->fetch($id);
-		
+
 		if ($result < 0) {
 			$this->error = 'Error deleting id ' . $id . ' : ' . $this->error;
 			return -1;
@@ -768,7 +774,9 @@ class Agefodd_sesscalendar extends CommonObject{
 		$action->percentage = - 1;
 		$action->userownerid = $user->id;
 		if (! empty($session->fk_soc)) {
-			$action->societe->id = $session->fk_soc;
+			if (property_exists($action,'societe') && is_object($action->societe) && property_exists($action->societe,'id')){
+			    $action->societe->id = $session->fk_soc;
+			}
 			$action->socid = $session->fk_soc;
 		}
 

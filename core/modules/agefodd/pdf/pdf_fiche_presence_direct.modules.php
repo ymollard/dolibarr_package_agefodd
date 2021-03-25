@@ -588,6 +588,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 
 		// Logo
 		$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
+		$width_logo = pdf_getWidthForLogo($logo);
 		if ($this->emetteur->logo)
 		{
 			if (is_readable($logo))
@@ -648,12 +649,18 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		// Affichage du logo commanditaire (optionnel)
 		if ($conf->global->AGF_USE_LOGO_CLIENT) {
 			$staticsoc = new Societe($this->db);
-			$staticsoc->fetch($agf->socid);
+			$staticsoc->fetch($object->socid);
 			$dir = $conf->societe->multidir_output [$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
 			if (! empty($staticsoc->logo)) {
 				$logo_client = $dir . $staticsoc->logo;
-				if (file_exists($logo_client) && is_readable($logo_client))
-					$this->pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute, 40);
+				if (file_exists($logo_client) && is_readable($logo_client)){
+					$hlogo = pdf_getHeightForLogo($logo_client);
+					$wlogo = pdf_getWidthForLogo($logo_client);
+					$X =  ($this->page_largeur / 2) - ($wlogo / 2) ;
+					$Y = $this->marge_haute;
+					$this->pdf->Image($logo_client,$X ,$Y, $wlogo, $hlogo,'','','',true);
+				}
+
 			}
 		}
 
@@ -691,7 +698,9 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 			$this->pdf->SetFont('','', $this->default_font_size - 3);
 			$this->pdf->MultiCell(70, 4, $outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 
+			$posy=$this->pdf->GetY();
 			printRefIntForma($this->db, $outputlangs, $object, $this->default_font_size - 3, $this->pdf, $posx, $posy, 'L');
+			$this->marge_haute += 5;
 		}
 
 		/*
@@ -719,7 +728,7 @@ class pdf_fiche_presence_direct extends ModelePDFAgefodd {
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($outputlangs), '', $this->default_font_size-3);
 		$this->pdf->SetTextColor($this->colortext [0], $this->colortext [1], $this->colortext [2]);
-		$this->str = $outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' »,' . $outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
+		$this->str = $outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' », ' . $outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
 		$this->str .= $mysoc->address . ' ';
 		$this->str .= $mysoc->zip . ' ' . $mysoc->town;
 		$this->str .= $outputlangs->transnoentities('AgfPDFFichePres4') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . ",\n";

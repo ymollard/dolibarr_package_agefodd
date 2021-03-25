@@ -207,6 +207,7 @@ class pdf_convention extends ModelePDFAgefodd
 
 				// Logo en haut à gauche
 				$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
+				$width_logo = pdf_getWidthForLogo($logo);
 				if ($this->emetteur->logo) {
 					if (is_readable($logo)) {
 						$height = pdf_getHeightForLogo($logo);
@@ -294,8 +295,11 @@ class pdf_convention extends ModelePDFAgefodd
 					if (! empty($staticsoc->logo)) {
 						$logo_client = $dir . $staticsoc->logo;
 						if (file_exists($logo_client) && is_readable($logo_client)) {
-							$pdf->SetXY(($this->page_largeur / 2) - 20, $this->marge_haute + 50);
-							$pdf->Image($logo_client, '', '', 40, 40, '', '', 'T', false, 300, '', false, false, 0, true, false, false);
+							$hlogo = pdf_getHeightForLogo($logo_client);
+							$wlogo = pdf_getWidthForLogo($logo_client);
+							$X =  ($this->page_largeur / 2) - ($wlogo / 2) ;
+							$Y = $this->marge_haute;
+							$pdf->Image($logo_client,$X ,$Y, $wlogo, $hlogo,'','','',true);
 						}
 					}
 				}
@@ -867,9 +871,16 @@ class pdf_convention extends ModelePDFAgefodd
 					$agfTraining = new Formation($db);
 					$agfTraining->fetch($agf->fk_formation_catalogue);
 					$agfTraining->generatePDAByLink();
+                    $addFile = '';
 					$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $agf->fk_formation_catalogue . '.pdf';
-					if (is_file($infile)) {
-						$count = $pdf->setSourceFile($infile);
+                    $infileModules = $conf->agefodd->dir_output . '/fiche_pedago_modules_' . $agf->fk_formation_catalogue . '.pdf';
+                    if (is_file($infile)) {
+                        $addFile = $infile;
+                    } elseif (is_file($infileModules)) {
+                        $addFile = $infileModules;
+                    }
+                    if (!empty($addFile)) {
+						$count = $pdf->setSourceFile($addFile);
 						// import all page
 						for($i = 1; $i <= $count; $i ++) {
 							// New page

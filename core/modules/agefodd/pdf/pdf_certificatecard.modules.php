@@ -197,6 +197,7 @@ class pdf_certificatecard extends ModelePDFAgefodd
 
 							// Logo en haut à gauche
 							$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
+							$width_logo = pdf_getWidthForLogo($logo);
 							// Logo en haut à gauche
 							if ($this->emetteur->logo) {
 								if (is_readable($logo))
@@ -210,8 +211,14 @@ class pdf_certificatecard extends ModelePDFAgefodd
 								$dir = $conf->societe->multidir_output[$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
 								if (! empty($staticsoc->logo)) {
 									$logo_client = $dir . $staticsoc->logo;
-									if (file_exists($logo_client) && is_readable($logo_client))
-										$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 2, $this->marge_haute + 2, 3);
+									if (file_exists($logo_client) && is_readable($logo_client)){
+										$hlogo = pdf_getHeightForLogo($logo_client);
+										$wlogo = pdf_getWidthForLogo($logo_client);
+										$X =  ($this->page_largeur / 2) - ($wlogo / 2) ;
+										$Y = $this->marge_haute;
+										$pdf->Image($logo_client,$X ,$Y, $wlogo, $hlogo,'','','',true);
+									}
+
 								}
 							}
 

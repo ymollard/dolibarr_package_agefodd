@@ -123,7 +123,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 	 * @param int $socid socid
 	 * @return int
 	 */
-	function write_file($agf, $outputlangs, $file, $socid)
+	function write_file($agf, $outputlangs, $file, $socid, $courrier)
 	{
 		global $user, $langs, $conf, $hookmanager;
 
@@ -218,7 +218,7 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 	 * @param Translate $outputlangs Object lang for output
 	 * @return void
 	 */
-	function _pagebody(&$agf, $outputlangs)
+	function _pagebody($agf, $outputlangs)
 	{
 		global $conf, $mysoc;
 
@@ -289,13 +289,14 @@ class pdf_fiche_presence_societe extends pdf_fiche_presence {
 		//Pour chaque société ayant un participant à afficher, on crée une série de feuilles de présence
 		foreach($socstagiaires as $socstagiaires_id => $agfsta) {
 
+			$this->stagiaires = new stdClass();
 			$this->stagiaires->lines = $agfsta->lines;
 
 			foreach ($session_hours as $key => $dates_array) {
 				// New page
 				$this->pdf->AddPage();
 				if (!empty($tplidx)) $this->pdf->useTemplate($tplidx);
-				list($posX, $posY) = $this->_pagehead($this->pdf, $this->outputlangs);
+				list($posX, $posY) = $this->_pagehead($this->pdf, 1, $this->outputlangs);
 
 				/**
 				 * *** Bloc formation ****

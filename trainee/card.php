@@ -356,19 +356,19 @@ if ($action == 'create_confirm' && ($user->rights->agefodd->creer || $user->righ
 				} else {
 					setEventMessage($sessionstat->error, 'errors');
 				}
-			}
+			} else {
+                setEventMessage('AgfSuccessCreateStag', 'mesgs');
+            }
 
 			$saveandstay = GETPOST('saveandstay', 'none');
-			if (! empty($saveandstay)) {
-				Header("Location: " . $_SERVER['HTTP_REFERER']);
-			} else {
-				if (strlen($url_back) > 0) {
-					Header("Location: " . $url_back);
-				} else {
-					Header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $agf->id);
-				}
-			}
-			exit();
+            if (empty($saveandstay)) {
+                if (strlen($url_back) > 0) {
+                    header("Location: " . $url_back);
+                } else {
+                    header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $agf->id);
+                }
+                exit();
+            }
 		} else {
 			setEventMessage($agf->error, 'errors');
 		}

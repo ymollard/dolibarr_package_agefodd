@@ -166,6 +166,7 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 
 				// Logo
 				$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
+				$width_logo = pdf_getWidthForLogo($logo);
 				if ($this->emetteur->logo) {
 					if (is_readable($logo)) {
 						$height = pdf_getHeightForLogo($logo);
@@ -219,8 +220,13 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 					$dir = $conf->societe->multidir_output[$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
 					if (! empty($staticsoc->logo)) {
 						$logo_client = $dir . $staticsoc->logo;
-						if (file_exists($logo_client) && is_readable($logo_client))
-							$pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute, 40);
+						if (file_exists($logo_client) && is_readable($logo_client)){
+							$hlogo = pdf_getHeightForLogo($logo_client);
+							$wlogo = pdf_getWidthForLogo($logo_client);
+							$X =  ($this->page_largeur / 2) - ($wlogo / 2) ;
+							$Y = $this->marge_haute;
+							$pdf->Image($logo_client,$X ,$Y, $wlogo, $hlogo,'','','',true);
+						}
 					}
 				}
 
@@ -366,26 +372,27 @@ class pdf_fiche_evaluation extends ModelePDFAgefodd {
 				$posY = $pdf->GetY() + 1;
 
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 10);
+				if (is_array($agf_op->line)) {
+					for ($y = 0; $y < count($agf_op->line); $y++) {
+						// Intitulé
+						$posY = $pdf->GetY();
+						$pdf->SetXY($posX, $posY);
+						$pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 1, 'L', 0);
+						$posY_after = $pdf->GetY();
+						$hauteur = ($posY_after - $posY);
 
-				for($y = 0; $y < count($agf_op->line); $y ++) {
-					// Intitulé
-					$posY = $pdf->GetY();
-					$pdf->SetXY($posX, $posY);
-					$pdf->MultiCell($width, 0, $outputlangs->transnoentities($agf_op->line[$y]->intitule), 1, 'L', 0);
-					$posY_after = $pdf->GetY();
-					$hauteur = ($posY_after - $posY);
+						// Oui
+						$pdf->SetXY($posX + $width, $posY);
+						$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalYes');
+						$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
+						$pdf->Rect($posX + $width, $posY, 10, $hauteur);
 
-					// Oui
-					$pdf->SetXY($posX + $width, $posY);
-					$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalYes');
-					$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
-					$pdf->Rect($posX + $width, $posY, 10, $hauteur);
-
-					// Non
-					$pdf->SetXY($posX + $width + 10, $posY);
-					$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalNo');
-					$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
-					$pdf->Rect($posX + $width + 10, $posY, 10, $hauteur);
+						// Non
+						$pdf->SetXY($posX + $width + 10, $posY);
+						$this->str = $outputlangs->transnoentities('AgfPDFFicheEvalNo');
+						$pdf->MultiCell(10, $hauteur, $outputlangs->convToOutputCharset($this->str), 0, 'C', 0);
+						$pdf->Rect($posX + $width + 10, $posY, 10, $hauteur);
+					}
 				}
 				$posY = $pdf->GetY() + 5;
 

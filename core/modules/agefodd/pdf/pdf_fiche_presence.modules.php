@@ -97,11 +97,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->emetteur->country_code = substr($langs->defaultlang, -2); // By default, if was not defined
 
 		$this->header_vertical_margin = 3;
+		$this->summaryPaddingBottom = 3;
 
 		$this->formation_widthcol1 = 20;
 		$this->formation_widthcol2 = 80;
 		$this->formation_widthcol3 = 27;
-		$this->formation_widthcol4 = 65;
+		$this->formation_widthcol4 = 60;
 
 		$this->trainer_widthcol1 = 44;
 		$this->trainer_widthcol2 = 140;
@@ -115,7 +116,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$this->trainee_widthtimeslot = 24.7;
 		}
 
-		$this->height_for_footer = 40;
+		$this->height_for_footer = 20;
 
 		$this->nbtimeslots = 6;
 
@@ -662,7 +663,9 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		if (!empty($conf->global->AGF_HIDE_SOCIETE_FICHEPRES)) {
 			if (!empty($line->socname)) {
-				$str .= '-' . dol_trunc($line->socname, 27);
+				if ($line->nom . ' ' . $line->prenom!==$line->socname) {
+					$str .= '-' . dol_trunc($line->socname, 27);
+				}
 			}
 		}
 
@@ -789,11 +792,12 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 9);
 		$this->pdf->MultiCell($this->formation_widthcol4, 4, $this->outputlangs->convToOutputCharset($str), 0, 'L');
 		$hauteur = dol_nboflines_bis($str, 50) * 4;
-		$haut_col4 += $hauteur + 4;
+		$haut_col4 += $hauteur + 2;
+
 		// Cadre
 		($haut_col4 > $haut_col2) ? $haut_table = $haut_col4 : $haut_table = $haut_col2;
 		$posY = $posYintitule + $haut_table + 4;
-		$this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table+2);
+		$this->pdf->Rect($cadre_tableau[0], $cadre_tableau[1], $this->espaceH_dispo, $haut_table + $this->summaryPaddingBottom);
 
 		return array($posX, $posY);
 	}
@@ -824,6 +828,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 
 		// Logo
 		$logo = $conf->mycompany->dir_output . '/logos/' . $this->emetteur->logo;
+		$width_logo = pdf_getWidthForLogo($logo);
 		if ($this->emetteur->logo) {
 			if (is_readable($logo)) {
 				$height = pdf_getHeightForLogo($logo);
@@ -846,10 +851,6 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		}
 		$posY = $this->marge_haute;
 		$posX = $this->marge_gauche;
-
-//		$hautcadre = 30;
-//		$this->pdf->SetXY($posX, $posY);
-//		$this->pdf->MultiCell(70, $hautcadre, "", 0, 'R', 1);
 
 		// Show sender name
 		$this->pdf->SetXY($posX, $posY);
@@ -875,7 +876,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->MultiCell(70, 4, $this->outputlangs->convToOutputCharset($this->emetteur->email), 0, 'L');
 		$posY = $this->pdf->GetY();
 
-		printRefIntForma($this->db, $this->outputlangs, $agf, $this->default_font_size - 3, $this->pdf, $posX, $posY, 'L');
+		printRefIntForma($this->db, $this->outputlangs, $agf, $this->default_font_size - 3, $this->pdf, $posX, $posY, 'L', true);
 
 		// Affichage du logo commanditaire (optionnel)
 		if ($conf->global->AGF_USE_LOGO_CLIENT) {
@@ -884,8 +885,10 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 			$dir = $conf->societe->multidir_output[$staticsoc->entity] . '/' . $staticsoc->id . '/logos/';
 			if (!empty($staticsoc->logo)) {
 				$logo_client = $dir . $staticsoc->logo;
-				if (file_exists($logo_client) && is_readable($logo_client))
-					$this->pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - 30, $this->marge_haute, 40);
+				if (file_exists($logo_client) && is_readable($logo_client)){
+					$heightlogo = pdf_getHeightForLogo($logo_client);
+					$this->pdf->Image($logo_client, $this->page_largeur - $this->marge_gauche - $this->marge_droite - ( $width_logo * 1.5), $this->marge_haute, $heightlogo);
+				}
 			}
 		}
 
@@ -927,7 +930,7 @@ class pdf_fiche_presence extends ModelePDFAgefodd
 		$this->pdf->SetXY($posX, $posY);
 		$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs), '', 8);
 		$this->pdf->SetTextColor($this->colortext[0], $this->colortext[1], $this->colortext[2]);
-		$str = $this->outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' »,' . $this->outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
+		$str = $this->outputlangs->transnoentities('AgfPDFFichePres2') . ' « ' . $mysoc->name . ' », ' . $this->outputlangs->transnoentities('AgfPDFFichePres3') . ' ';
 		$str .= str_replace(array('<br>', '<br />', "\n", "\r"), array(' ', ' ', ' ', ' '), $mysoc->address) . ' ';
 		$str .= $mysoc->zip . ' ' . $mysoc->town;
 		$str .= $this->outputlangs->transnoentities('AgfPDFFichePres4') . ' ' . $conf->global->AGF_ORGANISME_REPRESENTANT . ",\n";

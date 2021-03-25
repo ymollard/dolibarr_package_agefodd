@@ -170,7 +170,7 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 			$result = $agf_soc->fetch($socid);
 
 			if ($result) {
-				$this->_pagebody($agf, 1, $this->outputlangs);
+				$this->_pagebody_custom($agf, 1, $this->outputlangs);
 			}
 
 			$this->pdf->Close();
@@ -206,7 +206,7 @@ class pdf_fiche_presence_empty extends pdf_fiche_presence {
 	 * \param showaddress 0=no, 1=yes
 	 * \param outputlangs		Object lang for output
 	 */
-	function _pagebody($agf, $showaddress = 1, $outputlangs) {
+	function _pagebody_custom($agf, $showaddress = 1, $outputlangs) {
 		global $user, $langs, $conf, $mysoc;
 
 		// Set path to the background PDF File

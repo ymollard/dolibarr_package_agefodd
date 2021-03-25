@@ -18,7 +18,7 @@
  */
 
 /**
- * \file		/agefodd/report/report_bpf.php
+ * \file		/agefodd/report/report_bpf_help.php
  * \brief		report part
  * (Agefodd).
  */
@@ -28,12 +28,7 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
-require_once ('../class/agsession.class.php');
 require_once ('../lib/agefodd.lib.php');
-require_once ('../class/html.formagefodd.class.php');
-require_once ('../class/report_bpf.class.php');
-require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
-require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 
 // Security check
 if (! $user->rights->agefodd->lire)
@@ -42,7 +37,6 @@ if (! $user->rights->agefodd->lire)
 $lang_id = GETPOST('lang_id', 'none');
 
 $langs->load('agefodd@agefodd');
-
 
 llxHeader('', $langs->trans('AgfMenuReportBPFHelp'), '', '', '', '', $extrajs, $extracss);
 

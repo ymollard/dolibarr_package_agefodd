@@ -357,7 +357,7 @@ function getPageViewSessionListExternalAccess()
 						$Tsearch_sta[]=$search_sta;
 						$Tpopcontent_sta[]=' '.$stagiaire->civilite. ' '.$search_sta;
 					}
-					$plus_sta = ' <span data-toggle="popover" title="Détail des stagiaires" data-content="'.implode(' <br /> ',$Tpopcontent_sta).'"><i class="fa fa-plus hours-detail"></i></span>';
+					$plus_sta = ' <span data-toggle="popover" title="'.$langs->trans('AgfParticipants').'" data-content="'.implode(' <br /> ',$Tpopcontent_sta).'"><i class="fa fa-plus hours-detail"></i></span>';
 				}
 
 			}
@@ -394,18 +394,14 @@ function getPageViewSessionListExternalAccess()
 
 			    if (count($duree_exploded))
 			    {
-			        $plus = ' <i class="fa fa-plus hours-detail"></i>';
 
 
 			        $popcontent = '';
 			        foreach ($duree_exploded as $label => $hours)
 			        {
-			            $popcontent.= dol_escape_htmltag('<br>'.$label.' : '.$hours, 1);
+			            $popcontent.= dol_escape_htmltag($label.' : '.$hours.'<br>', 1);
 			        }
-			        $plus = ' <span data-toggle="popover" title="Détail des heures" data-content="'.$popcontent.'"><i class="fa fa-plus hours-detail"></i></span>';
-			        $plus.= '<span style="display:none;">';
-
-			        $plus.='</span>';
+			        $plus = ' <span data-toggle="popover" title="'.$langs->trans('AgfDetailHeure').'" data-content="'.$popcontent.'"><i class="fa fa-plus hours-detail"></i></span>';
 			    }
 			}
 			else
@@ -509,7 +505,7 @@ function getPageViewSessionCardExternalAccess(&$agsession, &$trainer)
     }
     $duree_timeRest = $agsession->duree_session - $duree_timeDone;
 
-	$out = '<!-- getPageViewSessionCardExternalAccess -->';
+	$out = '<!-- getPageViewSessionCardExternalAccessTrainer -->';
 	$out.= '<section id="section-session-card" class="py-5"><div class="container">';
 
 	$url_add = '';
@@ -637,7 +633,7 @@ function getPageViewTraineeSessionCardExternalAccess()
 
             $tab = GETPOST('tab', 'none');
 
-            $out = '<!-- getPageViewSessionCardExternalAccess -->';
+            $out = '<!-- getPageViewSessionCardExternalAccessTrainee -->';
             $out.= '<section id="section-session-card" class="py-5"><div class="container">';
 
             $out.= getEaNavbar($context->getRootUrl('agefodd_trainee_session_list', '&save_lastsearch_values=1'));
@@ -1279,6 +1275,7 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 	$context = Context::getInstance();
 	if (!validateFormateur($context)) return '';
 
+
 	$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
 	$agefodd_sesscalendar->fetch_all($agsession->id);
 	$stagiaires = new Agefodd_session_stagiaire($db);
@@ -1361,49 +1358,47 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 								<strong id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', price($agsession->duree_session - $duree_timeDone, 0, '', 1, -1, 2)).'</strong>
 							</div>
 					</div>
-				</div>
-				<hr/>
-				<div class="panel-body">
-					<div class="row clearfix">
-						<div class="col-md-6">
-							<div class="form-group">
-								<label class="col-md-7 px-0" for="AgfSessionSummaryTotalHours">'.$langs->trans('AgfSessionSummaryTotalHours').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', price($agsession->duree_session * $nbstag, 0, '', 1, -1, 2)).'</span>
+					<div class="accordion col-md text-center" id="accordionDetail">
+						<a class="btn btn-primary" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+				          <i class="btn-primary fa fa-plus-circle"></i><span class="btn-primary d-none d-sm-inline">&nbsp;'.$langs->trans('AgfDetailHeure').'</span>
+				        </a>
+						<div class="row clearfix collapse hidde" id="collapseOne" data-parent="#accordionDetail">
+							<div class="col-md">
+								<div class="form-group">
+									<label class="col-md-7 px-0" for="AgfSessionSummaryTotalHours">'.$langs->trans('AgfSessionSummaryTotalHours').'</label>
+									<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHours">'.$langs->trans('AgfHours', price($agsession->duree_session * $nbstag, 0, '', 1, -1, 2)).'</span>
+								</div>
+	                            <div class="form-group">
+									<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfSessionSummaryTotalScheduled').'</label>
+									<span class="col-md-5 px-0" id="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfHours', price($duree_scheduled_total, 0, '', 1, -1, 2)).'</span>
+								</div>
+								<div class="form-group">
+									<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfSessionSummaryTotalScheduledTrainer').'</label>
+									<span class="col-md-5 px-0" id="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfHours', price($duree_scheduled, 0, '', 1, -1, 2)).'</span>
+								</div>
+								<div class="form-group">
+									<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfSessionSummaryTotalLeftTotal').'</label>
+									<span class="col-md-5 px-0" id="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfHours', price($duree_scheduled_total - ($agsession->duree_session * $nbstag), 0, '', 1, -1, 2)).'</span>
+								</div>
 							</div>
-                            <div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfSessionSummaryTotalScheduled').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfHours', price($duree_scheduled_total, 0, '', 1, -1, 2)).'</span>
-							</div>
-							<div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfSessionSummaryTotalScheduledTrainer').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalScheduled">'.$langs->trans('AgfHours', price($duree_scheduled, 0, '', 1, -1, 2)).'</span>
-							</div>
-							<div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfSessionSummaryTotalLeftTotal').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalLeft">'.$langs->trans('AgfHours', price($duree_scheduled_total - ($agsession->duree_session * $nbstag), 0, '', 1, -1, 2)).'</span>
-							</div>
-						</div>
 
-						<div class="col-md-6">
-							<div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfSessionSummaryTotalPresence').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfHours', price($duree_timeConfirm, 0, '', 1, -1, 2)).'</span>
-							</div>
-							<!-- <div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursComptabilise">'.$langs->trans('AgfSessionSummaryTotalHoursComptabilise').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabilise">'.$langs->trans('AgfHours', price($duree_presence_comptabilise, 0, '', 1, -1, 2)).'</span>
-							</div> -->
-							<div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfSessionSummaryTotalHoursComptabiliseCancel').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfHours', price($duree_presence_comptabilise_cancel, 0, '', 1, -1, 2)).'</span>
-							</div>
-							<div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursMaxComptabilise">'.$langs->trans('AgfSessionSummaryTotalHoursMaxComptabilise').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursMaxComptabilise">'.$langs->trans('AgfHours', price($duree_presence_max_comptabilise, 0, '', 1, -1, 2)).'</span>
-							</div>
-							<div class="form-group">
-								<label class="col-md-7 px-0"  for="AgfSessionSummaryTauxAssiduite">'.$langs->trans('AgfSessionSummaryTauxAssiduite').'</label>
-								<span class="col-md-5 px-0" id="AgfSessionSummaryTauxAssiduite">'.number_format($tx_assi, 2).' %</span>
+							<div class="col-md">
+								<div class="form-group">
+									<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfSessionSummaryTotalPresence').'</label>
+									<span class="col-md-5 px-0" id="AgfSessionSummaryTotalPresence">'.$langs->trans('AgfHours', price($duree_timeConfirm, 0, '', 1, -1, 2)).'</span>
+								</div>
+								<div class="form-group">
+									<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfSessionSummaryTotalHoursComptabiliseCancel').'</label>
+									<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursComptabiliseCancel">'.$langs->trans('AgfHours', price($duree_presence_comptabilise_cancel, 0, '', 1, -1, 2)).'</span>
+								</div>
+								<div class="form-group">
+									<label class="col-md-7 px-0"  for="AgfSessionSummaryTotalHoursMaxComptabilise">'.$langs->trans('AgfSessionSummaryTotalHoursMaxComptabilise').'</label>
+									<span class="col-md-5 px-0" id="AgfSessionSummaryTotalHoursMaxComptabilise">'.$langs->trans('AgfHours', price($duree_presence_max_comptabilise, 0, '', 1, -1, 2)).'</span>
+								</div>
+								<div class="form-group">
+									<label class="col-md-7 px-0"  for="AgfSessionSummaryTauxAssiduite">'.$langs->trans('AgfSessionSummaryTauxAssiduite').'</label>
+									<span class="col-md-5 px-0" id="AgfSessionSummaryTauxAssiduite">'.number_format($tx_assi, 2).' %</span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -1429,9 +1424,16 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 		if (!empty($stagiaire->email)) {
 			$out .= ' - ' . $stagiaire->email;
 		}
+
+		//planning par participant
+        $out .= '<br><br>';
+        $out.= getPlanningViewSessionTrainee($agsession, $agsession->id, $stagiaire);
+
 		$out.= '</span></li>';
+
 	}
 	$out.= '</ul>';
+
 
 	$out.= '
 				</div>
@@ -1439,6 +1441,12 @@ function getPageViewSessionCardExternalAccess_summary(&$agsession, &$trainer, &$
 		</div>
 
 	';
+
+	$out.= '<script type="text/javascript" >
+				$(document).ready(function(){
+					$(\'[data-toggle="popover"]\').popover({html:true});
+				})
+			</script>';
 
 	return $out;
 }
@@ -3265,6 +3273,7 @@ function downloadAgefoddTrainneeDoc(){
  * @param $sessionStagiaire Agefodd_session_stagiaire
  * @param $calendrier Agefodd_sesscalendar
  * @param $sessionstagiaireheures Agefoddsessionstagiaireheures
+ * @param $errorsMsg string
  */
 function traineeSendMailAlertForAbsence($user, $agsession, $trainee, $sessionStagiaire, $calendrier, $sessionstagiaireheures, &$errorsMsg = array())
 {
@@ -3460,13 +3469,187 @@ function getExternalAccessSendEmailContext(){
 function getExternalAccessSendEmailFrom($default){
     global $conf;
     $mail=$default;
+
     if(!empty($conf->global->AGF_EA_SEND_EMAIL_FROM))
     {
         $mail=$conf->global->AGF_EA_SEND_EMAIL_FROM;
     }
     elseif(!empty($conf->global->MAIN_MAIL_EMAIL_FROM)){
-        $mail=$conf->MAIN_MAIL_EMAIL_FROM;
+        $mail=$conf->global->MAIN_MAIL_EMAIL_FROM;
     }
 
     return $mail;
+}
+
+/**
+ * Get table of a planning's trainee
+ * @param $session User
+ * @param $idsession Agsession
+ * @param $trainee Agefodd_stagiaire
+ * @return string
+ */
+function getPlanningViewSessionTrainee($session, $idsess, $trainee){
+
+    global $db, $langs, $user;
+
+	$context = Context::getInstance();
+
+    dol_include_once('/agefodd/class/agefodd_session_stagiaire_heures.class.php');
+	dol_include_once('/agefodd/class/agefodd_session_stagiaire_planification.class.php');
+	dol_include_once('/agefodd/class/agefodd_session_formateur.class.php');
+	dol_include_once('/agefodd/class/agefodd_formateur.class.php');
+
+	$out='';
+	$session_trainer = new Agefodd_session_formateur($db);
+	$formateur = new Agefodd_teacher($db);
+	$formateur->fetchByUser($user);
+	$TtrainerName = array();
+	$fk_agefodd_session_formateur=0;
+	//Find fk_agefodd_session_formateur for the current trainer
+	if (!empty($formateur->id)) {
+		$result = $session_trainer->fetch_formateur_per_session($idsess);
+		if ($result < 0) {
+			$context->setEventMessage($session_trainer->error, 'errors');
+		} else {
+			if (is_array($session_trainer->lines) && count($session_trainer->lines) > 0) {
+				foreach ($session_trainer->lines as $line) {
+					if ($line->formid == $formateur->id) {
+						$fk_agefodd_session_formateur = $line->opsid;
+						$TtrainerName[$fk_agefodd_session_formateur] = $line->firstname . ' ' . $line->lastname;
+						break;
+					}
+				}
+			}
+		}
+
+		$idTrainee_session = $trainee->stagerowid;
+		$idtrainee = $trainee->id;
+
+		//Tableau de toutes les heures plannifiées du participant
+		$planningTrainee = new AgefoddSessionStagiairePlanification($db);
+		$result = $planningTrainee->loadDictModalite();
+		if ($result < 0) {
+			$context->setEventMessage($planningTrainee->error, 'errors');
+		}
+		$TLinesTraineePlanning = $planningTrainee->getSchedulesPerCalendarType($idsess, $idTrainee_session);
+
+		//if(empty($user->rights->agefodd->external_trainer_seeotrainerplantime))
+
+		//Nombre d'heures planifiées
+		$totalScheduledHoursTrainee = $planningTrainee->getTotalScheduledHoursbyTrainee($idsess, $idTrainee_session);
+		if (empty($totalScheduledHoursTrainee))
+			$totalScheduledHoursTrainee = 0;
+
+		//heures réalisées par type de créneau
+
+		$heureRTotal = 0;
+		$trainee_hr = new Agefoddsessionstagiaireheures($db);
+		$THoursR = $trainee_hr->fetch_heures_stagiaire_per_type($idsess, $idtrainee);
+		if (!is_array($THoursR) && $THoursR < 0) {
+			$context->setEventMessages($trainee_hr->error, 'errors');
+		} elseif (is_array($THoursR) && count($THoursR) > 0) {
+			$detailHours = '';
+			foreach ($THoursR as $typ => $trainer_hrs) {
+				foreach ($trainer_hrs as $trainerid => $hrs) {
+					$detailHours .= $planningTrainee->TTypeTimeByCode[$typ]['label'] . ':' . $hrs;
+					if (!empty($trainerid)) {
+						if (!array_key_exists($trainerid, $TtrainerName)) {
+							$result = $session_trainer->fetch($trainerid);
+							if ($result < 0) {
+								setEventMessage($session_trainer->error, 'errors');
+							} elseif ($result == 1) {
+								if (!empty($user->rights->agefodd->external_trainer_seeotrainerplantime)) {
+									$TtrainerName[$trainerid] = $session_trainer->firstname . ' ' . $session_trainer->lastname;
+								} else {
+									$TtrainerName[$trainerid] = $langs->trans('AgfOtherTrainer');
+								}
+							}
+						}
+						$detailHours .= ' (' . $TtrainerName[$trainerid] . ')';
+					}
+					$detailHours .= '<br/>';
+					$heureRTotal += $hrs;
+				}
+			}
+		} else {
+			$heureRTotal = 0;
+		}
+
+		if (!empty($detailHours)) {
+			$detailHours = ' <span data-toggle="popover" title="' . $langs->trans('AgfDetailHeure') . '" data-content="' . $detailHours . '"><i class="fa fa-plus hours-detail"></i></span>';
+		}
+
+		//heures totales restantes : durée de la session - heures réalisées totales
+		$heureRestTotal = $session->duree_session - $heureRTotal;
+
+		$out = '<table class="table table-striped w-100" id="planningTrainee">';
+
+		//Titres
+		$out .= '<tr class="text-center">';
+		$out .= '<th width="15%" class="text-center">' . $langs->trans('AgfCalendarType') . '</th>';
+		$out .= '<th width="35%" class="text-center">' . $langs->trans('AgfHoursP') . ' (' . $totalScheduledHoursTrainee . ')</th>';
+		$out .= '<th class="text-center">' . $langs->trans('AgfHoursR') . ' (' . $heureRTotal . $detailHours . ')</th>';
+		$out .= '<th class="text-center">' . $langs->trans('AgfHoursRest') . ' (' . $heureRestTotal . ')</th>';
+		$out .= '</tr>';
+
+		//Lignes par type de modalité
+		foreach ($TLinesTraineePlanning as $line) {
+
+
+			//Match Trainer
+			if (!empty($line->fk_agefodd_session_formateur)) {
+				if (!array_key_exists($line->fk_agefodd_session_formateur, $TtrainerName)) {
+					$result = $session_trainer->fetch($line->fk_agefodd_session_formateur);
+					if ($result < 0) {
+						setEventMessage($session_trainer->error, 'errors');
+					} elseif($result==1) {
+						$TtrainerName[$line->fk_agefodd_session_formateur] = $session_trainer->firstname . ' ' . $session_trainer->lastname;
+					}
+				}
+				//Calcul heures restantes
+				$heureRest = $line->heurep - $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][$line->fk_agefodd_session_formateur];
+				if ($heureRest<0) {
+					$heureRest ='<div style="color:red;font-weight: bold">'.$heureRest.' (' . $TtrainerName[$line->fk_agefodd_session_formateur].')</div>';
+				} else {
+					$heureRest .=' (' . $TtrainerName[$line->fk_agefodd_session_formateur].')';
+				}
+				//Calcul heures réalisé
+				if (!empty($THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][$line->fk_agefodd_session_formateur])) {
+					$heureDone = $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][$line->fk_agefodd_session_formateur] . ' ('. $TtrainerName[$line->fk_agefodd_session_formateur].')';
+				} else {
+					$heureDone ='';
+				}
+			} else {
+				$heureDoneByModTotal=0;
+				$TrainerDoneByMod=array();
+				foreach($THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']] as $trainerid=>$hrsDone) {
+					$heureDoneByModTotal += $hrsDone;
+					$TrainerDoneByMod[]= $TtrainerName[$trainerid];
+				}
+
+				if (!empty($heureDoneByModTotal)) {
+					$heureDone = $heureDoneByModTotal.' ('.implode(',', $TrainerDoneByMod).')';
+					$heureRest = $line->heurep - $heureDoneByModTotal;
+				} else {
+					$heureRest = $line->heurep - $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][0];
+					$heureDone = $THoursR[$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['code']][0];
+				}
+			}
+
+			$out .= '<tr>';
+
+			//Type créneau
+			$out .= '<td>'.$planningTrainee->TTypeTimeById[$line->fk_calendrier_type]['label'].'</td>';
+			//Heure planifé
+			$out .= '<td class="text-center">'.$line->heurep.(array_key_exists($line->fk_agefodd_session_formateur, $TtrainerName)?' (' . $TtrainerName[$line->fk_agefodd_session_formateur].')':'').'</td>';
+			//Heure réalisées
+			$out .= '<td class="text-center">'.$heureDone.'</td>';
+			//Heures restantes
+			$out.= '<td class="text-center">'.$heureRest.'</td>';
+
+		}
+
+		$out .= '</table>';
+	}
+    return $out;
 }
