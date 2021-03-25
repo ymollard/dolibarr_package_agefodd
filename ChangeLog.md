@@ -25,6 +25,10 @@ All notable changes to this project will be documented in this file.
 ___
 ## OLDER
 
+
+***** ChangeLog for 4.9.12 compared to 4.9.11 *****
+FIX : HTML 5 form validation for module external access view
+
 ***** ChangeLog for 3.0.18 compared to 3.0.17 *****
 NEW : Can add image on location
 
