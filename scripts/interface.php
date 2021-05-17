@@ -6,6 +6,7 @@ if (! $res)
 if (! $res)
 	die("Include of main fails");
 
+if (!defined('NOTOKENRENEWAL')) define('NOTOKENRENEWAL', '1'); // Disable token renewal
 
 dol_include_once('/core/lib/functions.lib.php');
 
