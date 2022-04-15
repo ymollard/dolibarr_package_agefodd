@@ -1798,3 +1798,5 @@ AgfTimeManagement=Gestion du temps
 AgfTraineeStatus = Statut du participant
 AgfStagiaireSocHistory = Historique des sociétés
 AgfSuccessCreateStag = Le participant a bien été créé
+
+DateToBirth=Date de naissance

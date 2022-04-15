@@ -1756,6 +1756,7 @@ AGF_FICHEPRES_SHOW_OPCO_NUMBERS=Afficher les numeros de dossier OPCO dans les fe
 AgfStaNotInStatusToOutput=Le stagiaire %s n'est pas dans un status pour être sur la fiche de présence
 AgfDocFin=Documents Financiés (devis/commande/facture)
 AgfTimeManagement=Gestion du temps
+DateToBirth=Birth date
 #
 # NEW TRANSLATIONS HERE
 #
